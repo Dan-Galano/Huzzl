@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/homepage.dart';
 
 void main() {
   runApp(const HuzzlWeb());
@@ -10,7 +11,7 @@ class HuzzlWeb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(),
+      home: HomePage(),
     );
   }
 }
