@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/login/login.dart';
+import 'package:huzzl_web/views/user%20option/user_option.dart';
 
 void main() {
   runApp(const HuzzlWeb());
@@ -9,8 +11,10 @@ class HuzzlWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: LoginPage(),
+      // home: UserOptionScreen(),
     );
   }
 }
