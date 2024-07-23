@@ -11,12 +11,12 @@ class LoginPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          Positioned(
-            top: 20,
-            left: 20,
-            child: Image.asset('assets/images/huzzl.png', width: 80),
-          ),
-          // const NavBarLoginRegister(),
+          // Positioned(
+          //   top: 20,
+          //   left: 20,
+          //   child: Image.asset('assets/images/huzzl.png', width: 80),
+          // ),
+          const NavBarLoginRegister(),
           Center(
             child: Container(
               width: 670,
