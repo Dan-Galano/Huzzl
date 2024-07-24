@@ -9,14 +9,8 @@ class RecruiterRegistrationScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          // Positioned(
-          //   top: 20,
-          //   left: 20,
-          //   child: Image.asset('assets/images/huzzl.png', width: 80),
-          // ),
           const NavBarLoginRegister(),
-          Center(
-            heightFactor: 1.5,
+          Expanded(
             child: Container(
               width: 670,
               padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -146,40 +140,84 @@ class RecruiterRegistrationScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      isDense: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            hintText: 'First name',
+                            hintStyle: const TextStyle(
+                              color: Color(0xFFB6B6B6),
+                              fontFamily: 'Galano',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: TextField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            hintText: 'Last name',
+                            hintStyle: const TextStyle(
+                              color: Color(0xFFB6B6B6),
+                              fontFamily: 'Galano',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
-                        ),
-                      ),
-                      hintText: 'First name',
-                      hintStyle: const TextStyle(
-                        color: Color(0xFFB6B6B6),
-                        fontFamily: 'Galano',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   const Align(
