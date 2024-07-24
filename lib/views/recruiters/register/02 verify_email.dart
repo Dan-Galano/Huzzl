@@ -161,7 +161,7 @@ class CodeInputFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 60,
+      height: 48,
       width: 30,
       child: TextField(
         controller: controller,
@@ -169,7 +169,7 @@ class CodeInputFields extends StatelessWidget {
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 35,
+          fontSize: 28,
           fontFamily: 'Galano',
         ),
         inputFormatters: [
