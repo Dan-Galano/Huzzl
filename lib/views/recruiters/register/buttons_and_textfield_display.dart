@@ -13,6 +13,7 @@ import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_circlebutton.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/buttons/red/redfilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/tickbutton.dart';
+import 'package:huzzl_web/widgets/textfield/lightblue_hinttext.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_textfield.dart';
 
 void main() {
@@ -50,6 +51,12 @@ class HomePage extends StatelessWidget {
             LightBlueTextField(
               width: 670,
               controller: _controller,
+            ),
+            SizedBox(height: 10),
+            LightBlueHinttext(
+              width: 670,
+              controller: _controller,
+              hintText: 'Select an option',
             ),
             SizedBox(height: 10),
             BlueFilledCircleButton(

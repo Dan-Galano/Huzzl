@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 
-class LightBlueTextField extends StatelessWidget {
+class LightBlueHinttext extends StatelessWidget {
   final double? width;
   final TextEditingController controller;
+  final String hintText;
 
-  LightBlueTextField({this.width, required this.controller});
+  LightBlueHinttext({
+    this.width,
+    required this.controller,
+    required this.hintText,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final borderSide = BorderSide(
-      color: Color(0xFFD1E1FF),
-      width: 1.5,
-    );
-
     return Container(
-      width: width, 
+      width: width,
       child: TextField(
         style: TextStyle(
           fontSize: 15,
         ),
-        controller: controller, 
+        controller: controller,
         cursorColor: Color.fromARGB(255, 58, 63, 76),
         textAlignVertical: TextAlignVertical.center,
         decoration: InputDecoration(
@@ -28,17 +28,30 @@ class LightBlueTextField extends StatelessWidget {
             horizontal: 14.0,
           ),
           isDense: true,
+          hintText: hintText,
+          hintStyle: TextStyle(
+            color: Color(0xFF8E8E8E), 
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: borderSide,
+            borderSide: BorderSide(
+              color: Color(0xFFD1E1FF),
+              width: 1.5,
+            ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: borderSide,
+            borderSide: BorderSide(
+              color: Color(0xFFD1E1FF),
+              width: 1.5,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: borderSide,
+            borderSide: BorderSide(
+              color: Color(0xFFD1E1FF),
+              width: 1.5,
+            ),
           ),
         ),
       ),
