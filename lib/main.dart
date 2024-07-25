@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/login/login.dart';
 import 'package:huzzl_web/views/recruiters/register/00%20registration_screen.dart';
+import 'package:huzzl_web/views/recruiters/register/05%20details_hiring_manager.dart';
 import 'package:huzzl_web/views/user%20option/user_option.dart';
 
 void main() {
@@ -16,7 +17,8 @@ class HuzzlWeb extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // home: LoginPage(),
       // home: UserOptionScreen(),
-      home: RecruiterRegistrationScreen(),
+      // home: RecruiterRegistrationScreen(),
+      home: AccountHiringManager(),
     );
   }
 }
