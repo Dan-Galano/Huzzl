@@ -81,6 +81,8 @@ flutter:
           weight: 700
         - asset: assets/fonts/GalanoGrotesqueMedium.otf
           weight: 500
+        - asset: assets/fonts/GalanoGrotesqueRegular.otf
+          weight: 400
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
