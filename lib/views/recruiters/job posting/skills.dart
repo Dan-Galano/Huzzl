@@ -127,6 +127,10 @@ class _JobPostingSkillState extends State<JobPostingSkill> {
                           ),
                           decoration: InputDecoration(
                             hintText: 'Flutter',
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 5.0,
+                              horizontal: 10.0,
+                            ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(
                                 color: Color(0xffD1E1FF),
@@ -137,14 +141,14 @@ class _JobPostingSkillState extends State<JobPostingSkill> {
                             focusedBorder: OutlineInputBorder(
                               borderSide: const BorderSide(
                                 color: Color(0xffD1E1FF),
-                                width: 2.0,
+                                width: 1.5,
                               ),
                               borderRadius: BorderRadius.circular(15),
                             ),
                             border: OutlineInputBorder(
                               borderSide: const BorderSide(
                                 color: Color(0xffD1E1FF),
-                                width: 2.0,
+                                width: 1.5,
                               ),
                               borderRadius: BorderRadius.circular(15),
                             ),
