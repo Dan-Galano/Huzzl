@@ -13,7 +13,7 @@ class LoginRegister extends StatefulWidget {
 class _LoginRegisterState extends State<LoginRegister> {
   bool _showLoginScreen = true;
 
-  void _toggleScreen(){
+  void _toggleScreen() {
     setState(() {
       _showLoginScreen = !_showLoginScreen;
     });
@@ -26,9 +26,13 @@ class _LoginRegisterState extends State<LoginRegister> {
         children: [
           const NavBarLoginRegister(),
           Expanded(
-            child: _showLoginScreen 
-            ? LoginScreen(onToggle: _toggleScreen,)
-            : UserOptionScreen(onToggle: _toggleScreen,),
+            child: _showLoginScreen
+                ? LoginScreen(
+                    onToggle: _toggleScreen,
+                  )
+                : UserOptionScreen(
+                    onToggle: _toggleScreen,
+                  ),
           ),
         ],
       ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/hoverable_option_card.dart';
-import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class UserOptionScreen extends StatelessWidget {
   final VoidCallback onToggle;

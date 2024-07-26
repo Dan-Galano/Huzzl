@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/user%20option/user_option_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
-import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_hinttext.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_textfield.dart';
 

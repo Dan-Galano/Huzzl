@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/login/login_screen.dart';
-import 'package:huzzl_web/views/user%20option/login_register.dart';
+import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/user%20option/user_option_screen.dart';
 
 void main() {
