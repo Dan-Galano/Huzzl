@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/register/00%20registration_screen.dart';
+import 'package:huzzl_web/views/job%20seekers/register/01%20jobseeker_profile.dart';
+import 'package:huzzl_web/views/recruiters/register/00%20registration_screen.dart';
+import 'package:huzzl_web/views/recruiters/register/01%20company_profile.dart';
 
 class HoverableOptionCard extends StatefulWidget {
   final String title;
@@ -35,8 +39,21 @@ class _HoverableOptionCardState extends State<HoverableOptionCard> {
         });
       },
       child: GestureDetector(
+        // onTap: () {
+        //   print('${widget.title} selected');
+        // },
         onTap: () {
-          print('${widget.title} selected');
+          if (widget.title.contains('recruiter')) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RecruiterRegistrationScreen()),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => JobSeekerRegistrationScreen()),
+            );
+          }
         },
         child: Container(
           height: 180,

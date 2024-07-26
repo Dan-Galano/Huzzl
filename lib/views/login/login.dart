@@ -145,6 +145,7 @@ class LoginPage extends StatelessWidget {
                       TextButton(
                         onPressed: () {
                           //onpressed
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserOptionScreen(),));
                         },
                         child: const Text(
                           'Don\'t have an account? Sign up',
@@ -159,7 +160,7 @@ class LoginPage extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             //onpressed
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserOptionScreen(),));
+                            // Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserOptionScreen(),));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF0038FF),

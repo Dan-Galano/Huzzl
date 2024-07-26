@@ -19,8 +19,8 @@ class _RecruiterRegistrationScreenState
       body: Column(
         children: [
           NavBarLoginRegister(),
-          // CompanyProfileScreen(),
-          HiringManagerProfileScreen(),
+          CompanyProfileScreen(),
+          // HiringManagerProfileScreen(),
         ],
       ),
     );
