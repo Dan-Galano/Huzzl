@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/login/login.dart';
-import 'package:huzzl_web/views/user%20option/user_option.dart';
+import 'package:huzzl_web/views/login/login_screen.dart';
+import 'package:huzzl_web/views/user%20option/login_register.dart';
+import 'package:huzzl_web/views/user%20option/user_option_screen.dart';
 
 void main() {
   runApp(const HuzzlWeb());
@@ -13,7 +14,7 @@ class HuzzlWeb extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: LoginRegister(),
       // home: UserOptionScreen(),
     );
   }

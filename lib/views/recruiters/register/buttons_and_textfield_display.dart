@@ -57,6 +57,7 @@ class HomePage extends StatelessWidget {
               width: 670,
               controller: _controller,
               hintText: 'Select an option',
+              obscureText: false,
             ),
             SizedBox(height: 10),
             BlueFilledCircleButton(

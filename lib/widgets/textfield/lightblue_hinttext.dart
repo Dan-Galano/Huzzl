@@ -4,11 +4,13 @@ class LightBlueHinttext extends StatelessWidget {
   final double? width;
   final TextEditingController controller;
   final String hintText;
+  final bool obscureText;
 
   LightBlueHinttext({
     this.width,
     required this.controller,
     required this.hintText,
+    required this.obscureText,
   });
 
   @override
@@ -16,6 +18,7 @@ class LightBlueHinttext extends StatelessWidget {
     return Container(
       width: width,
       child: TextField(
+        obscureText: obscureText,
         style: TextStyle(
           fontSize: 15,
         ),
@@ -30,7 +33,7 @@ class LightBlueHinttext extends StatelessWidget {
           isDense: true,
           hintText: hintText,
           hintStyle: TextStyle(
-            color: Color(0xFF8E8E8E), 
+            color: Color(0xFF8E8E8E),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
