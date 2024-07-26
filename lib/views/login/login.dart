@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/user%20option/user_option.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+import 'package:huzzl_web/widgets/textfield/lightblue_hinttext.dart';
+import 'package:huzzl_web/widgets/textfield/lightblue_textfield.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +17,6 @@ class LoginPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Positioned(
-          //   top: 20,
-          //   left: 20,
-          //   child: Image.asset('assets/images/huzzl.png', width: 80),
-          // ),
           const NavBarLoginRegister(),
           Center(
             child: Container(
@@ -25,7 +26,7 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Login',
+                    'Login your account',
                     style: TextStyle(
                       fontSize: 32,
                       color: Color(0xff373030),
@@ -46,34 +47,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    decoration: InputDecoration(
-                      contentPadding:
-                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      isDense: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
+                  LightBlueTextField(controller: emailController),
                   const SizedBox(height: 20),
                   const Align(
                     alignment: Alignment.centerLeft,
@@ -87,41 +61,9 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      isDense: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFD1E1FF),
-                          width: 1.5,
-                        ),
-                      ),
-                      hintText: 'Password (8 or more characters)',
-                      hintStyle: const TextStyle(
-                        color: Color(0xFFB6B6B6),
-                        fontFamily: 'Galano',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                  LightBlueHinttext(
+                      controller: passwordController,
+                      hintText: 'Password (8 or more characters)'),
                   const SizedBox(height: 5),
                   Align(
                     alignment: Alignment.centerRight,
@@ -144,7 +86,9 @@ class LoginPage extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          //onpressed
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const UserOptionScreen(),
+                          ));
                         },
                         child: const Text(
                           'Don\'t have an account? Sign up',
@@ -154,25 +98,10 @@ class LoginPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(
+                      BlueFilledCircleButton(
                         width: 150,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            //onpressed
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserOptionScreen(),));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF0038FF),
-                            padding: EdgeInsets.all(20),
-                          ),
-                          child: const Text('LOGIN',
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.white,
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w700,
-                              )),
-                        ),
+                        onPressed: () {},
+                        text: 'Login',
                       ),
                     ],
                   ),

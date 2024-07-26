@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class HoverableOptionCard extends StatefulWidget {
+  final String userType;
   final String title;
   final String assetPath;
   final Color color;
   final Color borderColor;
 
   const HoverableOptionCard({
+    required this.userType,
     required this.title,
     required this.assetPath,
     required this.color,
@@ -36,7 +38,11 @@ class _HoverableOptionCardState extends State<HoverableOptionCard> {
       },
       child: GestureDetector(
         onTap: () {
-          print('${widget.title} selected');
+          if (widget.userType == "recruiter") {
+            print('recruiter');
+          } else {
+            print('job-seeker');
+          }
         },
         child: Container(
           height: 180,
@@ -61,7 +67,7 @@ class _HoverableOptionCardState extends State<HoverableOptionCard> {
                   height: 24,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color:  widget.color, width: 2),
+                    border: Border.all(color: widget.color, width: 2),
                     color: _isHovered ? widget.color : Colors.transparent,
                   ),
                   child: _isHovered
@@ -101,7 +107,7 @@ class _HoverableOptionCardState extends State<HoverableOptionCard> {
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
-                          fontFamily:'Galano',
+                          fontFamily: 'Galano',
                           fontWeight: FontWeight.w700,
                         ),
                       ),

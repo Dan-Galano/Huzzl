@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/hoverable_option_card.dart';
 
 class UserOptionScreen extends StatelessWidget {
@@ -8,17 +9,33 @@ class UserOptionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-          children: [
-            Positioned(
-              top: 20,
-              left: 20,
-              child: Image.asset('assets/images/huzzl.png', width: 80),
-            ),
-            const Center(
+        children: [
+          Positioned(
+            top: 20,
+            left: 20,
+            child: Image.asset('assets/images/huzzl.png', width: 80),
+          ),
+          Center(
+            child: SizedBox(
+              width: 550,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  Row(
+                    children: [
+                      IconButtonback(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        iconImage:
+                            const AssetImage('assets/images/backbutton.png'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  const Text(
                     'Join as a recruiter or job-seeker?',
                     style: TextStyle(
                       fontSize: 24,
@@ -27,12 +44,13 @@ class UserOptionScreen extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(height: 40),
-                  Row(
+                  const SizedBox(height: 40),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       HoverableOptionCard(
                         title: "I'm a recruiter, hiring for a project",
+                        userType: 'recruiter',
                         assetPath: 'assets/images/CV.png',
                         color: Color(0xff0038FF),
                         borderColor: Color(0xff0038FF),
@@ -40,6 +58,7 @@ class UserOptionScreen extends StatelessWidget {
                       SizedBox(width: 20),
                       HoverableOptionCard(
                         title: "I'm a job-seeker, looking for work",
+                        userType: 'job-seeker',
                         assetPath: 'assets/images/Hired.png',
                         color: Color(0xffFD7206),
                         borderColor: Color(0xffFD7206),
@@ -49,8 +68,9 @@ class UserOptionScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 }
