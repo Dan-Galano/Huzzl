@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 
 class CompanyProfileScreen extends StatefulWidget {
-  const CompanyProfileScreen({super.key});
+  final VoidCallback nextPage;
+  const CompanyProfileScreen({super.key, required this.nextPage});
 
   @override
   State<CompanyProfileScreen> createState() => _CompanyProfileScreenState();
@@ -15,13 +17,22 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
       child: Container(
-        width: 670,
-        padding: const EdgeInsets.symmetric(horizontal: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 400),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButtonback(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  iconImage: const AssetImage('assets/images/backbutton.png'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
             const Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -78,8 +89,8 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
             const SizedBox(height: 8),
             TextField(
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -119,8 +130,8 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
             const SizedBox(height: 8),
             TextField(
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -162,7 +173,6 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    obscureText: true,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 16.0),
@@ -200,7 +210,6 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                 const SizedBox(width: 15),
                 Expanded(
                   child: TextField(
-                    obscureText: true,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 16.0),
@@ -286,10 +295,9 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
             ),
             const SizedBox(height: 8),
             TextField(
-              obscureText: true,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -328,10 +336,9 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
             ),
             const SizedBox(height: 8),
             TextField(
-              obscureText: true,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -385,8 +392,8 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
             TextField(
               maxLines: 5,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -431,10 +438,10 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            TextField(
+            TextFormField(
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -466,13 +473,10 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                 SizedBox(
                   width: 150,
                   child: ElevatedButton(
-                    onPressed: () {
-                      //onpressed
-                      // Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserOptionScreen(),));
-                    },
+                    onPressed: widget.nextPage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF0038FF),
-                      padding: EdgeInsets.all(20),
+                      backgroundColor: const Color(0xFF0038FF),
+                      padding: const EdgeInsets.all(20),
                     ),
                     child: const Text('Next',
                         style: TextStyle(

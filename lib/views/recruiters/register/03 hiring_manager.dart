@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 
 class HiringManagerProfileScreen extends StatefulWidget {
-  const HiringManagerProfileScreen({super.key});
+  final VoidCallback nextPage;
+  final VoidCallback previousPage;
+  const HiringManagerProfileScreen(
+      {super.key, required this.nextPage, required this.previousPage});
 
   @override
   State<HiringManagerProfileScreen> createState() =>
@@ -30,12 +34,20 @@ class _HiringManagerProfileScreenState
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
-        width: 670,
-        padding: const EdgeInsets.symmetric(horizontal: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 400),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            //back button pa here
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButtonback(
+                  onPressed: widget.previousPage,
+                  iconImage: const AssetImage('assets/images/backbutton.png'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
             const Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -233,8 +245,8 @@ class _HiringManagerProfileScreenState
             TextField(
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -266,10 +278,7 @@ class _HiringManagerProfileScreenState
                 SizedBox(
                   width: 150,
                   child: ElevatedButton(
-                    onPressed: () {
-                      //onpressed
-                      // Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserOptionScreen(),));
-                    },
+                    onPressed: widget.nextPage,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0038FF),
                       padding: const EdgeInsets.all(20),

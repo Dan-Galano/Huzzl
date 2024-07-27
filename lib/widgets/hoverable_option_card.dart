@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/register/00%20registration_screen.dart';
 
 class HoverableOptionCard extends StatefulWidget {
   final String userType;
@@ -40,6 +41,9 @@ class _HoverableOptionCardState extends State<HoverableOptionCard> {
         onTap: () {
           if (widget.userType == "recruiter") {
             print('recruiter');
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => RecruiterRegistrationScreen(),
+            ));
           } else {
             print('job-seeker');
           }

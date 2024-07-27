@@ -14,6 +14,47 @@ class RecruiterRegistrationScreen extends StatefulWidget {
 
 class _RecruiterRegistrationScreenState
     extends State<RecruiterRegistrationScreen> {
+  PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  void _nextPage() {
+    if (_currentPage < 2) {
+      _pageController.animateToPage(
+        _currentPage + 1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _previousPage() {
+    if (_currentPage > 0) {
+      _pageController.animateToPage(
+        _currentPage - 1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _pageController.addListener(() {
+      setState(() {
+        _currentPage = _pageController.page!.round();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,11 +62,15 @@ class _RecruiterRegistrationScreenState
         children: [
           const NavBarLoginRegister(),
           Expanded(
-            child:
-                // CompanyProfileScreen(),
-                // const HiringManagerProfileScreen(),
-                AccountHiringManagerScreen(),
-          )
+              child: PageView(
+            controller: _pageController,
+            children: [
+              CompanyProfileScreen(nextPage: _nextPage),
+              HiringManagerProfileScreen(
+                  nextPage: _nextPage, previousPage: _previousPage),
+              AccountHiringManagerScreen(previousPage: _previousPage),
+            ],
+          ))
         ],
       ),
     );

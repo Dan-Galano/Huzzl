@@ -10,11 +10,9 @@ class HuzzlWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: LoginRegister(),
-      // home: UserOptionScreen(),
-      // home: RecruiterRegistrationScreen(),
     );
   }
 }
