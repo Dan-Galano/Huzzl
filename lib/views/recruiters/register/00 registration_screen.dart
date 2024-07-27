@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/register/01%20company_profile.dart';
 import 'package:huzzl_web/views/recruiters/register/03%20hiring_manager.dart';
+import 'package:huzzl_web/views/recruiters/register/05%20details_hiring_manager.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class RecruiterRegistrationScreen extends StatefulWidget {
@@ -15,12 +16,16 @@ class _RecruiterRegistrationScreenState
     extends State<RecruiterRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Column(
         children: [
-          NavBarLoginRegister(),
-          // CompanyProfileScreen(),
-          HiringManagerProfileScreen(),
+          const NavBarLoginRegister(),
+          Expanded(
+            child:
+                // CompanyProfileScreen(),
+                // const HiringManagerProfileScreen(),
+                AccountHiringManagerScreen(),
+          )
         ],
       ),
     );
