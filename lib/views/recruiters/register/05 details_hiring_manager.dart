@@ -1,10 +1,22 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 
 class AccountHiringManagerScreen extends StatefulWidget {
   final VoidCallback previousPage;
-  const AccountHiringManagerScreen({super.key, required this.previousPage});
+  final TextEditingController hiringManEmailController;
+  final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
+  final VoidCallback register;
+
+  const AccountHiringManagerScreen({super.key, 
+    required this.previousPage,
+    required this.hiringManEmailController,
+    required this.passwordController,
+    required this.confirmPasswordController,
+    required this.register,
+  });
 
   @override
   State<AccountHiringManagerScreen> createState() =>
@@ -14,9 +26,6 @@ class AccountHiringManagerScreen extends StatefulWidget {
 class _AccountHiringManagerScreenState
     extends State<AccountHiringManagerScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
@@ -32,13 +41,13 @@ class _AccountHiringManagerScreenState
     });
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Form submitted successfully'),
-      ));
-    }
-  }
+  // void _submitForm() {
+  //   if (_formKey.currentState!.validate()) {
+  //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //       content: Text('Form submitted successfully'),
+  //     ));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +104,7 @@ class _AccountHiringManagerScreenState
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _emailController,
+                    controller: widget.hiringManEmailController,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 16.0),
@@ -126,6 +135,10 @@ class _AccountHiringManagerScreenState
                       if (value!.isEmpty || value == null) {
                         return "Email is required";
                       }
+                      if (!EmailValidator.validate(value)) {
+                        return 'Invalid email';
+                      }
+                      return null;
                     },
                   ),
                   const SizedBox(height: 20),
@@ -139,7 +152,7 @@ class _AccountHiringManagerScreenState
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _passwordController,
+                    controller: widget.passwordController,
                     style: const TextStyle(
                       fontFamily: 'Galano',
                     ),
@@ -186,6 +199,7 @@ class _AccountHiringManagerScreenState
                       if (value.length <= 7) {
                         return 'Password must be at least 8 characters long';
                       }
+                      return null;
                     },
                   ),
                   const SizedBox(height: 20),
@@ -199,7 +213,7 @@ class _AccountHiringManagerScreenState
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _confirmPasswordController,
+                    controller: widget.confirmPasswordController,
                     style: const TextStyle(
                       fontFamily: 'Galano',
                     ),
@@ -243,9 +257,10 @@ class _AccountHiringManagerScreenState
                       if (value == null || value.isEmpty) {
                         return 'Please confirm your password';
                       }
-                      if (value != _passwordController.text) {
+                      if (value != widget.passwordController.text) {
                         return 'Passwords do not match';
                       }
+                      return null;
                     },
                   ),
                   const SizedBox(height: 20),
@@ -254,10 +269,10 @@ class _AccountHiringManagerScreenState
                     children: [
                       BlueFilledCircleButton(
                         width: 150,
-                        onPressed: () {
-                          _submitForm();
+                         onPressed: () {
+                          if (_formKey.currentState!.validate()) widget.register();
                         },
-                        text: 'Next',
+                        text: 'Register',
                       ),
                     ],
                   ),
