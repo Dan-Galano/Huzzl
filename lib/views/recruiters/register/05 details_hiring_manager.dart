@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
@@ -125,6 +126,9 @@ class _AccountHiringManagerScreenState
                     validator: (value) {
                       if (value!.isEmpty || value == null) {
                         return "Email is required";
+                      }
+                      if (!EmailValidator.validate(value)) {
+                        return "Email Address provided is not valid.";
                       }
                     },
                   ),
