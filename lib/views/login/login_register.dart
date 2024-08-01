@@ -22,19 +22,22 @@ class _LoginRegisterState extends State<LoginRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const NavBarLoginRegister(),
-          Expanded(
-            child: _showLoginScreen
-                ? LoginScreen(
-                    onToggle: _toggleScreen,
-                  )
-                : UserOptionScreen(
-                    onToggle: _toggleScreen,
-                  ),
-          ),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            const NavBarLoginRegister(),
+            Expanded(
+              child: _showLoginScreen
+                  ? LoginScreen(
+                      onToggle: _toggleScreen,
+                    )
+                  : UserOptionScreen(
+                      onToggle: _toggleScreen,
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
