@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:huzzl_web/views/job%20seekers/register/02%20verify_email.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/login/login_screen.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
@@ -21,7 +22,8 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
@@ -37,25 +39,50 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
     });
   }
 
+  bool isEmailVerified = false;
+
   void _registerJobSeeker() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
         );
 
-        await FirebaseFirestore.instance.collection('jobseekers').doc(userCredential.user!.uid).set({
-          'firstName': _firstNameController.text,
-          'lastName': _lastNameController.text,
-          'email': _emailController.text,
-          'phoneNumber': _phoneController.text,
+        setState(() {
+          isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
         });
 
-        // if success punta sa congrats
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => JobSeekerCongratulationsPage()));
+        if (!isEmailVerified) {
+          try {
+            final user = FirebaseAuth.instance.currentUser!;
+            await user.sendEmailVerification();
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
+            );
+          }
+        }
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => EmailValidationScreen(
+                    userCredential: userCredential,
+                    fname: _firstNameController.text,
+                    lname: _lastNameController.text,
+                    email: _emailController.text,
+                    phoneNumber: _phoneController.text,
+                  )),
+        );
       } on FirebaseAuthException catch (e) {
-        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${e.message}")),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("An unexpected error occurred.")),
+        );
       }
     }
   }
@@ -83,7 +110,8 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            iconImage: const AssetImage('assets/images/backbutton.png'),
+                            iconImage: const AssetImage(
+                                'assets/images/backbutton.png'),
                           ),
                         ],
                       ),
@@ -224,8 +252,8 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                           isDense: true,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -253,9 +281,9 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
-                             if (!EmailValidator.validate(value)) {
-                              return 'Invalid email';
-                            }
+                          if (!EmailValidator.validate(value)) {
+                            return 'Invalid email';
+                          }
                           return null;
                         },
                       ),
@@ -276,8 +304,8 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                           isDense: true,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -333,8 +361,8 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                                 ? const Icon(Icons.visibility_off)
                                 : const Icon(Icons.visibility),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                           isDense: true,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -365,7 +393,9 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty || value.length < 8) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.length < 8) {
                             return 'Please enter a password with 8 or more characters';
                           }
                           return null;
@@ -388,7 +418,7 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                         controller: _confirmPasswordController,
                         obscureText: isConfirmPasswordVisible ? false : true,
                         decoration: InputDecoration(
-                         suffixIcon: IconButton(
+                          suffixIcon: IconButton(
                             onPressed: () {
                               toggleConfirmPasswordVisibility();
                             },
@@ -396,8 +426,8 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                                 ? const Icon(Icons.visibility_off)
                                 : const Icon(Icons.visibility),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                           isDense: true,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -435,7 +465,6 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                           TextButton(
                             onPressed: () {
                               // onpress
-
                             },
                             child: const Text(
                               'Already have an account? Sign in here.',
@@ -448,7 +477,9 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                           SizedBox(
                             width: 200,
                             child: ElevatedButton(
-                              onPressed: _registerJobSeeker,
+                              onPressed: () {
+                                _registerJobSeeker();
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF0038FF),
                                 padding: EdgeInsets.all(20),
