@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/register/01%20jobseeker_profile.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
@@ -22,7 +23,8 @@ class HuzzlWeb extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginRegister(),
+      // home: LoginRegister(),
+      home: JobSeekerHomeScreen(),
     );
   }
 }
