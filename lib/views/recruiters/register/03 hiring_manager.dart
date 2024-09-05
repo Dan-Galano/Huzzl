@@ -5,8 +5,17 @@ import 'package:responsive_builder/responsive_builder.dart';
 class HiringManagerProfileScreen extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
-  const HiringManagerProfileScreen(
-      {super.key, required this.nextPage, required this.previousPage});
+  final TextEditingController hiringManFirstnameController;
+  final TextEditingController hiringManLastnameController;
+  final TextEditingController howHeardAbtUsController;
+  final TextEditingController phoneNumberController;
+
+  const HiringManagerProfileScreen({super.key, required this.nextPage, required this.previousPage,
+        required this.hiringManFirstnameController,
+        required this.hiringManLastnameController,
+        required this.howHeardAbtUsController,
+        required this.phoneNumberController,
+      });
 
   @override
   State<HiringManagerProfileScreen> createState() =>

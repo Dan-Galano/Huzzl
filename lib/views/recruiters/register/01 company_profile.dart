@@ -5,7 +5,28 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 class CompanyProfileScreen extends StatefulWidget {
   final VoidCallback nextPage;
-  const CompanyProfileScreen({super.key, required this.nextPage});
+
+  final TextEditingController companyNameController;
+  final TextEditingController companyEmailController;
+  final TextEditingController ceoFirstnameController;
+  final TextEditingController ceoLastnameController;
+  final TextEditingController numEmployeesController;
+  final TextEditingController companyHeadquarterController;
+  final TextEditingController companyIndustryController;
+  final TextEditingController companyDescriptionController;
+  final TextEditingController companyWebsiteController;
+
+  const CompanyProfileScreen({super.key, required this.nextPage,
+    required this.companyNameController,
+    required this.companyEmailController,
+    required this.ceoFirstnameController,
+    required this.ceoLastnameController,
+    required this.numEmployeesController,
+    required this.companyHeadquarterController,
+    required this.companyIndustryController,
+    required this.companyDescriptionController,
+    required this.companyWebsiteController,
+  });
 
   @override
   State<CompanyProfileScreen> createState() => _CompanyProfileScreenState();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/register/01%20jobseeker_profile.dart';
 import 'package:huzzl_web/views/recruiters/register/00%20registration_screen.dart';
 
 class HoverableOptionCard extends StatefulWidget {
@@ -46,6 +47,7 @@ class _HoverableOptionCardState extends State<HoverableOptionCard> {
             ));
           } else {
             print('job-seeker');
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => JobSeekerProfileScreen()));
           }
         },
         child: Container(
