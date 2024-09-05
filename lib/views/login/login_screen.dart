@@ -16,7 +16,7 @@ class LoginScreen extends StatelessWidget {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
 
-  Future<void> login(BuildContext context) async {
+Future<void> login(BuildContext context) async {
   final email = emailController.text;
   final password = passwordController.text;
 
