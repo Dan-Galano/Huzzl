@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
   
 // -- CODE FOR FETCHING JOBSTREET JOB POSTS --
   Future<String> fetchJobStreetData() async {
-    const url = 'https://www.jobstreet.com.ph/jobs';
+    const url = 'https://corsproxy.io/?https://www.jobstreet.com.ph/jobs';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -138,7 +138,7 @@ import 'package:http/http.dart' as http;
 
 // -- LINKIND --
     Future<String> fetchLinkedInData() async {
-    const url = 'https://www.linkedin.com/jobs/jobs-in-philippines';
+    const url = 'https://corsproxy.io/?https://www.linkedin.com/jobs/jobs-in-philippines';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -174,7 +174,7 @@ import 'package:http/http.dart' as http;
 // -- onlinejobsph --
 
  Future<String> fetchOnlineJobsData() async {
-    const url = 'https://www.onlinejobs.ph/jobseekers/jobsearch';
+    const url = 'https://corsproxy.io/?https://www.onlinejobs.ph/jobseekers/jobsearch';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

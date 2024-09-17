@@ -23,69 +23,69 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
     fetchJobs();
   }
 
-  // Future<void> fetchJobs() async {
-  //   try {
-  //     String jobStreetHtml = await fetchJobStreetData();
-  //     String upworkHtml = await fetchUpworkData();
-  //     String indeedHtml = await fetchIndeedData();
-  //     String onlinejobsHtml = await fetchOnlineJobsData();
-  //     String linkedinHtml = await fetchLinkedInData();
-
-  //     setState(() {
-  //       jobs = [
-  //         ...parseJobStreetData(jobStreetHtml),
-  //         ...parseUpworkData(upworkHtml),
-  //         ...parseIndeedData(indeedHtml),
-  //         ...parseOnlineJobsData(onlinejobsHtml),
-  //         ...parseLinkedInData(linkedinHtml),
-  //       ];
-  //     });
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-
-  // KAYA NAKA COMMENT YUNG upwork and indeed KASI AYAW MA ACCESS HUHU 403 ERROR FORBIDDEN HAYST
   Future<void> fetchJobs() async {
     try {
-      final jobStreetResponse =
-          await http.get(Uri.parse('http://127.0.0.1:5000/scrape/jobstreet'));
-      // final upworkResponse =
-      //     await http.get(Uri.parse('http://127.0.0.1:5000/scrape/upwork'));
-      // final indeedResponse =
-      //     await http.get(Uri.parse('http://127.0.0.1:5000/scrape/indeed'));
-      final onlinejobsResponse =
-          await http.get(Uri.parse('http://127.0.0.1:5000/scrape/onlinejobs'));
-      final linkedinResponse =
-          await http.get(Uri.parse('http://127.0.0.1:5000/scrape/linkedin'));
+      String jobStreetHtml = await fetchJobStreetData();
+      // String upworkHtml = await fetchUpworkData();
+      // String indeedHtml = await fetchIndeedData();
+      String onlinejobsHtml = await fetchOnlineJobsData();
+      String linkedinHtml = await fetchLinkedInData();
 
-      if (jobStreetResponse.statusCode == 200 &&
-          // upworkResponse.statusCode == 200 &&
-          // indeedResponse.statusCode == 200 &&
-          onlinejobsResponse.statusCode == 200 &&
-          linkedinResponse.statusCode == 200) {
-        final jobStreetData = jsonDecode(jobStreetResponse.body) as List;
-        // final upworkData = jsonDecode(upworkResponse.body) as List;
-        // final indeedData = jsonDecode(indeedResponse.body) as List;
-        final onlinejobsData = jsonDecode(onlinejobsResponse.body) as List;
-        final linkedinData = jsonDecode(linkedinResponse.body) as List;
-
-        setState(() {
-          jobs = [
-            ...jobStreetData.map((job) => Map<String, String>.from(job)),
-            // ...upworkData.map((job) => Map<String, String>.from(job)),
-            // ...indeedData.map((job) => Map<String, String>.from(job)),
-            ...onlinejobsData.map((job) => Map<String, String>.from(job)),
-            ...linkedinData.map((job) => Map<String, String>.from(job)),
-          ];
-        });
-      } else {
-        print('Failed to load job data');
-      }
+      setState(() {
+        jobs = [
+          ...parseJobStreetData(jobStreetHtml),
+          // ...parseUpworkData(upworkHtml),
+          // ...parseIndeedData(indeedHtml),
+          ...parseOnlineJobsData(onlinejobsHtml),
+          ...parseLinkedInData(linkedinHtml),
+        ];
+      });
     } catch (e) {
       print(e);
     }
   }
+
+  // KAYA NAKA COMMENT YUNG upwork and indeed KASI AYAW MA ACCESS HUHU 403 ERROR FORBIDDEN HAYST
+  // Future<void> fetchJobs() async {
+  //   try {
+  //     final jobStreetResponse =
+  //         await http.get(Uri.parse('http://127.0.0.1:5000/scrape/jobstreet'));
+  //     // final upworkResponse =
+  //     //     await http.get(Uri.parse('http://127.0.0.1:5000/scrape/upwork'));
+  //     // final indeedResponse =
+  //     //     await http.get(Uri.parse('http://127.0.0.1:5000/scrape/indeed'));
+  //     final onlinejobsResponse =
+  //         await http.get(Uri.parse('http://127.0.0.1:5000/scrape/onlinejobs'));
+  //     final linkedinResponse =
+  //         await http.get(Uri.parse('http://127.0.0.1:5000/scrape/linkedin'));
+
+  //     if (jobStreetResponse.statusCode == 200 &&
+  //         // upworkResponse.statusCode == 200 &&
+  //         // indeedResponse.statusCode == 200 &&
+  //         onlinejobsResponse.statusCode == 200 &&
+  //         linkedinResponse.statusCode == 200) {
+  //       final jobStreetData = jsonDecode(jobStreetResponse.body) as List;
+  //       // final upworkData = jsonDecode(upworkResponse.body) as List;
+  //       // final indeedData = jsonDecode(indeedResponse.body) as List;
+  //       final onlinejobsData = jsonDecode(onlinejobsResponse.body) as List;
+  //       final linkedinData = jsonDecode(linkedinResponse.body) as List;
+
+  //       setState(() {
+  //         jobs = [
+  //           ...jobStreetData.map((job) => Map<String, String>.from(job)),
+  //           // ...upworkData.map((job) => Map<String, String>.from(job)),
+  //           // ...indeedData.map((job) => Map<String, String>.from(job)),
+  //           ...onlinejobsData.map((job) => Map<String, String>.from(job)),
+  //           ...linkedinData.map((job) => Map<String, String>.from(job)),
+  //         ];
+  //       });
+  //     } else {
+  //       print('Failed to load job data');
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

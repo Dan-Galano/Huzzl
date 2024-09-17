@@ -23,8 +23,8 @@ class HuzzlWeb extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: LoginRegister(),
-      home: JobSeekerHomeScreen(),
+      home: LoginRegister(),
+      // home: JobSeekerHomeScreen(),
     );
   }
 }
