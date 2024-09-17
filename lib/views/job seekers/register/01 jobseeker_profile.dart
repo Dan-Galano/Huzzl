@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:huzzl_web/views/job%20seekers/register/02%20verify_email.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
+import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/login/login_screen.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
@@ -464,7 +465,7 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              // onpress
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginRegister(),));
                             },
                             child: const Text(
                               'Already have an account? Sign in here.',
