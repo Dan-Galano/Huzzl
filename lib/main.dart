@@ -5,6 +5,7 @@ import 'package:huzzl_web/views/job%20seekers/register/01%20jobseeker_profile.da
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/register/06%20congrats.dart';
+import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
 
 import 'firebase_options.dart';
 
@@ -21,9 +22,10 @@ class HuzzlWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginRegister(),
+      // home: LoginRegister(),
+      home: CompanyProfileRecruiter(),
       // home: JobSeekerHomeScreen(),
     );
   }
