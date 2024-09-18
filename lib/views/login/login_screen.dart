@@ -16,65 +16,74 @@ class LoginScreen extends StatelessWidget {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
 
-Future<void> login(BuildContext context) async {
-  final email = emailController.text;
-  final password = passwordController.text;
+  Future<void> login(BuildContext context) async {
+    final email = emailController.text;
+    final password = passwordController.text;
 
-  if (email.isEmpty || password.isEmpty) {
-    _showErrorDialog(context, 'Please fill in both fields.');
-    return;
-  }
-
-  try {
-     await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    ).then((userCredential) async {
-
-    String userId = userCredential.user!.uid;
-    print('User ID: $userId');
-
-    DocumentSnapshot jobseekerDoc = await FirebaseFirestore.instance.collection('jobseekers').doc(userId).get();
-    print('Jobseeker doc exists: ${jobseekerDoc.exists}');
-    if (jobseekerDoc.exists) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => JobSeekerHomeScreen()));
+    if (email.isEmpty || password.isEmpty) {
+      _showErrorDialog(context, 'Please fill in both fields.');
       return;
     }
 
-    DocumentSnapshot recruiterDoc = await FirebaseFirestore.instance.collection('recruiters').doc(userId).get();
-    print('Recruiter doc exists: ${recruiterDoc.exists}');
-    if (recruiterDoc.exists) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => RecruiterHomeScreen()));
-      return;
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      )
+          .then((userCredential) async {
+        String userId = userCredential.user!.uid;
+        print('User ID: $userId');
+
+        DocumentSnapshot jobseekerDoc = await FirebaseFirestore.instance
+            .collection('jobseekers')
+            .doc(userId)
+            .get();
+        print('Jobseeker doc exists: ${jobseekerDoc.exists}');
+        if (jobseekerDoc.exists) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => JobSeekerHomeScreen()));
+          return;
+        }
+
+        DocumentSnapshot recruiterDoc = await FirebaseFirestore.instance
+            .collection('recruiters')
+            .doc(userId)
+            .get();
+        print('Recruiter doc exists: ${recruiterDoc.exists}');
+        if (recruiterDoc.exists) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => RecruiterHomeScreen()));
+          return;
+        }
+
+        _showErrorDialog(context, 'User type not found');
+      });
+    } catch (e) {
+      _showErrorDialog(context, 'Incorrect Username and/or Password');
+      print('ERROR: $e');
     }
-
-    _showErrorDialog(context, 'User type not found');
-    });
-  } catch (e) {
-    _showErrorDialog(context, 'Incorrect Username and/or Password');
-    print('ERROR: $e');
   }
-}
 
-void _showErrorDialog(BuildContext context, String message) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
-}
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> _showLoadingDialog(BuildContext context) {
     return showDialog(

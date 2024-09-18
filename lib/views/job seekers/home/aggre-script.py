@@ -2,10 +2,12 @@
 # then run this py code
 
 from flask import Flask, jsonify
+from flask_caching import Cache
 import requests
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 def fetch_html(url):
     try:
@@ -30,7 +32,7 @@ def scrape_jobstreet():
     soup = BeautifulSoup(html_content, 'html.parser')
     jobs = []
     
-    for element in soup.select('article[data-testid="job-card"]')[:5]:
+    for element in soup.select('article[data-testid="job-card"]')[:10]:
         posted_date = element.select_one('span[data-automation="jobListingDate"]').text if element.select_one('span[data-automation="jobListingDate"]') else 'Unknown date'
         title = element.select_one('a[data-automation="jobTitle"]').text if element.select_one('a[data-automation="jobTitle"]') else 'No title'
         location = element.select_one('span[data-automation="jobCardLocation"]').text if element.select_one('span[data-automation="jobCardLocation"]') else 'No location'
@@ -50,58 +52,58 @@ def scrape_jobstreet():
     return jsonify(jobs)
 
 # --- UPWORK ---  ERROR 403 ITO FORBIDDEN
-# @app.route('/scrape/upwork', methods=['GET'])
-# def scrape_upwork():
-#     url = 'https://www.upwork.com/freelance-jobs/filipino/'
-#     html_content = fetch_html(url)
-#     if not html_content:
-#         return jsonify({"error": "Failed to fetch Upwork data"}), 500
+@app.route('/scrape/upwork', methods=['GET'])
+def scrape_upwork():
+    url = 'https://www.upwork.com/freelance-jobs/filipino/'
+    html_content = fetch_html(url)
+    if not html_content:
+        return jsonify({"error": "Failed to fetch Upwork data"}), 500
     
-#     soup = BeautifulSoup(html_content, 'html.parser')
-#     jobs = []
+    soup = BeautifulSoup(html_content, 'html.parser')
+    jobs = []
     
-#     for element in soup.select('div.job-tile-wrapper')[:5]:
-#         title = element.select_one('a[data-qa="job-title"]').text.strip() if element.select_one('a[data-qa="job-title"]') else 'No title'
-#         description = element.select_one('p[data-qa="job-description"]').text.strip() if element.select_one('p[data-qa="job-description"]') else 'No description'
-#         tags = ', '.join([tag.text.strip() for tag in element.select('div.skills-list span')])
-#         job_link = 'https://www.upwork.com' + element.select_one('a[data-qa="job-title"]')['href'] if element.select_one('a[data-qa="job-title"]') else '#'
+    for element in soup.select('div.job-tile-wrapper')[:10]:
+        title = element.select_one('a[data-qa="job-title"]').text.strip() if element.select_one('a[data-qa="job-title"]') else 'No title'
+        description = element.select_one('p[data-qa="job-description"]').text.strip() if element.select_one('p[data-qa="job-description"]') else 'No description'
+        tags = ', '.join([tag.text.strip() for tag in element.select('div.skills-list span')])
+        job_link = 'https://www.upwork.com' + element.select_one('a[data-qa="job-title"]')['href'] if element.select_one('a[data-qa="job-title"]') else '#'
         
-#         jobs.append({
-#             'title': title,
-#             'description': description,
-#             'tags': tags,
-#             'jobLink': job_link
-#         })
+        jobs.append({
+            'title': title,
+            'description': description,
+            'tags': tags,
+            'jobLink': job_link
+        })
     
-#     return jsonify(jobs)
+    return jsonify(jobs)
 
-# # --- INDEED --- ERROR 403 ITO FORBIDDEN
-# @app.route('/scrape/indeed', methods=['GET'])
-# def scrape_indeed():
-#     url = 'https://ph.indeed.com/q-indeed-philippines-jobs.html'
-#     html_content = fetch_html(url)
-#     if not html_content:
-#         return jsonify({"error": "Failed to fetch Indeed data"}), 500
+# --- INDEED --- ERROR 403 ITO FORBIDDEN
+@app.route('/scrape/indeed', methods=['GET'])
+def scrape_indeed():
+    url = 'https://ph.indeed.com/q-indeed-philippines-jobs.html'
+    html_content = fetch_html(url)
+    if not html_content:
+        return jsonify({"error": "Failed to fetch Indeed data"}), 500
     
-#     soup = BeautifulSoup(html_content, 'html.parser')
-#     jobs = []
+    soup = BeautifulSoup(html_content, 'html.parser')
+    jobs = []
     
-#     for element in soup.select('div.cardOutline')[:5]:
-#         posted_date = element.select_one('span[data-testid="myJobsStateDate"]').text if element.select_one('span[data-testid="myJobsStateDate"]') else 'Unknown date'
-#         title = element.select_one('h2.jobTitle span').text if element.select_one('h2.jobTitle span') else 'No title'
-#         location = element.select_one('div[data-testid="text-location"]').text if element.select_one('div[data-testid="text-location"]') else 'No location'
-#         salary = element.select_one('div.metadata.salary-snippet-container').text if element.select_one('div.metadata.salary-snippet-container') else 'Salary not provided'
-#         job_link = 'https://ph.indeed.com' + element.select_one('a.jcs-JobTitle')['href'] if element.select_one('a.jcs-JobTitle') else '#'
+    for element in soup.select('div.cardOutline')[:10]:
+        posted_date = element.select_one('span[data-testid="myJobsStateDate"]').text if element.select_one('span[data-testid="myJobsStateDate"]') else 'Unknown date'
+        title = element.select_one('h2.jobTitle span').text if element.select_one('h2.jobTitle span') else 'No title'
+        location = element.select_one('div[data-testid="text-location"]').text if element.select_one('div[data-testid="text-location"]') else 'No location'
+        salary = element.select_one('div.metadata.salary-snippet-container').text if element.select_one('div.metadata.salary-snippet-container') else 'Salary not provided'
+        job_link = 'https://ph.indeed.com' + element.select_one('a.jcs-JobTitle')['href'] if element.select_one('a.jcs-JobTitle') else '#'
         
-#         jobs.append({
-#             'datePosted': posted_date,
-#             'title': title,
-#             'location': location,
-#             'salary': salary,
-#             'jobLink': job_link
-#         })
+        jobs.append({
+            'datePosted': posted_date,
+            'title': title,
+            'location': location,
+            'salary': salary,
+            'jobLink': job_link
+        })
     
-#     return jsonify(jobs)
+    return jsonify(jobs)
 
 # --- LINKEDIN ---
 @app.route('/scrape/linkedin', methods=['GET'])
@@ -114,7 +116,7 @@ def scrape_linkedin():
     soup = BeautifulSoup(html_content, 'html.parser')
     jobs = []
     
-    for element in soup.select('.base-card')[:5]:
+    for element in soup.select('.base-card')[:10]:
         title = element.select_one('h3.base-search-card__title').text.strip() if element.select_one('h3.base-search-card__title') else 'No title'
         location = element.select_one('span.job-search-card__location').text.strip() if element.select_one('span.job-search-card__location') else 'No location'
         posted_date = element.select_one('time.job-search-card__listdate').text.strip() if element.select_one('time.job-search-card__listdate') else 'Unknown date'
@@ -140,7 +142,7 @@ def scrape_onlinejobs():
     soup = BeautifulSoup(html_content, 'html.parser')
     jobs = []
     
-    for element in soup.select('.jobpost-cat-box')[:5]:
+    for element in soup.select('.jobpost-cat-box')[:10]:
         title = element.select_one('h4.fs-16').text.strip() if element.select_one('h4.fs-16') else 'No title'
         posted_date = element.select_one('p.fs-13 em').text.strip() if element.select_one('p.fs-13 em') else 'Unknown date'
         description = element.select_one('div.desc').text.strip() if element.select_one('div.desc') else 'No description'
