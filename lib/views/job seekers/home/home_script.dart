@@ -30,27 +30,42 @@ List<Map<String, String>> parseJobStreetData(String htmlContent) {
         element.querySelector('a[data-automation="jobTitle"]')?.text;
     String? location =
         element.querySelector('span[data-automation="jobCardLocation"]')?.text;
-    // String? description = element
-    //     .querySelector('span[data-automation="jobShortDescription"]')
-    //     ?.text;
     String? salary =
         element.querySelector('span[data-automation="jobSalary"]')?.text;
     String? jobLink = element
         .querySelector('a[data-automation="job-list-item-link-overlay"]')
         ?.attributes['href'];
 
+    String? subClassification = element
+        .querySelector('a[data-automation="jobSubClassification"]')
+        ?.text;
+    String? classification = element
+        .querySelector('a[data-automation="jobClassification"]')
+        ?.text
+        ?.replaceAll('(', '')
+        .replaceAll(')', '');
+
+    List<String> tags = [];
+    if (subClassification != null) {
+      tags.add(subClassification);
+    }
+    if (classification != null) {
+      tags.add(classification);
+    }
+
     if (title != null && location != null && jobLink != null) {
       jobs.add({
         'datePosted': postedDate ?? 'Unknown date',
         'title': title,
         'location': location,
-        // 'description': description ?? 'No description available',
         'salary': salary ?? 'Salary not provided',
         'jobLink': 'https://www.jobstreet.com.ph${jobLink}',
-        'website': 'JobStreet'
+        'website': 'JobStreet',
+        'tags': tags.join(', ')
       });
     }
   });
+
   return jobs;
 }
 // -- jobstreet END --
@@ -91,6 +106,7 @@ List<Map<String, String>> parseLinkedInData(String htmlContent) {
         'jobLink': jobLink.startsWith('http')
             ? jobLink
             : 'https://ph.linkedin.com${jobLink}',
+        'tags': 'No Tag',
         'website': 'LinkedIn'
       });
     }
@@ -124,6 +140,13 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
     String? description = element.querySelector('div.desc')?.text.trim();
     String? salary = element.querySelector('dl.row.fs-14 dd')?.text.trim();
     String? jobLink = element.querySelector('a')?.attributes['href'];
+    List<String> tags = [];
+    element.querySelectorAll('div[class="job-tag"] a').forEach((tagElement) {
+      String? tag = tagElement.text;
+      if (tag != null) {
+        tags.add(tag);
+      }
+    });
 
     if (title != null && jobLink != null) {
       jobs.add({
@@ -132,7 +155,8 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
         'description': description ?? 'No description available',
         'salary': salary ?? 'Salary not provided',
         'jobLink': 'https://www.onlinejobs.ph${jobLink}',
-        'website': 'OnlineJobs'
+        'website': 'OnlineJobs',
+        'tags': tags.join(', ')
       });
     }
   });
@@ -163,7 +187,6 @@ List<Map<String, String>> parseKalibrrData(String htmlContent) {
       .forEach((element) {
     String? title = element.querySelector('h2 a[itemprop="name"]')?.text;
     String? location = element.querySelector('span.k-text-gray-500')?.text;
-    // String? postedDate = element.querySelector('span.k-text-gray-500')?.text;
     String? postedDate;
     var spans = element.querySelectorAll('span.k-flex.k-gap-4.k-text-gray-300');
 
@@ -186,7 +209,8 @@ List<Map<String, String>> parseKalibrrData(String htmlContent) {
         'location': location,
         'datePosted': postedDate ?? 'No date posted',
         'jobLink': 'https://www.kalibrr.com/${jobLink}',
-        'website': 'Kalibrr'
+        'website': 'Kalibrr',
+        'tags': 'No Tag'
       });
     }
   });
@@ -230,7 +254,8 @@ List<Map<String, String>> parsePhilJobNetData(String htmlContent) {
         'location': location ?? 'Location not provided',
         'datePosted': postedDate ?? 'Unknown date',
         'jobLink': jobLink,
-        'website': 'PhilJobNet'
+        'website': 'PhilJobNet',
+        'tags': 'No Tag'
       });
     }
   });

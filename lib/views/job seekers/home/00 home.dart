@@ -161,6 +161,12 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                                   itemCount: jobs.length,
                                   itemBuilder: (context, index) {
                                     final job = jobs[index];
+
+                                    List<String> tags = [];
+                                    if (job['tags'] != null) {
+                                      tags = job['tags']!.split(', ');
+                                    }
+
                                     return buildJobCard(
                                       joblink: job['jobLink'] ?? '',
                                       datePosted:
@@ -173,13 +179,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                                       description: job['description'] ??
                                           'No description available',
                                       website: job['website']!,
-                                      tags: [
-                                        "CAD",
-                                        "Autodesk authCAD",
-                                        "Electrical Engineering",
-                                        "Construction"
-                                      ], // SAMPLE TAGS
-                                      // tags: (job['tags'] as List<String>?) ?? [],
+                                      tags: tags,
                                     );
                                   },
                                 ),
