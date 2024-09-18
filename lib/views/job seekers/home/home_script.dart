@@ -144,7 +144,7 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
     element.querySelectorAll('div[class="job-tag"] a').forEach((tagElement) {
       String? tag = tagElement.text;
       if (tag != null) {
-        tags.add(tag);
+        tags.add(tag); // Add each tag to the list
       }
     });
 

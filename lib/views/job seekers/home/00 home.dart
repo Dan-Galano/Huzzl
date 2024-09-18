@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
 
@@ -15,6 +13,10 @@ class JobSeekerHomeScreen extends StatefulWidget {
 
 class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
   List<Map<String, String>> jobs = [];
+  List<Map<String, String>> filteredJobs = [];
+  TextEditingController searchController = TextEditingController();
+  bool isSearching = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -41,9 +43,37 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
           ...philJobNetJobs,
           ...parseKalibrrData(kalibrrHtml),
         ];
+        filteredJobs = jobs; // By default, show all jobs.
+        isLoading = false;
       });
     } catch (e) {
       print(e);
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void filterJobs(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        isSearching = false;
+        filteredJobs = jobs;
+      });
+    } else {
+      setState(() {
+        isSearching = true;
+        filteredJobs = jobs.where((job) {
+          final title = job['title']?.toLowerCase() ?? '';
+          final description = job['description']?.toLowerCase() ?? '';
+          final keywords = job['tags']?.toLowerCase() ?? '';
+          final searchQuery = query.toLowerCase();
+
+          return title.contains(searchQuery) ||
+              description.contains(searchQuery) ||
+              keywords.contains(searchQuery);
+        }).toList();
+      });
     }
   }
 
@@ -67,7 +97,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                   children: [
                     TextButton(
                       onPressed: () {},
-                      child: Text(
+                      child: const Text(
                         'Home',
                         style: TextStyle(
                           color: Color(0xff373030),
@@ -78,7 +108,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                     SizedBox(width: 10),
                     TextButton(
                       onPressed: () {},
-                      child: Text(
+                      child: const Text(
                         'Company Reviews',
                         style: TextStyle(
                           color: Color(0xff373030),
@@ -152,37 +182,85 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                     padding: EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        buildSearchBar(),
+                        // Search bar
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Job title, keywords, or company',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Container(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  filterJobs(searchController.text);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF0038FF),
+                                  padding: EdgeInsets.all(20),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Find Jobs',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.white,
+                                    fontFamily: 'Galano',
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 16),
                         Expanded(
-                          child: jobs.isEmpty
+                          child: isLoading
                               ? Center(child: CircularProgressIndicator())
-                              : ListView.builder(
-                                  itemCount: jobs.length,
-                                  itemBuilder: (context, index) {
-                                    final job = jobs[index];
+                              : filteredJobs.isEmpty && isSearching
+                                  ? const Center(
+                                      child: Text(
+                                        'No search results found',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      itemCount: filteredJobs.length,
+                                      itemBuilder: (context, index) {
+                                        final job = filteredJobs[index];
 
-                                    List<String> tags = [];
-                                    if (job['tags'] != null) {
-                                      tags = job['tags']!.split(', ');
-                                    }
+                                        List<String> tags = [];
+                                        if (job['tags'] != null) {
+                                          tags = job['tags']!.split(', ');
+                                        }
 
-                                    return buildJobCard(
-                                      joblink: job['jobLink'] ?? '',
-                                      datePosted:
-                                          job['datePosted'] ?? 'No Date Posted',
-                                      title: job['title']!,
-                                      location: job['location'] ??
-                                          'No Location Posted',
-                                      rate: job['salary'] ??
-                                          'Salary not provided',
-                                      description: job['description'] ??
-                                          'No description available',
-                                      website: job['website']!,
-                                      tags: tags,
-                                    );
-                                  },
-                                ),
+                                        return buildJobCard(
+                                          joblink: job['jobLink'] ?? '',
+                                          datePosted: job['datePosted'] ??
+                                              'No Date Posted',
+                                          title: job['title']!,
+                                          location:
+                                              job['location'] ?? 'No Location',
+                                          rate: job['salary'] ?? 'Not provided',
+                                          description: job['description'] ??
+                                              'No description available',
+                                          website: job['website']!,
+                                          tags: tags,
+                                        );
+                                      },
+                                    ),
                         ),
                       ],
                     ),
