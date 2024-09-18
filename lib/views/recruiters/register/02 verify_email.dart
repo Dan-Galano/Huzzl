@@ -65,21 +65,42 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
     });
 
     if (isEmailVerified) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return const AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("Verifying your email..."),
+              ],
+            ),
+          );
+        },
+      );
       timer?.cancel();
 
       await FirebaseFirestore.instance
-          .collection('recruiters')
+          .collection('users')
           .doc(widget.userCredential.user!.uid)
           .set({
         'uid': widget.userCredential.user!.uid,
+        'role': "recruiter",
         'hiringManagerFirstName': widget.fname,
         'hiringManagerLastName': widget.lname,
         'email': widget.email,
         'password': widget.password,
       });
 
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => CompanyProfileRecruiter()));
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => CompanyProfileRecruiter(
+            userCredential: widget.userCredential,
+          ),
+        ),
+      );
     }
   }
 

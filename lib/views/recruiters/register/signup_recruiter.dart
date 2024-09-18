@@ -41,10 +41,27 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   void submitRegistrationRecruiter() async {
     if (_formKey.currentState!.validate()) {
       try {
+        //creating user
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _email.text,
           password: _password.text,
+        );
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return const AlertDialog(
+              content: Row(
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Text("Registering..."),
+                ],
+              ),
+            );
+          },
         );
 
         setState(() {
@@ -67,11 +84,12 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
           MaterialPageRoute(
             builder: (context) {
               return VerifyEmailRecruiter(
-                  userCredential: userCredential,
-                  email: _email.text,
-                  fname: _firstName.text,
-                  lname: _lastName.text,
-                  password: _password.text);
+                userCredential: userCredential,
+                email: _email.text,
+                fname: _firstName.text,
+                lname: _lastName.text,
+                password: _password.text,
+              );
             },
           ),
         );
@@ -86,51 +104,6 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
       }
     }
   }
-  // void _registerJobSeeker() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     try {
-  //       UserCredential userCredential =
-  //           await FirebaseAuth.instance.createUserWithEmailAndPassword(
-  //         email: _emailController.text,
-  //         password: _passwordController.text,
-  //       );
-
-  //       setState(() {
-  //         isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-  //       });
-
-  //       if (!isEmailVerified) {
-  //         try {
-  //           final user = FirebaseAuth.instance.currentUser!;
-  //           await user.sendEmailVerification();
-  //         } catch (e) {
-  //           ScaffoldMessenger.of(context).showSnackBar(
-  //             SnackBar(content: Text(e.toString())),
-  //           );
-  //         }
-  //       }
-
-  //       Navigator.of(context).push(
-  //         MaterialPageRoute(
-  //             builder: (context) => EmailValidationScreen(
-  //                   userCredential: userCredential,
-  //                   fname: _firstNameController.text,
-  //                   lname: _lastNameController.text,
-  //                   email: _emailController.text,
-  //                   phoneNumber: _phoneController.text,
-  //                 )),
-  //       );
-  //     } on FirebaseAuthException catch (e) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("Error: ${e.message}")),
-  //       );
-  //     } catch (e) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("An unexpected error occurred.")),
-  //       );
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {

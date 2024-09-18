@@ -1,12 +1,16 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:http/http.dart' as http;
 
 class CompanyProfileRecruiter extends StatefulWidget {
-  CompanyProfileRecruiter({super.key});
+  UserCredential userCredential;
+  CompanyProfileRecruiter({required this.userCredential, super.key});
 
   @override
   State<CompanyProfileRecruiter> createState() =>
@@ -19,7 +23,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
   final _CEOFirstName = TextEditingController();
   final _CEOLastName = TextEditingController();
   final _description = TextEditingController();
-  final _companyWebsite = TextEditingController();
+  var _companyWebsite = TextEditingController();
 
   String? selectedRegion;
   String? selectedProvince;
@@ -142,12 +146,45 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
     'more than 1,000 employees',
   ];
 
-  //SubmitForm
 
-  void submitCompanyProfileForm() {
+  //SubmitForm
+  void submitCompanyProfileForm() async {
     if (_formkey.currentState!.validate()) {
-      print(
-          "Data: ${_companyName.text}, ${_CEOFirstName.text} ${_CEOLastName.text}, $selectedRegion $selectedProvince $selectedCity $selectedBarangay ${otherLocationInformation.text}, $_selectedSizeOfCompany, $_selectedSizeOfCompany, ${_description.text}, ${_companyWebsite.text}");
+      try {
+        // Store data in Firestore
+        await FirebaseFirestore.instance
+            .collection('recruiters_company_info')
+            .doc(widget.userCredential.user!.uid)
+            .set({
+          'uid': widget.userCredential.user!.uid,
+          'companyName': _companyName.text,
+          'ceoFirstName': _CEOFirstName.text,
+          'ceoLastName': _CEOLastName.text,
+          'region': selectedRegion ?? 'not specified',
+          'province': selectedProvince ?? 'not specified',
+          'city': selectedCity ?? 'not specified',
+          'barangay': selectedBarangay ?? 'not specified',
+          'locationOtherInformation': otherLocationInformation.text,
+          'companySize': _selectedSizeOfCompany,
+          'companyDescription': _description.text,
+          'companyWebsite':
+              _companyWebsite.text.isNotEmpty ? _companyWebsite.text : 'none',
+        });
+
+        // Navigate to RecruiterHomeScreen after successful submission
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const RecruiterHomeScreen(),
+          ),
+        );
+        print("User credential: ${widget.userCredential.user!.uid}");
+      } catch (e) {
+        // Handle any errors
+        print("Failed to submit company profile: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit company profile: $e')),
+        );
+      }
     }
   }
 

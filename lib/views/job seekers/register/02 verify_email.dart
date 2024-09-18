@@ -67,10 +67,11 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       timer?.cancel();
 
       await FirebaseFirestore.instance
-          .collection('jobseekers')
+          .collection('users')
           .doc(widget.userCredential.user!.uid)
           .set({
         'uid': widget.userCredential.user!.uid,
+        'role': 'jobseeker',
         'firstName': widget.fname,
         'lastName': widget.lname,
         'email': widget.email,
