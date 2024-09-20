@@ -20,7 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'docx'],
+      allowedExtensions: ['pdf', 'docx', 'txt'],
     );
 
     if (result != null && result.files.isNotEmpty) {
@@ -34,6 +34,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (fileName.endsWith('.docx')) {
           _selectedFileType = 'DOCX';
           _extractFromDocx(fileBytes);
+        } else if (fileName.endsWith('.txt')) {
+          _selectedFileType = 'TXT';
+          _extractFromTxt(fileBytes);
         }
       } else {
         setState(() {
@@ -43,6 +46,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       setState(() {
         _extractedText = 'No file selected';
+      });
+    }
+  }
+
+  void _extractFromTxt(Uint8List fileBytes) async {
+    try {
+      String extractedText = String.fromCharCodes(fileBytes);
+
+      setState(() {
+        _extractedText = extractedText;
+        print("EXTRACTED TEXT: ${_extractedText}");
+        _navigateToHomeScreen();
+      });
+    } catch (e) {
+      setState(() {
+        _extractedText = 'Error during TXT extraction: $e';
       });
     }
   }
