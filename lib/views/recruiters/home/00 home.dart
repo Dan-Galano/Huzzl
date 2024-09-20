@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/home/branches-tab.dart';
-import 'package:huzzl_web/views/recruiters/home/candidates-tab.dart';
+import 'package:huzzl_web/views/recruiters/branches/branches-tab.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/manager-tab.dart';
@@ -14,7 +14,7 @@ class RecruiterHomeScreen extends StatefulWidget {
 }
 
 class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
-  int? _selectedIndex = 0; // Default the first tab na (Managers)
+  int? _selectedIndex = 3; // Default the first tab na (Managers)
 
   void changeDestination(int index) {
     setState(() {
@@ -27,11 +27,11 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
       case 0:
         return buildManagersContent(context);
       case 1:
-        return buildBranchesContent();
+        return buildBranchesContent(context);
       case 2:
         return buildJobsContent();
       case 3:
-        return buildCandidatesContent();
+        return buildCandidatesContent(context);
       case 4:
         return buildInterviewsContent();
       default:
