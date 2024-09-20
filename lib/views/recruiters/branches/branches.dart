@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches/branches_widgets.dart';
+import 'package:huzzl_web/views/recruiters/branches/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/branches/views/active_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/branches/views/archive_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/branches/widgets/navbar_widget.dart';
 
 class BranchesScreen extends StatefulWidget {
   const BranchesScreen({super.key});
@@ -10,12 +15,410 @@ class BranchesScreen extends StatefulWidget {
 
 class _BranchesScreenState extends State<BranchesScreen>
     with SingleTickerProviderStateMixin {
+  final _formkey = GlobalKey<FormState>();
+
   late TabController _tabController;
+
+  final TextEditingController _branchNameController = TextEditingController();
+
+  String? selectedRegion;
+  String? selectedProvince;
+  String? selectedCity;
+  String? selectedBarangay;
+  final otherLocationInformation = TextEditingController();
+
+  List regions = [];
+  List provinces = [];
+  List cities = [];
+  List barangays = [];
 
   @override
   void initState() {
     super.initState();
+    fetchRegions();
     _tabController = TabController(length: 2, vsync: this); // Two tabs
+  }
+
+  Future<void> fetchRegions() async {
+    final response =
+        await http.get(Uri.parse('https://psgc.gitlab.io/api/regions/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        regions = jsonDecode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load regions');
+    }
+  }
+
+  // Fetch provinces from the API
+  Future<void> fetchProvinces(String regionCode) async {
+    final response = await http.get(
+        Uri.parse('https://psgc.gitlab.io/api/regions/$regionCode/provinces/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        provinces = jsonDecode(response.body);
+        selectedProvince = null; // Reset selected province
+        cities = [];
+        selectedCity = null; // Reset selected city
+        barangays = []; // Clear barangays
+        selectedBarangay = null; // Reset selected barangay
+      });
+    } else {
+      throw Exception('Failed to load provinces');
+    }
+  }
+
+  // Fetch cities by province code
+  Future<void> fetchCities(String provinceCode) async {
+    final response = await http.get(Uri.parse(
+        'https://psgc.gitlab.io/api/provinces/$provinceCode/cities-municipalities/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        cities = jsonDecode(response.body);
+        selectedCity = null; // Reset selected city
+        selectedBarangay = null; // Reset selected barangay
+        barangays = []; // Clear barangay list
+      });
+    } else {
+      throw Exception('Failed to load cities');
+    }
+  }
+
+  // Fetch barangays by city/municipality code
+  Future<void> fetchBarangays(String cityCode) async {
+    final response = await http.get(Uri.parse(
+        'https://psgc.gitlab.io/api/cities-municipalities/$cityCode/barangays/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        barangays = jsonDecode(response.body);
+        selectedBarangay = null; // Reset selected barangay
+      });
+    } else {
+      throw Exception('Failed to load barangays');
+    }
+  }
+
+  void submitNewBranch() async {
+    if (_formkey.currentState!.validate()) {
+      print("console: created a new company branch.");
+    }
+  }
+
+  void addNewBranch(BuildContext context) async {
+    await fetchRegions(); // Make sure regions are fetched before showing the dialog
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            // Use this setState to update dialog UI
+            return AlertDialog(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+              ),
+              content: Form(
+                key: _formkey,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Add new branch",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Branch name",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      //Branch name input field
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: TextFormField(
+                          controller: _branchNameController,
+                          decoration: inputTextFieldDecoration(1),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Branch name is required.";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      //Branch location
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Location",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Region Dropdown
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: DropdownButtonFormField<String>(
+                          decoration:
+                              customHintTextInputDecoration('Select Region'),
+                          value: selectedRegion,
+                          items:
+                              regions.map<DropdownMenuItem<String>>((region) {
+                            return DropdownMenuItem<String>(
+                              value: region['name'],
+                              child: Text(region['name']),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setStateDialog(() {
+                              selectedRegion = value;
+                              selectedProvince = null;
+                              selectedCity = null;
+                              selectedBarangay = null;
+                              provinces = [];
+                              cities = [];
+                              barangays = [];
+                            });
+                            if (value != null) {
+                              final selectedRegionCode = regions.firstWhere(
+                                (region) => region['name'] == value,
+                                orElse: () => null,
+                              )['code'];
+
+                              if (selectedRegionCode != null) {
+                                fetchProvinces(selectedRegionCode).then((_) {
+                                  setStateDialog(
+                                      () {}); // Trigger rebuild after fetching provinces
+                                });
+                              }
+                            }
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Region is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Province Dropdown
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: DropdownButtonFormField<String>(
+                          decoration:
+                              customHintTextInputDecoration('Select Province'),
+                          value: selectedProvince,
+                          items: provinces
+                              .map<DropdownMenuItem<String>>((province) {
+                            return DropdownMenuItem<String>(
+                              value: province['name'],
+                              child: Text(province['name']),
+                            );
+                          }).toList(),
+                          onChanged: selectedRegion != null
+                              ? (value) {
+                                  setStateDialog(() {
+                                    selectedProvince = value;
+                                    selectedCity = null;
+                                    selectedBarangay = null;
+                                    cities = [];
+                                    barangays = [];
+                                  });
+                                  if (value != null) {
+                                    final selectedProvinceCode =
+                                        provinces.firstWhere(
+                                      (province) => province['name'] == value,
+                                      orElse: () => null,
+                                    )['code'];
+
+                                    if (selectedProvinceCode != null) {
+                                      fetchCities(selectedProvinceCode)
+                                          .then((_) {
+                                        setStateDialog(
+                                            () {}); // Trigger rebuild after fetching cities
+                                      });
+                                    }
+                                  }
+                                }
+                              : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Province is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // City Dropdown
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: DropdownButtonFormField<String>(
+                          decoration: customHintTextInputDecoration(
+                              'Select City/Municipality'),
+                          value: selectedCity,
+                          items: cities.map<DropdownMenuItem<String>>((city) {
+                            return DropdownMenuItem<String>(
+                              value: city['name'],
+                              child: Text(city['name']),
+                            );
+                          }).toList(),
+                          onChanged: selectedProvince != null
+                              ? (value) {
+                                  setStateDialog(() {
+                                    selectedCity = value;
+                                    selectedBarangay = null;
+                                    barangays = [];
+                                  });
+                                  if (value != null) {
+                                    final selectedCitiesCode =
+                                        cities.firstWhere(
+                                      (city) => city['name'] == value,
+                                      orElse: () => null,
+                                    )['code'];
+                                    if (selectedCitiesCode != null) {
+                                      fetchBarangays(selectedCitiesCode)
+                                          .then((_) {
+                                        setStateDialog(
+                                            () {}); // Trigger rebuild after fetching barangays
+                                      });
+                                    }
+                                  }
+                                }
+                              : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'City is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Barangay Dropdown
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: DropdownButtonFormField<String>(
+                          decoration:
+                              customHintTextInputDecoration('Select Barangay'),
+                          value: selectedBarangay,
+                          items: barangays
+                              .map<DropdownMenuItem<String>>((barangay) {
+                            return DropdownMenuItem<String>(
+                              value: barangay['name'],
+                              child: Text(barangay['name']),
+                            );
+                          }).toList(),
+                          onChanged: selectedCity != null
+                              ? (value) {
+                                  setStateDialog(() {
+                                    selectedBarangay = value;
+                                  });
+                                }
+                              : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Barangay is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Other location information field
+                      if (selectedBarangay != null)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: TextFormField(
+                            controller: otherLocationInformation,
+                            decoration: inputTextFieldDecoration(3),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "This field is required.";
+                              }
+                            },
+                          ),
+                        ),
+
+                      const SizedBox(height: 10),
+                      //Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: submitNewBranch,
+                            style: const ButtonStyle(
+                              elevation: WidgetStatePropertyAll(0),
+                              backgroundColor: WidgetStatePropertyAll(
+                                Color(0xffD6E4FF),
+                              ),
+                            ),
+                            child: const Text(
+                              'Save',
+                              style: TextStyle(
+                                color: Color(0xff3B7DFF),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: const ButtonStyle(
+                              elevation: WidgetStatePropertyAll(0),
+                              backgroundColor: WidgetStatePropertyAll(
+                                Color(0xffe8e8e8),
+                              ),
+                            ),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: Color(0xff4D4D4D),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -92,7 +495,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                             ),
                             const Spacer(),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () => addNewBranch(context),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF0038FF),
                                 padding: EdgeInsets.all(20),
@@ -157,506 +560,6 @@ class _BranchesScreenState extends State<BranchesScreen>
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class Branch {
-  final String name;
-  final String manager;
-  final String dateEstablished;
-
-  Branch(
-      {required this.name,
-      required this.manager,
-      required this.dateEstablished});
-}
-
-// Sample  Active Branches List
-class ActiveBranchesView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        //Branch Manager and Date Established Text
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 200,
-                child: Text(""),
-              ),
-              SizedBox(
-                width: 200,
-                child: Text(
-                  "Branch Manager",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Galano',
-                  ),
-                ),
-              ),
-              Text(
-                "Date Established",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Galano',
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              BranchTile(
-                  name: 'Jollibee - Urdaneta Bypass',
-                  manager: 'Add branch manager',
-                  date: '05/12/2024',
-                  location: 'San Vicente, Urdaneta City, Pangasinan'),
-              BranchTile(
-                  name: 'Jollibee - Urdaneta Magic Mall',
-                  manager: 'Juan Karlos',
-                  date: '06/17/2024',
-                  location: 'Nancaysan, Urdaneta City, Pangasinan'),
-              BranchTile(
-                  name: 'Jollibee - Urdaneta SM',
-                  manager: 'Ebe Dancel',
-                  date: '05/18/2024',
-                  location: 'Nancaysan, Urdaneta City, Pangasinan'),
-              BranchTile(
-                  name: 'Jollibee - Urdaneta CB Mall',
-                  manager: 'Dionela',
-                  date: '02/28/2024',
-                  location: 'San Vicente, Urdaneta City, Pangasinan'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// Example Archive Branches List (if any)
-class ArchiveBranchesView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'No Archived Branches',
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.grey,
-          fontFamily: 'Galano',
-        ),
-      ),
-    );
-  }
-}
-
-// Branch List Tile widget
-class BranchTile extends StatefulWidget {
-  final String name;
-  final String manager;
-  final String date;
-  final String location;
-
-  BranchTile(
-      {required this.name,
-      required this.manager,
-      required this.date,
-      required this.location});
-
-  @override
-  State<BranchTile> createState() => _BranchTileState();
-}
-
-class _BranchTileState extends State<BranchTile> {
-  bool _isHovered = false;
-  bool _isAddManagerHovered = false;
-
-  bool _isEditing = false;
-
-  TextEditingController _branchNameController = TextEditingController();
-  TextEditingController _branchLocationController = TextEditingController();
-
-  late String _originalBranchName;
-  late String _originalBranchLocation;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize with the original data
-    _originalBranchName = widget.name;
-    _originalBranchLocation = widget.location;
-    _branchNameController.text = widget.name;
-    _branchLocationController.text = widget.location;
-  }
-
-  void _startEditing() {
-    print("EDIT CLICKED");
-    setState(() {
-      _isEditing = true; // Switch to "edit" mode
-    });
-  }
-
-  void _saveChanges() {
-    setState(() {
-      _originalBranchName = _branchNameController.text; // Save the new data
-      _originalBranchLocation = _branchLocationController.text;
-      _isEditing = false; // Exit "edit" mode
-    });
-  }
-
-  void _cancelChanges() {
-    setState(() {
-      // Revert back to original data
-      _branchNameController.text = _originalBranchName;
-      _branchLocationController.text = _originalBranchLocation;
-      _isEditing = false; // Exit "edit" mode
-    });
-  }
-
-  void _showBranchDetailsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15.0)),
-              ),
-              content: Container(
-                width: MediaQuery.of(context).size.width * 0.4,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Branch Details
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              foregroundColor: const Color(0xff373030),
-                              backgroundColor: const Color(0xffD1E1FF),
-                              child: Text(widget.name[0]),
-                            ),
-                            title: TextField(
-                              controller: _branchNameController,
-                              enabled: _isEditing,
-                              decoration: inputTextFieldDecoration(1),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: TextField(
-                                controller: _branchLocationController,
-                                enabled: _isEditing,
-                                decoration: inputTextFieldDecoration(2),
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (_isEditing) {
-                                    _saveChanges();
-                                  } else {
-                                    _startEditing();
-                                  }
-                                });
-                              },
-                              style: ButtonStyle(
-                                elevation: const WidgetStatePropertyAll(0),
-                                backgroundColor: WidgetStatePropertyAll(
-                                  _isEditing
-                                      ? const Color(0xffD6E4FF)
-                                      : const Color(0xffffeed4),
-                                ),
-                              ),
-                              child: Text(
-                                _isEditing ? 'Save' : 'Edit details',
-                                style: TextStyle(
-                                  color: _isEditing
-                                      ? const Color(0xff3B7DFF)
-                                      : const Color(0xffFF9600),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8), // Space between buttons
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (_isEditing) {
-                                    _cancelChanges();
-                                  } else {
-                                    // Archive action here
-                                  }
-                                });
-                              },
-                              style: ButtonStyle(
-                                elevation: const WidgetStatePropertyAll(0),
-                                backgroundColor: WidgetStatePropertyAll(
-                                  _isEditing
-                                      ? const Color(0xffe8e8e8)
-                                      : const Color(0xfffcd0d0),
-                                ),
-                              ),
-                              child: Text(
-                                _isEditing ? 'Cancel' : 'Archive',
-                                style: TextStyle(
-                                  color: _isEditing
-                                      ? const Color(0xff4D4D4D)
-                                      : const Color(0xffB80000),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    const Row(
-                      children: [
-                        Text(
-                          "Branch Manager",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    // Manager Details
-                    ListTile(
-                      leading: CircleAvatar(
-                        foregroundColor: const Color(0xff373030),
-                        backgroundColor: const Color(0xffD1E1FF),
-                        child: Text(widget.manager[0]),
-                      ),
-                      title: Text(
-                        widget.manager,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: const Text(
-                        "dionela_153@gmail.com",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xff3B7DFF),
-                        ),
-                      ),
-                      trailing: const Text(
-                        "09123456789",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xff373030),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Row(
-                      children: [
-                        Text(
-                          "Co-Managers (17)",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: 17,
-                        itemBuilder: (context, index) => ListTile(
-                          leading: CircleAvatar(
-                            foregroundColor: const Color(0xff373030),
-                            backgroundColor: const Color(0xffD1E1FF),
-                            child: Text(widget.manager[0]),
-                          ),
-                          title: Text(
-                            widget.manager,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: const Text(
-                            "dionela_153@gmail.com",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xff3B7DFF),
-                            ),
-                          ),
-                          trailing: const Text(
-                            "09123456789",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xff373030),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) {
-        setState(() {
-          _isHovered = true;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          _isHovered = false;
-        });
-      },
-      child: GestureDetector(
-        onTap: () {
-          if (widget.manager != "Add branch manager") {
-            _showBranchDetailsDialog(context);
-          }
-        },
-        child: Card(
-          elevation: _isHovered ? 8 : 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          color: _isHovered ? Colors.grey[200] : Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                // Branch Info
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.name,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff373030),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.person_outline,
-                              size: 20, color: Colors.grey),
-                          SizedBox(width: 5),
-                          Text(
-                            widget.location,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                              fontFamily: 'Galano',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                //Manager Column
-                widget.manager == "Add branch manager"
-                    ? Expanded(
-                        child: MouseRegion(
-                        onEnter: (_) {
-                          setState(() {
-                            _isAddManagerHovered = true;
-                          });
-                        },
-                        onExit: (_) {
-                          setState(() {
-                            _isAddManagerHovered = false;
-                          });
-                        },
-                        child: GestureDetector(
-                          onTap: () {
-                            print('"Add Branch Manager" button tapped');
-                          },
-                          child: Center(
-                            child: Text(
-                              widget.manager,
-                              style: TextStyle(
-                                decoration: _isAddManagerHovered
-                                    ? TextDecoration.underline
-                                    : TextDecoration.none,
-                                decorationColor: Colors.orange,
-                                fontSize: 14,
-                                color: Colors.orange,
-                                fontFamily: 'Galano',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ))
-                    : Expanded(
-                        child: Center(
-                        child: Text(
-                          widget.manager,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.blue,
-                            fontFamily: 'Galano',
-                          ),
-                        ),
-                      )),
-                // Date Established Column
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        widget.date,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w300,
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
