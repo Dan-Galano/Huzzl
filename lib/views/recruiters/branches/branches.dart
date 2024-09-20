@@ -102,7 +102,34 @@ class _BranchesScreenState extends State<BranchesScreen>
   void submitNewBranch() async {
     if (_formkey.currentState!.validate()) {
       print("console: created a new company branch.");
+      Navigator.of(context).pop();
     }
+    setState(() {
+      regions = [];
+      selectedRegion = null;
+      provinces = [];
+      selectedProvince = null; // Reset selected province
+      cities = [];
+      selectedCity = null; // Reset selected city
+      barangays = []; // Clear barangays
+      selectedBarangay = null;
+      _branchNameController.text = '';
+    });
+  }
+
+  void cancelAddNewBranch() {
+    setState(() {
+      regions = [];
+      selectedRegion = null;
+      provinces = [];
+      selectedProvince = null; // Reset selected province
+      cities = [];
+      selectedCity = null; // Reset selected city
+      barangays = []; // Clear barangays
+      selectedBarangay = null;
+      _branchNameController.text = '';
+    });
+    Navigator.of(context).pop();
   }
 
   void addNewBranch(BuildContext context) async {
@@ -229,130 +256,133 @@ class _BranchesScreenState extends State<BranchesScreen>
                       const SizedBox(height: 10),
 
                       // Province Dropdown
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: DropdownButtonFormField<String>(
-                          decoration:
-                              customHintTextInputDecoration('Select Province'),
-                          value: selectedProvince,
-                          items: provinces
-                              .map<DropdownMenuItem<String>>((province) {
-                            return DropdownMenuItem<String>(
-                              value: province['name'],
-                              child: Text(province['name']),
-                            );
-                          }).toList(),
-                          onChanged: selectedRegion != null
-                              ? (value) {
-                                  setStateDialog(() {
-                                    selectedProvince = value;
-                                    selectedCity = null;
-                                    selectedBarangay = null;
-                                    cities = [];
-                                    barangays = [];
-                                  });
-                                  if (value != null) {
-                                    final selectedProvinceCode =
-                                        provinces.firstWhere(
-                                      (province) => province['name'] == value,
-                                      orElse: () => null,
-                                    )['code'];
+                      if (selectedRegion != null)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: DropdownButtonFormField<String>(
+                            decoration: customHintTextInputDecoration(
+                                'Select Province'),
+                            value: selectedProvince,
+                            items: provinces
+                                .map<DropdownMenuItem<String>>((province) {
+                              return DropdownMenuItem<String>(
+                                value: province['name'],
+                                child: Text(province['name']),
+                              );
+                            }).toList(),
+                            onChanged: selectedRegion != null
+                                ? (value) {
+                                    setStateDialog(() {
+                                      selectedProvince = value;
+                                      selectedCity = null;
+                                      selectedBarangay = null;
+                                      cities = [];
+                                      barangays = [];
+                                    });
+                                    if (value != null) {
+                                      final selectedProvinceCode =
+                                          provinces.firstWhere(
+                                        (province) => province['name'] == value,
+                                        orElse: () => null,
+                                      )['code'];
 
-                                    if (selectedProvinceCode != null) {
-                                      fetchCities(selectedProvinceCode)
-                                          .then((_) {
-                                        setStateDialog(
-                                            () {}); // Trigger rebuild after fetching cities
-                                      });
+                                      if (selectedProvinceCode != null) {
+                                        fetchCities(selectedProvinceCode)
+                                            .then((_) {
+                                          setStateDialog(
+                                              () {}); // Trigger rebuild after fetching cities
+                                        });
+                                      }
                                     }
                                   }
-                                }
-                              : null,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Province is required.';
-                            }
-                            return null;
-                          },
+                                : null,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Province is required.';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                      ),
                       const SizedBox(height: 10),
 
                       // City Dropdown
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: DropdownButtonFormField<String>(
-                          decoration: customHintTextInputDecoration(
-                              'Select City/Municipality'),
-                          value: selectedCity,
-                          items: cities.map<DropdownMenuItem<String>>((city) {
-                            return DropdownMenuItem<String>(
-                              value: city['name'],
-                              child: Text(city['name']),
-                            );
-                          }).toList(),
-                          onChanged: selectedProvince != null
-                              ? (value) {
-                                  setStateDialog(() {
-                                    selectedCity = value;
-                                    selectedBarangay = null;
-                                    barangays = [];
-                                  });
-                                  if (value != null) {
-                                    final selectedCitiesCode =
-                                        cities.firstWhere(
-                                      (city) => city['name'] == value,
-                                      orElse: () => null,
-                                    )['code'];
-                                    if (selectedCitiesCode != null) {
-                                      fetchBarangays(selectedCitiesCode)
-                                          .then((_) {
-                                        setStateDialog(
-                                            () {}); // Trigger rebuild after fetching barangays
-                                      });
+                      if (selectedProvince != null)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: DropdownButtonFormField<String>(
+                            decoration: customHintTextInputDecoration(
+                                'Select City/Municipality'),
+                            value: selectedCity,
+                            items: cities.map<DropdownMenuItem<String>>((city) {
+                              return DropdownMenuItem<String>(
+                                value: city['name'],
+                                child: Text(city['name']),
+                              );
+                            }).toList(),
+                            onChanged: selectedProvince != null
+                                ? (value) {
+                                    setStateDialog(() {
+                                      selectedCity = value;
+                                      selectedBarangay = null;
+                                      barangays = [];
+                                    });
+                                    if (value != null) {
+                                      final selectedCitiesCode =
+                                          cities.firstWhere(
+                                        (city) => city['name'] == value,
+                                        orElse: () => null,
+                                      )['code'];
+                                      if (selectedCitiesCode != null) {
+                                        fetchBarangays(selectedCitiesCode)
+                                            .then((_) {
+                                          setStateDialog(
+                                              () {}); // Trigger rebuild after fetching barangays
+                                        });
+                                      }
                                     }
                                   }
-                                }
-                              : null,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'City is required.';
-                            }
-                            return null;
-                          },
+                                : null,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'City is required.';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                      ),
                       const SizedBox(height: 10),
 
                       // Barangay Dropdown
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: DropdownButtonFormField<String>(
-                          decoration:
-                              customHintTextInputDecoration('Select Barangay'),
-                          value: selectedBarangay,
-                          items: barangays
-                              .map<DropdownMenuItem<String>>((barangay) {
-                            return DropdownMenuItem<String>(
-                              value: barangay['name'],
-                              child: Text(barangay['name']),
-                            );
-                          }).toList(),
-                          onChanged: selectedCity != null
-                              ? (value) {
-                                  setStateDialog(() {
-                                    selectedBarangay = value;
-                                  });
-                                }
-                              : null,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Barangay is required.';
-                            }
-                            return null;
-                          },
+                      if (selectedCity != null)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: DropdownButtonFormField<String>(
+                            decoration: customHintTextInputDecoration(
+                                'Select Barangay'),
+                            value: selectedBarangay,
+                            items: barangays
+                                .map<DropdownMenuItem<String>>((barangay) {
+                              return DropdownMenuItem<String>(
+                                value: barangay['name'],
+                                child: Text(barangay['name']),
+                              );
+                            }).toList(),
+                            onChanged: selectedCity != null
+                                ? (value) {
+                                    setStateDialog(() {
+                                      selectedBarangay = value;
+                                    });
+                                  }
+                                : null,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Barangay is required.';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                      ),
                       const SizedBox(height: 10),
 
                       // Other location information field

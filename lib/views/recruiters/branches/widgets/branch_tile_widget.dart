@@ -191,20 +191,26 @@ class _BranchTileState extends State<BranchTile> {
                         child: Text(widget.manager[0]),
                       ),
                       title: Text(
-                        widget.manager,
+                        widget.manager == "Add branch manager"
+                            ? "No branch manager yet."
+                            : widget.manager,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: const Text(
-                        "dionela_153@gmail.com",
+                      subtitle: Text(
+                        widget.manager == "Add branch manager"
+                            ? "N/A"
+                            : "dionela_153@gmail.com",
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xff3B7DFF),
                         ),
                       ),
-                      trailing: const Text(
-                        "09123456789",
+                      trailing: Text(
+                        widget.manager == "Add branch manager"
+                            ? "N/A"
+                            : "09123456789",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -213,73 +219,75 @@ class _BranchTileState extends State<BranchTile> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Row(
-                      children: [
-                        Text(
-                          "Co-Managers (17)",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: 17,
-                        itemBuilder: (context, index) => ListTile(
-                          leading: CircleAvatar(
-                            foregroundColor: const Color(0xff373030),
-                            backgroundColor: const Color(0xffD1E1FF),
-                            child: Text(widget.manager[0]),
-                          ),
-                          title: Text(
-                            widget.manager,
-                            style: const TextStyle(
+                    if (widget.manager != "Add branch manager") ...[
+                      const Row(
+                        children: [
+                          Text(
+                            "Co-Managers (17)",
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: 20,
                             ),
                           ),
-                          subtitle: const Text(
-                            "dionela_153@gmail.com",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xff3B7DFF),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: 17,
+                          itemBuilder: (context, index) => ListTile(
+                            leading: CircleAvatar(
+                              foregroundColor: const Color(0xff373030),
+                              backgroundColor: const Color(0xffD1E1FF),
+                              child: Text(widget.manager[0]),
                             ),
-                          ),
-                          trailing: const Text(
-                            "09123456789",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xff373030),
+                            title: Text(
+                              widget.manager,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: const Text(
+                              "dionela_153@gmail.com",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xff3B7DFF),
+                              ),
+                            ),
+                            trailing: const Text(
+                              "09123456789",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xff373030),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {},
-                          child: const Text("View job posts in this branch"),
-                          style: ButtonStyle(
-                            elevation: const WidgetStatePropertyAll(0),
-                            foregroundColor: WidgetStateProperty.all(
-                              const Color(0xffFD7206),
-                            ),
-                            side: WidgetStateProperty.all(
-                              const BorderSide(
-                                color: Color(0xffFD7206),
-                                width: 2,
-                              ), // Outline color and thickness
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OutlinedButton(
+                            onPressed: () {},
+                            child: const Text("View job posts in this branch"),
+                            style: ButtonStyle(
+                              elevation: const WidgetStatePropertyAll(0),
+                              foregroundColor: WidgetStateProperty.all(
+                                const Color(0xffFD7206),
+                              ),
+                              side: WidgetStateProperty.all(
+                                const BorderSide(
+                                  color: Color(0xffFD7206),
+                                  width: 2,
+                                ), // Outline color and thickness
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
+                        ],
+                      )
+                    ],
                   ],
                 ),
               ),
@@ -306,9 +314,7 @@ class _BranchTileState extends State<BranchTile> {
       },
       child: GestureDetector(
         onTap: () {
-          if (widget.manager != "Add branch manager") {
-            _showBranchDetailsDialog(context);
-          }
+          _showBranchDetailsDialog(context);
         },
         child: Card(
           elevation: _isHovered ? 8 : 2,
