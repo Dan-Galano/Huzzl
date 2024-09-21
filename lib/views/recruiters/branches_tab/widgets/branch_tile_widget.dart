@@ -1,278 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches/branches_widgets.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 
-class BranchesScreen extends StatefulWidget {
-  const BranchesScreen({super.key});
-
-  @override
-  _BranchesScreenState createState() => _BranchesScreenState();
-}
-
-class _BranchesScreenState extends State<BranchesScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this); // Two tabs
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          navBar(),
-          Divider(
-            thickness: 1,
-            color: Colors.grey[400],
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                // Sidebar
-                Container(
-                  width: 350,
-                  color: const Color(0xffACACAC),
-                  padding: const EdgeInsets.all(30),
-                  child: ListView(
-                    children: const [
-                      Text(
-                        'Sidebar (Branches tab)',
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          fontSize: 32,
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 1,
-                  height: double.infinity,
-                  color: Colors.grey[300],
-                ),
-                // Main Content
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                     LayoutBuilder(
-  builder: (context, constraints) {
-    // Check the available width of the screen
-    double screenWidth = constraints.maxWidth;
-
-    // Adjust the width of the TextField and spacing based on screen width
-    double textFieldWidth = screenWidth * 0.4; // Adjust based on your needs
-    double spacing = screenWidth > 600 ? 20 : 10; // Larger spacing for larger screens
-
-    return Row(
-      children: [
-        SizedBox(width: spacing),
-        const Text(
-          'Branches',
-          style: TextStyle(
-            decoration: TextDecoration.none,
-            fontSize: 32,
-            color: Color(0xff373030),
-            fontFamily: 'Galano',
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        SizedBox(width: spacing),
-        SizedBox(
-          width: textFieldWidth, // Use responsive width
-          child: TextField(
-            decoration: searchTextFieldDecoration('Search'),
-          ),
-        ),
-        const Spacer(),
-        ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF0038FF),
-            padding: EdgeInsets.all(screenWidth > 600 ? 20 : 10), // Adjust padding
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Text(
-            'Add new branch',
-            style: TextStyle(
-              fontSize: 17,
-              color: Colors.white,
-              fontFamily: 'Galano',
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        SizedBox(
-          width: screenWidth > 600 ? 30 : 10, // Adjust based on screen size
-        ),
-      ],
-    );
-  },
-),
-   // Add Tabs for Active and Archive
-                        TabBar(
-                          controller: _tabController,
-                          labelColor: Colors.black,
-                          unselectedLabelColor: Colors.grey,
-                          indicatorColor: Colors.orange,
-                          labelStyle: TextStyle(
-                            fontSize: 18, // Font size of the selected tab
-                            fontWeight: FontWeight
-                                .bold, // Font weight of the selected tab
-                            fontFamily: 'Galano', // Use your custom font
-                          ),
-                          unselectedLabelStyle: TextStyle(
-                            fontSize: 16, // Font size of the unselected tabs
-                            fontWeight: FontWeight
-                                .normal, // Font weight of the unselected tabs
-                            fontFamily: 'Galano', // Use your custom font
-                          ),
-                          tabs: [
-                            Tab(text: '4 Active'),
-                            Tab(text: '0 Archived'),
-                          ],
-                        ),
-                        Expanded(
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              // Active Tab Content
-                              ActiveBranchesView(),
-                              // Archive Tab Content
-                              ArchiveBranchesView(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class Branch {
-  final String name;
-  final String manager;
-  final String dateEstablished;
-
-  Branch(
-      {required this.name,
-      required this.manager,
-      required this.dateEstablished});
-}
-
-// Sample  Active Branches List
-class ActiveBranchesView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        //Branch Manager and Date Established Text
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 200,
-                child: Text(""),
-              ),
-              SizedBox(
-                width: 200,
-                child: Text(
-                  "Branch Manager",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Galano',
-                  ),
-                ),
-              ),
-              Text(
-                "Date Established",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Galano',
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              BranchTile(
-                  name: 'Jollibee - Urdaneta Bypass',
-                  manager: 'Add branch manager',
-                  date: '05/12/2024',
-                  location: 'San Vicente, Urdaneta City, Pangasinan'),
-              BranchTile(
-                  name: 'Jollibee - Urdaneta Magic Mall',
-                  manager: 'Juan Karlos',
-                  date: '06/17/2024',
-                  location: 'Nancaysan, Urdaneta City, Pangasinan'),
-              BranchTile(
-                  name: 'Jollibee - Urdaneta SM',
-                  manager: 'Ebe Dancel',
-                  date: '05/18/2024',
-                  location: 'Nancaysan, Urdaneta City, Pangasinan'),
-              BranchTile(
-                  name: 'Jollibee - Urdaneta CB Mall',
-                  manager: 'Dionela',
-                  date: '02/28/2024',
-                  location: 'San Vicente, Urdaneta City, Pangasinan'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// Example Archive Branches List (if any)
-class ArchiveBranchesView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'No Archived Branches',
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.grey,
-          fontFamily: 'Galano',
-        ),
-      ),
-    );
-  }
-}
-
-// Branch List Tile widget
 class BranchTile extends StatefulWidget {
   final String name;
   final String manager;
@@ -345,7 +73,7 @@ class _BranchTileState extends State<BranchTile> {
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
               ),
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -463,20 +191,26 @@ class _BranchTileState extends State<BranchTile> {
                         child: Text(widget.manager[0]),
                       ),
                       title: Text(
-                        widget.manager,
+                        widget.manager == "Add branch manager"
+                            ? "No branch manager yet."
+                            : widget.manager,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: const Text(
-                        "dionela_153@gmail.com",
+                      subtitle: Text(
+                        widget.manager == "Add branch manager"
+                            ? "N/A"
+                            : "dionela_153@gmail.com",
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xff3B7DFF),
                         ),
                       ),
-                      trailing: const Text(
-                        "09123456789",
+                      trailing: Text(
+                        widget.manager == "Add branch manager"
+                            ? "N/A"
+                            : "09123456789",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -485,51 +219,75 @@ class _BranchTileState extends State<BranchTile> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Row(
-                      children: [
-                        Text(
-                          "Co-Managers (17)",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: 17,
-                        itemBuilder: (context, index) => ListTile(
-                          leading: CircleAvatar(
-                            foregroundColor: const Color(0xff373030),
-                            backgroundColor: const Color(0xffD1E1FF),
-                            child: Text(widget.manager[0]),
-                          ),
-                          title: Text(
-                            widget.manager,
-                            style: const TextStyle(
+                    if (widget.manager != "Add branch manager") ...[
+                      const Row(
+                        children: [
+                          Text(
+                            "Co-Managers (17)",
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: 20,
                             ),
                           ),
-                          subtitle: const Text(
-                            "dionela_153@gmail.com",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xff3B7DFF),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: 17,
+                          itemBuilder: (context, index) => ListTile(
+                            leading: CircleAvatar(
+                              foregroundColor: const Color(0xff373030),
+                              backgroundColor: const Color(0xffD1E1FF),
+                              child: Text(widget.manager[0]),
                             ),
-                          ),
-                          trailing: const Text(
-                            "09123456789",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xff373030),
+                            title: Text(
+                              widget.manager,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: const Text(
+                              "dionela_153@gmail.com",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xff3B7DFF),
+                              ),
+                            ),
+                            trailing: const Text(
+                              "09123456789",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xff373030),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OutlinedButton(
+                            onPressed: () {},
+                            child: const Text("View job posts in this branch"),
+                            style: ButtonStyle(
+                              elevation: const WidgetStatePropertyAll(0),
+                              foregroundColor: WidgetStateProperty.all(
+                                const Color(0xffFD7206),
+                              ),
+                              side: WidgetStateProperty.all(
+                                const BorderSide(
+                                  color: Color(0xffFD7206),
+                                  width: 2,
+                                ), // Outline color and thickness
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
                   ],
                 ),
               ),
@@ -556,9 +314,7 @@ class _BranchTileState extends State<BranchTile> {
       },
       child: GestureDetector(
         onTap: () {
-          if (widget.manager != "Add branch manager") {
-            _showBranchDetailsDialog(context);
-          }
+          _showBranchDetailsDialog(context);
         },
         child: Card(
           elevation: _isHovered ? 8 : 2,

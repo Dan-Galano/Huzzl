@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches/branches-tab.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
@@ -27,7 +27,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
       case 0:
         return buildManagersContent(context);
       case 1:
-        return buildBranchesContent(context);
+        return BranchesScreen();
       case 2:
         return buildJobsContent();
       case 3:
