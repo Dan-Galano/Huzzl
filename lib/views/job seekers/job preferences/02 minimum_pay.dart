@@ -1,23 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
-
-void main() => runApp(MinimumPay());
-
-class MinimumPay extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MinimumPayPage(),
-    );
-  }
-}
 
 class MinimumPayPage extends StatefulWidget {
   MinimumPayPage({super.key});
@@ -211,7 +198,13 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                     child: SizedBox(
                       width: 130,
                       child: BlueFilledCircleButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          //For debugging and UI only
+                          //Use PageController
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => JobTitlesPage(),
+                          ));
+                        },
                         text: 'Next',
                       ),
                     ),
@@ -231,7 +224,9 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                 height: 20,
               ),
               onPressed: () {
-                // action
+                //For debugging and UI only
+                //Use PageController
+                Navigator.of(context).pop();
               },
             ),
           ),

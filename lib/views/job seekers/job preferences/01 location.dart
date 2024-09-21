@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-void main() => runApp(LocationSelectorApp());
-
-class LocationSelectorApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LocationSelectorPage(),
-    );
-  }
-}
 
 class LocationSelectorPage extends StatefulWidget {
   @override
@@ -333,29 +320,20 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                     child: SizedBox(
                       width: 130,
                       child: BlueFilledCircleButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          //For debugging and UI only
+                          //Use PageController
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => MinimumPayPage(),
+                          ));
+                        },
                         text: 'Next',
                       ),
                     ),
                   ),
-
                   SizedBox(height: 20),
                 ],
               ),
-            ),
-          ),
-          Positioned(
-            top: 60,
-            left: 350,
-            child: IconButton(
-              icon: Image.asset(
-                'assets/images/backbutton.png',
-                width: 20,
-                height: 20,
-              ),
-              onPressed: () {
-                // action
-              },
             ),
           ),
         ],

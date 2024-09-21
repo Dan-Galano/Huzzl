@@ -3,28 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 
-void main() => runApp(MinimumPay());
-
-class MinimumPay extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MinimumPayPage(),
-    );
-  }
-}
-
-class MinimumPayPage extends StatefulWidget {
-  MinimumPayPage({super.key});
+class JobTitlesPage extends StatefulWidget {
+  JobTitlesPage({super.key});
 
   @override
-  _MinimumPayPageState createState() => _MinimumPayPageState();
+  _JobTitlesPageState createState() => _JobTitlesPageState();
 }
 
-class _MinimumPayPageState extends State<MinimumPayPage> {
+class _JobTitlesPageState extends State<JobTitlesPage> {
   var minimum = TextEditingController();
   var maximum = TextEditingController();
 
@@ -112,11 +98,10 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                       children: [
                         Image.asset(
                           'assets/images/info.png',
-                          width: 20, 
-                          height: 20, 
+                          width: 20,
+                          height: 20,
                         ),
-                        SizedBox(
-                            width: 8),
+                        SizedBox(width: 8),
                         Text(
                           'Select up to 3 specialties.',
                           style: TextStyle(
@@ -263,8 +248,10 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                       child: SizedBox(
                         width: 130,
                         child: BlueFilledCircleButton(
-                          onPressed: () {},
-                          text: 'Next',
+                          onPressed: () {
+                            //Proceed to home
+                          },
+                          text: 'Continue',
                         ),
                       ),
                     ),
@@ -284,7 +271,9 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                 height: 20,
               ),
               onPressed: () {
-                // action
+                //For debugging and UI only
+                //Use PageController
+                Navigator.of(context).pop();
               },
             ),
           ),
