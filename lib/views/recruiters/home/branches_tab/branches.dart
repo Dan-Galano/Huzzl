@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches/widgets/textfield_decorations.dart';
-import 'package:huzzl_web/views/recruiters/branches/views/active_branches_view.dart';
-import 'package:huzzl_web/views/recruiters/branches/views/archive_branches_view.dart';
-import 'package:huzzl_web/views/recruiters/branches/widgets/navbar_widget.dart';
+import 'package:huzzl_web/views/recruiters/home/branches_tab/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/home/branches_tab/views/active_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/home/branches_tab/views/archive_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/home/branches_tab/widgets/navbar_widget.dart';
 
 class BranchesScreen extends StatefulWidget {
   const BranchesScreen({super.key});
@@ -458,138 +458,98 @@ class _BranchesScreenState extends State<BranchesScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          navBar(),
-          Divider(
-            thickness: 1,
-            color: Colors.grey[400],
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                // Sidebar
-                Container(
-                  width: 350,
-                  color: const Color(0xffACACAC),
-                  padding: const EdgeInsets.all(30),
-                  child: ListView(
-                    children: const [
-                      Text(
-                        'Sidebar (Branches tab)',
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          fontSize: 32,
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w700,
+    return Column(
+      children: [
+        Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const SizedBox(width: 20),
+                                const Text(
+                                  'Branches',
+                                  style: TextStyle(
+                                    decoration: TextDecoration.none,
+                                    fontSize: 32,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * 0.5,
+                                  child: TextField(
+                                    decoration: searchTextFieldDecoration('Search'),
+                                  ),
+                                ),
+                                const Spacer(),
+                                ElevatedButton(
+                                  onPressed: () => addNewBranch(context),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF0038FF),
+                                    padding: EdgeInsets.all(20),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Add new branch',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.white,
+                                      fontFamily: 'Galano',
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                )
+                              ],
+                            ),
+                            // Add Tabs for Active and Archive
+                            TabBar(
+                              controller: _tabController,
+                              labelColor: Colors.black,
+                              unselectedLabelColor: Colors.grey,
+                              indicatorColor: Colors.orange,
+                              labelStyle: TextStyle(
+                                fontSize: 18, // Font size of the selected tab
+                                fontWeight: FontWeight
+                                    .bold, // Font weight of the selected tab
+                                fontFamily: 'Galano', // Use your custom font
+                              ),
+                              unselectedLabelStyle: TextStyle(
+                                fontSize: 16, // Font size of the unselected tabs
+                                fontWeight: FontWeight
+                                    .normal, // Font weight of the unselected tabs
+                                fontFamily: 'Galano', // Use your custom font
+                              ),
+                              tabs: [
+                                Tab(text: '4 Active'),
+                                Tab(text: '0 Archived'),
+                              ],
+                            ),
+                            Expanded(
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  // Active Tab Content
+                                  ActiveBranchesView(),
+                                  // Archive Tab Content
+                                  ArchiveBranchesView(),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 1,
-                  height: double.infinity,
-                  color: Colors.grey[300],
-                ),
-                // Main Content
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const SizedBox(width: 20),
-                            const Text(
-                              'Branches',
-                              style: TextStyle(
-                                decoration: TextDecoration.none,
-                                fontSize: 32,
-                                color: Color(0xff373030),
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(width: 20),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: TextField(
-                                decoration: searchTextFieldDecoration('Search'),
-                              ),
-                            ),
-                            const Spacer(),
-                            ElevatedButton(
-                              onPressed: () => addNewBranch(context),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF0038FF),
-                                padding: EdgeInsets.all(20),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                'Add new branch',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  color: Colors.white,
-                                  fontFamily: 'Galano',
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 30,
-                            )
-                          ],
-                        ),
-                        // Add Tabs for Active and Archive
-                        TabBar(
-                          controller: _tabController,
-                          labelColor: Colors.black,
-                          unselectedLabelColor: Colors.grey,
-                          indicatorColor: Colors.orange,
-                          labelStyle: TextStyle(
-                            fontSize: 18, // Font size of the selected tab
-                            fontWeight: FontWeight
-                                .bold, // Font weight of the selected tab
-                            fontFamily: 'Galano', // Use your custom font
-                          ),
-                          unselectedLabelStyle: TextStyle(
-                            fontSize: 16, // Font size of the unselected tabs
-                            fontWeight: FontWeight
-                                .normal, // Font weight of the unselected tabs
-                            fontFamily: 'Galano', // Use your custom font
-                          ),
-                          tabs: [
-                            Tab(text: '4 Active'),
-                            Tab(text: '0 Archived'),
-                          ],
-                        ),
-                        Expanded(
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              // Active Tab Content
-                              ActiveBranchesView(),
-                              // Archive Tab Content
-                              ArchiveBranchesView(),
-                            ],
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }

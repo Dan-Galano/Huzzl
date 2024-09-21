@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches/widgets/branch_tile_widget.dart';
+import 'package:huzzl_web/views/recruiters/home/branches_tab/widgets/branch_tile_widget.dart';
 
 class ActiveBranchesView extends StatelessWidget {
   @override

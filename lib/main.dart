@@ -7,7 +7,7 @@ import 'package:huzzl_web/views/job%20seekers/register/01%20jobseeker_profile.da
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/login/login_screen.dart';
-import 'package:huzzl_web/views/recruiters/branches/branches.dart';
+import 'package:huzzl_web/views/recruiters/home/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/register/06%20congrats.dart';
 
@@ -29,9 +29,9 @@ class HuzzlWeb extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
-      // home: AuthWrapper(),
+      home: AuthWrapper(),
       // home: JobSeekerHomeScreen(),
-      home: BranchesScreen(),
+      // home: BranchesScreen(),
     );
   }
 }
