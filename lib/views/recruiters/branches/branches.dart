@@ -102,19 +102,19 @@ class _BranchesScreenState extends State<BranchesScreen>
   void submitNewBranch() async {
     if (_formkey.currentState!.validate()) {
       print("console: created a new company branch.");
+      setState(() {
+        regions = [];
+        selectedRegion = null;
+        provinces = [];
+        selectedProvince = null; // Reset selected province
+        cities = [];
+        selectedCity = null; // Reset selected city
+        barangays = []; // Clear barangays
+        selectedBarangay = null;
+        _branchNameController.text = '';
+      });
       Navigator.of(context).pop();
     }
-    setState(() {
-      regions = [];
-      selectedRegion = null;
-      provinces = [];
-      selectedProvince = null; // Reset selected province
-      cities = [];
-      selectedCity = null; // Reset selected city
-      barangays = []; // Clear barangays
-      selectedBarangay = null;
-      _branchNameController.text = '';
-    });
   }
 
   void cancelAddNewBranch() {
@@ -129,6 +129,7 @@ class _BranchesScreenState extends State<BranchesScreen>
       selectedBarangay = null;
       _branchNameController.text = '';
     });
+    fetchRegions();
     Navigator.of(context).pop();
   }
 
@@ -422,9 +423,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                           ),
                           const SizedBox(width: 4),
                           ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
+                            onPressed: () => cancelAddNewBranch(),
                             style: const ButtonStyle(
                               elevation: WidgetStatePropertyAll(0),
                               backgroundColor: WidgetStatePropertyAll(
