@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/home/branches-tab.dart';
-import 'package:huzzl_web/views/recruiters/home/candidates-tab.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/manager-tab.dart';
@@ -90,7 +90,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         case 1:
           return buildJobsContent();
         case 2:
-          return buildCandidatesContent();
+          return buildCandidatesContent(context);
         case 3:
           return buildInterviewsContent();
         default:
@@ -102,11 +102,11 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
         case 1:
-          return buildBranchesContent();
+          return BranchesScreen();
         case 2:
           return buildJobsContent();
         case 3:
-          return buildCandidatesContent();
+          return buildCandidatesContent(context);
         case 4:
           return buildInterviewsContent();
         default:
