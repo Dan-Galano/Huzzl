@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BlueFilledBoxButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
-  final double width; 
+  final double width;
 
   BlueFilledBoxButton({
     required this.onPressed,
@@ -18,10 +18,10 @@ class BlueFilledBoxButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF0038FF), 
+          backgroundColor: Color(0xFF0038FF),
           padding: EdgeInsets.all(20),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), 
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
         child: Text(

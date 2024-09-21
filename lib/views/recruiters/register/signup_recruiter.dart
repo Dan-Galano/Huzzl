@@ -113,333 +113,357 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
           const NavBarLoginRegister(),
           Expanded(
             child: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 550),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 70),
-                      const Center(
-                        child: Text(
-                          "Sign up your account",
-                          style: TextStyle(
-                            fontFamily: "Galano",
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Email",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                      TextFormField(
-                        controller: _email,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          isDense: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty || value == null) {
-                            return "Email Address is required.";
-                          }
-                          if (!EmailValidator.validate(value)) {
-                            return "Email Address provided is not valid.";
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Get the screen width
+                  double screenWidth = constraints.maxWidth;
+
+                  // Compute padding as a percentage of screen width
+                  double paddingHorizontal =
+                      screenWidth * 0.25; // Example: 10% of screen width
+                  double paddingVertical = screenWidth * 0.05;
+
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: paddingHorizontal,
+                        vertical: paddingVertical),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "First Name",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xff373030),
-                                    fontFamily: 'Galano',
-                                  ),
+                          const Center(
+                            child: Text(
+                              "Sign up your account",
+                              style: TextStyle(
+                                fontFamily: "Galano",
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            "Email",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff373030),
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                          TextFormField(
+                            controller: _email,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
+                              isDense: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
                                 ),
-                                const SizedBox(height: 8),
-                                TextFormField(
-                                  controller: _firstName,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 16.0),
-                                    isDense: true,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFD1E1FF),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFD1E1FF),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFD1E1FF),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value!.isEmpty || value == null) {
-                                      return "First name is required.";
-                                    }
-                                  },
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
                                 ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Last Name",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xff373030),
-                                    fontFamily: 'Galano',
-                                  ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
                                 ),
-                                const SizedBox(height: 8),
-                                TextFormField(
-                                  controller: _lastName,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 16.0),
-                                    isDense: true,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFD1E1FF),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFD1E1FF),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFFD1E1FF),
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value!.isEmpty || value == null) {
-                                      return "Last name is required.";
-                                    }
-                                  },
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Password',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _password,
-                        style: const TextStyle(
-                          fontFamily: 'Galano',
-                        ),
-                        obscureText: isPasswordVisible ? false : true,
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                togglePasswordVisibility();
-                              },
-                              icon: isPasswordVisible
-                                  ? const Icon(Icons.visibility)
-                                  : const Icon(Icons.visibility_off)),
-                          hintText: "Password (8 or more characters)",
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          isDense: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty || value == null) {
-                            return "Password is required.";
-                          }
-                          if (value.length < 8) {
-                            return 'Password must be at least 8 characters long';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Confirm Password',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _confirmPassword,
-                        style: const TextStyle(
-                          fontFamily: 'Galano',
-                        ),
-                        obscureText: isConfirmPasswordVisible ? false : true,
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                togglePasswordConfirmVisibility();
-                              },
-                              icon: isConfirmPasswordVisible
-                                  ? const Icon(Icons.visibility)
-                                  : const Icon(Icons.visibility_off)),
-                          hintText: "Password (8 or more characters)",
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          isDense: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFD1E1FF),
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value != _password.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                const Text(
-                                  "Don't have a company account? ",
-                                  style: TextStyle(
-                                    fontFamily: "Galano",
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    "Create here.",
-                                    style: TextStyle(
-                                      fontFamily: "Galano",
-                                      fontSize: 16,
-                                      color: Color(0xFF0038FF),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          BlueFilledCircleButton(
-                            onPressed: () {
-                              submitRegistrationRecruiter();
+                            validator: (value) {
+                              if (value!.isEmpty || value == null) {
+                                return "Email Address is required.";
+                              }
+                              if (!EmailValidator.validate(value)) {
+                                return "Email Address provided is not valid.";
+                              }
                             },
-                            text: "Submit",
-                            width: 150,
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "First Name",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0xff373030),
+                                        fontFamily: 'Galano',
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextFormField(
+                                      controller: _firstName,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 8.0,
+                                                horizontal: 16.0),
+                                        isDense: true,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFD1E1FF),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFD1E1FF),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFD1E1FF),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                      validator: (value) {
+                                        if (value!.isEmpty || value == null) {
+                                          return "First name is required.";
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Last Name",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0xff373030),
+                                        fontFamily: 'Galano',
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextFormField(
+                                      controller: _lastName,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 8.0,
+                                                horizontal: 16.0),
+                                        isDense: true,
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFD1E1FF),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFD1E1FF),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                            color: Color(0xFFD1E1FF),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                      validator: (value) {
+                                        if (value!.isEmpty || value == null) {
+                                          return "Last name is required.";
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Password',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff373030),
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _password,
+                            style: const TextStyle(
+                              fontFamily: 'Galano',
+                            ),
+                            obscureText: isPasswordVisible ? false : true,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    togglePasswordVisibility();
+                                  },
+                                  icon: isPasswordVisible
+                                      ? const Icon(Icons.visibility)
+                                      : const Icon(Icons.visibility_off)),
+                              hintText: "Password (8 or more characters)",
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
+                              isDense: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty || value == null) {
+                                return "Password is required.";
+                              }
+                              if (value.length < 8) {
+                                return 'Password must be at least 8 characters long';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Confirm Password',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff373030),
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _confirmPassword,
+                            style: const TextStyle(
+                              fontFamily: 'Galano',
+                            ),
+                            obscureText:
+                                isConfirmPasswordVisible ? false : true,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    togglePasswordConfirmVisibility();
+                                  },
+                                  icon: isConfirmPasswordVisible
+                                      ? const Icon(Icons.visibility)
+                                      : const Icon(Icons.visibility_off)),
+                              hintText: "Password (8 or more characters)",
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
+                              isDense: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value != _password.text) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      "Don't have a company account? ",
+                                      style: TextStyle(
+                                        fontFamily: "Galano",
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {},
+                                      child: const Text(
+                                        "Create here.",
+                                        style: TextStyle(
+                                          fontFamily: "Galano",
+                                          fontSize: 16,
+                                          color: Color(0xFF0038FF),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              BlueFilledCircleButton(
+                                onPressed: () {
+                                  submitRegistrationRecruiter();
+                                },
+                                text: "Submit",
+                                width: 150,
+                              )
+                            ],
                           )
                         ],
-                      )
-                    ],
-                  ),
-                ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
