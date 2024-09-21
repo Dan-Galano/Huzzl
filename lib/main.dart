@@ -31,7 +31,6 @@ class HuzzlWeb extends StatelessWidget {
       theme: ThemeData(fontFamily: 'Galano'),
       home: AuthWrapper(),
       // home: JobSeekerHomeScreen(),
-      // home: BranchesScreen(),
     );
   }
 }
