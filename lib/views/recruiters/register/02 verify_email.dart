@@ -128,14 +128,6 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 70),
-                    IconButtonback(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      iconImage:
-                          const AssetImage('assets/images/backbutton.png'),
-                    ),
                     const SizedBox(height: 20),
                     Container(
                       width: 850,
@@ -216,6 +208,10 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
                                     child: ElevatedButton(
                                       onPressed: () {
                                         sendVerificationEmail();
+                                        setState(() {
+                                          canResendEmail = false;
+                                        });
+                                        resendEmail();
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
