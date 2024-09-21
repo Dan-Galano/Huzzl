@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
-import 'package:huzzl_web/views/recruiters/home/interview-tab.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/manager-tab.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
@@ -68,7 +68,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 0; // Default the first tab na (Managers)
+  int? _selectedIndex = 4; // Default the first tab na (Managers)
 
   void changeDestination(int index) {
     setState(() {

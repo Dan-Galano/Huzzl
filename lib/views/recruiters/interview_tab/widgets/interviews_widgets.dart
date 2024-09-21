@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class FilterRowWidget extends StatefulWidget {
+class InterviewFilterRowWidget extends StatefulWidget {
   @override
-  _FilterRowWidgetState createState() => _FilterRowWidgetState();
+  _InterviewFilterRowWidgetState createState() =>
+      _InterviewFilterRowWidgetState();
 }
 
-class _FilterRowWidgetState extends State<FilterRowWidget> {
+class _InterviewFilterRowWidgetState extends State<InterviewFilterRowWidget> {
   String selectedBranch = 'All branches';
   String selectedJob = 'All jobs';
   String selectedSort = 'Sort By';
@@ -58,54 +59,7 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
               });
             },
           ),
-
-          SizedBox(width: 20),
-
-          // Group of checkboxes
-          Row(
-            children: [
-              _buildCustomCheckbox(
-                value: isFullTime,
-                label: 'Full-time',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isFullTime = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              _buildCustomCheckbox(
-                value: isPartTime,
-                label: 'Part-time',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isPartTime = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              _buildCustomCheckbox(
-                value: isPermanent,
-                label: 'Permanent',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isPermanent = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              _buildCustomCheckbox(
-                value: isFixedTerm,
-                label: 'Fixed Term',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isFixedTerm = newValue!;
-                  });
-                },
-              ),
-            ],
-          ),
-          Gap(40),
+          const SizedBox(width: 20),
           Text(
             "Clear all filter",
             style: TextStyle(
