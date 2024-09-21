@@ -40,59 +40,54 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return StreamBuilder<User?>(
-    //   stream: FirebaseAuth.instance.authStateChanges(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return Center(
-    //         child: CircularProgressIndicator(),
-    //       );
-    //     } else if (snapshot.hasData) {
-    //       return FutureBuilder<DocumentSnapshot>(
-    //         future: FirebaseFirestore.instance
-    //             .collection('users')
-    //             .doc(snapshot.data!.uid)
-    //             .get(),
-    //         builder: (context, snapshot) {
-    //           if (snapshot.connectionState == ConnectionState.waiting) {
-    //             // print(snapshot.data!.id);
-    //             // print('User Document ID (uid): ${snapshot.data!.id}');
-    //             print('Fetching user document...');
-    //             return Center(
-    //               child: CircularProgressIndicator(),
-    //             );
-    //           }
-    //           print('TEST');
-    //           if (snapshot.hasError) {
-    //             print('Error: ${snapshot.error}');
-    //             return ErrorWidget(snapshot.error.toString());
-    //           }
-    //           if (snapshot.hasData && snapshot.data!.exists) {
-    //             print('Data: ${snapshot.data}');
-    //             var userData = snapshot.data!.data() as Map<String, dynamic>;
-    //             String userType = userData['role'];
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasData) {
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(snapshot.data!.uid)
+                .get(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // print(snapshot.data!.id);
+                // print('User Document ID (uid): ${snapshot.data!.id}');
+                print('Fetching user document...');
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              print('TEST');
+              if (snapshot.hasError) {
+                print('Error: ${snapshot.error}');
+                return ErrorWidget(snapshot.error.toString());
+              }
+              if (snapshot.hasData && snapshot.data!.exists) {
+                print('Data: ${snapshot.data}');
+                var userData = snapshot.data!.data() as Map<String, dynamic>;
+                String userType = userData['role'];
 
-    //             if (userType == 'jobseeker') {
-    //               return JobSeekerHomeScreen();
-    //             } else if (userType == 'recruiter') {
-    //               return RecruiterHomeScreen();
-    //             } else {
-    //               return LoginRegister();
-    //             }
-    //           }
-    //           return LoginRegister();
-    //         },
-    //       );
-    //     } else {
-    //       print("LOGIN!");
-    //       return LoginRegister();
-    //     }
-    //   },
-    // );
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // home: BranchesScreen(),
-      home: RecruiterHomeScreen(),
+                if (userType == 'jobseeker') {
+                  return JobSeekerHomeScreen();
+                } else if (userType == 'recruiter') {
+                  return RecruiterHomeScreen();
+                } else {
+                  return LoginRegister();
+                }
+              }
+              return LoginRegister();
+            },
+          );
+        } else {
+          print("LOGIN!");
+          return LoginRegister();
+        }
+      },
     );
   }
 }

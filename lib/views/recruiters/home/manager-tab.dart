@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 
 //userData => user company data
@@ -17,38 +18,35 @@ Widget buildManagersContent(
         children: [
           // Header Row with title and search field
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              const SizedBox(width: 20),
               const Row(
                 children: [
                   Text(
                     "Managers",
                     style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Galano",
+                      decoration: TextDecoration.none,
+                      fontSize: 32,
+                      color: Color(0xff373030),
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
               ),
-              const Row(
-                children: [
-                  SizedBox(
-                    height: 40,
-                    width: 600,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Search",
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Icon(Icons.filter_alt),
-                  SizedBox(width: 10),
-                  Text("Filters"),
-                ],
+              const SizedBox(width: 20),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: TextField(
+                  decoration: searchTextFieldDecoration('Search'),
+                ),
               ),
+              const SizedBox(width: 20),
+              ...[
+                Icon(Icons.filter_alt),
+                SizedBox(width: 10),
+                Text("Filters"),
+              ],
+              Spacer(),
               Row(
                 children: [
                   Container(
@@ -139,10 +137,11 @@ Widget buildManagersContent(
                   ),
                 ],
               ),
+              const SizedBox(width: 30),
             ],
           ),
 
-          SizedBox(height: 20), // Adds space between rows
+          const SizedBox(height: 20), // Adds space between rows
 
           // More content can go here
           // Text("Here is some long content about managers..."),
