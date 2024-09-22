@@ -4,6 +4,7 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/manager-tab.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class RecruiterHomeScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
       case 1:
         return BranchesScreen();
       case 2:
-        return buildJobsContent();
+        return JobScreens();
       case 3:
         return buildCandidatesContent(context);
       case 4:
