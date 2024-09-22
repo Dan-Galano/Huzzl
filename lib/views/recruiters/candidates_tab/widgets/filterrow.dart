@@ -141,7 +141,10 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
         items: items.map<DropdownMenuItem<T>>((T value) {
           return DropdownMenuItem<T>(
             value: value,
-            child: Text(value.toString()),
+            child: Text(
+              value.toString(),
+              style: TextStyle(fontFamily: 'Galano'),
+            ),
           );
         }).toList(),
       ),

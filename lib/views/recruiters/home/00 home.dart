@@ -278,7 +278,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             label,
             style: const TextStyle(
               color: Colors.white,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w400,
               fontFamily: "Galano",
             ),
           ),
