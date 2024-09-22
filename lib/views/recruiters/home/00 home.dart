@@ -5,7 +5,7 @@ import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
-import 'package:huzzl_web/views/recruiters/home/manager-tab.dart';
+import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class RecruiterHomeScreen extends StatefulWidget {
