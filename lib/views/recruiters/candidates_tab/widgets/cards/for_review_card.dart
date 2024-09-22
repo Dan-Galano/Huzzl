@@ -101,28 +101,30 @@ class _ForReviewCardState extends State<ForReviewCard> {
                     ),
                   ),
                   Gap(100),
-              TextButton(
-  onPressed: () {
-    final homeState = context.findAncestorStateOfType<RecruiterHomeScreenState>();
-    homeState?.toggleApplicationScreen(true);
-  },
-  style: TextButton.styleFrom(
-    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    backgroundColor: Colors.blue.shade50,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  ),
-  child: Text(
-    'Review application',
-    style: TextStyle(
-      fontFamily: 'Galano',
-      fontSize: 14,
-      color: Colors.blue,
-    ),
-  ),
-),
-   ],
+                  TextButton(
+                    onPressed: () {
+                      final homeState = context
+                          .findAncestorStateOfType<RecruiterHomeScreenState>();
+                      homeState?.toggleApplicationScreen(true);
+                    },
+                    style: TextButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      backgroundColor: Colors.blue.shade50,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Review application',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 14,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
