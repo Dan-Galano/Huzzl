@@ -26,7 +26,10 @@ class HuzzlWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Galano',
+      ),
       debugShowCheckedModeBanner: false,
       home: AuthWrapper(),
       // home: JobSeekerHomeScreen(),
@@ -89,6 +92,9 @@ class AuthWrapper extends StatelessWidget {
     //   },
     // );
     return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Galano',
+      ),
       debugShowCheckedModeBanner: false,
       // home: BranchesScreen(),
       home: RecruiterHomeScreen(),

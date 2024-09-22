@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/customCheckbox.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/customDropdown.dart';
 
 class FilterRowWidget extends StatefulWidget {
   @override
@@ -9,7 +11,7 @@ class FilterRowWidget extends StatefulWidget {
 class _FilterRowWidgetState extends State<FilterRowWidget> {
   String selectedBranch = 'All branches';
   String selectedJob = 'All jobs';
-  String selectedSort = 'Sort By';
+  String selectedSort = 'Newest-Oldest';
 
   bool isFullTime = false;
   bool isPartTime = false;
@@ -22,49 +24,44 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
       padding: const EdgeInsets.all(8.0),
       child: Row(
         children: [
-          // Custom Dropdown for branches
-          _buildCustomDropdown<String>(
+          buildCustomDropdown<String>(
             value: selectedBranch,
-            items: <String>['All branches', 'Branch 1', 'Branch 2'],
+            items: <String>[
+              'All branches',
+              'Urdaneta Branch',
+              'Dagupan Branch',
+              'San Carlos Branch'
+            ],
             onChanged: (String? newValue) {
               setState(() {
                 selectedBranch = newValue!;
               });
             },
           ),
-
           SizedBox(width: 10),
-
-          // Custom Dropdown for jobs
-          _buildCustomDropdown<String>(
+          buildCustomDropdown<String>(
             value: selectedJob,
-            items: <String>['All jobs', 'Job 1', 'Job 2'],
+            items: <String>['All jobs', 'Vocalist', 'Dancerist', 'Tiktokerist'],
             onChanged: (String? newValue) {
               setState(() {
                 selectedJob = newValue!;
               });
             },
           ),
-
           SizedBox(width: 10),
-
-          // Custom Dropdown for sort
-          _buildCustomDropdown<String>(
+          buildCustomDropdown<String>(
             value: selectedSort,
-            items: <String>['Sort By', 'Date', 'Relevance'],
+            items: <String>['Newest-Oldest', 'Oldest-Newest', 'A-Z', 'Z-A'],
             onChanged: (String? newValue) {
               setState(() {
                 selectedSort = newValue!;
               });
             },
           ),
-
           SizedBox(width: 20),
-
-          // Group of checkboxes
           Row(
             children: [
-              _buildCustomCheckbox(
+              buildCustomCheckbox(
                 value: isFullTime,
                 label: 'Full-time',
                 onChanged: (bool? newValue) {
@@ -74,7 +71,7 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
                 },
               ),
               Gap(15),
-              _buildCustomCheckbox(
+              buildCustomCheckbox(
                 value: isPartTime,
                 label: 'Part-time',
                 onChanged: (bool? newValue) {
@@ -84,7 +81,7 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
                 },
               ),
               Gap(15),
-              _buildCustomCheckbox(
+              buildCustomCheckbox(
                 value: isPermanent,
                 label: 'Permanent',
                 onChanged: (bool? newValue) {
@@ -94,7 +91,7 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
                 },
               ),
               Gap(15),
-              _buildCustomCheckbox(
+              buildCustomCheckbox(
                 value: isFixedTerm,
                 label: 'Fixed Term',
                 onChanged: (bool? newValue) {
@@ -118,61 +115,6 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
     );
   }
 
-  // Function to create a custom dropdown with a rounded border
-  Widget _buildCustomDropdown<T>({
-    required T value,
-    required List<T> items,
-    required ValueChanged<T?> onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 1),
-        borderRadius: BorderRadius.circular(20), // Rounded border
-      ),
-      child: DropdownButton<T>(
-        value: value,
-        icon: Icon(Icons.arrow_drop_down),
-        underline: SizedBox(), // Remove default underline
-        isExpanded: false, // Prevent the dropdown from covering itself
-        style: TextStyle(color: Colors.black),
-        onChanged: onChanged,
-        items: items.map<DropdownMenuItem<T>>((T value) {
-          return DropdownMenuItem<T>(
-            value: value,
-            child: Text(value.toString()),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  // Function to create a custom checkbox with a thin and rounded border
-  Widget _buildCustomCheckbox({
-    required bool value,
-    required String label,
-    required ValueChanged<bool?> onChanged,
-  }) {
-    return Row(
-      children: [
-        Checkbox(
-          value: value,
-          onChanged: onChanged,
-          checkColor: Colors.white, // Color of check mark
-          activeColor: Color(0xFFFF9800), // Color when checked (ff9800)
-          shape: RoundedRectangleBorder(
-            // Rounded shape for checkbox
-            borderRadius: BorderRadius.circular(5),
-          ),
-          side: MaterialStateBorderSide.resolveWith(
-            (states) => BorderSide(
-              width: 1, // Thin border
-              color: Colors.grey,
-            ),
-          ),
-        ),
-        Text(label),
-      ],
-    );
-  }
+  
+  
 }
