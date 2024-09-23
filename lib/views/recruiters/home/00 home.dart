@@ -3,19 +3,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/manager-tab.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class RecruiterHomeScreen extends StatefulWidget {
   const RecruiterHomeScreen({super.key});
 
   @override
-  State<RecruiterHomeScreen> createState() => _RecruiterHomeScreenState();
+  State<RecruiterHomeScreen> createState() => RecruiterHomeScreenState();
 }
 
-class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
+class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   Map<String, dynamic>? companyData;
   Map<String, dynamic>? userData;
   bool? isStandaloneCompany;
@@ -68,11 +71,25 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 4; // Default the first tab na (Managers)
+  int? _selectedIndex = 4;
+  bool _isApplicationScreen = false;
+  bool _isSlApplicationScreen = false;
 
   void changeDestination(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  void toggleApplicationScreen(bool showApplicationScreen) {
+    setState(() {
+      _isApplicationScreen = showApplicationScreen;
+    });
+  }
+
+  void toggleSlApplicationScreen(bool showApplicationScreen) {
+    setState(() {
+      _isSlApplicationScreen = showApplicationScreen;
     });
   }
 
@@ -88,7 +105,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
         case 1:
-          return buildJobsContent();
+          return JobScreens();
         case 2:
           return buildCandidatesContent(context);
         case 3:
@@ -104,9 +121,16 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         case 1:
           return BranchesScreen();
         case 2:
-          return buildJobsContent();
+          return JobScreens();
         case 3:
-          return buildCandidatesContent(context);
+          if (_isApplicationScreen) {
+          return ApplicationScreen(
+              onBack: () => toggleApplicationScreen(false));
+        } else if (_isSlApplicationScreen) {
+          return SlApplicationScreen(
+              onBack: () => toggleSlApplicationScreen(false));
+        }
+        return buildCandidatesContent(context);
         case 4:
           return buildInterviewsContent();
         default:
@@ -239,15 +263,13 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                         ],
                       ),
                 const VerticalDivider(thickness: 1, width: 1),
-                // Expanded makes sure the content takes up the remaining space
-                Expanded(
+                      Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
                       children: [
-                        // Text("Header for all"),
-                        Expanded(
-                          child: buildContent(), // contents goes here
+                              Expanded(
+                          child: buildContent(),
                         ),
                       ],
                     ),
