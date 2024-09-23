@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/candidates_widgets.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/missed_view.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/past_view.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/pending_view.dart';
