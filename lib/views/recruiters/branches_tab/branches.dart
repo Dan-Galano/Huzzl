@@ -475,7 +475,6 @@ class _BranchesScreenState extends State<BranchesScreen>
                         decoration: TextDecoration.none,
                         fontSize: 32,
                         color: Color(0xff373030),
-                        fontFamily: 'Galano',
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -496,19 +495,28 @@ class _BranchesScreenState extends State<BranchesScreen>
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
-                        'Add new branch',
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.white,
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w700,
-                        ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            "assets/images/add-icon.png",
+                            width: 20,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Text(
+                            'Add new branch',
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.white,
+                              fontFamily: 'Galano',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(
-                      width: 30,
-                    )
+                    const SizedBox(width: 30),
                   ],
                 ),
                 // Add Tabs for Active and Archive

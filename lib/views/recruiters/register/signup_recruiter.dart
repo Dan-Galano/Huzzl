@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/register/02%20verify_email.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
@@ -430,16 +431,23 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                                 child: Row(
                                   children: [
                                     const Text(
-                                      "Don't have a company account? ",
+                                      "Already have an account? ",
                                       style: TextStyle(
                                         fontFamily: "Galano",
                                         fontSize: 16,
                                       ),
                                     ),
                                     TextButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                          builder: (context) {
+                                            return LoginRegister();
+                                          },
+                                        ));
+                                      },
                                       child: const Text(
-                                        "Create here.",
+                                        "Sign in",
                                         style: TextStyle(
                                           fontFamily: "Galano",
                                           fontSize: 16,

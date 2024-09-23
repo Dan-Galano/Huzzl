@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class FilterRowWidget extends StatefulWidget {
+class InterviewFilterRowWidget extends StatefulWidget {
   @override
-  _FilterRowWidgetState createState() => _FilterRowWidgetState();
+  _InterviewFilterRowWidgetState createState() =>
+      _InterviewFilterRowWidgetState();
 }
 
-class _FilterRowWidgetState extends State<FilterRowWidget> {
+class _InterviewFilterRowWidgetState extends State<InterviewFilterRowWidget> {
   String selectedBranch = 'All branches';
+  String selectedInterviewType = 'All interview types';
+  String selectedInterviewer = 'All interviewers';
   String selectedJob = 'All jobs';
   String selectedSort = 'Sort By';
-
-  bool isFullTime = false;
-  bool isPartTime = false;
-  bool isPermanent = false;
-  bool isFixedTerm = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +27,36 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
             onChanged: (String? newValue) {
               setState(() {
                 selectedBranch = newValue!;
+              });
+            },
+          ),
+          SizedBox(width: 10),
+
+          // For interview types
+          _buildCustomDropdown<String>(
+            value: selectedInterviewType,
+            items: <String>['All interview types', 'Online', 'Face-to-face'],
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedInterviewType = newValue!;
+              });
+            },
+          ),
+
+          SizedBox(width: 10),
+
+          // For interviewers
+          _buildCustomDropdown<String>(
+            value: selectedInterviewer,
+            items: <String>[
+              'All interviewers',
+              'Patrick',
+              'Dessamine',
+              'Monica'
+            ],
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedInterviewer = newValue!;
               });
             },
           ),
@@ -58,54 +86,7 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
               });
             },
           ),
-
-          SizedBox(width: 20),
-
-          // Group of checkboxes
-          Row(
-            children: [
-              _buildCustomCheckbox(
-                value: isFullTime,
-                label: 'Full-time',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isFullTime = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              _buildCustomCheckbox(
-                value: isPartTime,
-                label: 'Part-time',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isPartTime = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              _buildCustomCheckbox(
-                value: isPermanent,
-                label: 'Permanent',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isPermanent = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              _buildCustomCheckbox(
-                value: isFixedTerm,
-                label: 'Fixed Term',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isFixedTerm = newValue!;
-                  });
-                },
-              ),
-            ],
-          ),
-          Gap(40),
+          const SizedBox(width: 20),
           Text(
             "Clear all filter",
             style: TextStyle(
@@ -148,35 +129,6 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
           );
         }).toList(),
       ),
-    );
-  }
-
-  // Function to create a custom checkbox with a thin and rounded border
-  Widget _buildCustomCheckbox({
-    required bool value,
-    required String label,
-    required ValueChanged<bool?> onChanged,
-  }) {
-    return Row(
-      children: [
-        Checkbox(
-          value: value,
-          onChanged: onChanged,
-          checkColor: Colors.white, // Color of check mark
-          activeColor: Color(0xFFFF9800), // Color when checked (ff9800)
-          shape: RoundedRectangleBorder(
-            // Rounded shape for checkbox
-            borderRadius: BorderRadius.circular(5),
-          ),
-          side: MaterialStateBorderSide.resolveWith(
-            (states) => BorderSide(
-              width: 1, // Thin border
-              color: Colors.grey,
-            ),
-          ),
-        ),
-        Text(label),
-      ],
     );
   }
 }
