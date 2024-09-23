@@ -89,7 +89,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
         case 1:
-          return buildJobsContent();
+          return JobScreens();
         case 2:
           return buildCandidatesContent(context);
         case 3:
@@ -105,7 +105,7 @@ class _RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         case 1:
           return BranchesScreen();
         case 2:
-          return buildJobsContent();
+          return JobScreens();
         case 3:
           return buildCandidatesContent(context);
         case 4:
