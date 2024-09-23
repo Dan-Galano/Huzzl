@@ -28,8 +28,12 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
   Future<void> fetchJobs() async {
     try {
       String onlinejobsHtml = await fetchOnlineJobsData();
-      String linkedinHtml = await fetchLinkedInData();
-      String kalibrrHtml = await fetchKalibrrData();
+      // String linkedinHtml = await fetchLinkedInData();
+      List<Map<String, String>> linkedInJobs =
+          await fetchJobsWithDescriptions('linkedIn');
+      // String kalibrrHtml = await fetchKalibrrData();
+      List<Map<String, String>> kalibrrJobs =
+          await fetchJobsWithDescriptions('kalibrr');
       List<Map<String, String>> philJobNetJobs =
           await fetchJobsWithDescriptions('philJobNet');
       List<Map<String, String>> jobstreetJobs =
@@ -38,10 +42,12 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
       setState(() {
         jobs = [
           ...jobstreetJobs,
-          ...parseLinkedInData(linkedinHtml),
+          // ...parseLinkedInData(linkedinHtml),
+          ...linkedInJobs,
           ...parseOnlineJobsData(onlinejobsHtml),
           ...philJobNetJobs,
-          ...parseKalibrrData(kalibrrHtml),
+          // ...parseKalibrrData(kalibrrHtml),
+          ...kalibrrJobs
         ];
         filteredJobs = jobs; // By default, show all jobs.
         isLoading = false;

@@ -106,7 +106,7 @@ List<Map<String, String>> parseLinkedInData(String htmlContent) {
         'jobLink': jobLink.startsWith('http')
             ? jobLink
             : 'https://ph.linkedin.com${jobLink}',
-        'tags': 'No Tag',
+        // 'tags': 'No Tag',
         'website': 'LinkedIn'
       });
     }
@@ -156,7 +156,7 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
         'salary': salary ?? 'Salary not provided',
         'jobLink': 'https://www.onlinejobs.ph${jobLink}',
         'website': 'OnlineJobs',
-        'tags': tags.join(', ')
+        if (tags.isNotEmpty) 'tags': tags.join(', '),
       });
     }
   });
@@ -208,9 +208,9 @@ List<Map<String, String>> parseKalibrrData(String htmlContent) {
         'title': title,
         'location': location,
         'datePosted': postedDate ?? 'No date posted',
-        'jobLink': 'https://www.kalibrr.com/${jobLink}',
+        'jobLink': 'https://www.kalibrr.com${jobLink}',
         'website': 'Kalibrr',
-        'tags': 'No Tag'
+        // 'tags': 'No Tag'
       });
     }
   });
@@ -255,7 +255,7 @@ List<Map<String, String>> parsePhilJobNetData(String htmlContent) {
         'datePosted': postedDate ?? 'Unknown date',
         'jobLink': jobLink,
         'website': 'PhilJobNet',
-        'tags': 'No Tag'
+        // 'tags': 'No Tag'
       });
     }
   });
@@ -273,21 +273,61 @@ Future<String?> fetchJobDescription(String jobUrl, String source) async {
     if (response.statusCode == 200) {
       var document = parse(response.body);
       String? jobDescription;
+      // List<String> jobTags = [];
 
       if (source == 'philJobNet') {
         jobDescription =
             document.querySelector('div.jobdescription')?.text.trim();
+        if (jobDescription != null) {
+          List<String> words = jobDescription.split(' ');
+          jobDescription = words.take(55).join(' ');
+        }
       } else if (source == 'jobStreet') {
-        var jobDetailsDiv = document.querySelector('div._1vpsrtt0._4pyceb0');
+        // var jobDetailsDiv = document.querySelector('div._1vpsrtt0._4pyceb0';
+        var jobDetailsDiv =
+            document.querySelector('div[data-automation="jobAdDetails"]');
         if (jobDetailsDiv != null) {
-          var children = jobDetailsDiv.children.take(2);
+          var children = jobDetailsDiv.children.take(1);
           jobDescription = children
               .map((child) => child.text.trim())
               .where((text) => text.isNotEmpty)
               .join('\n\n')
               .trim();
+          var words = jobDescription.split(RegExp(r'\s+'));
+          if (words.length > 60) {
+            jobDescription = words.take(60).join(' ') + '...';
+          }
+        }
+      } else if (source == 'linkedIn') {
+        var jobDetailsDiv = document
+            .querySelector('div.description__text.description__text--rich');
+        if (jobDetailsDiv != null) {
+          var jobDescription =
+              jobDetailsDiv.querySelector('div.show-more-less-html__markup');
+          // jobTags = document
+          //     .querySelectorAll(
+          //         'span.description__job-criteria-text description__job-criteria-text--criteria')
+          //     .map((tag) => tag.text.trim())
+          //     .toList();
+          if (jobDescription != null) {
+            String descriptionText = jobDescription.text.trim();
+            List<String> words = descriptionText.split(' ');
+            if (words.length > 50) {
+              descriptionText = words.take(50).join(' ') + '...';
+            }
+            return descriptionText;
+          }
+        }
+      } else if (source == 'kalibrr') {
+        jobDescription =
+            document.querySelector('div[itemprop="description"]')?.text.trim();
+
+        if (jobDescription != null) {
+          List<String> words = jobDescription.split(' ');
+          jobDescription = words.take(55).join(' ');
         }
       }
+
       return jobDescription ?? 'No description available';
     } else {
       throw Exception('Failed to load job details page');
@@ -309,6 +349,12 @@ Future<List<Map<String, String>>> fetchJobsWithDescriptions(
   } else if (source == 'jobStreet') {
     String htmlContent = await fetchJobStreetData();
     jobs = parseJobStreetData(htmlContent);
+  } else if (source == 'linkedIn') {
+    String htmlContent = await fetchLinkedInData();
+    jobs = parseLinkedInData(htmlContent);
+  } else if (source == 'kalibrr') {
+    String htmlContent = await fetchKalibrrData();
+    jobs = parseKalibrrData(htmlContent);
   } else {
     throw Exception('Unknown source');
   }
