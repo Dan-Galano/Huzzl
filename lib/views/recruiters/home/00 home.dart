@@ -7,8 +7,8 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_s
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/home/jobs-tab.dart';
-import 'package:huzzl_web/views/recruiters/home/manager-tab.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
+import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class RecruiterHomeScreen extends StatefulWidget {
@@ -71,7 +71,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 4;
+  int? _selectedIndex = 0;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
 
