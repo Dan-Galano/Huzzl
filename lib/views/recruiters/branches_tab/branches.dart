@@ -703,18 +703,20 @@ class _BranchesScreenState extends State<BranchesScreen>
                 ),
                 // Add Tabs for Active and Archive
                 TabBar(
+                  tabAlignment: TabAlignment.start,
+                  isScrollable: true,
                   controller: _tabController,
                   labelColor: Colors.black,
                   unselectedLabelColor: Colors.grey,
                   indicatorColor: Colors.orange,
                   labelStyle: TextStyle(
-                    fontSize: 18, // Font size of the selected tab
+                    fontSize: 14, // Font size of the selected tab
                     fontWeight:
                         FontWeight.bold, // Font weight of the selected tab
                     fontFamily: 'Galano', // Use your custom font
                   ),
                   unselectedLabelStyle: TextStyle(
-                    fontSize: 16, // Font size of the unselected tabs
+                    fontSize: 12, // Font size of the unselected tabs
                     fontWeight:
                         FontWeight.normal, // Font weight of the unselected tabs
                     fontFamily: 'Galano', // Use your custom font

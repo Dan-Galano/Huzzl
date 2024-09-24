@@ -56,7 +56,6 @@ class _InterviewTileState extends State<InterviewTile> {
               children: [
                 // Interview info
                 Expanded(
-                  flex: 1,
                   child: Row(
                     children: [
                       Column(
@@ -93,7 +92,6 @@ class _InterviewTileState extends State<InterviewTile> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
-                                  fontFamily: 'Galano',
                                 ),
                               ),
                             ],
@@ -110,7 +108,6 @@ class _InterviewTileState extends State<InterviewTile> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
-                                  fontFamily: 'Galano',
                                 ),
                               ),
                             ],
@@ -122,7 +119,6 @@ class _InterviewTileState extends State<InterviewTile> {
                 ),
                 //Interview title
                 Expanded(
-                  flex: 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -134,7 +130,6 @@ class _InterviewTileState extends State<InterviewTile> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color(0xff373030),
-                          fontFamily: 'Galano',
                         ),
                       ),
                       Text(
@@ -144,7 +139,6 @@ class _InterviewTileState extends State<InterviewTile> {
                           decorationColor: Colors.orange,
                           fontSize: 14,
                           color: Colors.grey,
-                          fontFamily: 'Galano',
                         ),
                       ),
                     ],
@@ -154,6 +148,7 @@ class _InterviewTileState extends State<InterviewTile> {
                 Expanded(
                   flex: 1,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       IconButton(
                         onPressed: () {},
@@ -180,7 +175,11 @@ class _InterviewTileState extends State<InterviewTile> {
                     ],
                   ),
                 ),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
+                const Gap(10),
+                Expanded(
+                    flex: 0,
+                    child: IconButton(
+                        onPressed: () {}, icon: const Icon(Icons.more_vert)))
               ],
             ),
           ),
