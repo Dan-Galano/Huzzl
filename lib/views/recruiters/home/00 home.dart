@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/admin/admin_tab.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
@@ -71,7 +72,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 0;
+  int? _selectedIndex = 1;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
 
@@ -102,13 +103,15 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     if (isStandaloneCompany!) {
       switch (_selectedIndex) {
         case 0:
+          return buildAdminContent(context, userData);
+        case 1:
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
-        case 1:
-          return JobScreens();
         case 2:
-          return buildCandidatesContent(context);
+          return JobScreens();
         case 3:
+          return buildCandidatesContent(context);
+        case 4:
           return buildInterviewsContent();
         default:
           return Text("No content available");
@@ -116,22 +119,24 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     } else {
       switch (_selectedIndex) {
         case 0:
+          return buildAdminContent(context, userData);
+        case 1:
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
-        case 1:
-          return BranchesScreen();
         case 2:
-          return JobScreens();
+          return BranchesScreen();
         case 3:
-          if (_isApplicationScreen) {
-          return ApplicationScreen(
-              onBack: () => toggleApplicationScreen(false));
-        } else if (_isSlApplicationScreen) {
-          return SlApplicationScreen(
-              onBack: () => toggleSlApplicationScreen(false));
-        }
-        return buildCandidatesContent(context);
+          return JobScreens();
         case 4:
+          if (_isApplicationScreen) {
+            return ApplicationScreen(
+                onBack: () => toggleApplicationScreen(false));
+          } else if (_isSlApplicationScreen) {
+            return SlApplicationScreen(
+                onBack: () => toggleSlApplicationScreen(false));
+          }
+          return buildCandidatesContent(context);
+        case 5:
           return buildInterviewsContent();
         default:
           return Text("No content available");
@@ -195,50 +200,12 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                         destinations: <NavigationRailDestination>[
                           NavigationRailDestination(
                             icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Managers', 0),
+                                'assets/images/manager-tab.png', 'Admin', 0),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
                             icon: _buildNavItem(
-                                'assets/images/jobs-tab.png', 'Jobs', 1),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/candidates-tab.png',
-                                'Candidates',
-                                2),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/interview-tab.png',
-                                'Interviews',
-                                3),
-                            label: const SizedBox.shrink(),
-                          ),
-                        ],
-                      )
-                    : NavigationRail(
-                        backgroundColor: const Color(0xFF23294F),
-                        selectedIndex: _selectedIndex,
-                        onDestinationSelected: changeDestination,
-                        minWidth: 200,
-                        labelType: NavigationRailLabelType.none,
-                        leading: const SizedBox(height: 20),
-                        useIndicator: true,
-                        indicatorColor: Colors.orange,
-                        destinations: <NavigationRailDestination>[
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Managers', 0),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/branches-tab.png',
-                                'Branches',
-                                1),
+                                'assets/images/manager-tab.png', 'Managers', 1),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
@@ -261,14 +228,62 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                             label: const SizedBox.shrink(),
                           ),
                         ],
+                      )
+                    : NavigationRail(
+                        backgroundColor: const Color(0xFF23294F),
+                        selectedIndex: _selectedIndex,
+                        onDestinationSelected: changeDestination,
+                        minWidth: 200,
+                        labelType: NavigationRailLabelType.none,
+                        leading: const SizedBox(height: 20),
+                        useIndicator: true,
+                        indicatorColor: Colors.orange,
+                        destinations: <NavigationRailDestination>[
+                          NavigationRailDestination(
+                            icon: _buildNavItem(
+                                'assets/images/manager-tab.png', 'Admin', 0),
+                            label: const SizedBox.shrink(),
+                          ),
+                          NavigationRailDestination(
+                            icon: _buildNavItem(
+                                'assets/images/manager-tab.png', 'Managers', 1),
+                            label: const SizedBox.shrink(),
+                          ),
+                          NavigationRailDestination(
+                            icon: _buildNavItem(
+                                'assets/images/branches-tab.png',
+                                'Branches',
+                                2),
+                            label: const SizedBox.shrink(),
+                          ),
+                          NavigationRailDestination(
+                            icon: _buildNavItem(
+                                'assets/images/jobs-tab.png', 'Jobs', 3),
+                            label: const SizedBox.shrink(),
+                          ),
+                          NavigationRailDestination(
+                            icon: _buildNavItem(
+                                'assets/images/candidates-tab.png',
+                                'Candidates',
+                                4),
+                            label: const SizedBox.shrink(),
+                          ),
+                          NavigationRailDestination(
+                            icon: _buildNavItem(
+                                'assets/images/interview-tab.png',
+                                'Interviews',
+                                5),
+                            label: const SizedBox.shrink(),
+                          ),
+                        ],
                       ),
                 const VerticalDivider(thickness: 1, width: 1),
-                      Expanded(
+                Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
                       children: [
-                              Expanded(
+                        Expanded(
                           child: buildContent(),
                         ),
                       ],
