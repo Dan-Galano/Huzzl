@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/branch_tile_widget.dart';
 
 class ActiveBranchesView extends StatelessWidget {
+  const ActiveBranchesView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         //Branch Manager and Date Established Text
-        Padding(
-          padding: const EdgeInsets.all(8.0),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -45,7 +47,7 @@ class ActiveBranchesView extends StatelessWidget {
             children: [
               BranchTile(
                   name: 'Jollibee - Urdaneta Bypass',
-                  manager: 'Add branch manager',
+                  manager: 'Allen Alvaro',
                   date: '05/12/2024',
                   location: 'San Vicente, Urdaneta City, Pangasinan'),
               BranchTile(

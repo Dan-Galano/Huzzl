@@ -71,7 +71,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 1;
+  int? _selectedIndex = 2;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
 

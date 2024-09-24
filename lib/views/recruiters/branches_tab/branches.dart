@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
@@ -25,6 +26,11 @@ class _BranchesScreenState extends State<BranchesScreen>
   String? selectedCity;
   String? selectedBarangay;
   final otherLocationInformation = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   List regions = [];
   List provinces = [];
@@ -111,6 +117,11 @@ class _BranchesScreenState extends State<BranchesScreen>
         barangays = []; // Clear barangays
         selectedBarangay = null;
         _branchNameController.text = '';
+        _firstNameController.text = '';
+        _lastNameController.text = '';
+        _emailController.text = '';
+        _passwordController.text = '';
+        _phoneController.text = '';
       });
       Navigator.of(context).pop();
     }
@@ -127,14 +138,27 @@ class _BranchesScreenState extends State<BranchesScreen>
       barangays = []; // Clear barangays
       selectedBarangay = null;
       _branchNameController.text = '';
+      _firstNameController.text = '';
+      _lastNameController.text = '';
+      _emailController.text = '';
+      _passwordController.text = '';
+      _phoneController.text = '';
     });
     fetchRegions();
     Navigator.of(context).pop();
   }
 
+  bool isPasswordVisible = false;
+  Future<void> toggleShowPassword(
+      void Function(void Function()) setStateDialog) async {
+    setStateDialog(() {
+      isPasswordVisible = !isPasswordVisible;
+    });
+    print(isPasswordVisible);
+  }
+
   void addNewBranch(BuildContext context) async {
     await fetchRegions(); // Make sure regions are fetched before showing the dialog
-
     showDialog(
       context: context,
       builder: (context) {
@@ -174,7 +198,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const Gap(10),
                       //Branch name input field
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.25,
@@ -402,6 +426,164 @@ class _BranchesScreenState extends State<BranchesScreen>
                         ),
 
                       const SizedBox(height: 10),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Hiring Manager",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Gap(10),
+                      //Branch name input field
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.12,
+                            child: TextFormField(
+                              controller: _firstNameController,
+                              decoration:
+                                  customHintTextInputDecoration('First name'),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Hiring manager is required.";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const Gap(10),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.12,
+                            child: TextFormField(
+                              controller: _lastNameController,
+                              decoration:
+                                  customHintTextInputDecoration('Last name'),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Hiring manager is required.";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Gap(20),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Work email address",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: TextFormField(
+                          controller: _emailController,
+                          decoration: customHintTextInputDecoration('Email'),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Work email address is required.";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const Gap(20),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Password",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                                onPressed: () =>
+                                    toggleShowPassword(setStateDialog),
+                                icon: isPasswordVisible
+                                    ? const Icon(Icons.visibility)
+                                    : const Icon(Icons.visibility_off)),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            isDense: true,
+                            border: outlinedInputBorder(),
+                            enabledBorder: outlinedInputBorder(),
+                            focusedBorder: outlinedInputBorder(),
+                            hintText: "Password (8 or more characters)",
+                          ),
+                          obscureText: !isPasswordVisible,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Password is required.';
+                            }
+                            if (value.length < 8) {
+                              return 'Password must be at least 8 characters long';
+                            }
+                            return null;
+                          },
+                          // onSaved: (value) => _passwordController = value ?? '',
+                        ),
+                      ),
+                      const Gap(20),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Phone number",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.number,
+                          decoration: customHintTextInputDecoration('Phone'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Phone number is required.';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 30),
                       //Buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
