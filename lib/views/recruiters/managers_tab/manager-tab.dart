@@ -1,8 +1,6 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/widgets/add_new_staff_modal.dart';
-import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 
 //userData => user company data
 

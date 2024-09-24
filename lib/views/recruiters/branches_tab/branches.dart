@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/views/active_branches_view.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/views/archive_branches_view.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/widgets/navbar_widget.dart';
 
 class BranchesScreen extends StatefulWidget {
   const BranchesScreen({super.key});

@@ -4,13 +4,6 @@ import 'package:huzzl_web/views/recruiters/admin/views/active_view.dart';
 import 'package:huzzl_web/views/recruiters/admin/views/archive_view.dart';
 import 'package:huzzl_web/views/recruiters/admin/widgets/add_user_modal.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/missed_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/past_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/pending_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/reschedule_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/today_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/upcoming_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/widgets/interviews_widgets.dart';
 
 Widget buildAdminContent(BuildContext context, userData) {
   return StatefulBuilder(
