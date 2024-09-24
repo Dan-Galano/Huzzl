@@ -396,6 +396,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                               if (value!.isEmpty) {
                                 return "This field is required.";
                               }
+                              return null;
                             },
                           ),
                         ),
