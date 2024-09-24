@@ -174,7 +174,7 @@ class _BranchTileState extends State<BranchTile> {
                     const Row(
                       children: [
                         Text(
-                          "Branch Manager",
+                          "Hiring Manager",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -223,7 +223,7 @@ class _BranchTileState extends State<BranchTile> {
                       const Row(
                         children: [
                           Text(
-                            "Co-Managers (7)",
+                            "Staff (7)",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
