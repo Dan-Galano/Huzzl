@@ -3,7 +3,9 @@ import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_boxbutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class JobSeekerCongratulationsPage extends StatelessWidget {
-  const JobSeekerCongratulationsPage({super.key});
+
+  final VoidCallback goToJobPref;
+  const JobSeekerCongratulationsPage({super.key, required this.goToJobPref});
 
   @override
   Widget build(BuildContext context) {
@@ -43,24 +45,23 @@ class JobSeekerCongratulationsPage extends StatelessWidget {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 150),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('It only takes 3-5 minutes and you can edit it later. We\'ll save as you go.',
+                        Text('It only takes 3-5 minutes and you can edit it later. \nWe\'ll save as you go.',
+                        textAlign: TextAlign.right,
                           style: TextStyle(
                         fontSize: 16,
                         color: Color(0xff373030),
                         fontFamily: 'Galano',
                       ),
                         ),
+                        SizedBox(width: 20,),
                          SizedBox(
-                        width: 200,
+                        width: 170,
                         child: ElevatedButton(
-                          onPressed: () {
-                            //onpressed
-
-                          },
+                          onPressed: goToJobPref,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF0038FF),
                             padding: EdgeInsets.all(20),

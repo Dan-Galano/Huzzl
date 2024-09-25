@@ -7,7 +7,10 @@ import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 
 class MinimumPayPage extends StatefulWidget {
-  MinimumPayPage({super.key});
+  final VoidCallback nextPage;
+  final VoidCallback previousPage;
+  MinimumPayPage(
+      {super.key, required this.nextPage, required this.previousPage});
 
   @override
   _MinimumPayPageState createState() => _MinimumPayPageState();
@@ -16,6 +19,13 @@ class MinimumPayPage extends StatefulWidget {
 class _MinimumPayPageState extends State<MinimumPayPage> {
   var minimum = TextEditingController();
   var maximum = TextEditingController();
+
+  void _submitMimPayForm() {
+    // if (_formKey.currentState!.validate()) {
+    //   widget.nextPage();
+    // }
+    widget.nextPage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,13 +208,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                     child: SizedBox(
                       width: 130,
                       child: BlueFilledCircleButton(
-                        onPressed: () {
-                          //For debugging and UI only
-                          //Use PageController
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => JobTitlesPage(),
-                          ));
-                        },
+                        onPressed: () => _submitMimPayForm(),
                         text: 'Next',
                       ),
                     ),
@@ -226,7 +230,8 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
               onPressed: () {
                 //For debugging and UI only
                 //Use PageController
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
+                widget.previousPage();
               },
             ),
           ),

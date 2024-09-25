@@ -4,7 +4,9 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 
 class JobTitlesPage extends StatefulWidget {
-  JobTitlesPage({super.key});
+  final VoidCallback nextPage;
+  final VoidCallback previousPage;
+  JobTitlesPage({super.key, required this.nextPage, required this.previousPage});
 
   @override
   _JobTitlesPageState createState() => _JobTitlesPageState();
@@ -14,6 +16,12 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
   var minimum = TextEditingController();
   var maximum = TextEditingController();
 
+  void _submitJobTitlesForm() {
+    // if (_formKey.currentState!.validate()) {
+    //   widget.nextPage();
+    // }
+    widget.nextPage();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -248,9 +256,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                       child: SizedBox(
                         width: 130,
                         child: BlueFilledCircleButton(
-                          onPressed: () {
-                            //Proceed to home
-                          },
+                          onPressed: () => _submitJobTitlesForm(),
                           text: 'Continue',
                         ),
                       ),
@@ -273,7 +279,8 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
               onPressed: () {
                 //For debugging and UI only
                 //Use PageController
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
+                widget.previousPage();
               },
             ),
           ),

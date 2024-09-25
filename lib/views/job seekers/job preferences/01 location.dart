@@ -7,6 +7,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class LocationSelectorPage extends StatefulWidget {
+  final VoidCallback nextPage;
+
+  const LocationSelectorPage({
+    super.key,
+    required this.nextPage,
+  });
+
   @override
   State<LocationSelectorPage> createState() => _LocationSelectorPageState();
 }
@@ -27,6 +34,13 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
   void initState() {
     super.initState();
     fetchRegions(); // Fetch regions when app starts
+  }
+
+  void _submitLocationForm() {
+    // if (_formKey.currentState!.validate()) {
+    //   widget.nextPage();
+    // }
+    widget.nextPage();
   }
 
   // Fetch regions from the API
@@ -132,88 +146,48 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
       ),
       body: Stack(
         children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 400.0),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 80.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 40), // Space for the icon
-                  Text(
-                    '1/3',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xff373030),
-                      fontFamily: 'Galano',
-                      fontWeight: FontWeight.w100,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Where are you located?',
-                    style: TextStyle(
-                      fontSize: 22,
-                      color: Color(0xff373030),
-                      fontFamily: 'Galano',
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Text(
-                    'We use this to match you with jobs nearby',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xff373030),
-                      fontFamily: 'Galano',
-                      fontWeight: FontWeight.w100,
-                    ),
-                  ),
-                  SizedBox(height: 30),
-
-                  DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: 'Select Region',
-                      labelStyle: TextStyle(
+          SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 400.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 80.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 40), // Space for the icon
+                    Text(
+                      '1/3',
+                      style: TextStyle(
+                        fontSize: 15,
                         color: Color(0xff373030),
-                        fontSize: 15.0,
                         fontFamily: 'Galano',
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w100,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12.0, vertical: 10.0),
                     ),
-                    value: selectedRegion,
-                    items: regions.map<DropdownMenuItem<String>>((region) {
-                      return DropdownMenuItem<String>(
-                        value: region['code'],
-                        child: Text(region['name']),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedRegion = value;
-                        provinces = [];
-                        selectedProvince = null;
-                        cities = [];
-                        selectedCity = null;
-                        barangays = [];
-                        selectedBarangay = null;
-                      });
-                      if (value != null) {
-                        fetchProvinces(value);
-                      }
-                    },
-                  ),
-                  SizedBox(height: 16.0),
-
-                  // Show Province Dropdown only when a region is selected
-                  if (selectedRegion != null)
+                    SizedBox(height: 10),
+                    Text(
+                      'Where are you located?',
+                      style: TextStyle(
+                        fontSize: 22,
+                        color: Color(0xff373030),
+                        fontFamily: 'Galano',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      'We use this to match you with jobs nearby',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color(0xff373030),
+                        fontFamily: 'Galano',
+                        fontWeight: FontWeight.w100,
+                      ),
+                    ),
+                    SizedBox(height: 30),
+            
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText: 'Select Province',
+                        labelText: 'Select Region',
                         labelStyle: TextStyle(
                           color: Color(0xff373030),
                           fontSize: 15.0,
@@ -226,132 +200,168 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: 12.0, vertical: 10.0),
                       ),
-                      value: selectedProvince,
-                      items:
-                          provinces.map<DropdownMenuItem<String>>((province) {
+                      value: selectedRegion,
+                      items: regions.map<DropdownMenuItem<String>>((region) {
                         return DropdownMenuItem<String>(
-                          value: province['code'],
-                          child: Text(province['name']),
+                          value: region['code'],
+                          child: Text(region['name']),
                         );
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          selectedProvince = value;
+                          selectedRegion = value;
+                          provinces = [];
+                          selectedProvince = null;
                           cities = [];
                           selectedCity = null;
                           barangays = [];
                           selectedBarangay = null;
                         });
                         if (value != null) {
-                          fetchCities(value);
+                          fetchProvinces(value);
                         }
                       },
                     ),
-                  SizedBox(height: 16.0),
-                  // Show City Dropdown only when a province is selected
-                  if (selectedProvince != null)
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: 'Select City/Municipality',
-                        labelStyle: TextStyle(
-                          color: Color(0xff373030),
-                          fontSize: 15.0,
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w400,
+                    SizedBox(height: 16.0),
+            
+                    // Show Province Dropdown only when a region is selected
+                    if (selectedRegion != null)
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'Select Province',
+                          labelStyle: TextStyle(
+                            color: Color(0xff373030),
+                            fontSize: 15.0,
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 10.0),
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 10.0),
-                      ),
-                      value: selectedCity,
-                      items: cities.map<DropdownMenuItem<String>>((city) {
-                        return DropdownMenuItem<String>(
-                          value: city['code'],
-                          child: Text(city['name']),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCity = value;
-                          barangays = [];
-                          selectedBarangay = null;
-                        });
-                        if (value != null) {
-                          fetchBarangays(value);
-                        }
-                      },
-                    ),
-                  // Show Barangay Dropdown only when a city is selected
-                  SizedBox(height: 16.0),
-                  if (selectedCity != null)
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: 'Select Barangay',
-                        labelStyle: TextStyle(
-                          color: Color(0xff373030),
-                          fontSize: 15.0,
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 10.0),
-                      ),
-                      value: selectedBarangay,
-                      items:
-                          barangays.map<DropdownMenuItem<String>>((barangay) {
-                        return DropdownMenuItem<String>(
-                          value: barangay['code'],
-                          child: Text(barangay['name']),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedBarangay = value;
-                        });
-                      },
-                    ),
-
-                  if (selectedBarangay != null)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 16.0),
-                        TextFormField(
-                          controller: otherLocationInformation,
-                          decoration: customHintTextInputDecoration(
-                              "Street Name, Building, House No."),
-                          validator: (value) {
-                            if (value!.isEmpty || value == null) {
-                              return "This field is required.";
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  SizedBox(height: 30),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      width: 130,
-                      child: BlueFilledCircleButton(
-                        onPressed: () {
-                          //For debugging and UI only
-                          //Use PageController
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => MinimumPayPage(),
-                          ));
+                        value: selectedProvince,
+                        items:
+                            provinces.map<DropdownMenuItem<String>>((province) {
+                          return DropdownMenuItem<String>(
+                            value: province['code'],
+                            child: Text(province['name']),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedProvince = value;
+                            cities = [];
+                            selectedCity = null;
+                            barangays = [];
+                            selectedBarangay = null;
+                          });
+                          if (value != null) {
+                            fetchCities(value);
+                          }
                         },
-                        text: 'Next',
+                      ),
+                    SizedBox(height: 16.0),
+                    // Show City Dropdown only when a province is selected
+                    if (selectedProvince != null)
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'Select City/Municipality',
+                          labelStyle: TextStyle(
+                            color: Color(0xff373030),
+                            fontSize: 15.0,
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 10.0),
+                        ),
+                        value: selectedCity,
+                        items: cities.map<DropdownMenuItem<String>>((city) {
+                          return DropdownMenuItem<String>(
+                            value: city['code'],
+                            child: Text(city['name']),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCity = value;
+                            barangays = [];
+                            selectedBarangay = null;
+                          });
+                          if (value != null) {
+                            fetchBarangays(value);
+                          }
+                        },
+                      ),
+                    // Show Barangay Dropdown only when a city is selected
+                    SizedBox(height: 16.0),
+                    if (selectedCity != null)
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'Select Barangay',
+                          labelStyle: TextStyle(
+                            color: Color(0xff373030),
+                            fontSize: 15.0,
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w400,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 10.0),
+                        ),
+                        value: selectedBarangay,
+                        items:
+                            barangays.map<DropdownMenuItem<String>>((barangay) {
+                          return DropdownMenuItem<String>(
+                            value: barangay['code'],
+                            child: Text(barangay['name']),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedBarangay = value;
+                          });
+                        },
+                      ),
+            
+                    if (selectedBarangay != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16.0),
+                          TextFormField(
+                            controller: otherLocationInformation,
+                            decoration: grayHintTextInputDecoration(
+                                "Street Name, Building, House No."),
+                            validator: (value) {
+                              if (value!.isEmpty || value == null) {
+                                return "This field is required.";
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    SizedBox(height: 30),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        width: 130,
+                        child: BlueFilledCircleButton(
+                          onPressed: () => _submitLocationForm(),
+                          text: 'Next',
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                ],
+                    SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),

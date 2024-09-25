@@ -73,10 +73,10 @@ class CongratulationPage extends StatelessWidget {
                       width: 430,
                       child: BlueOutlinedBoxButton(
                         onPressed: () {
-                          Navigator.of(context)
-                              .pushReplacement(MaterialPageRoute(
-                            builder: (context) => LocationSelectorPage(),
-                          ));
+                          // Navigator.of(context)
+                          //     .pushReplacement(MaterialPageRoute(
+                          //   builder: (context) => LocationSelectorPage(),
+                          // ));
                         },
                         text: 'Continue',
                       ),
