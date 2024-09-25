@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/widgets/interview_tile_card.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/cards/interview_tile_card.dart';
 import 'package:intl/intl.dart';
 
 class InterviewRowCard extends StatelessWidget {
@@ -49,6 +49,7 @@ class InterviewRowCard extends StatelessWidget {
             branch: branch,
             interviewTitle: interviewTitle,
             interviewType: interviewType,
+            timeRange: timeRange,
           ),
         ),
       ],
