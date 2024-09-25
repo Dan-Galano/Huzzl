@@ -296,29 +296,32 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
 
   Widget _buildNavItem(String iconPath, String label, int index) {
     bool isSelected = _selectedIndex == index;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.orange : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Image.asset(
-            iconPath,
-            width: 24,
-            color: Colors.white,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: const TextStyle(
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.orange : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Image.asset(
+              iconPath,
+              width: 24,
               color: Colors.white,
-              fontWeight: FontWeight.w400,
-              fontFamily: "Galano",
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+                fontFamily: "Galano",
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
