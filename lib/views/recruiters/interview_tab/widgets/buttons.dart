@@ -28,6 +28,32 @@ class StartInterviewButton extends StatelessWidget {
   }
 }
 
+class RescheduleInterviewButton extends StatelessWidget {
+  const RescheduleInterviewButton({super.key, required this.onPressed});
+  final VoidCallback? onPressed;
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ButtonStyle(
+          fixedSize: WidgetStateProperty.all(const Size.fromHeight(40)),
+          foregroundColor: WidgetStateProperty.all(Colors.white),
+          backgroundColor: WidgetStateProperty.all(const Color(0xff3B7DFF))),
+      child: Row(
+        children: [
+          Icon(
+            Icons.calendar_month,
+            size: 24,
+            color: Colors.white,
+          ),
+          const Gap(15),
+          Text('Reschedule interview'),
+        ],
+      ),
+    );
+  }
+}
+
 class ScheduleInterviewButton extends StatelessWidget {
   const ScheduleInterviewButton({super.key, required this.onPressed});
   final VoidCallback? onPressed;

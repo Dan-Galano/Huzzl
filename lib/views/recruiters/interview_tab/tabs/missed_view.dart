@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/cards/missed_interview_card.dart';
 
 class MissedView extends StatelessWidget {
   MissedView({super.key});
@@ -37,34 +38,28 @@ class MissedView extends StatelessWidget {
         child: Column(
           children: [
             const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(flex: 3, child: Text('')),
-                SizedBox(
-                  child: Text(
-                    "Title",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Galano',
-                    ),
+                Text(
+                  "Title",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Galano',
                   ),
                 ),
-                Expanded(flex: 2, child: Text('')),
-                SizedBox(
-                  width: 170,
-                  child: Text(
-                    "Interview Date",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Galano',
-                    ),
+                Gap(200),
+                Text(
+                  "Interview Date",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Galano',
                   ),
                 ),
-                Expanded(flex: 2, child: Text('')),
+                Gap(465),
               ],
             ),
             ListView.builder(
@@ -72,13 +67,14 @@ class MissedView extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: interviewees.length,
               itemBuilder: (context, index) {
-                // return PastInterviewTileCard(
-                //   intervieweeName: interviewees[index]['name'],
-                //   interviewTitle: interviewees[index]['interviewTitle'],
-                //   profession: interviewees[index]['profession'],
-                //   branch: interviewees[index]['branch'],
-                //   dateInterviewed: interviewees[index]['dateInterviewed'],
-                // );
+                return MissedInterviewCard(
+                  intervieweeName: interviewees[index]['name'],
+                  interviewTitle: interviewees[index]['interviewTitle'],
+                  interviewType: interviewees[index]['interviewType'],
+                  profession: interviewees[index]['profession'],
+                  branch: interviewees[index]['branch'],
+                  dateInterviewed: interviewees[index]['dateInterviewed'],
+                );
               },
             ),
           ],
