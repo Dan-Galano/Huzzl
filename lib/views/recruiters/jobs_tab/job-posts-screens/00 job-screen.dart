@@ -81,6 +81,7 @@ class _JobScreensState extends State<JobScreens> {
 
   void _submitJobPostForm() {
     // ADD THE DB HERE
+    print(jobTitleController.text);
     // clear all values
     jobTitleController.clear();
     jobDescriptionController.clear();
@@ -109,7 +110,7 @@ class _JobScreensState extends State<JobScreens> {
     selectedHiringTimeline = ''; // Clear hiring timeline
     preScreenQues.clear(); // Clear pre-screen questions
     // Go back to the Job tab
-    _pageController.jumpToPage(0);
+    _pageController.jumpToPage(9);
   }
 
   void _cancel() {
@@ -272,7 +273,7 @@ class _JobScreensState extends State<JobScreens> {
               prescreenQuestions: preScreenQues,
             ),
             JobCongratulationPage(
-              goBack: _submitJobPostForm,
+              goBack: _cancel, // clear niya everything tas balik sa Job tab
             ),
           ],
         ))
