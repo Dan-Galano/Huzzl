@@ -5,11 +5,20 @@ class JobDetails extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final VoidCallback cancel;
-  const JobDetails(
+  String selectedJobType;
+  final ValueChanged<String?> onJobTypeChanged;
+  String hrsPerWeek;
+  final ValueChanged<String?> onHrsPerWeekChanged;
+
+  JobDetails(
       {super.key,
       required this.nextPage,
       required this.previousPage,
-      required this.cancel});
+      required this.cancel,
+      required this.selectedJobType,
+      required this.onJobTypeChanged,
+      required this.hrsPerWeek,
+      required this.onHrsPerWeekChanged});
 
   @override
   State<JobDetails> createState() => _JobDetailsState();
@@ -18,19 +27,18 @@ class JobDetails extends StatefulWidget {
 class _JobDetailsState extends State<JobDetails> {
   // final _formKey = GlobalKey<FormState>();
 
-  List<String> jobTypes = [
-    'Full-time',
-    'Part-time',
-    'Permanent',
-    'Fresh Graduate'
-  ];
-  String selectedJobType = 'Full-time';
-
-  String _selectedSched = 'More than 30 hrs/week';
+  List<String> jobTypes = ['Full-time', 'Part-time', 'Permanent', 'Fixed Term'];
+  bool showError = false;
 
   void _submitJobDetails() {
     // if (_formKey.currentState!.validate()) {
-    widget.nextPage();
+    if (widget.selectedJobType.isEmpty) {
+      setState(() {
+        showError = true;
+      });
+    } else {
+      widget.nextPage();
+    }
     // }
   }
 
@@ -101,57 +109,70 @@ class _JobDetailsState extends State<JobDetails> {
                 ),
                 Gap(10),
                 Wrap(
-                  spacing: 12.0, // Spacing between chips
-                  runSpacing: 8.0, // Spacing for wrapping
+                  spacing: 12.0,
+                  runSpacing: 8.0,
                   children: jobTypes.map((jobType) {
-                    bool isSelected = selectedJobType == jobType;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedJobType = isSelected ? '' : jobType;
-                          print('Selected Job Type: $selectedJobType');
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xFF21254A)),
-                          borderRadius: BorderRadius.circular(20),
-                          color: isSelected ? Color(0xFF21254A) : Colors.white,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.add,
-                                size: 16,
-                                color: isSelected
-                                    ? Colors.white
-                                    : Color(0xFF21254A)),
-                            Gap(4),
-                            Text(
-                              jobType,
-                              style: TextStyle(
-                                fontFamily: 'Galano',
-                                color: isSelected
-                                    ? Colors.white
-                                    : Color(0xFF21254A),
-                                fontWeight: FontWeight.bold,
+                    bool isSelected = widget.selectedJobType == jobType;
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            widget.selectedJobType = jobType;
+                            print(
+                                'Selected Job Type: ${widget.selectedJobType}');
+                          });
+                          widget.onJobTypeChanged(widget.selectedJobType);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Color(0xFF21254A)),
+                            borderRadius: BorderRadius.circular(20),
+                            color:
+                                isSelected ? Color(0xFF21254A) : Colors.white,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add,
+                                  size: 16,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Color(0xFF21254A)),
+                              SizedBox(width: 4),
+                              Text(
+                                jobType,
+                                style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Color(0xFF21254A),
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     );
                   }).toList(),
                 ),
+                Gap(10),
+                if (showError)
+                  Text(
+                    'Please select a job type.',
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.w500),
+                  ),
                 Gap(20),
                 Divider(
                   color: Colors.grey,
                 ),
                 Gap(20),
                 Text(
-                  'Schedule',
+                  'Hours per week',
                   style: TextStyle(
                     fontFamily: 'Galano',
                     fontSize: 16,
@@ -171,11 +192,12 @@ class _JobDetailsState extends State<JobDetails> {
                     ),
                   ),
                   value: 'More than 30 hrs/week',
-                  groupValue: _selectedSched,
+                  groupValue: widget.hrsPerWeek,
                   onChanged: (value) {
                     setState(() {
-                      _selectedSched = value!;
+                      widget.hrsPerWeek = value!;
                     });
+                    widget.onHrsPerWeekChanged(value);
                   },
                 ),
                 RadioListTile<String>(
@@ -189,11 +211,12 @@ class _JobDetailsState extends State<JobDetails> {
                     ),
                   ),
                   value: 'Less than 30 hrs/week',
-                  groupValue: _selectedSched,
+                  groupValue: widget.hrsPerWeek,
                   onChanged: (value) {
                     setState(() {
-                      _selectedSched = value!;
+                      widget.hrsPerWeek = value!;
                     });
+                    widget.onHrsPerWeekChanged(value);
                   },
                 ),
                 RadioListTile<String>(
@@ -207,11 +230,12 @@ class _JobDetailsState extends State<JobDetails> {
                     ),
                   ),
                   value: 'I’m not sure',
-                  groupValue: _selectedSched,
+                  groupValue: widget.hrsPerWeek,
                   onChanged: (value) {
                     setState(() {
-                      _selectedSched = value!;
+                      widget.hrsPerWeek = value!;
                     });
+                    widget.onHrsPerWeekChanged(value);
                   },
                 ),
                 Divider(

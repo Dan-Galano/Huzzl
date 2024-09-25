@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/custom_input.dart';
 
@@ -6,12 +7,25 @@ class JobPay extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final VoidCallback cancel;
+  final String selectedRate;
+  final ValueChanged<String?> onSelectedRateChanged;
+  final TextEditingController minimumRate;
+  final TextEditingController maximumRate;
+  List<String> selectedSupPay;
+  // final ValueChanged<List<String?>> onSelectedSuppayChanged;
 
-  const JobPay(
-      {super.key,
-      required this.nextPage,
-      required this.previousPage,
-      required this.cancel});
+  JobPay({
+    super.key,
+    required this.nextPage,
+    required this.previousPage,
+    required this.cancel,
+    required this.onSelectedRateChanged,
+    required this.minimumRate,
+    required this.maximumRate,
+    required this.selectedRate,
+    required this.selectedSupPay,
+    // required this.onSelectedSuppayChanged
+  });
 
   @override
   State<JobPay> createState() => _JobPayState();
@@ -31,13 +45,9 @@ class _JobPayState extends State<JobPay> {
     'Quarterly bonus',
     'Anniversary bonus'
   ];
-  String selectedSupplementalPay = '';
 
   List<String> rateOptions = ['Per Hour', 'Per Day', 'Per Week', 'Per Month'];
-  String selectedRate = 'Per Hour'; // Default selection
-
-  var minimumController = TextEditingController();
-  var maximumController = TextEditingController();
+  String? selectedRate; // Default selection
 
   void _submitJobPay() {
     if (_formKey.currentState!.validate()) {
@@ -116,12 +126,23 @@ class _JobPayState extends State<JobPay> {
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.12,
                             child: DropdownButtonFormField<String>(
+                              hint: Text('Select a rate'),
+                              validator: (value) {
+                                if (widget.selectedRate.isEmpty &&
+                                    (widget.minimumRate.text.isNotEmpty ||
+                                        widget.maximumRate.text.isNotEmpty)) {
+                                  return "Please select a rate first";
+                                }
+                                return null;
+                              },
                               decoration: customInputDecoration(),
                               value: selectedRate,
-                              onChanged: (String? newValue) {
+                              onChanged: (newValue) {
                                 setState(() {
-                                  selectedRate = newValue!;
+                                  selectedRate = newValue;
+                                  widget.onSelectedRateChanged(newValue);
                                 });
+                                // selectedRate = newValue!;
                               },
                               items: rateOptions.map<DropdownMenuItem<String>>(
                                   (String value) {
@@ -156,7 +177,33 @@ class _JobPayState extends State<JobPay> {
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.12,
                             child: TextFormField(
-                              controller: minimumController,
+                              controller: widget.minimumRate,
+                              validator: (value) {
+                                // Check if the rate is selected
+                                if (widget.selectedRate == null ||
+                                    widget.selectedRate.isEmpty) {
+                                  // If no rate is selected, return null (not required)
+                                  return null;
+                                }
+
+                                // If a rate is selected, validate the value
+                                if (value == null || value.isEmpty) {
+                                  return 'Required'; // Field is required
+                                }
+
+                                final n = num.tryParse(value);
+                                if (n == null) {
+                                  return 'Please enter a valid number'; // Input must be a number
+                                }
+
+                                if (int.parse(widget.minimumRate.text) >
+                                    int.parse(widget.maximumRate.text)) {
+                                  return 'Minimum rate should not be greater than maximum rate.';
+                                }
+
+                                return null; // Valid input
+                              },
+                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 prefixIcon: Padding(
                                   padding: const EdgeInsets.only(
@@ -225,7 +272,28 @@ class _JobPayState extends State<JobPay> {
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.12,
                             child: TextFormField(
-                              controller: maximumController,
+                              controller: widget.maximumRate,
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                // Check if the rate is selected
+                                if (widget.selectedRate == null ||
+                                    widget.selectedRate.isEmpty) {
+                                  // If no rate is selected, return null (not required)
+                                  return null;
+                                }
+
+                                // If a rate is selected, validate the value
+                                if (value == null || value.isEmpty) {
+                                  return 'Required'; // Field is required
+                                }
+
+                                final n = num.tryParse(value);
+                                if (n == null) {
+                                  return 'Please enter a valid number'; // Input must be a number
+                                }
+
+                                return null; // Valid input
+                              },
                               decoration: InputDecoration(
                                 prefixIcon: Padding(
                                   padding: const EdgeInsets.only(
@@ -291,44 +359,54 @@ class _JobPayState extends State<JobPay> {
                     spacing: 12.0, // Spacing between chips
                     runSpacing: 8.0, // Spacing for wrapping
                     children: supplementalPay.map((sPay) {
-                      bool isSelected = selectedSupplementalPay == sPay;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedSupplementalPay = isSelected ? '' : sPay;
-                            print(
-                                'Selected supplemental pay: $selectedSupplementalPay');
-                          });
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Color(0xFF21254A)),
-                            borderRadius: BorderRadius.circular(20),
-                            color:
-                                isSelected ? Color(0xFF21254A) : Colors.white,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.add,
-                                  size: 16,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Color(0xFF21254A)),
-                              Gap(4),
-                              Text(
-                                sPay,
-                                style: TextStyle(
-                                  fontFamily: 'Galano',
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Color(0xFF21254A),
-                                  fontWeight: FontWeight.bold,
+                      // bool isSelected = widget.selectedSupPay == sPay;
+                      bool isSelected = widget.selectedSupPay.contains(sPay);
+
+                      return MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (isSelected) {
+                                widget.selectedSupPay
+                                    .remove(sPay); // Remove if already selected
+                              } else {
+                                widget.selectedSupPay
+                                    .add(sPay); // Add if not selected
+                              }
+                              print(sPay);
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xFF21254A)),
+                              borderRadius: BorderRadius.circular(20),
+                              color:
+                                  isSelected ? Color(0xFF21254A) : Colors.white,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.add,
+                                    size: 16,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Color(0xFF21254A)),
+                                Gap(4),
+                                Text(
+                                  sPay,
+                                  style: TextStyle(
+                                    fontFamily: 'Galano',
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Color(0xFF21254A),
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );

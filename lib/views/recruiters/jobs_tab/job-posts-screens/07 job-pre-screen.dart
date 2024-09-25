@@ -5,11 +5,13 @@ class JobPreScreenApplicants extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final VoidCallback cancel;
-  const JobPreScreenApplicants(
+  List<String> prescreenQuestions;
+  JobPreScreenApplicants(
       {super.key,
       required this.nextPage,
       required this.previousPage,
-      required this.cancel});
+      required this.cancel,
+      required this.prescreenQuestions});
 
   @override
   State<JobPreScreenApplicants> createState() => _JobPreScreenApplicantsState();
@@ -18,13 +20,13 @@ class JobPreScreenApplicants extends StatefulWidget {
 class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
-  final List<String> _questions = [];
+  // final List<String> _questions = [];
 
   void _addQuestion() {
     final questionText = _controller.text.trim();
     if (questionText.isNotEmpty) {
       setState(() {
-        _questions.add(questionText);
+        widget.prescreenQuestions.add(questionText);
         _controller.clear();
       });
     }
@@ -32,7 +34,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
 
   void _deleteClickedItem(int index) {
     setState(() {
-      _questions.removeAt(index);
+      widget.prescreenQuestions.removeAt(index);
     });
   }
 
@@ -139,7 +141,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                         const SizedBox(height: 15),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: _questions.length,
+                            itemCount: widget.prescreenQuestions.length,
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding:
@@ -154,7 +156,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                                   ),
                                   child: ListTile(
                                     title: Text(
-                                      _questions[index],
+                                      widget.prescreenQuestions[index],
                                       style: const TextStyle(
                                         fontFamily: 'Galano',
                                       ),

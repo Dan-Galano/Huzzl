@@ -1,14 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 
 class EditJobDetails extends StatefulWidget {
-  final VoidCallback nextPage;
+  final VoidCallback submitForm;
   final VoidCallback previousPage;
-  const EditJobDetails({
-    super.key,
-    required this.nextPage,
-    required this.previousPage,
-  });
+  final TextEditingController jobTitleController;
+  String numOfPeopleToHire; // one or more
+  String numPeople; // 1 to 10+
+  final String region;
+  final String province;
+  final String city;
+  final String barangay;
+  final TextEditingController otherLocation;
+  final TextEditingController jobDescriptionController;
+  final String jobType;
+  final String schedule;
+  final List<String> skills;
+  final String selectedRate;
+  final TextEditingController minRate;
+  final TextEditingController maxRate;
+  final List<String> supplementalPay;
+  final String resumeRequiredAns;
+  final String appDeadlineAns;
+  DateTime appDeadlineDate;
+  final String hiringTimeline;
+  final List<String> prescreenQuestions;
+
+  EditJobDetails(
+      {super.key,
+      required this.submitForm,
+      required this.previousPage,
+      required this.jobTitleController,
+      required this.numOfPeopleToHire,
+      required this.numPeople,
+      required this.region,
+      required this.province,
+      required this.city,
+      required this.barangay,
+      required this.otherLocation,
+      required this.jobDescriptionController,
+      required this.jobType,
+      required this.schedule,
+      required this.skills,
+      required this.selectedRate,
+      required this.minRate,
+      required this.maxRate,
+      required this.supplementalPay,
+      required this.resumeRequiredAns,
+      required this.appDeadlineAns,
+      required this.appDeadlineDate,
+      required this.hiringTimeline,
+      required this.prescreenQuestions});
 
   @override
   State<EditJobDetails> createState() => _EditJobDetailsState();
@@ -18,38 +61,47 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   final _formKey = GlobalKey<FormState>();
 
   // samples
-  final TextEditingController jobTitleController =
-      TextEditingController(text: 'Architect / Engineer Drafter with...');
-  final TextEditingController openingsController =
-      TextEditingController(text: '3');
-  final TextEditingController locationController =
-      TextEditingController(text: 'Brgy. Moreno, Binalonan, Pangasinan');
-  final TextEditingController descriptionController = TextEditingController(
-      text: 'We urgently need a skilled wedding photograph...');
-  final TextEditingController jobTypeController =
-      TextEditingController(text: 'Part-time');
-  final TextEditingController scheduleController =
-      TextEditingController(text: 'Weekends');
-  final TextEditingController skillController = TextEditingController(
-      text: 'Java, JavaScript, Flutter, Microsoft Office');
-  final TextEditingController payController =
-      TextEditingController(text: 'From ₱200.00 per hour');
-  final TextEditingController supplementalPayController =
-      TextEditingController(text: 'Tips, Bonus Pay');
-  final TextEditingController requireResumeController =
-      TextEditingController(text: 'Yes, require a resume');
-  final TextEditingController hiringTimelineController =
-      TextEditingController(text: '2-4 weeks');
-  final TextEditingController applicationDeadlineController =
-      TextEditingController(text: '07/25/2024');
+  late TextEditingController openingsController = TextEditingController(
+      text: widget.numOfPeopleToHire == 'More than one person'
+          ? widget.numPeople
+          : widget.numOfPeopleToHire);
+  late TextEditingController locationController = TextEditingController(
+      text:
+          '${widget.region}, ${widget.province}, ${widget.city}, ${widget.barangay}, ${widget.otherLocation.text}');
+  late TextEditingController jobTypeController =
+      TextEditingController(text: widget.jobType);
+  late TextEditingController scheduleController =
+      TextEditingController(text: widget.schedule);
+  late TextEditingController skillController =
+      TextEditingController(text: widget.skills.join(', '));
+
+  late TextEditingController payController = TextEditingController(
+      text: widget.selectedRate.isNotEmpty
+          ? 'From ₱${widget.minRate.text} to ₱${widget.maxRate.text} ${widget.selectedRate}'
+          : 'Pay not specified');
+  late TextEditingController supplementalPayController = TextEditingController(
+      text: widget.supplementalPay.isNotEmpty
+          ? widget.supplementalPay.join(', ')
+          : 'None');
+  late TextEditingController requireResumeController =
+      TextEditingController(text: widget.resumeRequiredAns);
+  late TextEditingController hiringTimelineController =
+      TextEditingController(text: widget.hiringTimeline);
+  late TextEditingController applicationDeadlineController =
+      TextEditingController(
+          text: widget.appDeadlineAns == 'Yes'
+              ? DateFormat.yMMMd().format(widget.appDeadlineDate)
+              : 'No Deadline');
   final TextEditingController updatesController =
-      TextEditingController(text: 'huzzle@gmail.com');
-  final TextEditingController preScreeningController = TextEditingController(
-      text: 'Will you be able to reliably commute or relocate...');
+      TextEditingController(text: 'huzzle@gmail.com'); // change this
+  late TextEditingController preScreeningController = TextEditingController(
+      text: widget.prescreenQuestions.isNotEmpty
+          ? widget.prescreenQuestions.join(', ')
+          : 'None');
 
   void _submitJobPost() {
     // if (_formKey.currentState!.validate()) {
-    widget.nextPage();
+    widget.submitForm();
     // }
   }
 
@@ -99,7 +151,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildJobDetailRow('Job title', jobTitleController),
+                        _buildJobDetailRow(
+                            'Job title', widget.jobTitleController),
                         const Gap(10),
                         _buildJobDetailRow(
                             'Number of openings', openingsController),
@@ -107,7 +160,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
                         _buildJobDetailRow('Location', locationController),
                         const Gap(10),
                         _buildJobDetailRow(
-                            'Description', descriptionController),
+                            'Description', widget.jobDescriptionController),
                         const Gap(10),
                         _buildJobDetailRow('Job type', jobTypeController),
                         const Gap(10),
