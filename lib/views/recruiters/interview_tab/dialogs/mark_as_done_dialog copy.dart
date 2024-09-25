@@ -138,14 +138,14 @@ class _MarkAsDoneDialogState extends State<MarkAsDoneDialog> {
                   Expanded(
                     child: Row(
                       children: [
-                        Column(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: const Color(0xffd1e1ff),
-                              foregroundColor: const Color(0xff373030),
-                              child: Text('A'),
-                            ),
-                          ],
+                        const CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Color(0xffd1e1ff),
+                          foregroundColor: Color(0xff373030),
+                          child: Icon(
+                            Icons.person_sharp,
+                            size: 60,
+                          ),
                         ),
                         const Gap(15),
                         Column(

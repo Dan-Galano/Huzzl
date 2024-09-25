@@ -5,27 +5,30 @@ import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/back_for_review
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/reschedule_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/widgets/date_container.dart';
 import 'package:intl/intl.dart';
 
-class PendingTileCard extends StatefulWidget {
+class PastInterviewTileCard extends StatefulWidget {
   final String intervieweeName;
+  final String interviewTitle;
   final String profession;
   final String branch;
-  final DateTime shortlistDate;
+  final DateTime dateInterviewed;
 
-  const PendingTileCard({
+  const PastInterviewTileCard({
     super.key,
     required this.intervieweeName,
+    required this.interviewTitle,
     required this.profession,
     required this.branch,
-    required this.shortlistDate,
+    required this.dateInterviewed,
   });
 
   @override
-  State<PendingTileCard> createState() => _PendingTileCardState();
+  State<PastInterviewTileCard> createState() => _PastInterviewTileCardState();
 }
 
-class _PendingTileCardState extends State<PendingTileCard>
+class _PastInterviewTileCardState extends State<PastInterviewTileCard>
     with TickerProviderStateMixin {
   bool _isHovered = false;
   late String formattedDate;
@@ -34,7 +37,7 @@ class _PendingTileCardState extends State<PendingTileCard>
   void initState() {
     super.initState();
     formattedDate =
-        DateFormat('dd MMM yyyy, h:mm a').format(widget.shortlistDate);
+        DateFormat('dd MMM yyyy, h:mm a').format(widget.dateInterviewed);
   }
 
   @override
@@ -65,9 +68,9 @@ class _PendingTileCardState extends State<PendingTileCard>
                 // Interview info
                 Row(
                   children: [
+                    //====================== Circle Avatar ======================
                     Column(
                       children: [
-                        //====================== Circle Avatar ======================
                         CircleAvatar(
                           backgroundColor: const Color(0xffd1e1ff),
                           foregroundColor: const Color(0xff373030),
@@ -125,23 +128,37 @@ class _PendingTileCardState extends State<PendingTileCard>
                     ),
                   ],
                 ),
-                //====================== Shortlist date ======================
+                        //====================== Interview title ======================
                 Row(
-                  // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      formattedDate,
-                      style: const TextStyle(
-                        decoration: TextDecoration.none,
-                        decorationColor: Colors.orange,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff373030),
-                      ),
-                    ),
-                    const Gap(50),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          widget.interviewTitle,
+                          style: const TextStyle(
+                            decoration: TextDecoration.none,
+                            decorationColor: Colors.orange,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff373030),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Gap(200),
+                    //Date interviewed
+                    Row(
+                      children: [
+                        DateContainer(
+                          date: formattedDate,
+                          backgroundColor: const Color(0xffFFE0C3),
+                          outlineBorderColor: const Color(0XFFFD7206),
+                        ),
+                      ],
+                    ),
+                    const Gap(100),
+                    //Buttons
+                    Row(
                       children: [
                         IconButton(
                           onPressed: () {},
@@ -149,57 +166,48 @@ class _PendingTileCardState extends State<PendingTileCard>
                           color: const Color(0xff3B7DFF),
                         ),
                         const Gap(50),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ScheduleInterviewButton(
-                              onPressed: () {},
-                            ),
-                          ],
+                        IconButton(
+                          onPressed: () async {
+                            final RenderBox button =
+                                context.findRenderObject() as RenderBox;
+                            final RenderBox overlay = Overlay.of(context)
+                                .context
+                                .findRenderObject() as RenderBox;
+
+                            final position = button.localToGlobal(Offset.zero,
+                                ancestor: overlay);
+
+                            await showMenu(
+                              context: context,
+                              position: RelativeRect.fromLTRB(
+                                position.dx,
+                                position.dy,
+                                overlay.size.width -
+                                    position.dx -
+                                    button.size.width,
+                                overlay.size.height - position.dy,
+                              ),
+                              items: [
+                                const PopupMenuItem(
+                                  value: 'view_applicant_details',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.reply, color: Colors.grey),
+                                      SizedBox(width: 8),
+                                      Text('View applicant\'s details'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ).then((value) {
+                              if (value == 'view_applicant_details') {
+                                showApplicationNotesViewDialog(context, this);
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.more_vert),
                         ),
                       ],
-                    ),
-                    const Gap(10),
-                    IconButton(
-                      onPressed: () async {
-                        final RenderBox button =
-                            context.findRenderObject() as RenderBox;
-                        final RenderBox overlay = Overlay.of(context)
-                            .context
-                            .findRenderObject() as RenderBox;
-
-                        final position = button.localToGlobal(Offset.zero,
-                            ancestor: overlay);
-
-                        await showMenu(
-                          context: context,
-                          position: RelativeRect.fromLTRB(
-                            position.dx,
-                            position.dy,
-                            overlay.size.width -
-                                position.dx -
-                                button.size.width,
-                            overlay.size.height - position.dy,
-                          ),
-                          items: [
-                            const PopupMenuItem(
-                              value: 'move_back_for_review',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.reply, color: Colors.grey),
-                                  SizedBox(width: 8),
-                                  Text('Move back for review'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ).then((value) {
-                          if (value == 'move_back_for_review') {
-                            showMoveBackforReviewDialog(context);
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.more_vert),
                     ),
                   ],
                 ),

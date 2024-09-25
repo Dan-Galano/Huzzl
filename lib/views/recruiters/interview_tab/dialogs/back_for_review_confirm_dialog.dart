@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-void showConfirmMarkAsDoneDialog(BuildContext context) {
+void showMoveBackforReviewDialog(BuildContext context) {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -19,7 +19,7 @@ void showConfirmMarkAsDoneDialog(BuildContext context) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Confirm Mark as Done",
+                    "Confirm Move Back for Review",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -27,7 +27,7 @@ void showConfirmMarkAsDoneDialog(BuildContext context) {
                   ),
                   Gap(10),
                   Text(
-                    "Are you sure you want to mark this applicant's interview as done?",
+                    "Are you sure you want to move this applicant back for review?",
                     style: TextStyle(fontSize: 16),
                   ),
                   Gap(8),
@@ -81,7 +81,7 @@ void showConfirmMarkAsDoneDialog(BuildContext context) {
                           ),
                         ),
                         child: const Text(
-                          'Mark as done',
+                          'Move back for review',
                           style: TextStyle(
                             color: Colors.white,
                           ),

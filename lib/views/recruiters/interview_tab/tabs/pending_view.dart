@@ -17,36 +17,167 @@ class PendingView extends StatelessWidget {
         start: DateTime(2024, 9, 25, 8, 0),
         end: DateTime(2024, 9, 25, 10, 0),
       ),
-    }
+    },
+    {
+      'name': 'Jau Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Alaminos City',
+      'interviewTitle': 'Final Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Elijah Japheth Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Urdaneta City',
+      'interviewTitle': 'Technical Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Jau Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Alaminos City',
+      'interviewTitle': 'Final Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Elijah Japheth Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Urdaneta City',
+      'interviewTitle': 'Technical Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Jau Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Alaminos City',
+      'interviewTitle': 'Final Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Elijah Japheth Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Urdaneta City',
+      'interviewTitle': 'Technical Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Jau Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Alaminos City',
+      'interviewTitle': 'Final Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Elijah Japheth Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Urdaneta City',
+      'interviewTitle': 'Technical Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Jau Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Alaminos City',
+      'interviewTitle': 'Final Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Elijah Japheth Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Urdaneta City',
+      'interviewTitle': 'Technical Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
+    {
+      'name': 'Jau Macatiag',
+      'profession': 'Photographer',
+      'branch': 'Alaminos City',
+      'interviewTitle': 'Final Interview',
+      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
+      'interviewType': 'Online',
+      'timeRange': DateTimeRange(
+        start: DateTime(2024, 9, 25, 8, 0),
+        end: DateTime(2024, 9, 25, 10, 0),
+      ),
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     if (interviewees.isNotEmpty) {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  child: Text(
-                    "Shortlist Date",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Galano',
-                    ),
+      return Column(
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                child: Text(
+                  "Shortlist Date",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Galano',
                   ),
                 ),
-                Gap(100)
-              ],
-            ),
-            ListView.builder(
+              ),
+              Gap(470)
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+              // physics: const NeverScrollableScrollPhysics(),
               itemCount: interviewees.length,
               itemBuilder: (context, index) {
                 return PendingTileCard(
@@ -57,8 +188,8 @@ class PendingView extends StatelessWidget {
                 );
               },
             ),
-          ],
-        ),
+          ),
+        ],
       );
     } else {
       return Column(

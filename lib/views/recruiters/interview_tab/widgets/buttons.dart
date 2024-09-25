@@ -56,6 +56,37 @@ class ScheduleInterviewButton extends StatelessWidget {
   }
 }
 
+class InterviewCalendarButton extends StatelessWidget {
+  const InterviewCalendarButton({super.key, required this.onPressed});
+  final VoidCallback? onPressed;
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ButtonStyle(
+        fixedSize: WidgetStateProperty.all(const Size.fromHeight(40)),
+        foregroundColor: WidgetStateProperty.all(Colors.white),
+        backgroundColor: onPressed == null
+            ? WidgetStateProperty.all(Colors.grey)
+            : WidgetStateProperty.all(const Color(0xffe0e8f9)),
+      ),
+      child: const Row(
+        children: [
+          Icon(
+            Icons.calendar_month,
+            color: Color(0xff3B7DFF),
+          ),
+          Gap(15),
+          Text(
+            'Schedule interview',
+            style: TextStyle(color: Color(0xff3B7DFF)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class MarkAsDoneButton extends StatelessWidget {
   const MarkAsDoneButton({super.key, required this.onPressed});
   final VoidCallback onPressed;

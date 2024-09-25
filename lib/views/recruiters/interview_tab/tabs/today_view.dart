@@ -14,8 +14,8 @@ class TodayView extends StatelessWidget {
       'interviewTitle': 'Technical Interview',
       'interviewType': 'Online',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
+        start: DateTime(2024, 9, 26, 8, 0),
+        end: DateTime(2024, 9, 26, 10, 0),
       ),
     },
     {
@@ -25,8 +25,8 @@ class TodayView extends StatelessWidget {
       'interviewTitle': 'Final Interview',
       'interviewType': 'Face-to-face',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 10, 0),
-        end: DateTime(2024, 9, 25, 12, 0),
+        start: DateTime(2024, 9, 26, 10, 0),
+        end: DateTime(2024, 9, 26, 12, 0),
       ),
     },
     {
@@ -36,8 +36,8 @@ class TodayView extends StatelessWidget {
       'interviewTitle': 'Final Interview',
       'interviewType': 'Online',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 10, 0),
-        end: DateTime(2024, 9, 25, 12, 0),
+        start: DateTime(2024, 9, 26, 10, 0),
+        end: DateTime(2024, 9, 26, 12, 0),
       ),
     },
     {

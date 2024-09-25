@@ -3,9 +3,10 @@ import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decora
 import 'package:huzzl_web/views/recruiters/interview_tab/tabs/missed_view.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/tabs/past_view.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/tabs/pending_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/tabs/reschedule_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/tabs/rescheduled_view.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/tabs/today_view.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/tabs/upcoming_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/interviews_widgets.dart';
 
 Widget buildInterviewsContent() {
@@ -37,11 +38,14 @@ Widget buildInterviewsContent() {
                       ),
                     ),
                     SizedBox(width: spacing),
-                    SizedBox(
-                      width: textFieldWidth,
+                    Expanded(
                       child: TextField(
                         decoration: searchTextFieldDecoration('Search'),
                       ),
+                    ),
+                    SizedBox(width: spacing),
+                    InterviewCalendarButton(
+                      onPressed: () {},
                     ),
                   ],
                 );
@@ -85,7 +89,7 @@ Widget buildInterviewsContent() {
                   UpcomingView(),
                   PendingView(),
                   PastView(),
-                  RescheduleView(),
+                  RescheduledView(),
                   MissedView(),
                 ],
               ),
