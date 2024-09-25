@@ -61,6 +61,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   final _formKey = GlobalKey<FormState>();
 
   // samples
+  // late TextEditingController jobTitle = TextEditingController(text: widget.jobTitleController.text);
+  // late TextEditingController jobDescription = TextEditingController(text: widget.jobDescriptionController.text);
   late TextEditingController openingsController = TextEditingController(
       text: widget.numOfPeopleToHire == 'More than one person'
           ? widget.numPeople
@@ -102,6 +104,11 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   void _submitJobPost() {
     // if (_formKey.currentState!.validate()) {
     widget.submitForm();
+
+    print("Job Title: ${widget.jobTitleController.text}");
+    print("Job Description: ${widget.jobDescriptionController.text}");
+    print("Job Type: ${jobTypeController.text}");
+    print("Job Location: ${locationController.text}");
     // }
   }
 

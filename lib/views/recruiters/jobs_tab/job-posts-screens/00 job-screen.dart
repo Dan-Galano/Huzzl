@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/01%20job-posts.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/02%20job-details.dart';
@@ -18,6 +20,9 @@ class JobScreens extends StatefulWidget {
 }
 
 class _JobScreensState extends State<JobScreens> {
+  //UID
+  User? user = FirebaseAuth.instance.currentUser;
+  
   PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -81,6 +86,27 @@ class _JobScreensState extends State<JobScreens> {
 
   void _submitJobPostForm() {
     // ADD THE DB HERE
+    print("Data: ${jobTitleController.text} ${jobDescriptionController.text}");
+    
+    FirebaseFirestore.instance
+    .collection('job_posts')
+    .doc(user!.uid) // UID of the user
+    .collection('jobs')
+    .add({
+      'jobTitle': jobTitleController.text,
+      'jobDescription' : jobDescriptionController.text,
+      'numberOfPeopleToHire' : _numOfPeopleToHire,
+      'posted_at': FieldValue.serverTimestamp(),
+    })
+    .then((value) {
+      print('Job post added successfully!');
+    })
+    .catchError((error) {
+      print('Error adding job post: $error');
+    });
+
+
+
     // clear all values
     jobTitleController.clear();
     jobDescriptionController.clear();
@@ -110,6 +136,7 @@ class _JobScreensState extends State<JobScreens> {
     preScreenQues.clear(); // Clear pre-screen questions
     // Go back to the Job tab
     _pageController.jumpToPage(0);
+
   }
 
   void _cancel() {
