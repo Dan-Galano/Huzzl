@@ -15,6 +15,7 @@ class StartInterviewButton extends StatelessWidget {
               ? WidgetStateProperty.all(Colors.grey)
               : WidgetStateProperty.all(const Color(0xff3B7DFF))),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
             'assets/images/camera_icon.png',
@@ -36,18 +37,19 @@ class RescheduleInterviewButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-          fixedSize: WidgetStateProperty.all(const Size.fromHeight(40)),
+          fixedSize: WidgetStateProperty.all(const Size(200, 40)),
           foregroundColor: WidgetStateProperty.all(Colors.white),
           backgroundColor: WidgetStateProperty.all(const Color(0xff3B7DFF))),
-      child: Row(
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.calendar_month,
             size: 24,
             color: Colors.white,
           ),
-          const Gap(15),
-          Text('Reschedule interview'),
+          Gap(15),
+          Text('Reschedule'),
         ],
       ),
     );
@@ -69,6 +71,7 @@ class ScheduleInterviewButton extends StatelessWidget {
             : WidgetStateProperty.all(const Color(0xfffd7206)),
       ),
       child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.calendar_month,
@@ -97,6 +100,7 @@ class InterviewCalendarButton extends StatelessWidget {
             : WidgetStateProperty.all(const Color(0xffe0e8f9)),
       ),
       child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.calendar_month,
@@ -128,6 +132,7 @@ class MarkAsDoneButton extends StatelessWidget {
         foregroundColor: const WidgetStatePropertyAll(Color(0xff3B7DFF)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Gap(10),
           Image.asset(
@@ -135,7 +140,7 @@ class MarkAsDoneButton extends StatelessWidget {
             height: 20,
           ),
           const Gap(15),
-          Text('Mark as done'),
+          const Text('Mark as done'),
         ],
       ),
     );
