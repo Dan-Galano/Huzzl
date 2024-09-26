@@ -510,7 +510,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                         // Main content based on search and job data state
                         jobProvider.isLoading
                             ? Padding(
-                                padding: const EdgeInsets.only(top: 180),
+                                padding: const EdgeInsets.only(top: 150),
                                 child: Center(
                                   child: Column(
                                     children: [
@@ -523,50 +523,62 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                         style: TextStyle(
                                           fontStyle: FontStyle.italic,
                                           color: Color(0xFFfd7206),
+                                          fontFamily: 'Galano',
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ) // Show loading spinner
+                              )
                             : jobProvider.hasResults &&
-                                    jobProvider.jobs
-                                        .isNotEmpty // Show jobs if available
+                                    (jobProvider.searchJobs.isNotEmpty ||
+                                        jobProvider.jobs
+                                            .isNotEmpty) // Show jobs if available
                                 ? Expanded(
                                     child: ListView.builder(
-                                      itemCount: jobProvider.jobs.length,
+                                      itemCount: jobProvider
+                                              .searchJobs.isNotEmpty
+                                          ? jobProvider.searchJobs
+                                              .length // Use searchJobs if a search query is active
+                                          : jobProvider.jobs
+                                              .length, // Use jobs if no search query is active
                                       itemBuilder: (context, index) {
+                                        final job = jobProvider
+                                                .searchJobs.isNotEmpty
+                                            ? jobProvider.searchJobs[
+                                                index] // Use filtered jobs
+                                            : jobProvider
+                                                .jobs[index]; // Use all jobs
+
                                         return buildJobCard(
-                                          joblink: jobProvider.jobs[index]
-                                                  ['jobLink'] ??
-                                              '',
-                                          datePosted: jobProvider.jobs[index]
-                                                  ['datePosted'] ??
+                                          joblink: job['jobLink'] ?? '',
+                                          datePosted: job['datePosted'] ??
                                               'No Date Posted',
-                                          title: jobProvider.jobs[index]
-                                              ['title']!,
-                                          location: jobProvider.jobs[index]
-                                                  ['location'] ??
-                                              'No Location',
-                                          rate: jobProvider.jobs[index]
-                                                  ['salary'] ??
-                                              'Not provided',
-                                          description: jobProvider.jobs[index]
-                                                  ['description'] ??
+                                          title: job['title']!,
+                                          location:
+                                              job['location'] ?? 'No Location',
+                                          rate: job['salary'] ?? 'Not provided',
+                                          description: job['description'] ??
                                               'No description available',
-                                          website: jobProvider.jobs[index]
-                                              ['website']!,
-                                          tags: jobProvider.jobs[index]['tags']
-                                                  ?.split(', ') ??
-                                              [],
+                                          website: job['website']!,
+                                          tags: job['tags']?.split(', ') ?? [],
                                         );
                                       },
                                     ),
                                   )
-                                : Center(
-                                    child: Text(isSearching
-                                        ? 'No search results match'
-                                        : 'No jobs available')), // Show no results message or default message
+                                : Padding(
+                                    padding: const EdgeInsets.only(top: 180),
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          Image.asset(
+                                            'assets/images/huzzl_notfound.png',
+                                            height: 150,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                       ],
                     ),
                   ),
