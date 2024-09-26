@@ -92,329 +92,331 @@ class _RescheduleInterviewDialogState extends State<RescheduleInterviewDialog> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(15.0)),
       ),
-      content: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Reschedule Interview',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
+      content: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Reschedule Interview',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close))
-              ],
-            ),
-            const Text(
-              'Note: This information will be sent to Jau Salcedo',
-              style: TextStyle(
-                fontSize: 16,
+                  IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close))
+                ],
               ),
-            ),
-            const Gap(20),
-            Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              color: Colors.white,
-              child: Row(
+              const Text(
+                'Note: This information will be sent to Jau Salcedo',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              const Gap(20),
+              Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: const Color(0xffd1e1ff),
+                                foregroundColor: const Color(0xff373030),
+                                child: Text('A'),
+                              ),
+                            ],
+                          ),
+                          const Gap(15),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Jau Salcedo',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff373030),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'jau.salcedo@gmail.com',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const Gap(4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.person_outline,
+                                      size: 20, color: Colors.grey),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Mobile Developer',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.business_center_outlined,
+                                      size: 20, color: Colors.grey),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Urdaneta City',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Gap(MediaQuery.of(context).size.width * 0.1),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text("Title: "),
+                                  const Text(
+                                    "Technical Interview",
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              const Gap(10),
+                              Row(
+                                children: [
+                                  const Text('Interview Date: '),
+                                  Text(
+                                    'July 17, 2024 8:00-10:00',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(20),
+              const Text(
+                'Why do you want to reschedule this interview?',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff373030)),
+              ),
+              const Gap(10),
+              Row(
                 children: [
                   Expanded(
-                    child: Row(
-                      children: [
-                        Column(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: const Color(0xffd1e1ff),
-                              foregroundColor: const Color(0xff373030),
-                              child: Text('A'),
-                            ),
-                          ],
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: "Select reason for rescheduling",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.grey),
                         ),
-                        const Gap(15),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Jau Salcedo',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff373030),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'jau.salcedo@gmail.com',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const Gap(4),
-                            Row(
-                              children: [
-                                const Icon(Icons.person_outline,
-                                    size: 20, color: Colors.grey),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Mobile Developer',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.business_center_outlined,
-                                    size: 20, color: Colors.grey),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Urdaneta City',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Gap(MediaQuery.of(context).size.width * 0.1),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Text("Title: "),
-                                const Text(
-                                  "Technical Interview",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            const Gap(10),
-                            Row(
-                              children: [
-                                const Text('Interview Date: '),
-                                Text(
-                                  'July 17, 2024 8:00-10:00',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
+                      ),
+                      value: selectedCause,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCause = newValue;
+                        });
+                      },
+                      items: causeOfReschedule
+                          .map<DropdownMenuItem<String>>((String cause) {
+                        return DropdownMenuItem<String>(
+                          value: cause,
+                          child: Text(cause),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ],
               ),
-            ),
-            const Gap(20),
-            const Text(
-              'Why do you want to reschedule this interview?',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xff373030)),
-            ),
-            const Gap(10),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: "Select reason for rescheduling",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Colors.grey),
-                      ),
+              const Gap(10),
+              const Text(
+                'Choose new interview date',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff373030)),
+              ),
+              const Gap(10),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: _selectDate,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xff79747e)),
                     ),
-                    value: selectedCause,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCause = newValue;
-                      });
-                    },
-                    items: causeOfReschedule
-                        .map<DropdownMenuItem<String>>((String cause) {
-                      return DropdownMenuItem<String>(
-                        value: cause,
-                        child: Text(cause),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-            const Gap(10),
-            const Text(
-              'Choose new interview date',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xff373030)),
-            ),
-            const Gap(10),
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: _selectDate,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xff79747e)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        selectedDate != null
-                            ? DateFormat('yyyy-MM-dd').format(selectedDate!)
-                            : 'Select a date',
-                        style: const TextStyle(
-                          color: Color(0xff49454f),
-                          fontSize: 16,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedDate != null
+                              ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                              : 'Select a date',
+                          style: const TextStyle(
+                            color: Color(0xff49454f),
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      const Icon(Icons.calendar_today),
-                    ],
+                        const Icon(Icons.calendar_today),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const Gap(10),
-            const Text(
-              'Choose new interview time range',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xff373030)),
-            ),
-            const Gap(10),
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: _selectTimeRange,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xff79747e)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        (selectedStartTime != null && selectedEndTime != null)
-                            ? '${selectedStartTime!.format(context)} - ${selectedEndTime!.format(context)}'
-                            : 'Select time range',
-                        style: const TextStyle(
-                          color: Color(0xff49454f),
-                          fontSize: 16,
+              const Gap(10),
+              const Text(
+                'Choose new interview time range',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff373030)),
+              ),
+              const Gap(10),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: _selectTimeRange,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xff79747e)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          (selectedStartTime != null && selectedEndTime != null)
+                              ? '${selectedStartTime!.format(context)} - ${selectedEndTime!.format(context)}'
+                              : 'Select time range',
+                          style: const TextStyle(
+                            color: Color(0xff49454f),
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      const Icon(Icons.access_time),
-                    ],
+                        const Icon(Icons.access_time),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const Gap(10),
-            const Text(
-              'Interviewer',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xff373030)),
-            ),
-            const Gap(10),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: "Select interviewer",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Colors.grey),
+              const Gap(10),
+              const Text(
+                'Interviewer',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff373030)),
+              ),
+              const Gap(10),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: "Select interviewer",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.grey),
+                        ),
                       ),
+                      value: selectedInterviewer,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedInterviewer = newValue;
+                        });
+                      },
+                      items: interviewers
+                          .map<DropdownMenuItem<String>>((String interviewer) {
+                        return DropdownMenuItem<String>(
+                          value: interviewer,
+                          child: Text(interviewer),
+                        );
+                      }).toList(),
                     ),
-                    value: selectedInterviewer,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedInterviewer = newValue;
-                      });
-                    },
-                    items: interviewers
-                        .map<DropdownMenuItem<String>>((String interviewer) {
-                      return DropdownMenuItem<String>(
-                        value: interviewer,
-                        child: Text(interviewer),
-                      );
-                    }).toList(),
                   ),
-                ),
-              ],
-            ),
-            const Gap(10),
-            const Text(
-              'Interview Type (edit pa ito for multiple selection)',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xff373030)),
-            ),
-            const Gap(10),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: "Select interview type",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Colors.grey),
+                ],
+              ),
+              const Gap(10),
+              const Text(
+                'Interview Type (edit pa ito for multiple selection)',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff373030)),
+              ),
+              const Gap(10),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: "Select interview type",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.grey),
+                        ),
                       ),
+                      value: selectedInterviewType,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedInterviewType = newValue;
+                        });
+                      },
+                      items: interviewType
+                          .map<DropdownMenuItem<String>>((String type) {
+                        return DropdownMenuItem<String>(
+                          value: type,
+                          child: Text(type),
+                        );
+                      }).toList(),
                     ),
-                    value: selectedInterviewType,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedInterviewType = newValue;
-                      });
-                    },
-                    items: interviewType
-                        .map<DropdownMenuItem<String>>((String type) {
-                      return DropdownMenuItem<String>(
-                        value: type,
-                        child: Text(type),
-                      );
-                    }).toList(),
                   ),
-                ),
-              ],
-            ),
-            const Gap(30),
-            BlueFilledCircleButton(onPressed: () {}, text: 'Reschedule')
-          ],
+                ],
+              ),
+              const Gap(30),
+              BlueFilledCircleButton(onPressed: () {}, text: 'Reschedule')
+            ],
+          ),
         ),
       ),
     );

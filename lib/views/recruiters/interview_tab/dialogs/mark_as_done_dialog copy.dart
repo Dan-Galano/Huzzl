@@ -94,254 +94,256 @@ class _MarkAsDoneDialogState extends State<MarkAsDoneDialog> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(15.0)),
       ),
-      content: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.lock,
-                      color: Colors.grey,
-                      size: 16,
-                    ),
-                    Gap(10),
-                    Text(
-                      'Only visible to your team',
-                      style: TextStyle(
-                        fontSize: 12,
+      content: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(
+                        Icons.lock,
                         color: Colors.grey,
+                        size: 16,
+                      ),
+                      Gap(10),
+                      Text(
+                        'Only visible to your team',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const Gap(20),
+              Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Color(0xffd1e1ff),
+                            foregroundColor: Color(0xff373030),
+                            child: Icon(
+                              Icons.person_sharp,
+                              size: 60,
+                            ),
+                          ),
+                          const Gap(15),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Jau Salcedo',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff373030),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'jau.salcedo@gmail.com',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const Gap(4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.person_outline,
+                                      size: 20, color: Colors.grey),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Mobile Developer',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.business_center_outlined,
+                                      size: 20, color: Colors.grey),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Urdaneta City',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Gap(MediaQuery.of(context).size.width * 0.1),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              //=========================== Title ===========================
+                              Row(
+                                children: [
+                                  Text("Title: "),
+                                  Text(
+                                    "Technical Interview",
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              //=========================== Interview Date ===========================
+                              Gap(4),
+                              Row(
+                                children: [
+                                  Text('Interview Date: '),
+                                  Text(
+                                    'July 17, 2024 8:00-10:00',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              //=========================== Interviewer/s ===========================
+                              Gap(4),
+                              Row(
+                                children: [
+                                  Text('Interviewer(s): '),
+                                  Text(
+                                    'John Wick',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              //=========================== Interview Type ===========================
+                              Gap(4),
+                              Row(
+                                children: [
+                                  Text('Interviewer Type: '),
+                                  Text(
+                                    'Face-to-Face',
+                                    style: TextStyle(
+                                      color: Color(0xffFD7206),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              //=========================== Location ===========================
+                              Gap(4),
+                              Row(
+                                children: [
+                                  Text('Location: '),
+                                  Text(
+                                    '123 Building, San Vicente, Urdaneta City, Pangasinan',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const Gap(20),
-            Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              color: Colors.white,
-              child: Row(
+              ),
+              //=========================== Did the candidate show up? ===========================
+              const Gap(20),
+              const Text(
+                'Did the candidate show up?',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff373030)),
+              ),
+              const Gap(10),
+              //=========================== Radio buttons YES or NO ===========================
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Color(0xffd1e1ff),
-                          foregroundColor: Color(0xff373030),
-                          child: Icon(
-                            Icons.person_sharp,
-                            size: 60,
-                          ),
-                        ),
-                        const Gap(15),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Jau Salcedo',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff373030),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'jau.salcedo@gmail.com',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const Gap(4),
-                            Row(
-                              children: [
-                                const Icon(Icons.person_outline,
-                                    size: 20, color: Colors.grey),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Mobile Developer',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const Icon(Icons.business_center_outlined,
-                                    size: 20, color: Colors.grey),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Urdaneta City',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Gap(MediaQuery.of(context).size.width * 0.1),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //=========================== Title ===========================
-                            Row(
-                              children: [
-                                Text("Title: "),
-                                Text(
-                                  "Technical Interview",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            //=========================== Interview Date ===========================
-                            Gap(4),
-                            Row(
-                              children: [
-                                Text('Interview Date: '),
-                                Text(
-                                  'July 17, 2024 8:00-10:00',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            //=========================== Interviewer/s ===========================
-                            Gap(4),
-                            Row(
-                              children: [
-                                Text('Interviewer(s): '),
-                                Text(
-                                  'John Wick',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            //=========================== Interview Type ===========================
-                            Gap(4),
-                            Row(
-                              children: [
-                                Text('Interviewer Type: '),
-                                Text(
-                                  'Face-to-Face',
-                                  style: TextStyle(
-                                    color: Color(0xffFD7206),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            //=========================== Location ===========================
-                            Gap(4),
-                            Row(
-                              children: [
-                                Text('Location: '),
-                                Text(
-                                  '123 Building, San Vicente, Urdaneta City, Pangasinan',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  Row(
+                    children: [
+                      Radio<bool>(
+                        value: true,
+                        groupValue: _selectedOption,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _selectedOption = value;
+                          });
+                        },
+                      ),
+                      const Text('Yes'),
+                    ],
+                  ),
+                  const Gap(20), // Add some spacing between the options
+                  Row(
+                    children: [
+                      Radio<bool>(
+                        value: false,
+                        groupValue: _selectedOption,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _selectedOption = value;
+                          });
+                        },
+                      ),
+                      const Text('No'),
+                    ],
                   ),
                 ],
               ),
-            ),
-            //=========================== Did the candidate show up? ===========================
-            const Gap(20),
-            const Text(
-              'Did the candidate show up?',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xff373030)),
-            ),
-            const Gap(10),
-            //=========================== Radio buttons YES or NO ===========================
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Radio<bool>(
-                      value: true,
-                      groupValue: _selectedOption,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          _selectedOption = value;
-                        });
-                      },
-                    ),
-                    const Text('Yes'),
-                  ],
-                ),
-                const Gap(20), // Add some spacing between the options
-                Row(
-                  children: [
-                    Radio<bool>(
-                      value: false,
-                      groupValue: _selectedOption,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          _selectedOption = value;
-                        });
-                      },
-                    ),
-                    const Text('No'),
-                  ],
-                ),
-              ],
-            ),
-            //=========================== Interview notes or comments ===========================
-            const Gap(20),
-            const Text(
-              'Any interview notes or comments? (Optional)',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xff373030)),
-            ),
-            const Gap(20),
-            TextFormField(
-              controller: _interviewFeedbackNotes,
-              maxLines: 10,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Write your feedback here...'),
-            ),
-            const Gap(30),
-            BlueFilledCircleButton(
-              onPressed: () => showConfirmMarkAsDoneDialog(context),
-              text: 'Mark as done',
-            )
-          ],
+              //=========================== Interview notes or comments ===========================
+              const Gap(20),
+              const Text(
+                'Any interview notes or comments? (Optional)',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff373030)),
+              ),
+              const Gap(20),
+              TextFormField(
+                controller: _interviewFeedbackNotes,
+                maxLines: 10,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Write your feedback here...'),
+              ),
+              const Gap(30),
+              BlueFilledCircleButton(
+                onPressed: () => showConfirmMarkAsDoneDialog(context),
+                text: 'Mark as done',
+              )
+            ],
+          ),
         ),
       ),
     );
