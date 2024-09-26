@@ -66,7 +66,7 @@ List<Map<String, String>> parseJobStreetData(String htmlContent) {
         'jobLink': 'https://www.jobstreet.com.ph${jobLink}',
         'proxyLink':
             'https://corsproxy.io/?https://www.jobstreet.com.ph${jobLink}',
-        'website': 'JOBSTREET'
+        'website': 'assets/images/jobstreet-logo.png'
       });
     }
   });
@@ -120,7 +120,7 @@ List<Map<String, String>> parseLinkedInData(String htmlContent) {
             : 'https://ph.linkedin.com${jobLink}',
         // 'tags': 'No Tag',
         'proxyLink': 'https://corsproxy.io/?${jobLink}',
-        'website': 'LINKEDIN'
+        'website': 'assets/images/linkedin-logo.png'
       });
     }
   });
@@ -175,7 +175,7 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
         'jobLink': 'https://www.onlinejobs.ph${jobLink}',
         // 'website': 'OnlineJobs',
         if (tags.isNotEmpty) 'tags': tags.join(', '),
-        'website': 'ONLINEJOBS'
+        'website': 'assets/images/onlinejobsph-logo.png'
       });
     }
   });
@@ -241,7 +241,7 @@ List<Map<String, String>> parseKalibrrData(String htmlContent) {
         'datePosted': postedDate ?? 'No date posted',
         'jobLink': 'https://www.kalibrr.com${jobLink}',
         'proxyLink': 'https://corsproxy.io/?https://www.kalibrr.com${jobLink}',
-        'website': 'KALIBRR',
+        'website': 'assets/images/kalibbr-logo.png',
       });
     }
   });
@@ -287,7 +287,7 @@ List<Map<String, String>> parsePhilJobNetData(String htmlContent) {
         'datePosted': postedDate ?? 'Unknown date',
         'jobLink': jobLink,
         'proxyLink': 'https://corsproxy.io/?$jobLink',
-        'website': 'PhilJobNet',
+        'website': 'assets/images/philjobnet-logo.png',
         // 'tags': 'No Tag'
       });
     }
