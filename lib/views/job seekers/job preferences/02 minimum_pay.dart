@@ -31,42 +31,42 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
-        child: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: Image.asset(
-            'assets/images/huzzl.png',
-            width: 80,
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: IconButton(
-                icon: Image.asset(
-                  'assets/images/account.png',
-                  width: 25,
-                  height: 25,
-                ),
-                onPressed: () {
-                  // action
-                },
-              ),
-            ),
-          ],
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0xffD9D9D9),
-                  width: 3.0,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      // appBar: PreferredSize(
+      //   preferredSize: Size.fromHeight(60.0),
+      //   child: AppBar(
+      //     backgroundColor: Colors.white,
+      //     elevation: 0,
+      //     title: Image.asset(
+      //       'assets/images/huzzl.png',
+      //       width: 80,
+      //     ),
+      //     actions: [
+      //       Padding(
+      //         padding: const EdgeInsets.only(right: 16.0),
+      //         child: IconButton(
+      //           icon: Image.asset(
+      //             'assets/images/account.png',
+      //             width: 25,
+      //             height: 25,
+      //           ),
+      //           onPressed: () {
+      //             // action
+      //           },
+      //         ),
+      //       ),
+      //     ],
+      //     flexibleSpace: Container(
+      //       decoration: BoxDecoration(
+      //         border: Border(
+      //           bottom: BorderSide(
+      //             color: Color(0xffD9D9D9),
+      //             width: 3.0,
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       body: Stack(
         children: [
           Container(

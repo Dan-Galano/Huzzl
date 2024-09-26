@@ -6,7 +6,8 @@ import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 class JobTitlesPage extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
-  JobTitlesPage({super.key, required this.nextPage, required this.previousPage});
+  JobTitlesPage(
+      {super.key, required this.nextPage, required this.previousPage});
 
   @override
   _JobTitlesPageState createState() => _JobTitlesPageState();
@@ -20,48 +21,50 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
     // if (_formKey.currentState!.validate()) {
     //   widget.nextPage();
     // }
-    widget.nextPage();
+    // widget.nextPage();
+    // Navigator.of(context).push(MaterialPageRoute(builder: (context) => ,));
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
-        child: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: Image.asset(
-            'assets/images/huzzl.png',
-            width: 80,
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: IconButton(
-                icon: Image.asset(
-                  'assets/images/account.png',
-                  width: 25,
-                  height: 25,
-                ),
-                onPressed: () {
-                  // action
-                },
-              ),
-            ),
-          ],
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0xffD9D9D9),
-                  width: 3.0,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      // appBar: PreferredSize(
+      //   preferredSize: Size.fromHeight(60.0),
+      //   child: AppBar(
+      //     backgroundColor: Colors.white,
+      //     elevation: 0,
+      //     title: Image.asset(
+      //       'assets/images/huzzl.png',
+      //       width: 80,
+      //     ),
+      //     actions: [
+      //       Padding(
+      //         padding: const EdgeInsets.only(right: 16.0),
+      //         child: IconButton(
+      //           icon: Image.asset(
+      //             'assets/images/account.png',
+      //             width: 25,
+      //             height: 25,
+      //           ),
+      //           onPressed: () {
+      //             // action
+      //           },
+      //         ),
+      //       ),
+      //     ],
+      //     flexibleSpace: Container(
+      //       decoration: BoxDecoration(
+      //         border: Border(
+      //           bottom: BorderSide(
+      //             color: Color(0xffD9D9D9),
+      //             width: 3.0,
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       body: Stack(
         children: [
           SingleChildScrollView(

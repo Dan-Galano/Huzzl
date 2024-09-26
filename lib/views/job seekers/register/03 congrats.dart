@@ -3,7 +3,6 @@ import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_boxbutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class JobSeekerCongratulationsPage extends StatelessWidget {
-
   final VoidCallback goToJobPref;
   const JobSeekerCongratulationsPage({super.key, required this.goToJobPref});
 
@@ -12,10 +11,10 @@ class JobSeekerCongratulationsPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const NavBarLoginRegister(),
+          // const NavBarLoginRegister(),
           Padding(
-            padding: const EdgeInsets.only(top: 150.0), 
-            child: Center(  
+            padding: const EdgeInsets.only(top: 150.0),
+            child: Center(
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -49,35 +48,38 @@ class JobSeekerCongratulationsPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('It only takes 3-5 minutes and you can edit it later. \nWe\'ll save as you go.',
-                        textAlign: TextAlign.right,
+                        Text(
+                          'It only takes 3-5 minutes and you can edit it later. \nWe\'ll save as you go.',
+                          textAlign: TextAlign.right,
                           style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xff373030),
-                        fontFamily: 'Galano',
-                      ),
-                        ),
-                        SizedBox(width: 20,),
-                         SizedBox(
-                        width: 170,
-                        child: ElevatedButton(
-                          onPressed: goToJobPref,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF0038FF),
-                            padding: EdgeInsets.all(20),
+                            fontSize: 16,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
                           ),
-                          child: const Text('Get Started',
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.white,
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w700,
-                              )),
                         ),
-                      ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        SizedBox(
+                          width: 170,
+                          child: ElevatedButton(
+                            onPressed: goToJobPref,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF0038FF),
+                              padding: EdgeInsets.all(20),
+                            ),
+                            child: const Text('Get Started',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w700,
+                                )),
+                          ),
+                        ),
                       ],
                     ),
-                    
+
                     // SizedBox(
                     //   width: 430,
                     //   child: BlueOutlinedBoxButton(
