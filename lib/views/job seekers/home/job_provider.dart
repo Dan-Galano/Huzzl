@@ -27,18 +27,18 @@ class JobProvider with ChangeNotifier {
 
         await fetchJobStreetJobDesc(jobstreetJobs);
 
-        // String linkedInHtmlContent;
-        // try {
-        //   linkedInHtmlContent = await fetchLinkedInData(searchQuery);
-        // } catch (e) {
-        //   print('Error fetching LinkedIn data: $e');
-        //   linkedInHtmlContent = '';
-        // }
+        String linkedInHtmlContent;
+        try {
+          linkedInHtmlContent = await fetchLinkedInData(searchQuery);
+        } catch (e) {
+          print('Error fetching LinkedIn data: $e');
+          linkedInHtmlContent = '';
+        }
 
-        // List<Map<String, String>> linkedInJobs =
-        //     parseLinkedInData(linkedInHtmlContent);
+        List<Map<String, String>> linkedInJobs =
+            parseLinkedInData(linkedInHtmlContent);
 
-        // await fetchLinkedInJobDesc(linkedInJobs);
+        await fetchLinkedInJobDesc(linkedInJobs);
 
         String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
         List<Map<String, String>> onlineJobsJobs =
@@ -65,8 +65,8 @@ class JobProvider with ChangeNotifier {
         _jobs.addAll(jobstreetJobs.where(
             (job) => job['description'] != 'Error fetching description'));
 
-        // _jobs.addAll(linkedInJobs.where(
-        //     (job) => job['description'] != 'Error fetching description'));
+        _jobs.addAll(linkedInJobs.where(
+            (job) => job['description'] != 'Error fetching description'));
 
         _jobs.addAll(onlineJobsJobs);
         _jobs.addAll(kalibrrJobs);
@@ -79,8 +79,8 @@ class JobProvider with ChangeNotifier {
           _defaultJobs.addAll(jobstreetJobs.where(
               (job) => job['description'] != 'Error fetching description'));
 
-          // _defaultJobs.addAll(linkedInJobs.where(
-          //     (job) => job['description'] != 'Error fetching description'));
+          _defaultJobs.addAll(linkedInJobs.where(
+              (job) => job['description'] != 'Error fetching description'));
 
           _defaultJobs.addAll(onlineJobsJobs);
           _defaultJobs.addAll(kalibrrJobs);

@@ -66,10 +66,11 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
     _searchController.clear();
     // final jobProvider = Provider.of<JobProvider>(context, listen: false);
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    jobProvider.restoreDefaultJobs(); // Restore default jobs
+    // jobProvider.restoreDefaultJobs(); // Restore default jobs
     setState(() {
       isSearching = false;
     });
+    jobProvider.loadJobs();
   }
 
   @override
@@ -85,100 +86,311 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
               children: [
                 // Sidebar Filters
                 Container(
-                  width: 350,
+                  width: 320,
                   padding: EdgeInsets.all(30),
                   child: ListView(
                     children: [
+                      // Location field
                       Text(
                         'Location',
                         style: TextStyle(
                             fontFamily: 'Galano',
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.w500),
                       ),
-                      Gap(10),
-                      Container(
-                        height: 40,
-                        child: TextField(
-                          controller: locationController,
-                          decoration: InputDecoration(
-                            hintText: 'Enter job title or keywords',
-                            hintStyle: TextStyle(
-                                fontFamily: 'Galano',
-                                fontSize: 14,
-                                color: Colors.grey),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(0xFFD1E1FF), width: 1.5),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(0xFFD1E1FF), width: 1.5),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(0xFFD1E1FF), width: 1.5),
-                            ),
+                      Gap(8),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'City, State',
+                          hintStyle: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 14,
+                              color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
                           ),
                         ),
                       ),
-                      Gap(20),
+                      Gap(16),
                       Text(
                         'Date posted',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Gap(8),
+                      DropdownButtonFormField<String>(
+                        // value: _selectedDate,
+                        items: [
+                          DropdownMenuItem(
+                              value: 'Last 24 hours',
+                              child: Text('Last 24 hours')),
+                          DropdownMenuItem(
+                              value: 'Last 7 days', child: Text('Last 7 days')),
+                          DropdownMenuItem(
+                              value: 'Last 30 days',
+                              child: Text('Last 30 days')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            // _selectedDate = value;
+                          });
+                        },
+                        hint: Text(
+                          'Select date posted',
+                          style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 15,
+                              color: Colors.grey),
+                        ),
+                        decoration: InputDecoration(
+                          // labelText: 'Select date posted',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                        ),
+                      ),
+                      Gap(16),
+
+                      // Salary range
+                      Text(
+                        'Salary range',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Gap(8),
+                      DropdownButtonFormField<String>(
+                        // value: _selectedRate,
+                        items: [
+                          DropdownMenuItem(
+                              value: 'Hourly', child: Text('Hourly')),
+                          DropdownMenuItem(
+                              value: 'Monthly', child: Text('Monthly')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            // _selectedRate = value;
+                          });
+                        },
+                        hint: Text(
+                          'Select rate',
+                          style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 15,
+                              color: Colors.grey),
+                        ),
+                        decoration: InputDecoration(
+                          // labelText: 'Select date posted',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+
+                      // Custom salary input fields
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                // prefixIcon: Icon(Icons.money),
+                                labelText: '₱ Min',
+                                labelStyle: TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 15,
+                                    color: Colors.grey),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text('/hr', style: TextStyle(fontSize: 16)),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                // prefixIcon: Icon(Icons.money),
+                                labelText: '₱ Max',
+                                labelStyle: TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 15,
+                                    color: Colors.grey),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+
+                      // Job post history checkboxes
+                      Text(
+                        'Job post history',
                         style: TextStyle(
                             fontFamily: 'Galano',
                             fontSize: 16,
                             fontWeight: FontWeight.w500),
                       ),
-                      Gap(10),
-                      SizedBox(
-                        height: 40,
-                        child: DropdownButtonFormField<String>(
-                          hint: Text(
-                            'Select a date',
-                            style:
-                                TextStyle(fontFamily: 'Galano', fontSize: 14),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          'No hires',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          '1 to 9 hires',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          '10+ hires',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+
+                      // Schedule checkboxes
+                      Text(
+                        'Schedule',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          'Less than 30 hrs/week',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          'More than 30 hrs/week',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+
+                      // Job type dropdown
+                      DropdownButtonFormField<String>(
+                        // value: _selectedJobType,
+                        items: [
+                          DropdownMenuItem(
+                              value: 'Full-time', child: Text('Full-time')),
+                          DropdownMenuItem(
+                              value: 'Part-time', child: Text('Part-time')),
+                          DropdownMenuItem(
+                              value: 'Contract', child: Text('Contract')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            // _selectedJobType = value;
+                          });
+                        },
+                        hint: Text(
+                          'Job type',
+                          style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 15,
+                              color: Colors.grey),
+                        ),
+                        decoration: InputDecoration(
+                          // labelText: 'Job type',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
                           ),
-                          // decoration: customInputDecoration(),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(0xFFD1E1FF), width: 1.5),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(0xFFD1E1FF), width: 1.5),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: Color(0xFFD1E1FF), width: 1.5),
-                            ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
                           ),
-                          value: selectedDate,
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedDate = newValue;
-                            });
-                          },
-                          items: datePostedOptions
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: TextStyle(
-                                  fontFamily: 'Galano',
-                                  fontSize: 16,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
                         ),
                       ),
                     ],
@@ -198,63 +410,65 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                         // Search bar
                         Row(
                           children: [
-                            Container(
-                              width: 700,
-                              child: TextField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                  hintText: 'Enter job title or keywords',
-                                  hintStyle: TextStyle(fontFamily: 'Galano'),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(
-                                        color: Color(0xFFD1E1FF), width: 2),
+                            Expanded(
+                              child: Container(
+                                width: 700,
+                                child: TextField(
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter job title or keywords',
+                                    hintStyle: TextStyle(fontFamily: 'Galano'),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Color(0xFFD1E1FF), width: 2),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Color(0xFFD1E1FF), width: 2),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Color(0xFFD1E1FF), width: 2),
+                                    ),
+                                    prefixIcon: Padding(
+                                      padding: const EdgeInsets.all(
+                                          10), // Adjust padding as needed
+                                      child: Icon(
+                                        Icons.search,
+                                        color: Color(0xFFFE9703),
+                                      ), // Change color if needed
+                                    ),
+                                    suffixIcon:
+                                        isSearching // Show clear button only if searching
+                                            ? IconButton(
+                                                icon: Icon(Icons.clear),
+                                                // onPressed: () {
+                                                //   setState(() {
+                                                //     _searchController.clear();
+                                                //     isSearching =
+                                                //         false; // Reset searching state
+                                                //     // jobs.clear();
+                                                //     jobProvider.jobs.clear();
+                                                //   });
+                                                // },
+                                                onPressed: () => clearSearch(),
+                                              )
+                                            : null,
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(
-                                        color: Color(0xFFD1E1FF), width: 2),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(
-                                        color: Color(0xFFD1E1FF), width: 2),
-                                  ),
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.all(
-                                        10), // Adjust padding as needed
-                                    child: Icon(
-                                      Icons.search,
-                                      color: Color(0xFFFE9703),
-                                    ), // Change color if needed
-                                  ),
-                                  suffixIcon:
-                                      isSearching // Show clear button only if searching
-                                          ? IconButton(
-                                              icon: Icon(Icons.clear),
-                                              // onPressed: () {
-                                              //   setState(() {
-                                              //     _searchController.clear();
-                                              //     isSearching =
-                                              //         false; // Reset searching state
-                                              //     // jobs.clear();
-                                              //     jobProvider.jobs.clear();
-                                              //   });
-                                              // },
-                                              onPressed: () => clearSearch(),
-                                            )
-                                          : null,
-                                ),
-                                onChanged: (value) {
-                                  if (_searchController.text.isEmpty) {
+                                  onChanged: (value) {
+                                    if (_searchController.text.isEmpty) {
+                                      setState(() {
+                                        isSearching = false;
+                                      });
+                                    }
                                     setState(() {
-                                      isSearching = false;
+                                      isSearching = true;
                                     });
-                                  }
-                                  setState(() {
-                                    isSearching = true;
-                                  });
-                                },
+                                  },
+                                ),
                               ),
                             ),
                             SizedBox(width: 8),
