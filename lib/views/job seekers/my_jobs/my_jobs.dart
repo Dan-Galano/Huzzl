@@ -88,10 +88,11 @@ class _MyJobsViewState extends State<MyJobsView> with SingleTickerProviderStateM
             thickness: 1,
             color: Colors.grey[400],
           ),
+          const Gap(30),
           //==================================== Content ====================================
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
