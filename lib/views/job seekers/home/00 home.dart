@@ -5,6 +5,7 @@ import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
+import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 
 class JobSeekerHomeScreen extends StatefulWidget {
   const JobSeekerHomeScreen({super.key});
@@ -145,7 +146,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyJobsView(),),),
                       icon: Image.asset(
                         'assets/images/user-icon.png',
                         width: 20,
