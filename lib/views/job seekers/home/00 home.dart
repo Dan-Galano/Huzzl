@@ -9,6 +9,7 @@ import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
+import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 
 class JobSeekerHomeScreen extends StatefulWidget {
   final String? resumeText;
@@ -56,9 +57,6 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   @override
   void initState() {
     super.initState();
-    // loadJobs(); // Load default jobs on startup
-    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    // jobProvider.loadJobs();
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
     if (jobProvider.jobs.isEmpty) {
       jobProvider.loadJobs();
@@ -109,7 +107,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Expanded(
+          Expanded( 
             child: Row(
               children: [
                 // Sidebar Filters

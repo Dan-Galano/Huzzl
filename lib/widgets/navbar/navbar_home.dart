@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 
@@ -158,13 +159,13 @@ class _NavBarHomeState extends State<NavBarHome> {
                         showFeedbackViewDialog(context);
                         break;
                       case 'view_profile':
-                        showProfileDialog(context);
+                        switchScreen(4);
                         break;
                       case 'my_jobs':
-                        showMyJobsDialog(context);
+                        switchScreen(2);
                         break;
                       case 'my_reviews':
-                        showMyReviewsDialog(context);
+                        switchScreen(3);
                         break;
                       case 'close_account':
                         showCloseAccountDialog(context);
@@ -185,6 +186,10 @@ class _NavBarHomeState extends State<NavBarHome> {
         ],
       ),
     );
+  }
+
+  void switchScreen(int index){
+    widget.onItemTapped(index);
   }
 
   Widget _buildNavButton(int index, String title) {
@@ -336,6 +341,16 @@ void showCloseAccountDialog(BuildContext context) {
   );
 }
 
+ void logOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      print("User logged out successfully.");
+      Navigator.of(context).pop();
+    } catch (e) {
+      print("Error signing out: $e");
+    }
+  }
+
 void showLogoutDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -395,10 +410,8 @@ void showLogoutDialog(BuildContext context) {
                   // Button centered below text
                   Center(
                     child: BlueFilledCircleButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      text: "LOG OUT", // Button text
+                      onPressed: () => logOut(context),
+                      text: "Log Out", // Button text
                       width: 470, // Optional width for the button
                     ),
                   ),
