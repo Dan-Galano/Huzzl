@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/missed_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/past_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/pending_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/reschedule_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/today_view.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/upcoming_view.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/tabs/missed_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/tabs/past_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/tabs/pending_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/tabs/rescheduled_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/tabs/today_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/tabs/upcoming_view.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/interviews_widgets.dart';
 
 Widget buildInterviewsContent() {
@@ -37,11 +40,18 @@ Widget buildInterviewsContent() {
                       ),
                     ),
                     SizedBox(width: spacing),
-                    SizedBox(
-                      width: textFieldWidth,
+                    Expanded(
                       child: TextField(
                         decoration: searchTextFieldDecoration('Search'),
                       ),
+                    ),
+                    SizedBox(width: spacing),
+                    InterviewCalendarButton(
+                      onPressed: () {
+                          final homeState = context
+                          .findAncestorStateOfType<RecruiterHomeScreenState>();
+                      homeState?.toggleCalendarScreen(true);
+                      },
                     ),
                   ],
                 );
@@ -49,17 +59,19 @@ Widget buildInterviewsContent() {
             ),
             InterviewFilterRowWidget(),
             TabBar(
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
               controller: _tabController,
               labelColor: Colors.black,
               unselectedLabelColor: Colors.grey,
               indicatorColor: Colors.orange,
               labelStyle: const TextStyle(
-                fontSize: 18, // Font size of the selected tab
+                fontSize: 14, // Font size of the selected tab
                 fontWeight: FontWeight.bold, // Font weight of the selected tab
                 fontFamily: 'Galano', // Use your custom font
               ),
               unselectedLabelStyle: const TextStyle(
-                fontSize: 16, // Font size of the unselected tabs
+                fontSize: 12, // Font size of the unselected tabs
                 fontWeight:
                     FontWeight.normal, // Font weight of the unselected tabs
                 fontFamily: 'Galano', // Use your custom font
@@ -83,7 +95,7 @@ Widget buildInterviewsContent() {
                   UpcomingView(),
                   PendingView(),
                   PastView(),
-                  RescheduleView(),
+                  RescheduledView(),
                   MissedView(),
                 ],
               ),

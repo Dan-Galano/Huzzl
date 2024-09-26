@@ -124,6 +124,16 @@ InputDecoration inputTextFieldDecoration(int option) {
   return const InputDecoration();
 }
 
+OutlineInputBorder outlinedInputBorder(){
+  return OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(
+          color: Color(0xFFD1E1FF),
+          width: 1.5,
+        ),
+      );
+}
+
 InputDecoration customHintTextInputDecoration(String hintTxt) {
   return InputDecoration(
       hintText: hintTxt,

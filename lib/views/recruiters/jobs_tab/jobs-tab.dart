@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
-import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/01%20job-posts.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/closed.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/open.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/paused.dart';
@@ -91,17 +90,19 @@ class _JobTabState extends State<JobTab> {
                     ),
                     JobFilterRowWidget(),
                     TabBar(
+                      tabAlignment: TabAlignment.start,
+                      isScrollable: true,
                       controller: _tabController,
                       labelColor: Colors.black,
                       unselectedLabelColor: Colors.grey,
                       indicatorColor: Colors.orange,
                       labelStyle: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Galano',
                       ),
                       unselectedLabelStyle: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
                         fontWeight: FontWeight.normal,
                         fontFamily: 'Galano',
                       ),

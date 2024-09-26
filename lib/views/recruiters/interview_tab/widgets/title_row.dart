@@ -3,10 +3,11 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class TitleRow extends StatefulWidget {
-  TitleRow({super.key, required this.date, required this.title});
+  TitleRow({super.key, required this.date, required this.title, required this.color});
 
   DateTime date;
   String title;
+  Color color;
 
   @override
   State<TitleRow> createState() => _TitleRowState();
@@ -38,7 +39,7 @@ class _TitleRowState extends State<TitleRow> {
                 Text(
                   widget.title,
                   style: TextStyle(
-                    color: Color(0xffFD7206),
+                    color: widget.color,
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
                   ),
@@ -47,7 +48,7 @@ class _TitleRowState extends State<TitleRow> {
                 Expanded(
                   child: Container(
                     height: 2,
-                    color: Color(0xffFD7206),
+                    color: widget.color,
                   ),
                 )
               ],

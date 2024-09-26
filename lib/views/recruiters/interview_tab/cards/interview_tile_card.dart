@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/application_view_dialog.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_dialog%20copy.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/reschedule_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 
 class InterviewTile extends StatefulWidget {
@@ -8,32 +12,36 @@ class InterviewTile extends StatefulWidget {
   final String branch;
   final String interviewTitle;
   final String interviewType;
+  final DateTimeRange timeRange;
 
 // intervieweeName
 // profession
 // branch?
 // interviewTitle
-//interviewType
+//in.terviewType
 
-  InterviewTile({
+  const InterviewTile({
+    super.key,
     required this.intervieweeName,
     required this.profession,
     required this.branch,
     required this.interviewTitle,
     required this.interviewType,
+    required this.timeRange,
   });
 
   @override
   State<InterviewTile> createState() => _InterviewTileState();
 }
 
-class _InterviewTileState extends State<InterviewTile> {
+class _InterviewTileState extends State<InterviewTile>
+    with TickerProviderStateMixin {
   bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      // cursor: SystemMouseCursors.click,
       onEnter: (_) {
         setState(() {
           _isHovered = true;
@@ -47,7 +55,7 @@ class _InterviewTileState extends State<InterviewTile> {
       child: GestureDetector(
         onTap: () {},
         child: Card(
-          elevation: _isHovered ? 8 : 2,
+          // elevation: _isHovered ? 8 : 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: _isHovered ? Colors.grey[200] : Colors.white,
           child: Padding(
@@ -56,7 +64,6 @@ class _InterviewTileState extends State<InterviewTile> {
               children: [
                 // Interview info
                 Expanded(
-                  flex: 1,
                   child: Row(
                     children: [
                       Column(
@@ -93,7 +100,6 @@ class _InterviewTileState extends State<InterviewTile> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
-                                  fontFamily: 'Galano',
                                 ),
                               ),
                             ],
@@ -110,7 +116,6 @@ class _InterviewTileState extends State<InterviewTile> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
-                                  fontFamily: 'Galano',
                                 ),
                               ),
                             ],
@@ -122,7 +127,6 @@ class _InterviewTileState extends State<InterviewTile> {
                 ),
                 //Interview title
                 Expanded(
-                  flex: 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -134,7 +138,6 @@ class _InterviewTileState extends State<InterviewTile> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color(0xff373030),
-                          fontFamily: 'Galano',
                         ),
                       ),
                       Text(
@@ -144,16 +147,17 @@ class _InterviewTileState extends State<InterviewTile> {
                           decorationColor: Colors.orange,
                           fontSize: 14,
                           color: Colors.grey,
-                          fontFamily: 'Galano',
                         ),
                       ),
                     ],
                   ),
                 ),
                 // const Spacer(),
+                //Buttons
                 Expanded(
                   flex: 1,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       IconButton(
                         onPressed: () {},
@@ -166,13 +170,22 @@ class _InterviewTileState extends State<InterviewTile> {
                         children: [
                           if (widget.interviewType == 'Online') ...[
                             StartInterviewButton(
-                              onPressed: () {},
+                              onPressed: widget.timeRange.start.day ==
+                                          DateTime.now().day &&
+                                      widget.timeRange.start.month ==
+                                          DateTime.now().month &&
+                                      widget.timeRange.start.year ==
+                                          DateTime.now().year
+                                  ? () {
+                                      // Your logic for starting the interview
+                                    }
+                                  : null,
                             ),
                             const Gap(10),
                           ],
                           ...[
                             MarkAsDoneButton(
-                              onPressed: () {},
+                              onPressed: () => showMarkAsDoneDialog(context),
                             ),
                           ],
                         ],
@@ -180,7 +193,63 @@ class _InterviewTileState extends State<InterviewTile> {
                     ],
                   ),
                 ),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
+                const Gap(10),
+                Expanded(
+                  flex: 0,
+                  child: IconButton(
+                    onPressed: () async {
+                      final RenderBox button =
+                          context.findRenderObject() as RenderBox;
+                      final RenderBox overlay = Overlay.of(context)
+                          .context
+                          .findRenderObject() as RenderBox;
+
+                      final position =
+                          button.localToGlobal(Offset.zero, ancestor: overlay);
+
+                      await showMenu(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          position.dx,
+                          position.dy,
+                          overlay.size.width - position.dx - button.size.width,
+                          overlay.size.height - position.dy,
+                        ),
+                        items: [
+                          const PopupMenuItem(
+                            value: 'view_applicant_details',
+                            child: Row(
+                              children: [
+                                Icon(Icons.file_open_outlined,
+                                    color: Colors.grey),
+                                SizedBox(width: 8),
+                                Text('View applicant\'s details'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'reschedule_interview',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit_calendar_outlined,
+                                    color: Colors.grey),
+                                SizedBox(width: 8),
+                                Text('Reschedule interview'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ).then((value) {
+                        if (value == 'view_applicant_details') {
+                          showApplicationNotesViewDialog(context, this);
+                        } else if (value == 'reschedule_interview') {
+                          showRescheduleInterviewDialog(context);
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.more_vert),
+                  ),
+                ),
               ],
             ),
           ),
