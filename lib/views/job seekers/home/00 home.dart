@@ -78,7 +78,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Expanded(
+          Expanded( 
             child: Row(
               children: [
                 // Sidebar Filters

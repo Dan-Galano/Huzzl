@@ -162,7 +162,7 @@ class _NavBarHomeState extends State<NavBarHome> {
                         showProfileDialog(context);
                         break;
                       case 'my_jobs':
-                        showMyJobsDialog(context);
+                        switchScreen(2);
                         break;
                       case 'my_reviews':
                         showMyReviewsDialog(context);
@@ -186,6 +186,10 @@ class _NavBarHomeState extends State<NavBarHome> {
         ],
       ),
     );
+  }
+
+  void switchScreen(int index){
+    widget.onItemTapped(index);
   }
 
   Widget _buildNavButton(int index, String title) {
