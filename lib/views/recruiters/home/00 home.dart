@@ -21,44 +21,66 @@ class RecruiterHomeScreen extends StatefulWidget {
 class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   Map<String, dynamic>? companyData;
   Map<String, dynamic>? userData;
+  List<Map<String, dynamic>> jobPostsData = [];
+  User? user;
   bool? isStandaloneCompany;
+
   void getcompanyData() async {
     // Get the current user after they sign in
-    User? user = FirebaseAuth.instance.currentUser;
+    setState(() {
+      user = FirebaseAuth.instance.currentUser;
+    });
 
     if (user != null) {
       // The UID of the signed-in user
-      String uid = user.uid;
+      String uid = user!.uid;
 
-      // Company Info
-      DocumentSnapshot companyDocument = await FirebaseFirestore.instance
-          .collection(
-              'recruiters_company_info') // Assuming 'companyData' is the collection
-          .doc(uid) // Access the document with the user's UID
+      // Fetch company info from the subcollection
+      QuerySnapshot companySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('company_information')
           .get();
-      //USer info
+
+      QuerySnapshot jobPostsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('job_posts')
+          .get();
+
+      // Fetch user info
       DocumentSnapshot userDocument = await FirebaseFirestore.instance
-          .collection('users') // Assuming 'companyData' is the collection
+          .collection('users') // Access the 'users' collection
           .doc(uid) // Access the document with the user's UID
           .get();
 
-      // Check if the document exists
-      if (companyDocument.exists && userDocument.exists) {
-        // Get the user's data
+      // Check if the user document exists and the company subcollection has data
+      if (companySnapshot.docs.isNotEmpty && userDocument.exists) {
         setState(() {
-          companyData = companyDocument.data() as Map<String, dynamic>;
+          // Extract the first document from the company_information subcollection (or handle multiple documents as needed)
+          companyData =
+              companySnapshot.docs.first.data() as Map<String, dynamic>;
           userData = userDocument.data() as Map<String, dynamic>;
-
+          jobPostsData = jobPostsSnapshot.docs
+              .map((doc) => doc.data() as Map<String, dynamic>)
+              .toList();
+          print(jobPostsData);
+          // Check company size field to set the isStandaloneCompany flag
           if (companyData!["companySize"] == "It's just me") {
             isStandaloneCompany = true;
           } else {
             isStandaloneCompany = false;
           }
+
+          // Update the user and company data
+          this.companyData = companyData;
+          this.userData = userData;
         });
 
-        print("User Data: ${companyData.toString()}");
+        print("Company Data: ${companyData.toString()}");
+        print("User Data: ${userData.toString()}");
       } else {
-        print("No user data found for UID: $uid");
+        print("No company or user data found for UID: $uid");
       }
     } else {
       print("No user signed in.");
@@ -105,7 +127,10 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
         case 1:
-          return JobScreens();
+          return JobScreens(
+            jobPostsData: jobPostsData,
+            user: user!,
+          );
         case 2:
           return buildCandidatesContent(context);
         case 3:
@@ -121,16 +146,19 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         case 1:
           return BranchesScreen();
         case 2:
-          return JobScreens();
+          return JobScreens(
+            jobPostsData: jobPostsData,
+            user: user!,
+          );
         case 3:
           if (_isApplicationScreen) {
-          return ApplicationScreen(
-              onBack: () => toggleApplicationScreen(false));
-        } else if (_isSlApplicationScreen) {
-          return SlApplicationScreen(
-              onBack: () => toggleSlApplicationScreen(false));
-        }
-        return buildCandidatesContent(context);
+            return ApplicationScreen(
+                onBack: () => toggleApplicationScreen(false));
+          } else if (_isSlApplicationScreen) {
+            return SlApplicationScreen(
+                onBack: () => toggleSlApplicationScreen(false));
+          }
+          return buildCandidatesContent(context);
         case 4:
           return buildInterviewsContent();
         default:
@@ -263,12 +291,12 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                         ],
                       ),
                 const VerticalDivider(thickness: 1, width: 1),
-                      Expanded(
+                Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
                       children: [
-                              Expanded(
+                        Expanded(
                           child: buildContent(),
                         ),
                       ],

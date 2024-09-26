@@ -11,9 +11,12 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/07%20job-p
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/08%20edit-job-details.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/09%20congrats.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/jobs-tab.dart';
+import 'package:intl/intl.dart';
 
 class JobScreens extends StatefulWidget {
-  const JobScreens({super.key});
+  final List<Map<String, dynamic>> jobPostsData;
+  final User user;
+  const JobScreens({required this.jobPostsData, required this.user, super.key});
 
   @override
   State<JobScreens> createState() => _JobScreensState();
@@ -22,7 +25,7 @@ class JobScreens extends StatefulWidget {
 class _JobScreensState extends State<JobScreens> {
   //UID
   User? user = FirebaseAuth.instance.currentUser;
-  
+
   PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -87,25 +90,6 @@ class _JobScreensState extends State<JobScreens> {
   void _submitJobPostForm() {
     // ADD THE DB HERE
     print("Data: ${jobTitleController.text} ${jobDescriptionController.text}");
-    
-    FirebaseFirestore.instance
-    .collection('job_posts')
-    .doc(user!.uid) // UID of the user
-    .collection('jobs')
-    .add({
-      'jobTitle': jobTitleController.text,
-      'jobDescription' : jobDescriptionController.text,
-      'numberOfPeopleToHire' : _numOfPeopleToHire,
-      'posted_at': FieldValue.serverTimestamp(),
-    })
-    .then((value) {
-      print('Job post added successfully!');
-    })
-    .catchError((error) {
-      print('Error adding job post: $error');
-    });
-
-
 
     // clear all values
     jobTitleController.clear();
@@ -194,7 +178,11 @@ class _JobScreensState extends State<JobScreens> {
             child: PageView(
           controller: _pageController,
           children: [
-            JobTab(postJob: _goToPostJob),
+            JobTab(
+              postJob: _goToPostJob,
+              jobPostsData: widget.jobPostsData,
+              user: widget.user,
+            ),
             JobPosts(
               nextPage: _nextPage,
               cancel: _cancel,
@@ -296,6 +284,7 @@ class _JobScreensState extends State<JobScreens> {
               appDeadlineDate: appDeadlineDate ?? DateTime.now(),
               hiringTimeline: selectedHiringTimeline,
               prescreenQuestions: preScreenQues,
+              user: widget.user,
             ),
             JobCongratulationPage(
               goBack: _cancel, // clear niya everything tas balik sa Job tab
