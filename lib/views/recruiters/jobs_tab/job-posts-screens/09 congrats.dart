@@ -23,7 +23,7 @@ class JobCongratulationPage extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   const Text(
-                    'Congratulations! Your account is created.',
+                    'Congratulations!',
                     style: TextStyle(
                       fontSize: 32,
                       color: Color(0xff373030),
@@ -33,7 +33,7 @@ class JobCongratulationPage extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   const Text(
-                    'Post a job, manage and find new recruits!',
+                    'Your job post has been uploaded.',
                     style: TextStyle(
                       fontSize: 22,
                       color: Color(0xff373030),

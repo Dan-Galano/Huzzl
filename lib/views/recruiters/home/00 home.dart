@@ -66,6 +66,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
               .map((doc) => doc.data() as Map<String, dynamic>)
               .toList();
           print(jobPostsData);
+          print(companyData!["companySize"]);
           // Check company size field to set the isStandaloneCompany flag
           if (companyData!["companySize"] == "It's just me") {
             isStandaloneCompany = true;
@@ -94,7 +95,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 5;
+  int? _selectedIndex = 0;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
   bool _isCalendarScreen = false;

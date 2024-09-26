@@ -117,7 +117,7 @@ class _JobTabState extends State<JobTab> {
                         controller: _tabController,
                         children: [
                           OpenJobs(
-                            jobPostsData: widget.jobPostsData,
+                            // jobPostsData: widget.jobPostsData,
                             user: widget.user,
                           ),
                           PausedJobs(),
