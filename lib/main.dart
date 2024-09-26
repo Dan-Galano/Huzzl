@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/register/01%20jobseeker_profile.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
@@ -21,12 +22,32 @@ void main() async {
   runApp(const HuzzlWeb());
 }
 
+
+void configLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 1500)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.custom
+    ..backgroundColor =
+        Color(0xFfd74a4a) 
+    ..textColor = Colors.white 
+    ..fontSize = 16.0 
+    ..indicatorColor = Colors.white
+    ..maskColor = Colors.black.withOpacity(0.5)
+    ..userInteractions = false
+    ..dismissOnTap = true;
+}
+
+
 class HuzzlWeb extends StatelessWidget {
   const HuzzlWeb({super.key});
 
   @override
   Widget build(BuildContext context) {
+    
+    configLoading();
     return MaterialApp(
+      builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
       home: AuthWrapper(),

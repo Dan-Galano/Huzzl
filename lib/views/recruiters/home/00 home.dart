@@ -6,6 +6,7 @@ import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
@@ -74,6 +75,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   int? _selectedIndex = 5;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
+  bool _isCalendarScreen = false;
 
   void changeDestination(int index) {
     setState(() {
@@ -90,6 +92,12 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   void toggleSlApplicationScreen(bool showApplicationScreen) {
     setState(() {
       _isSlApplicationScreen = showApplicationScreen;
+    });
+  }
+
+  void toggleCalendarScreen(bool showCalendarScreen) {
+    setState(() {
+      _isCalendarScreen = showCalendarScreen;
     });
   }
 
@@ -129,13 +137,20 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         case 4:
           if (_isApplicationScreen) {
             return ApplicationScreen(
-                onBack: () => toggleApplicationScreen(false));
+              onBack: () => toggleApplicationScreen(false),
+            );
           } else if (_isSlApplicationScreen) {
             return SlApplicationScreen(
-                onBack: () => toggleSlApplicationScreen(false));
+              onBack: () => toggleSlApplicationScreen(false),
+            );
           }
           return buildCandidatesContent(context);
         case 5:
+          if (_isCalendarScreen) {
+            return InterviewCalendar(
+              onBack: () => toggleCalendarScreen(false),
+            );
+          }
           return buildInterviewsContent();
         default:
           return Text("No content available");
