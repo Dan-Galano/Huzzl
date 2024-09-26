@@ -169,459 +169,461 @@ class _BranchesScreenState extends State<BranchesScreen>
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(15.0)),
               ),
-              content: Form(
-                key: _formkey,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        "Add new branch",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+              content: SingleChildScrollView(
+                child: Form(
+                  key: _formkey,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "Add new branch",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: const Row(
-                          children: [
-                            Text(
-                              "Branch name",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Branch name",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Gap(10),
-                      //Branch name input field
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: TextFormField(
-                          controller: _branchNameController,
-                          decoration: inputTextFieldDecoration(1),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Branch name is required.";
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      //Branch location
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: const Row(
-                          children: [
-                            Text(
-                              "Location",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Region Dropdown
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: DropdownButtonFormField<String>(
-                          decoration:
-                              customHintTextInputDecoration('Select Region'),
-                          value: selectedRegion,
-                          items:
-                              regions.map<DropdownMenuItem<String>>((region) {
-                            return DropdownMenuItem<String>(
-                              value: region['name'],
-                              child: Text(region['name']),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setStateDialog(() {
-                              selectedRegion = value;
-                              selectedProvince = null;
-                              selectedCity = null;
-                              selectedBarangay = null;
-                              provinces = [];
-                              cities = [];
-                              barangays = [];
-                            });
-                            if (value != null) {
-                              final selectedRegionCode = regions.firstWhere(
-                                (region) => region['name'] == value,
-                                orElse: () => null,
-                              )['code'];
-
-                              if (selectedRegionCode != null) {
-                                fetchProvinces(selectedRegionCode).then((_) {
-                                  setStateDialog(
-                                      () {}); // Trigger rebuild after fetching provinces
-                                });
-                              }
-                            }
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Region is required.';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Province Dropdown
-                      if (selectedRegion != null)
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.25,
-                          child: DropdownButtonFormField<String>(
-                            decoration: customHintTextInputDecoration(
-                                'Select Province'),
-                            value: selectedProvince,
-                            items: provinces
-                                .map<DropdownMenuItem<String>>((province) {
-                              return DropdownMenuItem<String>(
-                                value: province['name'],
-                                child: Text(province['name']),
-                              );
-                            }).toList(),
-                            onChanged: selectedRegion != null
-                                ? (value) {
-                                    setStateDialog(() {
-                                      selectedProvince = value;
-                                      selectedCity = null;
-                                      selectedBarangay = null;
-                                      cities = [];
-                                      barangays = [];
-                                    });
-                                    if (value != null) {
-                                      final selectedProvinceCode =
-                                          provinces.firstWhere(
-                                        (province) => province['name'] == value,
-                                        orElse: () => null,
-                                      )['code'];
-
-                                      if (selectedProvinceCode != null) {
-                                        fetchCities(selectedProvinceCode)
-                                            .then((_) {
-                                          setStateDialog(
-                                              () {}); // Trigger rebuild after fetching cities
-                                        });
-                                      }
-                                    }
-                                  }
-                                : null,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Province is required.';
-                              }
-                              return null;
-                            },
+                            ],
                           ),
                         ),
-                      const SizedBox(height: 10),
-
-                      // City Dropdown
-                      if (selectedProvince != null)
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.25,
-                          child: DropdownButtonFormField<String>(
-                            decoration: customHintTextInputDecoration(
-                                'Select City/Municipality'),
-                            value: selectedCity,
-                            items: cities.map<DropdownMenuItem<String>>((city) {
-                              return DropdownMenuItem<String>(
-                                value: city['name'],
-                                child: Text(city['name']),
-                              );
-                            }).toList(),
-                            onChanged: selectedProvince != null
-                                ? (value) {
-                                    setStateDialog(() {
-                                      selectedCity = value;
-                                      selectedBarangay = null;
-                                      barangays = [];
-                                    });
-                                    if (value != null) {
-                                      final selectedCitiesCode =
-                                          cities.firstWhere(
-                                        (city) => city['name'] == value,
-                                        orElse: () => null,
-                                      )['code'];
-                                      if (selectedCitiesCode != null) {
-                                        fetchBarangays(selectedCitiesCode)
-                                            .then((_) {
-                                          setStateDialog(
-                                              () {}); // Trigger rebuild after fetching barangays
-                                        });
-                                      }
-                                    }
-                                  }
-                                : null,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'City is required.';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      const SizedBox(height: 10),
-
-                      // Barangay Dropdown
-                      if (selectedCity != null)
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.25,
-                          child: DropdownButtonFormField<String>(
-                            decoration: customHintTextInputDecoration(
-                                'Select Barangay'),
-                            value: selectedBarangay,
-                            items: barangays
-                                .map<DropdownMenuItem<String>>((barangay) {
-                              return DropdownMenuItem<String>(
-                                value: barangay['name'],
-                                child: Text(barangay['name']),
-                              );
-                            }).toList(),
-                            onChanged: selectedCity != null
-                                ? (value) {
-                                    setStateDialog(() {
-                                      selectedBarangay = value;
-                                    });
-                                  }
-                                : null,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Barangay is required.';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      const SizedBox(height: 10),
-
-                      // Other location information field
-                      if (selectedBarangay != null)
+                        const Gap(10),
+                        //Branch name input field
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.25,
                           child: TextFormField(
-                            controller: otherLocationInformation,
-                            decoration: inputTextFieldDecoration(3),
+                            controller: _branchNameController,
+                            decoration: inputTextFieldDecoration(1),
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return "This field is required.";
+                                return "Branch name is required.";
                               }
                               return null;
                             },
                           ),
                         ),
-
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: const Row(
-                          children: [
-                            Text(
-                              "Hiring Manager",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                        const SizedBox(height: 10),
+                        //Branch location
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Location",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const Gap(10),
-                      //Branch name input field
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        const SizedBox(height: 10),
+                
+                        // Region Dropdown
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: DropdownButtonFormField<String>(
+                            decoration:
+                                customHintTextInputDecoration('Select Region'),
+                            value: selectedRegion,
+                            items:
+                                regions.map<DropdownMenuItem<String>>((region) {
+                              return DropdownMenuItem<String>(
+                                value: region['name'],
+                                child: Text(region['name']),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setStateDialog(() {
+                                selectedRegion = value;
+                                selectedProvince = null;
+                                selectedCity = null;
+                                selectedBarangay = null;
+                                provinces = [];
+                                cities = [];
+                                barangays = [];
+                              });
+                              if (value != null) {
+                                final selectedRegionCode = regions.firstWhere(
+                                  (region) => region['name'] == value,
+                                  orElse: () => null,
+                                )['code'];
+                
+                                if (selectedRegionCode != null) {
+                                  fetchProvinces(selectedRegionCode).then((_) {
+                                    setStateDialog(
+                                        () {}); // Trigger rebuild after fetching provinces
+                                  });
+                                }
+                              }
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Region is required.';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                
+                        // Province Dropdown
+                        if (selectedRegion != null)
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.12,
-                            child: TextFormField(
-                              controller: _firstNameController,
-                              decoration:
-                                  customHintTextInputDecoration('First name'),
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: DropdownButtonFormField<String>(
+                              decoration: customHintTextInputDecoration(
+                                  'Select Province'),
+                              value: selectedProvince,
+                              items: provinces
+                                  .map<DropdownMenuItem<String>>((province) {
+                                return DropdownMenuItem<String>(
+                                  value: province['name'],
+                                  child: Text(province['name']),
+                                );
+                              }).toList(),
+                              onChanged: selectedRegion != null
+                                  ? (value) {
+                                      setStateDialog(() {
+                                        selectedProvince = value;
+                                        selectedCity = null;
+                                        selectedBarangay = null;
+                                        cities = [];
+                                        barangays = [];
+                                      });
+                                      if (value != null) {
+                                        final selectedProvinceCode =
+                                            provinces.firstWhere(
+                                          (province) => province['name'] == value,
+                                          orElse: () => null,
+                                        )['code'];
+                
+                                        if (selectedProvinceCode != null) {
+                                          fetchCities(selectedProvinceCode)
+                                              .then((_) {
+                                            setStateDialog(
+                                                () {}); // Trigger rebuild after fetching cities
+                                          });
+                                        }
+                                      }
+                                    }
+                                  : null,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Hiring manager is required.";
+                                if (value == null || value.isEmpty) {
+                                  return 'Province is required.';
                                 }
                                 return null;
                               },
                             ),
                           ),
-                          const Gap(10),
+                        const SizedBox(height: 10),
+                
+                        // City Dropdown
+                        if (selectedProvince != null)
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.12,
-                            child: TextFormField(
-                              controller: _lastNameController,
-                              decoration:
-                                  customHintTextInputDecoration('Last name'),
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: DropdownButtonFormField<String>(
+                              decoration: customHintTextInputDecoration(
+                                  'Select City/Municipality'),
+                              value: selectedCity,
+                              items: cities.map<DropdownMenuItem<String>>((city) {
+                                return DropdownMenuItem<String>(
+                                  value: city['name'],
+                                  child: Text(city['name']),
+                                );
+                              }).toList(),
+                              onChanged: selectedProvince != null
+                                  ? (value) {
+                                      setStateDialog(() {
+                                        selectedCity = value;
+                                        selectedBarangay = null;
+                                        barangays = [];
+                                      });
+                                      if (value != null) {
+                                        final selectedCitiesCode =
+                                            cities.firstWhere(
+                                          (city) => city['name'] == value,
+                                          orElse: () => null,
+                                        )['code'];
+                                        if (selectedCitiesCode != null) {
+                                          fetchBarangays(selectedCitiesCode)
+                                              .then((_) {
+                                            setStateDialog(
+                                                () {}); // Trigger rebuild after fetching barangays
+                                          });
+                                        }
+                                      }
+                                    }
+                                  : null,
                               validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Hiring manager is required.";
+                                if (value == null || value.isEmpty) {
+                                  return 'City is required.';
                                 }
                                 return null;
                               },
                             ),
                           ),
-                        ],
-                      ),
-                      const Gap(20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: const Row(
+                        const SizedBox(height: 10),
+                
+                        // Barangay Dropdown
+                        if (selectedCity != null)
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: DropdownButtonFormField<String>(
+                              decoration: customHintTextInputDecoration(
+                                  'Select Barangay'),
+                              value: selectedBarangay,
+                              items: barangays
+                                  .map<DropdownMenuItem<String>>((barangay) {
+                                return DropdownMenuItem<String>(
+                                  value: barangay['name'],
+                                  child: Text(barangay['name']),
+                                );
+                              }).toList(),
+                              onChanged: selectedCity != null
+                                  ? (value) {
+                                      setStateDialog(() {
+                                        selectedBarangay = value;
+                                      });
+                                    }
+                                  : null,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Barangay is required.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                
+                        // Other location information field
+                        if (selectedBarangay != null)
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            child: TextFormField(
+                              controller: otherLocationInformation,
+                              decoration: inputTextFieldDecoration(3),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "This field is required.";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Hiring Manager",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Gap(10),
+                        //Branch name input field
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "Work email address",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.12,
+                              child: TextFormField(
+                                controller: _firstNameController,
+                                decoration:
+                                    customHintTextInputDecoration('First name'),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "Hiring manager is required.";
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const Gap(10),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.12,
+                              child: TextFormField(
+                                controller: _lastNameController,
+                                decoration:
+                                    customHintTextInputDecoration('Last name'),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "Hiring manager is required.";
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: TextFormField(
-                          controller: _emailController,
-                          decoration: customHintTextInputDecoration('Email'),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Work email address is required.";
-                            }
-                            return null;
-                          },
+                        const Gap(20),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Work email address",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const Gap(20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: const Row(
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: TextFormField(
+                            controller: _emailController,
+                            decoration: customHintTextInputDecoration('Email'),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Work email address is required.";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const Gap(20),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Password",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: TextFormField(
+                            controller: _passwordController,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  onPressed: () =>
+                                      toggleShowPassword(setStateDialog),
+                                  icon: isPasswordVisible
+                                      ? const Icon(Icons.visibility)
+                                      : const Icon(Icons.visibility_off)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
+                              isDense: true,
+                              border: outlinedInputBorder(),
+                              enabledBorder: outlinedInputBorder(),
+                              focusedBorder: outlinedInputBorder(),
+                              hintText: "Password (8 or more characters)",
+                            ),
+                            obscureText: !isPasswordVisible,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Password is required.';
+                              }
+                              if (value.length < 8) {
+                                return 'Password must be at least 8 characters long';
+                              }
+                              return null;
+                            },
+                            // onSaved: (value) => _passwordController = value ?? '',
+                          ),
+                        ),
+                        const Gap(20),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: const Row(
+                            children: [
+                              Text(
+                                "Phone number",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.number,
+                            decoration: customHintTextInputDecoration('Phone'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Phone number is required.';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        //Buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "Password",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                            ElevatedButton(
+                              onPressed: submitNewBranch,
+                              style: const ButtonStyle(
+                                elevation: WidgetStatePropertyAll(0),
+                                backgroundColor: WidgetStatePropertyAll(
+                                  Color(0xffD6E4FF),
+                                ),
+                              ),
+                              child: const Text(
+                                'Save',
+                                style: TextStyle(
+                                  color: Color(0xff3B7DFF),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            ElevatedButton(
+                              onPressed: () => cancelAddNewBranch(context),
+                              style: const ButtonStyle(
+                                elevation: WidgetStatePropertyAll(0),
+                                backgroundColor: WidgetStatePropertyAll(
+                                  Color(0xffe8e8e8),
+                                ),
+                              ),
+                              child: const Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  color: Color(0xff4D4D4D),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: TextFormField(
-                          controller: _passwordController,
-                          decoration: InputDecoration(
-                            suffixIcon: IconButton(
-                                onPressed: () =>
-                                    toggleShowPassword(setStateDialog),
-                                icon: isPasswordVisible
-                                    ? const Icon(Icons.visibility)
-                                    : const Icon(Icons.visibility_off)),
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            isDense: true,
-                            border: outlinedInputBorder(),
-                            enabledBorder: outlinedInputBorder(),
-                            focusedBorder: outlinedInputBorder(),
-                            hintText: "Password (8 or more characters)",
-                          ),
-                          obscureText: !isPasswordVisible,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Password is required.';
-                            }
-                            if (value.length < 8) {
-                              return 'Password must be at least 8 characters long';
-                            }
-                            return null;
-                          },
-                          // onSaved: (value) => _passwordController = value ?? '',
-                        ),
-                      ),
-                      const Gap(20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: const Row(
-                          children: [
-                            Text(
-                              "Phone number",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        child: TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.number,
-                          decoration: customHintTextInputDecoration('Phone'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Phone number is required.';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      //Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: submitNewBranch,
-                            style: const ButtonStyle(
-                              elevation: WidgetStatePropertyAll(0),
-                              backgroundColor: WidgetStatePropertyAll(
-                                Color(0xffD6E4FF),
-                              ),
-                            ),
-                            child: const Text(
-                              'Save',
-                              style: TextStyle(
-                                color: Color(0xff3B7DFF),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          ElevatedButton(
-                            onPressed: () => cancelAddNewBranch(context),
-                            style: const ButtonStyle(
-                              elevation: WidgetStatePropertyAll(0),
-                              backgroundColor: WidgetStatePropertyAll(
-                                Color(0xffe8e8e8),
-                              ),
-                            ),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(
-                                color: Color(0xff4D4D4D),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
