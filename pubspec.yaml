@@ -30,19 +30,27 @@ environment:
 dependencies:
   cloud_firestore: ^5.1.0
   cupertino_icons: ^1.0.6
+  drop_down_search_field: ^1.0.4
   email_validator: ^3.0.0
   firebase_auth: ^5.1.2
   firebase_core: ^3.2.0
   flutter:
     sdk: flutter
+  flutter_easyloading: ^3.0.5
+  flutter_localization: ^0.2.2
+  flutter_typeahead: ^5.2.0
   flutter_web_plugins:
     sdk: flutter
+  fluttertoast: ^8.2.8
   gap: ^3.0.1
   html: ^0.15.4
   http: ^1.2.2
   intl: ^0.19.0
+  multiselect_dropdown_flutter: ^0.0.7
   responsive_builder: ^0.7.1
+  syncfusion_flutter_calendar: ^27.1.48
   syncfusion_flutter_pdfviewer: ^27.1.48
+  syncfusion_localizations: ^27.1.48
   url_launcher: ^6.3.0
 
 dev_dependencies:

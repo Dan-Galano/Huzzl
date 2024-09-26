@@ -49,6 +49,8 @@ Widget buildInterviewsContent() {
             ),
             InterviewFilterRowWidget(),
             TabBar(
+      tabAlignment: TabAlignment.start,
+      isScrollable: true,
               controller: _tabController,
               labelColor: Colors.black,
               unselectedLabelColor: Colors.grey,

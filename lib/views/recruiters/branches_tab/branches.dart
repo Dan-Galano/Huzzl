@@ -521,6 +521,9 @@ class _BranchesScreenState extends State<BranchesScreen>
                 ),
                 // Add Tabs for Active and Archive
                 TabBar(
+                  
+      tabAlignment: TabAlignment.start,
+      isScrollable: true,
                   controller: _tabController,
                   labelColor: Colors.black,
                   unselectedLabelColor: Colors.grey,

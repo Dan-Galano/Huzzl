@@ -83,6 +83,8 @@ class _JobTabState extends State<JobTab> {
                     ),
                     JobFilterRowWidget(),
                     TabBar(
+      tabAlignment: TabAlignment.start,
+      isScrollable: true,
                       controller: _tabController,
                       labelColor: Colors.black,
                       unselectedLabelColor: Colors.grey,

@@ -171,6 +171,8 @@ Widget buildManagersContent(
                     ],
                   ),
                   TabBar(
+                    tabAlignment: TabAlignment.start,
+                    isScrollable: true,
                     controller: _tabController,
                     labelColor: Colors.black,
                     unselectedLabelColor: Colors.grey,
@@ -277,6 +279,8 @@ Widget buildManagersContent(
                   const SizedBox(height: 10),
 
                   TabBar(
+                    tabAlignment: TabAlignment.start,
+                    isScrollable: true,
                     controller: _tabTwoController,
                     labelColor: Colors.black,
                     unselectedLabelColor: Colors.grey,
