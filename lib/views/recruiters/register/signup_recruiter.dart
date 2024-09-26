@@ -197,7 +197,7 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                                 return "Email Address is required.";
                               }
                               if (!EmailValidator.validate(value)) {
-                                return "Email Address provided is not valid.";
+                                return "Please provide a valid email address.";
                               }
                             },
                           ),
