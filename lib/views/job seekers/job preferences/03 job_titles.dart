@@ -23,7 +23,9 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
     //   widget.nextPage();
     // }
     // widget.nextPage();
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => JobseekerMainScreen(),));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => JobseekerMainScreen(),
+    ));
   }
 
   @override

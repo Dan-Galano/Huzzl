@@ -31,29 +31,25 @@ void main() async {
   ));
 }
 
-
 void configLoading() {
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 1500)
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.custom
-    ..backgroundColor =
-        Color(0xFfd74a4a) 
-    ..textColor = Colors.white 
-    ..fontSize = 16.0 
+    ..backgroundColor = const Color(0xFfd74a4a)
+    ..textColor = Colors.white
+    ..fontSize = 16.0
     ..indicatorColor = Colors.white
     ..maskColor = Colors.black.withOpacity(0.5)
     ..userInteractions = false
     ..dismissOnTap = true;
 }
 
-
 class HuzzlWeb extends StatelessWidget {
   const HuzzlWeb({super.key});
 
   @override
   Widget build(BuildContext context) {
-    
     configLoading();
     return MaterialApp(
       builder: EasyLoading.init(),
