@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/views/job%20seekers/register/02%20verify_email.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
@@ -77,12 +78,23 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                   )),
         );
       } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: ${e.message}")),
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text("Error: ${e.message}")),
+        // );
+        EasyLoading.showToast(
+          "⚠️ ${e.message}",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+          // maskType: EasyLoadingMaskType.black,
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("An unexpected error occurred.")),
+        EasyLoading.showToast(
+          "An unexpected error occurred.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+          // maskType: EasyLoadingMaskType.black,
         );
       }
     }

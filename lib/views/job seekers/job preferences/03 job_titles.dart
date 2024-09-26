@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 
@@ -22,7 +23,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
     //   widget.nextPage();
     // }
     // widget.nextPage();
-    // Navigator.of(context).push(MaterialPageRoute(builder: (context) => ,));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => JobseekerMainScreen(),));
   }
 
   @override

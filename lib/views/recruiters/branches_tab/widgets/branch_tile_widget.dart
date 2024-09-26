@@ -174,7 +174,7 @@ class _BranchTileState extends State<BranchTile> {
                     const Row(
                       children: [
                         Text(
-                          "Branch Manager",
+                          "Hiring Manager",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -223,7 +223,7 @@ class _BranchTileState extends State<BranchTile> {
                       const Row(
                         children: [
                           Text(
-                            "Co-Managers (17)",
+                            "Staff (7)",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -234,7 +234,7 @@ class _BranchTileState extends State<BranchTile> {
                       const SizedBox(height: 10),
                       Expanded(
                         child: ListView.builder(
-                          itemCount: 17,
+                          itemCount: 7,
                           itemBuilder: (context, index) => ListTile(
                             leading: CircleAvatar(
                               foregroundColor: const Color(0xff373030),
