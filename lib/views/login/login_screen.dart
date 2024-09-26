@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -51,10 +53,17 @@ class _LoginScreenState extends State<LoginScreen> {
         User? user = userCredential.user;
 
         if (user == null) {
-          setState(() {
-            isError = true;
-            errorMessage = "User not found.";
-          });
+          // setState(() {
+          //   isError = true;
+          //   errorMessage = "User not found.";
+          // });
+          EasyLoading.showToast(
+            "⚠️ User not found.",
+            dismissOnTap: true,
+            toastPosition: EasyLoadingToastPosition.top,
+            duration: Duration(seconds: 3),
+            // maskType: EasyLoadingMaskType.black,
+          );
           return;
         }
 
@@ -73,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (role != null) {
               if (role == 'jobseeker') {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => JobSeekerHomeScreen()));
+                    builder: (context) => JobseekerMainScreen()));
               } else if (role == 'recruiter') {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => RecruiterHomeScreen()));
@@ -88,10 +97,17 @@ class _LoginScreenState extends State<LoginScreen> {
           print("Error fetching user document: $e");
         }
       } catch (e) {
-        setState(() {
-          isError = true;
-          errorMessage = "Invalid credentials";
-        });
+        // setState(() {
+        //   isError = true;
+        //   errorMessage = "Invalid credentials";
+        // });
+        EasyLoading.showToast(
+          "⚠️ Invalid credentials.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+          // maskType: EasyLoadingMaskType.black,
+        );
         print('ERROR: $e');
       }
     }

@@ -1,183 +1,424 @@
-import 'dart:convert';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' show parse;
-import 'package:http/http.dart' as http;
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
+import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
+import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 
 class JobSeekerHomeScreen extends StatefulWidget {
-  const JobSeekerHomeScreen({super.key});
+  final String? resumeText;
+
+  const JobSeekerHomeScreen({super.key, this.resumeText});
 
   @override
   State<JobSeekerHomeScreen> createState() => _JobSeekerHomeScreenState();
 }
 
-class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
-  List<Map<String, String>> jobs = [];
+class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
+    with AutomaticKeepAliveClientMixin {
+  // List<Map<String, String>> jobs = [];
+  // bool isLoading = false;
+  final TextEditingController _searchController = TextEditingController();
+  // bool hasResults = true;
+  bool isSearching = false;
+
+  var locationController = TextEditingController();
+
+  List<String> datePostedOptions = [
+    'Last 24 hours',
+    'Last 7 days',
+    'Last 30 days',
+    'Anytime'
+  ];
+  String? selectedDate; // Default selection
+
+  List<String> loadingPhrases = [
+    "Chasing Opportunities...",
+    "Racing Towards Your Next Job...",
+    "Finding the Perfect Fit...",
+    "Running to Match Your Skills...",
+    "On the Hunt for Jobs...",
+    "Your Dream Job is Around the Corner...",
+    "Matching You with Top Jobs...",
+    "Scouting the Best Opportunities...",
+    "Tracking Down the Best Matches...",
+    "On a Job-Search Marathon..."
+  ];
+
+  int currentIndex = 0;
+  Timer? _timer;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    fetchJobs();
-  }
-
-  Future<void> fetchJobs() async {
-    try {
-      String jobStreetHtml = await fetchJobStreetData();
-      // String upworkHtml = await fetchUpworkData();
-      // String indeedHtml = await fetchIndeedData();
-      String onlinejobsHtml = await fetchOnlineJobsData();
-      String linkedinHtml = await fetchLinkedInData();
-
-      setState(() {
-        jobs = [
-          ...parseJobStreetData(jobStreetHtml),
-          // ...parseUpworkData(upworkHtml),
-          // ...parseIndeedData(indeedHtml),
-          ...parseOnlineJobsData(onlinejobsHtml),
-          ...parseLinkedInData(linkedinHtml),
-        ];
-      });
-    } catch (e) {
-      print(e);
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs();
     }
+
+    _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
+      setState(() {
+        currentIndex = (currentIndex + 1) % loadingPhrases.length;
+      });
+    });
   }
 
-  // KAYA NAKA COMMENT YUNG upwork and indeed KASI AYAW MA ACCESS HUHU 403 ERROR FORBIDDEN HAYST
-  // Future<void> fetchJobs() async {
-  //   try {
-  //     final jobStreetResponse =
-  //         await http.get(Uri.parse('http://127.0.0.1:5000/scrape/jobstreet'));
-  //     // final upworkResponse =
-  //     //     await http.get(Uri.parse('http://127.0.0.1:5000/scrape/upwork'));
-  //     // final indeedResponse =
-  //     //     await http.get(Uri.parse('http://127.0.0.1:5000/scrape/indeed'));
-  //     final onlinejobsResponse =
-  //         await http.get(Uri.parse('http://127.0.0.1:5000/scrape/onlinejobs'));
-  //     final linkedinResponse =
-  //         await http.get(Uri.parse('http://127.0.0.1:5000/scrape/linkedin'));
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
+  }
 
-  //     if (jobStreetResponse.statusCode == 200 &&
-  //         // upworkResponse.statusCode == 200 &&
-  //         // indeedResponse.statusCode == 200 &&
-  //         onlinejobsResponse.statusCode == 200 &&
-  //         linkedinResponse.statusCode == 200) {
-  //       final jobStreetData = jsonDecode(jobStreetResponse.body) as List;
-  //       // final upworkData = jsonDecode(upworkResponse.body) as List;
-  //       // final indeedData = jsonDecode(indeedResponse.body) as List;
-  //       final onlinejobsData = jsonDecode(onlinejobsResponse.body) as List;
-  //       final linkedinData = jsonDecode(linkedinResponse.body) as List;
+  @override
+  bool get wantKeepAlive => true;
 
-  //       setState(() {
-  //         jobs = [
-  //           ...jobStreetData.map((job) => Map<String, String>.from(job)),
-  //           // ...upworkData.map((job) => Map<String, String>.from(job)),
-  //           // ...indeedData.map((job) => Map<String, String>.from(job)),
-  //           ...onlinejobsData.map((job) => Map<String, String>.from(job)),
-  //           ...linkedinData.map((job) => Map<String, String>.from(job)),
-  //         ];
-  //       });
-  //     } else {
-  //       print('Failed to load job data');
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+  void onSearch() {
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    final searchedWord = _searchController.text.trim().toLowerCase();
+    if (searchedWord.isNotEmpty) {
+      jobProvider.loadJobs(searchedWord);
+    }
+    setState(() {
+      jobProvider.jobs.shuffle(Random());
+    });
+  }
+
+  void clearSearch() {
+    _searchController.clear();
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    // jobProvider.restoreDefaultJobs(); // Restore default jobs
+    setState(() {
+      isSearching = false; // Reset searching state
+    });
+    jobProvider.loadJobs();
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final jobProvider = Provider.of<JobProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  child: Image.asset('assets/images/huzzl.png', width: 80),
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Home',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Company Reviews',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset('assets/images/message-icon.png',
-                          width: 20),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/notif-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/user-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            thickness: 1,
-            color: Colors.grey[400],
-          ),
-          Expanded(
+          Expanded( 
             child: Row(
               children: [
                 // Sidebar Filters
                 Container(
-                  width: 350,
+                  width: 320,
                   padding: EdgeInsets.all(30),
                   child: ListView(
                     children: [
-                      buildCategoryDropdown(),
+                      // Location field
+                      Text(
+                        'Location',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Gap(8),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'City, State',
+                          hintStyle: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 14,
+                              color: Colors.grey),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                        ),
+                      ),
+                      Gap(16),
+                      Text(
+                        'Date posted',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Gap(8),
+                      DropdownButtonFormField<String>(
+                        // value: _selectedDate,
+                        items: [
+                          DropdownMenuItem(
+                              value: 'Last 24 hours',
+                              child: Text('Last 24 hours')),
+                          DropdownMenuItem(
+                              value: 'Last 7 days', child: Text('Last 7 days')),
+                          DropdownMenuItem(
+                              value: 'Last 30 days',
+                              child: Text('Last 30 days')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            // _selectedDate = value;
+                          });
+                        },
+                        hint: Text(
+                          'Select date posted',
+                          style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 15,
+                              color: Colors.grey),
+                        ),
+                        decoration: InputDecoration(
+                          // labelText: 'Select date posted',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                        ),
+                      ),
+                      Gap(16),
+
+                      // Salary range
+                      Text(
+                        'Salary range',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Gap(8),
+                      DropdownButtonFormField<String>(
+                        // value: _selectedRate,
+                        items: [
+                          DropdownMenuItem(
+                              value: 'Hourly', child: Text('Hourly')),
+                          DropdownMenuItem(
+                              value: 'Monthly', child: Text('Monthly')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            // _selectedRate = value;
+                          });
+                        },
+                        hint: Text(
+                          'Select rate',
+                          style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 15,
+                              color: Colors.grey),
+                        ),
+                        decoration: InputDecoration(
+                          // labelText: 'Select date posted',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                        ),
+                      ),
                       SizedBox(height: 16),
-                      buildJobTypeFilter(),
+
+                      // Custom salary input fields
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                // prefixIcon: Icon(Icons.money),
+                                labelText: '₱ Min',
+                                labelStyle: TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 15,
+                                    color: Colors.grey),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text('/hr', style: TextStyle(fontSize: 16)),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                // prefixIcon: Icon(Icons.money),
+                                labelText: '₱ Max',
+                                labelStyle: TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 15,
+                                    color: Colors.grey),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Color(0xFFD1E1FF), width: 1.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 16),
-                      buildClientHistoryFilter(),
+
+                      // Job post history checkboxes
+                      Text(
+                        'Job post history',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          'No hires',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          '1 to 9 hires',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          '10+ hires',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
                       SizedBox(height: 16),
-                      buildClientLocationDropdown(),
+
+                      // Schedule checkboxes
+                      Text(
+                        'Schedule',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          'Less than 30 hrs/week',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
+                      CheckboxListTile(
+                        value: false,
+                        onChanged: (val) {},
+                        title: Text(
+                          'More than 30 hrs/week',
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
+                        ),
+                      ),
                       SizedBox(height: 16),
-                      buildProjectLengthFilter(),
+
+                      // Job type dropdown
+                      DropdownButtonFormField<String>(
+                        // value: _selectedJobType,
+                        items: [
+                          DropdownMenuItem(
+                              value: 'Full-time', child: Text('Full-time')),
+                          DropdownMenuItem(
+                              value: 'Part-time', child: Text('Part-time')),
+                          DropdownMenuItem(
+                              value: 'Contract', child: Text('Contract')),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            // _selectedJobType = value;
+                          });
+                        },
+                        hint: Text(
+                          'Job type',
+                          style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 15,
+                              color: Colors.grey),
+                        ),
+                        decoration: InputDecoration(
+                          // labelText: 'Job type',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: Color(0xFFD1E1FF), width: 1.5),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -192,34 +433,138 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                     padding: EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        buildSearchBar(),
-                        SizedBox(height: 16),
-                        Expanded(
-                          child: jobs.isEmpty
-                              ? Center(child: CircularProgressIndicator())
-                              : ListView.builder(
-                                  itemCount: jobs.length,
-                                  itemBuilder: (context, index) {
-                                    return buildJobCard(
-                                      joblink: jobs[index]['jobLink'] ?? '',
-                                      datePosted:
-                                          jobs[index]['datePosted'] ?? '',
-                                      title: jobs[index]['title']!,
-                                      location: jobs[index]['location'] ?? '',
-                                      rate: jobs[index]['salary'] ?? '',
-                                      description:
-                                          jobs[index]['description'] ?? '',
-                                      tags: [
-                                        "CAD",
-                                        "Autodesk authCAD",
-                                        "Electrical Engineering",
-                                        "Construction"
-                                      ], // SAMPLE TAGS
-                                      // tags: (jobs[index]['tags'] as List<String>?) ?? [],
-                                    );
-                                  },
+                        // Search bar
+                        Row(
+                          children: [
+                            Container(
+                              width: 700,
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter job title or keywords',
+                                  hintStyle: TextStyle(fontFamily: 'Galano'),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
+                                  ),
+                                  suffixIcon: isSearching
+                                      ? IconButton(
+                                          icon: Icon(Icons.clear),
+                                          onPressed:
+                                              clearSearch, // Clear search logic
+                                        )
+                                      : null,
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.all(
+                                        10), // Adjust padding as needed
+                                    child: Icon(
+                                      Icons.search,
+                                      color: Color(0xFFFE9703),
+                                    ), // Change color if needed
+                                  ),
                                 ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    isSearching =
+                                        _searchController.text.isNotEmpty;
+                                  });
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: onSearch,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF0038FF),
+                                padding: EdgeInsets.all(20),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                'Find Jobs',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
+                        SizedBox(height: 16),
+
+                        // Main content based on search and job data state
+                        jobProvider.isLoading
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 150),
+                                child: Center(
+                                  child: Column(
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/huzzl_loading.gif',
+                                        height: 80,
+                                      ),
+                                      Text(
+                                        loadingPhrases[currentIndex],
+                                        style: TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          color: Color(0xFFfd7206),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ) // Show loading spinner
+                            : jobProvider.hasResults &&
+                                    jobProvider.jobs
+                                        .isNotEmpty // Show jobs if available
+                                ? Expanded(
+                                    child: ListView.builder(
+                                      itemCount: jobProvider.jobs.length,
+                                      itemBuilder: (context, index) {
+                                        return buildJobCard(
+                                          joblink: jobProvider.jobs[index]
+                                                  ['jobLink'] ??
+                                              '',
+                                          datePosted: jobProvider.jobs[index]
+                                                  ['datePosted'] ??
+                                              'No Date Posted',
+                                          title: jobProvider.jobs[index]
+                                              ['title']!,
+                                          location: jobProvider.jobs[index]
+                                                  ['location'] ??
+                                              'No Location',
+                                          rate: jobProvider.jobs[index]
+                                                  ['salary'] ??
+                                              'Not provided',
+                                          description: jobProvider.jobs[index]
+                                                  ['description'] ??
+                                              'No description available',
+                                          website: jobProvider.jobs[index]
+                                              ['website']!,
+                                          tags: jobProvider.jobs[index]['tags']
+                                                  ?.split(', ') ??
+                                              [],
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : Center(
+                                    child: Text(isSearching
+                                        ? 'No search results match'
+                                        : 'No jobs available')), // Show no results message or default message
                       ],
                     ),
                   ),
