@@ -1,6 +1,13 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
+import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JobSeekerHomeScreen extends StatefulWidget {
   final String? resumeText;
@@ -11,151 +18,68 @@ class JobSeekerHomeScreen extends StatefulWidget {
   State<JobSeekerHomeScreen> createState() => _JobSeekerHomeScreenState();
 }
 
-class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
-  List<Map<String, String>> jobs = [];
-  List<Map<String, String>> filteredJobs = [];
-  TextEditingController searchController = TextEditingController();
+class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
+    with AutomaticKeepAliveClientMixin {
+  // List<Map<String, String>> jobs = [];
+  // bool isLoading = false;
+  final TextEditingController _searchController = TextEditingController();
+  // bool hasResults = true;
   bool isSearching = false;
-  bool isLoading = true;
+
+  var locationController = TextEditingController();
+
+  List<String> datePostedOptions = [
+    'Last 24 hours',
+    'Last 7 days',
+    'Last 30 days',
+    'Anytime'
+  ];
+  String? selectedDate; // Default selection
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    fetchJobs();
-  }
-
-  Future<void> fetchJobs() async {
-    try {
-      String onlinejobsHtml = await fetchOnlineJobsData();
-      // String linkedinHtml = await fetchLinkedInData();
-      List<Map<String, String>> linkedInJobs =
-          await fetchJobsWithDescriptions('linkedIn');
-      // String kalibrrHtml = await fetchKalibrrData();
-      List<Map<String, String>> kalibrrJobs =
-          await fetchJobsWithDescriptions('kalibrr');
-      List<Map<String, String>> philJobNetJobs =
-          await fetchJobsWithDescriptions('philJobNet');
-      List<Map<String, String>> jobstreetJobs =
-          await fetchJobsWithDescriptions('jobStreet');
-
-      setState(() {
-        jobs = [
-          ...jobstreetJobs,
-          // ...parseLinkedInData(linkedinHtml),
-          ...linkedInJobs,
-          ...parseOnlineJobsData(onlinejobsHtml),
-          ...philJobNetJobs,
-          // ...parseKalibrrData(kalibrrHtml),
-          ...kalibrrJobs
-        ];
-        filteredJobs = jobs; // By default, show all jobs.
-        isLoading = false;
-      });
-    } catch (e) {
-      print(e);
-      setState(() {
-        isLoading = false;
-      });
+    // loadJobs(); // Load default jobs on startup
+    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    // jobProvider.loadJobs();
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs();
     }
   }
 
-  void filterJobs(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        isSearching = false;
-        filteredJobs = jobs;
-      });
-    } else {
-      setState(() {
-        isSearching = true;
-        filteredJobs = jobs.where((job) {
-          final title = job['title']?.toLowerCase() ?? '';
-          final description = job['description']?.toLowerCase() ?? '';
-          final keywords = job['tags']?.toLowerCase() ?? '';
-          final searchQuery = query.toLowerCase();
+  @override
+  bool get wantKeepAlive => true;
 
-          return title.contains(searchQuery) ||
-              description.contains(searchQuery) ||
-              keywords.contains(searchQuery);
-        }).toList();
-      });
+  void onSearch() {
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    final searchedWord = _searchController.text.trim().toLowerCase();
+    if (searchedWord.isNotEmpty) {
+      jobProvider.loadJobs(searchedWord);
     }
+    setState(() {
+      jobProvider.jobs.shuffle(Random());
+    });
+  }
+
+  void clearSearch() {
+    _searchController.clear();
+    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    jobProvider.restoreDefaultJobs(); // Restore default jobs
+    setState(() {
+      isSearching = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final jobProvider = Provider.of<JobProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  child: Image.asset('assets/images/huzzl.png', width: 80),
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Home',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Company Reviews',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset('assets/images/message-icon.png',
-                          width: 20),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/notif-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/user-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            thickness: 1,
-            color: Colors.grey[400],
-          ),
           Expanded(
             child: Row(
               children: [
@@ -165,15 +89,98 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                   padding: EdgeInsets.all(30),
                   child: ListView(
                     children: [
-                      buildCategoryDropdown(),
-                      SizedBox(height: 16),
-                      buildJobTypeFilter(),
-                      SizedBox(height: 16),
-                      buildClientHistoryFilter(),
-                      SizedBox(height: 16),
-                      buildClientLocationDropdown(),
-                      SizedBox(height: 16),
-                      buildProjectLengthFilter(),
+                      Text(
+                        'Location',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Gap(10),
+                      Container(
+                        height: 40,
+                        child: TextField(
+                          controller: locationController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter job title or keywords',
+                            hintStyle: TextStyle(
+                                fontFamily: 'Galano',
+                                fontSize: 14,
+                                color: Colors.grey),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                  color: Color(0xFFD1E1FF), width: 1.5),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                  color: Color(0xFFD1E1FF), width: 1.5),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                  color: Color(0xFFD1E1FF), width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Gap(20),
+                      Text(
+                        'Date posted',
+                        style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Gap(10),
+                      SizedBox(
+                        height: 40,
+                        child: DropdownButtonFormField<String>(
+                          hint: Text(
+                            'Select a date',
+                            style:
+                                TextStyle(fontFamily: 'Galano', fontSize: 14),
+                          ),
+                          // decoration: customInputDecoration(),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                  color: Color(0xFFD1E1FF), width: 1.5),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                  color: Color(0xFFD1E1FF), width: 1.5),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                  color: Color(0xFFD1E1FF), width: 1.5),
+                            ),
+                          ),
+                          value: selectedDate,
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedDate = newValue;
+                            });
+                          },
+                          items: datePostedOptions
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontSize: 16,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -191,23 +198,69 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                         // Search bar
                         Row(
                           children: [
-                            Expanded(
+                            Container(
+                              width: 700,
                               child: TextField(
-                                controller: searchController,
+                                controller: _searchController,
                                 decoration: InputDecoration(
-                                  hintText: 'Job title, keywords, or company',
+                                  hintText: 'Enter job title or keywords',
+                                  hintStyle: TextStyle(fontFamily: 'Galano'),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
                                   ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
+                                  ),
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.all(
+                                        10), // Adjust padding as needed
+                                    child: Icon(
+                                      Icons.search,
+                                      color: Color(0xFFFE9703),
+                                    ), // Change color if needed
+                                  ),
+                                  suffixIcon:
+                                      isSearching // Show clear button only if searching
+                                          ? IconButton(
+                                              icon: Icon(Icons.clear),
+                                              // onPressed: () {
+                                              //   setState(() {
+                                              //     _searchController.clear();
+                                              //     isSearching =
+                                              //         false; // Reset searching state
+                                              //     // jobs.clear();
+                                              //     jobProvider.jobs.clear();
+                                              //   });
+                                              // },
+                                              onPressed: () => clearSearch(),
+                                            )
+                                          : null,
                                 ),
+                                onChanged: (value) {
+                                  if (_searchController.text.isEmpty) {
+                                    setState(() {
+                                      isSearching = false;
+                                    });
+                                  }
+                                  setState(() {
+                                    isSearching = true;
+                                  });
+                                },
                               ),
                             ),
                             SizedBox(width: 8),
                             Container(
                               child: ElevatedButton(
-                                onPressed: () {
-                                  filterJobs(searchController.text);
-                                },
+                                onPressed: onSearch,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF0038FF),
                                   padding: EdgeInsets.all(20),
@@ -229,45 +282,46 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen> {
                           ],
                         ),
                         SizedBox(height: 16),
-                        Expanded(
-                          child: isLoading
-                              ? Center(child: CircularProgressIndicator())
-                              : filteredJobs.isEmpty && isSearching
-                                  ? const Center(
-                                      child: Text(
-                                        'No search results found',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    )
-                                  : ListView.builder(
-                                      itemCount: filteredJobs.length,
+                        // isLoading
+                        jobProvider.isLoading
+                            ? Center(child: CircularProgressIndicator())
+                            // : hasResults
+                            : jobProvider.hasResults
+                                ? Expanded(
+                                    child: ListView.builder(
+                                      // itemCount: jobs.length,
+                                      itemCount: jobProvider.jobs.length,
                                       itemBuilder: (context, index) {
-                                        final job = filteredJobs[index];
-
-                                        List<String> tags = [];
-                                        if (job['tags'] != null) {
-                                          tags = job['tags']!.split(', ');
-                                        }
-
                                         return buildJobCard(
-                                          joblink: job['jobLink'] ?? '',
-                                          datePosted: job['datePosted'] ??
+                                          // final
+                                          joblink: jobProvider.jobs[index]
+                                                  ['jobLink'] ??
+                                              '',
+                                          datePosted: jobProvider.jobs[index]
+                                                  ['datePosted'] ??
                                               'No Date Posted',
-                                          title: job['title']!,
-                                          location:
-                                              job['location'] ?? 'No Location',
-                                          rate: job['salary'] ?? 'Not provided',
-                                          description: job['description'] ??
+                                          title: jobProvider.jobs[index]
+                                              ['title']!,
+                                          location: jobProvider.jobs[index]
+                                                  ['location'] ??
+                                              'No Location',
+                                          rate: jobProvider.jobs[index]
+                                                  ['salary'] ??
+                                              'Not provided',
+                                          description: jobProvider.jobs[index]
+                                                  ['description'] ??
                                               'No description available',
-                                          website: job['website']!,
-                                          tags: tags,
+                                          website: jobProvider.jobs[index]
+                                              ['website']!,
+                                          tags: jobProvider.jobs[index]['tags']
+                                                  ?.split(', ') ??
+                                              [],
                                         );
                                       },
                                     ),
-                        ),
+                                  )
+                                : Center(
+                                    child: Text('No search results match')),
                       ],
                     ),
                   ),
