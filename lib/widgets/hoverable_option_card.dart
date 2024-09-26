@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/register/01%20jobseeker_profile.dart';
 import 'package:huzzl_web/views/recruiters/register/00%20registration_screen.dart';
+import 'package:huzzl_web/views/recruiters/register/signup_recruiter.dart';
 
 class HoverableOptionCard extends StatefulWidget {
   final String userType;
@@ -43,11 +44,13 @@ class _HoverableOptionCardState extends State<HoverableOptionCard> {
           if (widget.userType == "recruiter") {
             print('recruiter');
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => RecruiterRegistrationScreen(),
+              // builder: (context) => RecruiterRegistrationScreen(),
+              builder: (context) => SignUpRecruiter(),
             ));
           } else {
             print('job-seeker');
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => JobSeekerProfileScreen()));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => JobSeekerProfileScreen()));
           }
         },
         child: Container(

@@ -117,74 +117,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // nav
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  child: Image.asset('assets/images/huzzl.png', width: 80),
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Home',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Company Reviews',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset('assets/images/message-icon.png',
-                          width: 20),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/notif-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/user-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            thickness: 1,
-            color: Colors.grey[400],
+            child: Row(),
           ),
           // content
           Container(
@@ -210,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             "Eleanor Pena",
                             style: TextStyle(
                               fontFamily: 'Galano',
-                              fontSize: 22 ,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: Color(0xff202855),
                             ),
@@ -357,14 +295,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color:
-                                  Color(0xffACACAC), 
-                              width: 2.0, 
+                              color: Color(0xffACACAC),
+                              width: 2.0,
                             ),
                             top: BorderSide(
-                              color:
-                                  Color(0xffACACAC), 
-                              width: 2.0, 
+                              color: Color(0xffACACAC),
+                              width: 2.0,
                             ),
                           ),
                         ),
@@ -395,9 +331,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color:
-                                  Color(0xffACACAC), 
-                              width: 2.0, 
+                              color: Color(0xffACACAC),
+                              width: 2.0,
                             ),
                           ),
                         ),

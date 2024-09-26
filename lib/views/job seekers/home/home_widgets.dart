@@ -36,33 +36,49 @@ Widget buildJobCard(
               Text(datePosted,
                   style: TextStyle(fontFamily: 'Galano', color: Colors.grey)),
               SizedBox(height: 8),
-              Text(title,
-                  style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold)),
-              // SizedBox(height: 8),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.location_on, size: 16, color: Colors.grey),
-                  SizedBox(width: 4),
-                  Text(location,
-                      style: TextStyle(
-                          fontFamily: 'Galano', fontWeight: FontWeight.w500)),
-                  SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title,
+                          style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold)),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, size: 16, color: Colors.grey),
+                          SizedBox(width: 4),
+                          Text(location,
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w500)),
+                          SizedBox(width: 16),
+                        ],
+                      ),
+                      Text("Rate: $rate",
+                          style: TextStyle(fontFamily: 'Galano', fontSize: 14)),
+                    ],
+                  ),
+                  Image.asset(
+                    website,
+                    width: 100,
+                  ),
                 ],
               ),
-              Text("Rate: $rate",
-                  style: TextStyle(fontFamily: 'Galano', fontSize: 14)),
+
               SizedBox(height: 8),
               Text(description,
                   style: TextStyle(
                     fontFamily: 'Galano',
                   )),
-              Text("From: $website",
-                  style: TextStyle(
-                    fontFamily: 'Galano',
-                  )),
+              // Text("From: $website",
+              //     style: TextStyle(
+              //       fontFamily: 'Galano',
+              //     )),
               SizedBox(height: 8),
               Wrap(
                 spacing: 8,
