@@ -57,10 +57,6 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   @override
   void initState() {
     super.initState();
-    final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    if (jobProvider.jobs.isEmpty) {
-      jobProvider.loadJobs();
-    }
 
     _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
       setState(() {
@@ -82,6 +78,9 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
     final searchedWord = _searchController.text.trim().toLowerCase();
     if (searchedWord.isNotEmpty) {
+      jobProvider.loadJobs(searchedWord);
+    }
+    if (jobProvider.jobs.isEmpty) {
       jobProvider.loadJobs(searchedWord);
     }
     // setState(() {
@@ -107,7 +106,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Expanded( 
+          Expanded(
             child: Row(
               children: [
                 // Sidebar Filters

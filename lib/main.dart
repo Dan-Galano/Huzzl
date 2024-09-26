@@ -62,9 +62,25 @@ class HuzzlWeb extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+
+@override
+void initState() {
+  super.initState();
+  final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs();
+    }
+
+}
+  
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
