@@ -165,7 +165,7 @@ class _NavBarHomeState extends State<NavBarHome> {
                         switchScreen(2);
                         break;
                       case 'my_reviews':
-                        showMyReviewsDialog(context);
+                        switchScreen(3);
                         break;
                       case 'close_account':
                         showCloseAccountDialog(context);
