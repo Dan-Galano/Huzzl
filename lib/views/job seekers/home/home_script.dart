@@ -24,7 +24,7 @@ List<Map<String, String>> parseJobStreetData(String htmlContent) {
 
   document
       .querySelectorAll('article[data-testid="job-card"]')
-      .take(5)
+      .take(4)
       .forEach((element) {
     String? postedDate =
         element.querySelector('span[data-automation="jobListingDate"]')?.text;
@@ -75,10 +75,10 @@ List<Map<String, String>> parseJobStreetData(String htmlContent) {
 }
 
 Future<String> fetchLinkedInData(String searchQuery) async {
-  await Future.delayed(Duration(
-      // comment this
-      seconds:
-          5)); // Delay between requests to prevent error 429, too many requests
+  // await Future.delayed(Duration(
+  //     // comment this
+  //     seconds:
+  //         5)); // Delay between requests to prevent error 429, too many requests
 
   String url =
       'https://corsproxy.io/?https://www.linkedin.com/jobs/jobs-in-philippines';
@@ -100,7 +100,7 @@ List<Map<String, String>> parseLinkedInData(String htmlContent) {
   var document = html.parse(htmlContent);
   List<Map<String, String>> jobs = [];
 
-  document.querySelectorAll('.base-card').take(5).forEach((element) {
+  document.querySelectorAll('.base-card').take(4).forEach((element) {
     String? title =
         element.querySelector('h3.base-search-card__title')?.text.trim();
     String? location =
@@ -149,7 +149,7 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
   var document = html.parse(htmlContent);
   List<Map<String, String>> jobs = [];
 
-  document.querySelectorAll('.jobpost-cat-box').take(5).forEach((element) {
+  document.querySelectorAll('.jobpost-cat-box').take(4).forEach((element) {
     String? title = element.querySelector('h4.fs-16')?.text.trim();
     String? postedDate = element.querySelector('p.fs-13 em')?.text.trim();
     String? description = element.querySelector('div.desc')?.text.trim();
@@ -214,7 +214,7 @@ List<Map<String, String>> parseKalibrrData(String htmlContent) {
 
   document
       .querySelectorAll('div.k-font-dm-sans.k-rounded-lg')
-      .take(5)
+      .take(4)
       .forEach((element) {
     String? title = element.querySelector('h2 a[itemprop="name"]')?.text;
     String? location = element.querySelector('span.k-text-gray-500')?.text;
@@ -267,7 +267,7 @@ List<Map<String, String>> parsePhilJobNetData(String htmlContent) {
   var document = html.parse(htmlContent);
   List<Map<String, String>> jobs = [];
 
-  document.querySelectorAll('tr').take(5).forEach((element) {
+  document.querySelectorAll('tr').take(4).forEach((element) {
     String? jobTitle = element.querySelector('h1.jobtitle')?.text.trim();
     String? salary = element.querySelector('h3.salary')?.text.trim();
     String? location = element.querySelector('div.col-lg-5')?.text.trim();
@@ -299,17 +299,26 @@ List<Map<String, String>> parsePhilJobNetData(String htmlContent) {
 // OTHER INFO FETCHED HERE/for fetching of job desc and tags
 Future<void> fetchJobStreetJobDesc(
     List<Map<String, String>> jobstreetJobs) async {
+  List<Future<void>> futures = [];
+
   for (var job in jobstreetJobs) {
-    try {
-      String jobDescription =
-          await parseJobStreetDescription(job['proxyLink']!);
-      job['description'] =
-          jobDescription; // Store the description in the job map
-    } catch (e) {
-      print('Error fetching JobStreet description for ${job['title']}: $e');
-      job['description'] =
-          'Error fetching description'; // Optionally set an error message
-    }
+    // Create a future for each job description fetch and add it to the list
+    futures.add(_fetchAndStoreJobDescription(job));
+  }
+
+  // Wait for all the futures (requests) to complete
+  await Future.wait(futures);
+}
+
+// Helper function to fetch and store the job description for a single job
+Future<void> _fetchAndStoreJobDescription(Map<String, String> job) async {
+  try {
+    String jobDescription = await parseJobStreetDescription(job['proxyLink']!);
+    job['description'] = jobDescription; // Store the description in the job map
+  } catch (e) {
+    print('Error fetching JobStreet description for ${job['title']}: $e');
+    job['description'] =
+        'Error fetching description'; // Optionally set an error message
   }
 }
 
@@ -317,28 +326,38 @@ Future<String> parseJobStreetDescription(String jobUrl) async {
   final response = await http.get(Uri.parse(jobUrl));
   if (response.statusCode == 200) {
     var document = html.parse(response.body);
-    return document
-            .querySelector('div[data-automation="jobAdDetails"]')
-            ?.text ??
-        'No description available';
+    String description =
+        document.querySelector('div[data-automation="jobAdDetails"]')?.text ??
+            'No description available';
+    List<String> words = description.split(' ');
+    if (words.length > 50) {
+      description = words.take(45).join(' ') + '...';
+    }
+    return description;
   } else {
     return 'Error fetching description';
   }
 }
 
 Future<void> fetchPhilJobNetJobDesc(
-    List<Map<String, String>> jobstreetJobs) async {
-  for (var job in jobstreetJobs) {
-    try {
-      String jobDescription =
-          await parsePhilJobNetDescription(job['proxyLink']!);
-      job['description'] =
-          jobDescription; // Store the description in the job map
-    } catch (e) {
-      print('Error fetching JobStreet description for ${job['title']}: $e');
-      job['description'] =
-          'Error fetching description'; // Optionally set an error message
-    }
+    List<Map<String, String>> philJobNetJobs) async {
+  List<Future<void>> futures = [];
+
+  for (var job in philJobNetJobs) {
+    futures.add(_fetchAndStorePhilJobNetDescription(job));
+  }
+
+  await Future.wait(futures); // Wait for all to complete
+}
+
+Future<void> _fetchAndStorePhilJobNetDescription(
+    Map<String, String> job) async {
+  try {
+    String jobDescription = await parsePhilJobNetDescription(job['proxyLink']!);
+    job['description'] = jobDescription;
+  } catch (e) {
+    print('Error fetching PhilJobNet description for ${job['title']}: $e');
+    job['description'] = 'Error fetching description';
   }
 }
 
@@ -350,7 +369,7 @@ Future<String> parsePhilJobNetDescription(String jobUrl) async {
         document.querySelector('div.jobdescription')?.text.trim();
     if (jobDescription != null) {
       List<String> words = jobDescription.split(' ');
-      jobDescription = words.take(55).join(' ');
+      jobDescription = words.take(45).join(' ');
     }
     return jobDescription ?? 'No description available';
   } else {
@@ -359,16 +378,22 @@ Future<String> parsePhilJobNetDescription(String jobUrl) async {
 }
 
 Future<void> fetchKalibrrJobDesc(List<Map<String, String>> kalibrrJobs) async {
+  List<Future<void>> futures = [];
+
   for (var job in kalibrrJobs) {
-    try {
-      String jobDescription = await parseKalibrrDescription(job['proxyLink']!);
-      job['description'] =
-          jobDescription; // Store the description in the job map
-    } catch (e) {
-      print('Error fetching Kalibrr description for ${job['title']}: $e');
-      job['description'] =
-          'Error fetching description'; // Optionally set an error message
-    }
+    futures.add(_fetchAndStoreKalibrrDescription(job));
+  }
+
+  await Future.wait(futures); // Wait for all to complete
+}
+
+Future<void> _fetchAndStoreKalibrrDescription(Map<String, String> job) async {
+  try {
+    String jobDescription = await parseKalibrrDescription(job['proxyLink']!);
+    job['description'] = jobDescription;
+  } catch (e) {
+    print('Error fetching Kalibrr description for ${job['title']}: $e');
+    job['description'] = 'Error fetching description';
   }
 }
 
@@ -381,7 +406,7 @@ Future<String> parseKalibrrDescription(String jobUrl) async {
 
     if (jobDescription != null) {
       List<String> words = jobDescription.split(' ');
-      jobDescription = words.take(55).join(' ');
+      jobDescription = words.take(45).join(' ');
     }
     return jobDescription ?? 'No description available';
   } else {
@@ -391,19 +416,25 @@ Future<String> parseKalibrrDescription(String jobUrl) async {
 
 Future<void> fetchLinkedInJobDesc(
     List<Map<String, String>> linkedInJobs) async {
+  List<Future<void>> futures = [];
+
   for (var job in linkedInJobs) {
-    try {
-      String jobDescription = await parseLinkedInDescription(job['proxyLink']!);
-      job['description'] =
-          jobDescription; // Store the description in the job map
-      job['tags'] =
-          await fetchLinkedInJobTags(job['proxyLink']!); // Fetch job tags
-    } catch (e) {
-      print('Error fetching LinkedIn description for ${job['title']}: $e');
-      job['description'] =
-          'Error fetching description'; // Optionally set an error message
-      job['tags'] = 'No tags available'; // Set a default for tags
-    }
+    futures.add(_fetchAndStoreLinkedInDescriptionAndTags(job));
+  }
+
+  await Future.wait(futures); // Wait for all to complete
+}
+
+Future<void> _fetchAndStoreLinkedInDescriptionAndTags(
+    Map<String, String> job) async {
+  try {
+    String jobDescription = await parseLinkedInDescription(job['proxyLink']!);
+    job['description'] = jobDescription;
+    job['tags'] = await fetchLinkedInJobTags(job['proxyLink']!); // Fetch tags
+  } catch (e) {
+    print('Error fetching LinkedIn description for ${job['title']}: $e');
+    job['description'] = 'Error fetching description';
+    job['tags'] = 'No tags available';
   }
 }
 
@@ -422,7 +453,7 @@ Future<String> parseLinkedInDescription(String jobUrl) async {
         String descriptionText = jobDescription.text.trim();
         List<String> words = descriptionText.split(' ');
         if (words.length > 50) {
-          descriptionText = words.take(50).join(' ') + '...';
+          descriptionText = words.take(45).join(' ') + '...';
         }
         return descriptionText;
       }
