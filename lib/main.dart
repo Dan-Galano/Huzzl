@@ -25,7 +25,7 @@ void main() async {
   );
   // runApp(const HuzzlWeb());
   runApp(ChangeNotifierProvider(
-    create: (_) => JobProvider(),
+    create: (context) => JobProvider(),
     child: HuzzlWeb(),
   ));
 }
