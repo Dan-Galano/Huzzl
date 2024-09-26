@@ -133,18 +133,16 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     if (isStandaloneCompany!) {
       switch (_selectedIndex) {
         case 0:
-          return buildAdminContent(context, userData);
-        case 1:
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
-        case 2:
+        case 1:
           return JobScreens(
             jobPostsData: jobPostsData,
             user: user!,
           );
-        case 3:
+        case 2:
           return buildCandidatesContent(context);
-        case 4:
+        case 3:
           return buildInterviewsContent();
         default:
           return Text("No content available");
@@ -243,31 +241,26 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                         destinations: <NavigationRailDestination>[
                           NavigationRailDestination(
                             icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Admin', 0),
+                                'assets/images/manager-tab.png', 'Managers', 0),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
                             icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Managers', 1),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/jobs-tab.png', 'Jobs', 2),
+                                'assets/images/jobs-tab.png', 'Jobs', 1),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
                             icon: _buildNavItem(
                                 'assets/images/candidates-tab.png',
                                 'Candidates',
-                                3),
+                                2),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
                             icon: _buildNavItem(
                                 'assets/images/interview-tab.png',
                                 'Interviews',
-                                4),
+                                3),
                             label: const SizedBox.shrink(),
                           ),
                         ],
