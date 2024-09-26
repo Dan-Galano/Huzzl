@@ -8,6 +8,7 @@ import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
 
 class JobSeekerHomeScreen extends StatefulWidget {
   final String? resumeText;
@@ -36,6 +37,22 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   ];
   String? selectedDate; // Default selection
 
+  List<String> loadingPhrases = [
+    "Chasing Opportunities...",
+    "Racing Towards Your Next Job...",
+    "Finding the Perfect Fit...",
+    "Running to Match Your Skills...",
+    "On the Hunt for Jobs...",
+    "Your Dream Job is Around the Corner...",
+    "Matching You with Top Jobs...",
+    "Scouting the Best Opportunities...",
+    "Tracking Down the Best Matches...",
+    "On a Job-Search Marathon..."
+  ];
+
+  int currentIndex = 0;
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +63,18 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
     if (jobProvider.jobs.isEmpty) {
       jobProvider.loadJobs();
     }
+
+    _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
+      setState(() {
+        currentIndex = (currentIndex + 1) % loadingPhrases.length;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
   }
 
   @override
@@ -64,11 +93,10 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
 
   void clearSearch() {
     _searchController.clear();
-    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
     // jobProvider.restoreDefaultJobs(); // Restore default jobs
     setState(() {
-      isSearching = false;
+      isSearching = false; // Reset searching state
     });
     jobProvider.loadJobs();
   }
@@ -410,104 +438,105 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                         // Search bar
                         Row(
                           children: [
-                            Expanded(
-                              child: Container(
-                                width: 700,
-                                child: TextField(
-                                  controller: _searchController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Enter job title or keywords',
-                                    hintStyle: TextStyle(fontFamily: 'Galano'),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Color(0xFFD1E1FF), width: 2),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Color(0xFFD1E1FF), width: 2),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                          color: Color(0xFFD1E1FF), width: 2),
-                                    ),
-                                    prefixIcon: Padding(
-                                      padding: const EdgeInsets.all(
-                                          10), // Adjust padding as needed
-                                      child: Icon(
-                                        Icons.search,
-                                        color: Color(0xFFFE9703),
-                                      ), // Change color if needed
-                                    ),
-                                    suffixIcon:
-                                        isSearching // Show clear button only if searching
-                                            ? IconButton(
-                                                icon: Icon(Icons.clear),
-                                                // onPressed: () {
-                                                //   setState(() {
-                                                //     _searchController.clear();
-                                                //     isSearching =
-                                                //         false; // Reset searching state
-                                                //     // jobs.clear();
-                                                //     jobProvider.jobs.clear();
-                                                //   });
-                                                // },
-                                                onPressed: () => clearSearch(),
-                                              )
-                                            : null,
+                            Container(
+                              width: 700,
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter job title or keywords',
+                                  hintStyle: TextStyle(fontFamily: 'Galano'),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
                                   ),
-                                  onChanged: (value) {
-                                    if (_searchController.text.isEmpty) {
-                                      setState(() {
-                                        isSearching = false;
-                                      });
-                                    }
-                                    setState(() {
-                                      isSearching = true;
-                                    });
-                                  },
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFFD1E1FF), width: 2),
+                                  ),
+                                  suffixIcon: isSearching
+                                      ? IconButton(
+                                          icon: Icon(Icons.clear),
+                                          onPressed:
+                                              clearSearch, // Clear search logic
+                                        )
+                                      : null,
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.all(
+                                        10), // Adjust padding as needed
+                                    child: Icon(
+                                      Icons.search,
+                                      color: Color(0xFFFE9703),
+                                    ), // Change color if needed
+                                  ),
                                 ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    isSearching =
+                                        _searchController.text.isNotEmpty;
+                                  });
+                                },
                               ),
                             ),
                             SizedBox(width: 8),
-                            Container(
-                              child: ElevatedButton(
-                                onPressed: onSearch,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF0038FF),
-                                  padding: EdgeInsets.all(20),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                            ElevatedButton(
+                              onPressed: onSearch,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF0038FF),
+                                padding: EdgeInsets.all(20),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Text(
-                                  'Find Jobs',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.white,
-                                    fontFamily: 'Galano',
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                              ),
+                              child: Text(
+                                'Find Jobs',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
                           ],
                         ),
                         SizedBox(height: 16),
-                        // isLoading
+
+                        // Main content based on search and job data state
                         jobProvider.isLoading
-                            ? Center(child: CircularProgressIndicator())
-                            // : hasResults
-                            : jobProvider.hasResults
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 150),
+                                child: Center(
+                                  child: Column(
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/huzzl_loading.gif',
+                                        height: 80,
+                                      ),
+                                      Text(
+                                        loadingPhrases[currentIndex],
+                                        style: TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          color: Color(0xFFfd7206),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ) // Show loading spinner
+                            : jobProvider.hasResults &&
+                                    jobProvider.jobs
+                                        .isNotEmpty // Show jobs if available
                                 ? Expanded(
                                     child: ListView.builder(
-                                      // itemCount: jobs.length,
                                       itemCount: jobProvider.jobs.length,
                                       itemBuilder: (context, index) {
                                         return buildJobCard(
-                                          // final
                                           joblink: jobProvider.jobs[index]
                                                   ['jobLink'] ??
                                               '',
@@ -535,7 +564,9 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                     ),
                                   )
                                 : Center(
-                                    child: Text('No search results match')),
+                                    child: Text(isSearching
+                                        ? 'No search results match'
+                                        : 'No jobs available')), // Show no results message or default message
                       ],
                     ),
                   ),

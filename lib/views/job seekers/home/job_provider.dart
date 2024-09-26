@@ -5,8 +5,7 @@ import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 
 class JobProvider with ChangeNotifier {
   List<Map<String, String>> _jobs = [];
-  List<Map<String, String>> _defaultJobs =
-      []; // when user clicks X icon so jobs wont load again
+  List<Map<String, String>> _defaultJobs = []; // Store the default jobs
   bool _hasResults = true;
   bool _isLoading = false;
 
@@ -15,93 +14,68 @@ class JobProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> loadJobs([String searchQuery = '']) async {
-    {
-      _isLoading = true;
-      _hasResults = true;
-      notifyListeners();
+    _isLoading = true;
+    _hasResults = true;
+    notifyListeners();
 
-      try {
-        String jobstreetHtmlContent = await fetchJobStreetData(searchQuery);
-        List<Map<String, String>> jobstreetJobs =
-            parseJobStreetData(jobstreetHtmlContent);
+    try {
+      // Fetch job data here...
+      String jobstreetHtmlContent = await fetchJobStreetData(searchQuery);
+      List<Map<String, String>> jobstreetJobs =
+          parseJobStreetData(jobstreetHtmlContent);
+      await fetchJobStreetJobDesc(jobstreetJobs);
 
-        await fetchJobStreetJobDesc(jobstreetJobs);
+      String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
+      List<Map<String, String>> onlineJobsJobs =
+          parseOnlineJobsData(onlineJobsHtmlContent);
 
-        String linkedInHtmlContent;
-        try {
-          linkedInHtmlContent = await fetchLinkedInData(searchQuery);
-        } catch (e) {
-          print('Error fetching LinkedIn data: $e');
-          linkedInHtmlContent = '';
-        }
+      String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
+      List<Map<String, String>> kalibrrJobs =
+          parseKalibrrData(kalibrrHtmlContent);
+      await fetchKalibrrJobDesc(kalibrrJobs);
 
-        List<Map<String, String>> linkedInJobs =
-            parseLinkedInData(linkedInHtmlContent);
+      String philJobNetHtmlContent = await fetchPhilJobNetData();
+      List<Map<String, String>> philJobNetJobs =
+          parsePhilJobNetData(philJobNetHtmlContent);
+      await fetchPhilJobNetJobDesc(philJobNetJobs);
 
-        await fetchLinkedInJobDesc(linkedInJobs);
+      // Clear existing jobs when searching
+      if (searchQuery.isNotEmpty) {
+        _jobs.clear();
+      }
 
-        String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
-        List<Map<String, String>> onlineJobsJobs =
-            parseOnlineJobsData(onlineJobsHtmlContent);
+      _jobs.addAll(jobstreetJobs
+          .where((job) => job['description'] != 'Error fetching description'));
+      _jobs.addAll(onlineJobsJobs);
+      _jobs.addAll(kalibrrJobs);
 
-        String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
-        List<Map<String, String>> kalibrrJobs =
-            parseKalibrrData(kalibrrHtmlContent);
+      if (searchQuery.isEmpty) {
+        _jobs.addAll(philJobNetJobs);
 
-        await fetchKalibrrJobDesc(kalibrrJobs);
-
-        String philJobNetHtmlContent = await fetchPhilJobNetData();
-        List<Map<String, String>> philJobNetJobs =
-            parsePhilJobNetData(philJobNetHtmlContent);
-
-        await fetchPhilJobNetJobDesc(philJobNetJobs);
-
-        if (searchQuery.isNotEmpty) {
-          _jobs.clear();
-        }
-
-        _jobs = [];
-
-        _jobs.addAll(jobstreetJobs.where(
-            (job) => job['description'] != 'Error fetching description'));
-
-        _jobs.addAll(linkedInJobs.where(
-            (job) => job['description'] != 'Error fetching description'));
-
-        _jobs.addAll(onlineJobsJobs);
-        _jobs.addAll(kalibrrJobs);
-
-        if (searchQuery.isEmpty) {
-          _jobs.addAll(philJobNetJobs);
-        }
-
-        if (searchQuery.isEmpty) {
+        // Save to default jobs if loading without a search query
+        if (_defaultJobs.isEmpty) {
           _defaultJobs.addAll(jobstreetJobs.where(
               (job) => job['description'] != 'Error fetching description'));
-
-          _defaultJobs.addAll(linkedInJobs.where(
-              (job) => job['description'] != 'Error fetching description'));
-
           _defaultJobs.addAll(onlineJobsJobs);
           _defaultJobs.addAll(kalibrrJobs);
           _defaultJobs.addAll(philJobNetJobs);
         }
-
-        _hasResults = _jobs.isNotEmpty;
-        notifyListeners();
-      } catch (e) {
-        print('Error loading jobs: $e');
       }
 
+      _hasResults = _jobs.isNotEmpty;
+      notifyListeners();
+    } catch (e) {
+      print('Error loading jobs: $e');
+    } finally {
       _isLoading = false;
-      jobs.shuffle(Random());
+      _jobs.shuffle(Random());
       notifyListeners();
     }
   }
 
   void restoreDefaultJobs() {
-    // Restore the default jobs when the search field is cleared
-    _jobs = List.from(_defaultJobs);
+    _jobs = List.from(_defaultJobs); // Restore the default jobs
+    _hasResults = _jobs.isNotEmpty; // Update hasResults based on default jobs
     notifyListeners();
   }
 }
