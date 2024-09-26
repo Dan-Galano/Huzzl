@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/application_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/back_for_review_confirm_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
@@ -153,7 +154,12 @@ class _PendingTileCardState extends State<PendingTileCard>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             ScheduleInterviewButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                final homeState =
+                                    context.findAncestorStateOfType<
+                                        RecruiterHomeScreenState>();
+                                homeState?.toggleCalendarScreen(true);
+                              },
                             ),
                           ],
                         ),
