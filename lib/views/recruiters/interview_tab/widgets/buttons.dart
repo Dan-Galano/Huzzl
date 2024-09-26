@@ -108,7 +108,7 @@ class InterviewCalendarButton extends StatelessWidget {
           ),
           Gap(15),
           Text(
-            'Schedule interview',
+            'Interview Calendar',
             style: TextStyle(color: Color(0xff3B7DFF)),
           ),
         ],
