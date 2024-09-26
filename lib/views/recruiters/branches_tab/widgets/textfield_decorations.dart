@@ -163,3 +163,32 @@ InputDecoration customHintTextInputDecoration(String hintTxt) {
       ),
     );
 }
+
+InputDecoration grayHintTextInputDecoration(String hintTxt) {
+  return InputDecoration(
+    hintText: hintTxt,
+    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0), 
+    isDense: true,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(
+        color: Color(0xFFb9b7bc), 
+        width: 1.5,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(
+        color: Color(0xFFb9b7bc), 
+        width: 1.5,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(
+        color: Color(0xFFb9b7bc), 
+        width: 1.5,
+      ),
+    ),
+  );
+}
