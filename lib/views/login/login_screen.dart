@@ -3,6 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -73,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (role != null) {
               if (role == 'jobseeker') {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => JobSeekerHomeScreen()));
+                    builder: (context) => JobseekerMainScreen()));
               } else if (role == 'recruiter') {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => RecruiterHomeScreen()));
