@@ -40,28 +40,38 @@ Widget buildJobCard(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
                           style: TextStyle(
-                              fontFamily: 'Galano',
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold)),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, size: 16, color: Colors.grey),
-                          SizedBox(width: 4),
-                          Text(location,
-                              style: TextStyle(
-                                  fontFamily: 'Galano',
-                                  fontWeight: FontWeight.w500)),
-                          SizedBox(width: 16),
-                        ],
-                      ),
-                      Text("Rate: $rate",
-                          style: TextStyle(fontFamily: 'Galano', fontSize: 14)),
-                    ],
+                            fontFamily: 'Galano',
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          softWrap: true, // Allow the text to wrap
+                          overflow: TextOverflow
+                              .visible, // Ensure it wraps instead of being truncated
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on,
+                                size: 16, color: Colors.grey),
+                            SizedBox(width: 4),
+                            Text(location,
+                                style: TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontWeight: FontWeight.w500)),
+                            SizedBox(width: 16),
+                          ],
+                        ),
+                        Text("Rate: $rate",
+                            style:
+                                TextStyle(fontFamily: 'Galano', fontSize: 14)),
+                      ],
+                    ),
                   ),
                   Image.asset(
                     website,

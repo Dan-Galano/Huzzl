@@ -86,19 +86,19 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
     if (searchedWord.isNotEmpty) {
       jobProvider.loadJobs(searchedWord);
     }
-    setState(() {
-      jobProvider.jobs.shuffle(Random());
-    });
+    // setState(() {
+    //   jobProvider.jobs.shuffle(Random());
+    // });
   }
 
   void clearSearch() {
     _searchController.clear();
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    // jobProvider.restoreDefaultJobs(); // Restore default jobs
+    jobProvider.restoreDefaultJobs(); // Restore default jobs
+
     setState(() {
       isSearching = false; // Reset searching state
     });
-    jobProvider.loadJobs();
   }
 
   @override
@@ -510,7 +510,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                         // Main content based on search and job data state
                         jobProvider.isLoading
                             ? Padding(
-                                padding: const EdgeInsets.only(top: 150),
+                                padding: const EdgeInsets.only(top: 180),
                                 child: Center(
                                   child: Column(
                                     children: [
