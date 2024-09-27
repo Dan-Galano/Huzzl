@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/preference_view.dart';
 import 'package:huzzl_web/views/recruiters/register/06%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -67,10 +68,11 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       timer?.cancel();
 
       await FirebaseFirestore.instance
-          .collection('jobseekers')
+          .collection('users')
           .doc(widget.userCredential.user!.uid)
           .set({
         'uid': widget.userCredential.user!.uid,
+        'role': 'jobseeker',
         'firstName': widget.fname,
         'lastName': widget.lname,
         'email': widget.email,
@@ -78,7 +80,7 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       });
 
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => CongratulationPage()));
+          .push(MaterialPageRoute(builder: (_) => const PreferenceViewPage()));
     }
   }
 
