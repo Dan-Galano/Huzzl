@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/admin/views/active_view.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/widgets/add_new_staff_modal.dart';
 
@@ -141,32 +142,37 @@ Widget buildManagersContent(
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      const SizedBox(width: 20),
-                      SizedBox(
-                        width: 250,
-                        child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(
-                            labelText: "All Branches",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                          ),
-                          value: selectedBranches, // Currently selected value
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedBranches = newValue;
-                            });
-                          },
-                          items: branches
-                              .map<DropdownMenuItem<String>>((String branch) {
-                            return DropdownMenuItem<String>(
-                              value: branch,
-                              child: Text(branch),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                      !isStandaloneCompany
+                          ? const SizedBox(width: 20)
+                          : const SizedBox(),
+                      !isStandaloneCompany
+                          ? SizedBox(
+                              width: 250,
+                              child: DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  labelText: "All Branches",
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(color: Colors.grey),
+                                  ),
+                                ),
+                                value:
+                                    selectedBranches, // Currently selected value
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedBranches = newValue;
+                                  });
+                                },
+                                items: branches.map<DropdownMenuItem<String>>(
+                                    (String branch) {
+                                  return DropdownMenuItem<String>(
+                                    value: branch,
+                                    child: Text(branch),
+                                  );
+                                }).toList(),
+                              ),
+                            )
+                          : const SizedBox(),
                       const SizedBox(width: 20),
                       SizedBox(
                         width: 250,
@@ -225,8 +231,8 @@ Widget buildManagersContent(
                       controller: _tabTwoController,
                       children: [
                         // Active Tab Content
-                        Center(
-                          child: Text("Active"),
+                        CompanyAdminsActive(
+                          userData: userData,
                         ),
                         // Archive Tab Content
                         Center(
