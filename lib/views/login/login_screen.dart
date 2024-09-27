@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return "Email Address is required.";
                 }
                 if (!EmailValidator.validate(value)) {
-                  return "Email Address provided is not valid.";
+                  return "Please provide a valid email address.";
                 }
               },
             ),

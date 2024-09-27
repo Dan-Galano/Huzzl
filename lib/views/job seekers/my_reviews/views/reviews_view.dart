@@ -24,7 +24,7 @@ class MyReviews extends StatelessWidget {
           ),
           const Gap(20),
           const Text(
-            "You don't have any saved jobs.",
+            "Your have not made any reviews.",
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey,

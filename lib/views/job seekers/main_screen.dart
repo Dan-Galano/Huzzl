@@ -5,6 +5,7 @@ import 'package:huzzl_web/views/job%20seekers/company%20reviews/company_reviews.
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 import 'package:huzzl_web/views/job%20seekers/my_reviews/my_reviews.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/01%20profile.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_home.dart';
 
 class JobseekerMainScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _JobseekerMainScreenState extends State<JobseekerMainScreen> {
     CompanyReviews(),
     MyJobsView(),
     MyReviewsView(),
+    ProfileScreen(),
   ];
 
   void _onNavBarItemTapped(int index) {

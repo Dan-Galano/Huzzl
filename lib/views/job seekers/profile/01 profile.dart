@@ -117,74 +117,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // nav
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  child: Image.asset('assets/images/huzzl.png', width: 80),
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Home',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Company Reviews',
-                        style: TextStyle(
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset('assets/images/message-icon.png',
-                          width: 20),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/notif-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Image.asset(
-                        'assets/images/user-icon.png',
-                        width: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            thickness: 1,
-            color: Colors.grey[400],
+            child: Row(),
           ),
           // content
           Container(
@@ -210,8 +148,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             "Eleanor Pena",
                             style: TextStyle(
                               fontFamily: 'Galano',
-                              fontSize: 24,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xff202855),
                             ),
                           ),
                           SizedBox(height: 5),
@@ -242,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 Divider(
-                  thickness: 3,
+                  thickness: 2,
                   color: Color(0xff6297ff),
                 ),
                 // SizedBox(height: 10),
@@ -255,70 +194,172 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         "Resume",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontFamily: 'Galano',
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xff202855),
                         ),
                       ),
                       SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ResumeButton(
-                            icon: Icons.upload_file,
-                            title: "Upload Resume",
-                            subtitle: "Attach your resume.",
-                            onTap: _pickFile,
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xffACACAC),
+                                  width: 1.5,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              margin: EdgeInsets.only(right: 8),
+                              child: ResumeButton(
+                                imageAsset: 'assets/images/upload.png',
+                                title: "Upload Resume",
+                                subtitle: "Attach your resume.",
+                                onTap: _pickFile,
+                                titleStyle: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff202855),
+                                ),
+                                subtitleStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'Galano',
+                                  color: Colors.grey.shade600,
+                                ),
+                                rightIconAsset:
+                                    'assets/images/upload_arrow.png', // Right-side icon
+                              ),
+                            ),
                           ),
-                          ResumeButton(
-                            icon: Icons.download,
-                            title: "Download Resume Template",
-                            subtitle: "sadasfadf",
-                            onTap: () {
-                              // Handle file download
-                            },
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xffACACAC),
+                                  width: 1.5,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              margin: EdgeInsets.only(left: 8),
+                              child: ResumeButton(
+                                imageAsset: 'assets/images/download.png',
+                                title: "Download Resume Template",
+                                subtitle: "Download a sample resume template.",
+                                onTap: () {
+                                  // Handle file download
+                                },
+                                titleStyle: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff202855),
+                                ),
+                                subtitleStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'Galano',
+                                  color: Colors.grey.shade600,
+                                ),
+                                rightIconAsset:
+                                    'assets/images/download_arrow.png', // Right-side icon
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
                 // Job match improvement section
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Improve your job matches",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Improve your job matches",
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff202855),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Color(0xffACACAC),
+                              width: 2.0,
+                            ),
+                            top: BorderSide(
+                              color: Color(0xffACACAC),
+                              width: 2.0,
+                            ),
                           ),
                         ),
-                        SizedBox(height: 10),
-                        ListTile(
-                          title: Text("Qualifications"),
-                          subtitle:
-                              Text("Highlight your skills and experience."),
+                        child: ListTile(
+                          title: Text(
+                            "Qualifications",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: 'Galano',
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xff202855),
+                            ),
+                          ),
+                          subtitle: Text(
+                            "Highlight your skills and experience.",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to qualifications screen
                           },
                         ),
-                        Divider(),
-                        ListTile(
-                          title: Text("Job preferences"),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Color(0xffACACAC),
+                              width: 2.0,
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            "Job preferences",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: 'Galano',
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xff202855),
+                            ),
+                          ),
                           subtitle: Text(
-                              "Save specific details like minimum desired pay and schedule."),
+                            "Save specific details like minimum desired pay and schedule.",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to job preferences screen
                           },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -331,16 +372,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class ResumeButton extends StatelessWidget {
-  final IconData icon;
+  final String imageAsset;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
+  final String? rightIconAsset; // New optional icon on the right side
 
   ResumeButton({
-    required this.icon,
+    required this.imageAsset,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.titleStyle,
+    this.subtitleStyle,
+    this.rightIconAsset, // Optional right icon asset
   });
 
   @override
@@ -349,21 +396,42 @@ class ResumeButton extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, size: 50, color: Colors.blue),
+          Image.asset(
+            imageAsset,
+            width: 50,
+            height: 50,
+            color: Colors.blue,
+          ),
           SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: titleStyle ??
+                    TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
               ),
-              Text(subtitle),
+              Text(
+                subtitle,
+                style: subtitleStyle ??
+                    TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+              ),
             ],
           ),
+          Spacer(), // Push the right icon to the right side
+          if (rightIconAsset != null) // Only show if rightIconAsset is provided
+            Image.asset(
+              rightIconAsset!,
+              width: 24, // Customize the size of the right icon
+              height: 24,
+            ),
         ],
       ),
     );

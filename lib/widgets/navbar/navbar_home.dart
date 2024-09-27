@@ -159,7 +159,7 @@ class _NavBarHomeState extends State<NavBarHome> {
                         showFeedbackViewDialog(context);
                         break;
                       case 'view_profile':
-                        showProfileDialog(context);
+                        switchScreen(4);
                         break;
                       case 'my_jobs':
                         switchScreen(2);
