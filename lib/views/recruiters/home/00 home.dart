@@ -6,10 +6,13 @@ import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
+import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/companyProfile.dart';
+import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
+import 'package:huzzl_web/widgets/navbar/navbar_home.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class RecruiterHomeScreen extends StatefulWidget {
@@ -186,14 +189,14 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   }
 
   //logout
-  void logOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      print("User logged out successfully.");
-    } catch (e) {
-      print("Error signing out: $e");
-    }
-  }
+  // void logOut() async {
+  //   try {
+  //     await FirebaseAuth.instance.signOut();
+  //     print("User logged out successfully.");
+  //   } catch (e) {
+  //     print("Error signing out: $e");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -215,8 +218,98 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           ),
           const SizedBox(width: 10),
           IconButton(
-            onPressed: () {
-              logOut();
+            onPressed: () async {
+              final RenderBox button = context.findRenderObject() as RenderBox;
+              final RenderBox overlay =
+                  Overlay.of(context).context.findRenderObject() as RenderBox;
+              final position =
+                  button.localToGlobal(Offset.zero, ancestor: overlay);
+              await showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  overlay.size.width - position.dx,
+                  position.dy + 55,
+                  position.dx + 30,
+                  overlay.size.height - position.dy,
+                ),
+                items: [
+                  const PopupMenuItem(
+                    value: 'company_profile',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.apartment_rounded,
+                          color: Color(0xff373030),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Company Profile',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'close_account',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.close_outlined,
+                          color: Color(0xff373030),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Close Account',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.logout_rounded,
+                          color: Color(0xff373030),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Log Out',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ).then((value) {
+                switch (value) {
+                  case 'company_profile':
+                    showCompanyProfile(context);
+                    break;
+                  case 'close_account':
+                    showCloseAccountDialog(context);
+                    break;
+                  case 'logout':
+                    showRecruiterLogoutDialog(context);
+                    break;
+                }
+              });
             },
             icon: Image.asset('assets/images/building-icon-recruiter.png',
                 width: 25),
