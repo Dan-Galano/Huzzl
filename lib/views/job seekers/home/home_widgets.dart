@@ -25,6 +25,7 @@ Widget buildJobCard({
   required String joblink,
   required BuildContext context,
 }) {
+  bool isHuzzlPost = website == 'assets/images/huzzl_logo_ulo.png';
   return Column(
     children: [
       ListTile(
@@ -71,6 +72,7 @@ Widget buildJobCard({
                             fontFamily: 'Galano',
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: isHuzzlPost ? Colors.orange : Colors.black,
                           ),
                           softWrap: true, // Allow the text to wrap
                           overflow: TextOverflow
