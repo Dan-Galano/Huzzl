@@ -144,8 +144,22 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             user: user!,
           );
         case 2:
+          if (_isApplicationScreen) {
+            return ApplicationScreen(
+              onBack: () => toggleApplicationScreen(false),
+            );
+          } else if (_isSlApplicationScreen) {
+            return SlApplicationScreen(
+              onBack: () => toggleSlApplicationScreen(false),
+            );
+          }
           return buildCandidatesContent(context);
         case 3:
+          if (_isCalendarScreen) {
+            return InterviewCalendar(
+              onBack: () => toggleCalendarScreen(false),
+            );
+          }
           return buildInterviewsContent();
         default:
           return Text("No content available");
