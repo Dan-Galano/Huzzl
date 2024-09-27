@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/home/details_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void _launchURL(String url) async {
@@ -13,20 +14,40 @@ void _launchURL(String url) async {
   }
 }
 
-Widget buildJobCard(
-    {required String datePosted,
-    required String title,
-    required String location,
-    required String rate,
-    required String description,
-    required String website,
-    required List<String> tags,
-    required String joblink}) {
+Widget buildJobCard({
+  required String datePosted,
+  required String title,
+  required String location,
+  required String rate,
+  required String description,
+  required String website,
+  required List<String> tags,
+  required String joblink,
+  required BuildContext context,
+}) {
   return Column(
     children: [
       ListTile(
         onTap: () {
-          _launchURL(joblink);
+          if (joblink.isNotEmpty) {
+            _launchURL(joblink);
+          } else {
+            //Huzzl Job post view
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return JobPostApp(
+                    jobTitle: title,
+                    jobDescription: description,
+                    jobDate: datePosted,
+                    location: location,
+                    rate: rate,
+                    skills: tags,
+                  );
+                },
+              ),
+            );
+          }
         },
         title: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -93,15 +114,18 @@ Widget buildJobCard(
               Wrap(
                 spacing: 8,
                 children: tags
-                    .map((tag) => Chip(
-                          label: Text(
-                            tag,
-                            style: TextStyle(
-                              fontFamily: 'Galano',
+                    .map((tag) => Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Chip(
+                            label: Text(
+                              tag,
+                              style: TextStyle(
+                                fontFamily: 'Galano',
+                              ),
                             ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
                           ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
                         ))
                     .toList(),
               ),

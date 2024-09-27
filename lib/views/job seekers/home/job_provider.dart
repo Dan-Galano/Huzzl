@@ -6,7 +6,7 @@ import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 class JobProvider with ChangeNotifier {
   List<Map<String, String>> _jobs = [];
   List<Map<String, String>> _defaultJobs = [];
-  List<Map<String, String>> _searchJobs = []; // New list for search results
+  List<Map<String, String>> _searchJobs = [];
   bool _hasResults = true;
   bool _isLoading = false;
 
@@ -22,22 +22,22 @@ class JobProvider with ChangeNotifier {
 
   Future<void> loadJobs([String searchQuery = '']) async {
     _isLoading = true;
-    _hasResults = true; // Assume results are available until proven otherwise
+    _hasResults = true;
     notifyListeners();
 
-    // Clear previous search results
+    // Clear previous job results to prevent duplication
     if (searchQuery.isNotEmpty) {
       _searchJobs.clear();
     } else {
-      _jobs.clear(); // Clear previous jobs only if no search query
+      _jobs.clear(); // Clear all jobs when no search query
     }
 
-    // Check for gibberish or invalid search input
+    // Check for invalid search input
     if (searchQuery.isNotEmpty && !isValidSearchQuery(searchQuery)) {
-      _hasResults = false; // No valid search input
+      _hasResults = false;
       notifyListeners();
       _isLoading = false;
-      return; // Exit early as no valid search
+      return;
     }
 
     try {
@@ -62,17 +62,17 @@ class JobProvider with ChangeNotifier {
       List<Map<String, String>> philJobNetJobs =
           parsePhilJobNetData(philJobNetHtmlContent);
 
-      // Combine all jobs
+      // Combine all jobs from all sources
       List<Map<String, String>> allJobs = [
+        ...huzzlJobs,
         ...jobstreetJobs,
-        ...huzzlJobs, // Include Huzzl jobs
-        ...linkedInJobs,
+        // ...linkedInJobs,
         ...onlineJobsJobs,
-        ...kalibrrJobs,
-        ...philJobNetJobs,
+        // ...kalibrrJobs,
+        // ...philJobNetJobs,
       ];
 
-      // Add jobs based on search query
+      // Add jobs based on the search query
       if (searchQuery.isEmpty) {
         _jobs.addAll(allJobs);
         if (_defaultJobs.isEmpty) {
@@ -93,20 +93,15 @@ class JobProvider with ChangeNotifier {
         }).toList());
       }
 
-      // Set hasResults based on actual job availability
-      _hasResults = (_jobs.isNotEmpty || _searchJobs.isNotEmpty);
+      _hasResults = _jobs.isNotEmpty || _searchJobs.isNotEmpty;
       notifyListeners();
     } catch (e) {
       print('Error loading jobs: $e');
-      _hasResults = false; // Set to false if there's an error
+      _hasResults = false;
     } finally {
       _isLoading = false;
-      if (searchQuery.isEmpty) {
-        shuffleJobsWithoutTwoConsecutive(
-            _jobs); // Shuffle jobs if no search query
-      } else {
-        shuffleJobsWithoutTwoConsecutive(_searchJobs); // Shuffle search results
-      }
+      shuffleJobsWithoutTwoConsecutive(
+          searchQuery.isEmpty ? _jobs : _searchJobs);
       notifyListeners();
     }
   }
@@ -120,6 +115,7 @@ class JobProvider with ChangeNotifier {
   }
 
   Future<List<Map<String, String>>> fetchAllJobPosts() async {
+    // Fetch all job posts from Firebase
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collectionGroup('job_posts').get();
 
@@ -127,6 +123,8 @@ class JobProvider with ChangeNotifier {
       return doc.data() as Map<String, dynamic>;
     }).toList();
 
+    // Prepare a new list to return, avoiding direct addition to _jobs
+    List<Map<String, String>> fetchedJobs = [];
     for (var jobPost in allJobPosts) {
       String? title = jobPost['jobTitle'] as String?;
       String? description = jobPost['jobDescription'] as String?;
@@ -134,29 +132,26 @@ class JobProvider with ChangeNotifier {
       String? postedDate = jobPost['posted_at']?.toString();
       String? salary = jobPost['payRate'] as String?;
       String? skills = jobPost['skills'] as String?;
-
       List<String> skillsTag = skills?.split(', ') ?? [];
 
       if (title != null && location != null) {
         String tags =
             skillsTag.isNotEmpty ? skillsTag.join(', ') : 'No tags available';
 
-        _jobs.add({
+        fetchedJobs.add({
           'datePosted': postedDate ?? 'Unknown date',
           'title': title,
           'description': description ?? 'No Description',
           'location': location,
           'tags': tags,
           'salary': salary ?? 'Salary not provided',
-          'jobLink': 'No job link',
           'proxyLink': 'no proxy link',
-          'website': 'assets/images/huzzl_logo_ulo.png'
+          'website': 'assets/images/huzzl_logo_ulo.png',
         });
       }
-      notifyListeners();
     }
-    print(_jobs);
-    return _jobs;
+
+    return fetchedJobs; // Return the fetched jobs instead of adding to _jobs directly
   }
 }
 

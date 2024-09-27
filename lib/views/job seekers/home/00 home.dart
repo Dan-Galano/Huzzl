@@ -548,18 +548,20 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                                 .jobs[index]; // Use all jobs
 
                                         return buildJobCard(
-                                          joblink: job['jobLink'] ?? '',
-                                          datePosted: job['datePosted'] ??
-                                              'No Date Posted',
-                                          title: job['title']!,
-                                          location:
-                                              job['location'] ?? 'No Location',
-                                          rate: job['salary'] ?? 'Not provided',
-                                          description: job['description'] ??
-                                              'No description available',
-                                          website: job['website']!,
-                                          tags: job['tags']?.split(', ') ?? [],
-                                        );
+                                            joblink: job['jobLink'] ?? '',
+                                            datePosted: job['datePosted'] ??
+                                                'No Date Posted',
+                                            title: job['title']!,
+                                            location: job['location'] ??
+                                                'No Location',
+                                            rate:
+                                                job['salary'] ?? 'Not provided',
+                                            description: job['description'] ??
+                                                'No description available',
+                                            website: job['website']!,
+                                            tags:
+                                                job['tags']?.split(', ') ?? [],
+                                            context: context);
                                       },
                                     ),
                                   )
