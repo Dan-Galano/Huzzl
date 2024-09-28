@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/closed.dart';
@@ -7,7 +8,14 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/jobfilterrow.dart';
 
 class JobTab extends StatefulWidget {
   final VoidCallback postJob;
-  const JobTab({super.key, required this.postJob});
+  final List<Map<String, dynamic>> jobPostsData;
+  final User user;
+  const JobTab({
+    super.key,
+    required this.postJob,
+    required this.jobPostsData,
+    required this.user,
+  });
 
   @override
   State<JobTab> createState() => _JobTabState();
@@ -108,7 +116,10 @@ class _JobTabState extends State<JobTab> {
                       child: TabBarView(
                         controller: _tabController,
                         children: [
-                          OpenJobs(),
+                          OpenJobs(
+                            // jobPostsData: widget.jobPostsData,
+                            user: widget.user,
+                          ),
                           PausedJobs(),
                           ClosedJobs(),
                         ],

@@ -5,12 +5,14 @@ class JobSkills extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final VoidCallback cancel;
+  final List<String> selectedSkills;
 
   const JobSkills(
       {super.key,
       required this.nextPage,
       required this.previousPage,
-      required this.cancel});
+      required this.cancel,
+      required this.selectedSkills});
 
   @override
   State<JobSkills> createState() => _JobSkillsState();
@@ -21,7 +23,6 @@ class _JobSkillsState extends State<JobSkills> {
   final TextEditingController _controller = TextEditingController();
 
   List<String> _suggestions = [];
-  List<String> _clickedSkills = [];
   final List<String> _skills = [
     'Communication Skills',
     'Critical Thinking',
@@ -45,7 +46,10 @@ class _JobSkillsState extends State<JobSkills> {
     setState(() {
       if (query.isNotEmpty) {
         _suggestions = _skills
-            .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+            .where((item) =>
+                item.toLowerCase().contains(query.toLowerCase()) &&
+                !widget.selectedSkills
+                    .contains(item)) // Exclude selected skills
             .toList();
       } else {
         _suggestions.clear();
@@ -55,7 +59,7 @@ class _JobSkillsState extends State<JobSkills> {
 
   void _deleteClickedItem(int index) {
     setState(() {
-      _clickedSkills.removeAt(index);
+      widget.selectedSkills.removeAt(index);
     });
   }
 
@@ -168,9 +172,9 @@ class _JobSkillsState extends State<JobSkills> {
                       ),
                     ),
                     validator: (value) {
-                      if (_clickedSkills.isEmpty) {
+                      if (widget.selectedSkills.isEmpty) {
                         return "Skill Required";
-                      } else if (_clickedSkills.length < 2) {
+                      } else if (widget.selectedSkills.length < 2) {
                         return "Please select at least 2 skills";
                       }
                     },
@@ -182,7 +186,7 @@ class _JobSkillsState extends State<JobSkills> {
                         // Display clicked items when not typing
                         if (_controller.text.isEmpty)
                           ListView.builder(
-                            itemCount: _clickedSkills.length,
+                            itemCount: widget.selectedSkills.length,
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding:
@@ -197,7 +201,7 @@ class _JobSkillsState extends State<JobSkills> {
                                   ),
                                   child: ListTile(
                                     title: Text(
-                                      _clickedSkills[index],
+                                      widget.selectedSkills[index],
                                       style: const TextStyle(
                                         fontFamily: 'Galano',
                                       ),
@@ -206,7 +210,7 @@ class _JobSkillsState extends State<JobSkills> {
                                       onPressed: () {
                                         _deleteClickedItem(index);
                                       },
-                                      icon: const Icon(Icons.delete_rounded),
+                                      icon: const Icon(Icons.delete_outline),
                                     ),
                                   ),
                                 ),
@@ -237,8 +241,11 @@ class _JobSkillsState extends State<JobSkills> {
                                       ),
                                     ),
                                     onTap: () {
+                                      // bool isSelected = widget.selectedSkills
+                                      //     .contains(_suggestions[index]);
                                       setState(() {
-                                        _clickedSkills.add(_suggestions[index]);
+                                        widget.selectedSkills
+                                            .add(_suggestions[index]);
                                         _controller.clear();
                                         _suggestions.clear();
                                       });

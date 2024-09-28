@@ -6,12 +6,16 @@ class JobHireSettings extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final VoidCallback cancel;
+  String selectedTimeline;
+  final ValueChanged<String?> onHiringTimelineChanged;
 
-  const JobHireSettings(
+  JobHireSettings(
       {super.key,
       required this.nextPage,
       required this.previousPage,
-      required this.cancel});
+      required this.cancel,
+      required this.selectedTimeline,
+      required this.onHiringTimelineChanged});
 
   @override
   State<JobHireSettings> createState() => _JobHireSettingsState();
@@ -108,16 +112,13 @@ class _JobHireSettingsState extends State<JobHireSettings> {
                       value: selectedTimeline,
                       hint: Text(
                         'Select an option',
-                        style: TextStyle(
-                          fontFamily: 'Galano',
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
                       ),
                       onChanged: (String? newValue) {
                         setState(() {
+                          widget.selectedTimeline = newValue!;
                           selectedTimeline = newValue;
                         });
+                        widget.onHiringTimelineChanged(newValue);
                       },
                       items: timelineOptions
                           .map<DropdownMenuItem<String>>((String value) {
@@ -133,9 +134,10 @@ class _JobHireSettingsState extends State<JobHireSettings> {
                         );
                       }).toList(),
                       validator: (value) {
-                        if (value!.isEmpty || value == null) {
+                        if (value == null) {
                           return "Hiring timeline is required.";
                         }
+                        return null;
                       },
                     ),
                   ),

@@ -1,13 +1,61 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 
 class EditJobDetails extends StatefulWidget {
-  final VoidCallback nextPage;
+  final VoidCallback submitForm;
   final VoidCallback previousPage;
-  const EditJobDetails({
+  final TextEditingController jobTitleController;
+  String numOfPeopleToHire; // one or more
+  String numPeople; // 1 to 10+
+  final String region;
+  final String province;
+  final String city;
+  final String barangay;
+  final TextEditingController otherLocation;
+  final TextEditingController jobDescriptionController;
+  final String jobType;
+  final String schedule;
+  final List<String> skills;
+  final String selectedRate;
+  final TextEditingController minRate;
+  final TextEditingController maxRate;
+  final List<String> supplementalPay;
+  final String resumeRequiredAns;
+  final String appDeadlineAns;
+  DateTime appDeadlineDate;
+  final String hiringTimeline;
+  final List<String> prescreenQuestions;
+  final User user;
+
+  EditJobDetails({
     super.key,
-    required this.nextPage,
+    required this.submitForm,
     required this.previousPage,
+    required this.jobTitleController,
+    required this.numOfPeopleToHire,
+    required this.numPeople,
+    required this.region,
+    required this.province,
+    required this.city,
+    required this.barangay,
+    required this.otherLocation,
+    required this.jobDescriptionController,
+    required this.jobType,
+    required this.schedule,
+    required this.skills,
+    required this.selectedRate,
+    required this.minRate,
+    required this.maxRate,
+    required this.supplementalPay,
+    required this.resumeRequiredAns,
+    required this.appDeadlineAns,
+    required this.appDeadlineDate,
+    required this.hiringTimeline,
+    required this.prescreenQuestions,
+    required this.user,
   });
 
   @override
@@ -18,38 +66,87 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   final _formKey = GlobalKey<FormState>();
 
   // samples
-  final TextEditingController jobTitleController =
-      TextEditingController(text: 'Architect / Engineer Drafter with...');
-  final TextEditingController openingsController =
-      TextEditingController(text: '3');
-  final TextEditingController locationController =
-      TextEditingController(text: 'Brgy. Moreno, Binalonan, Pangasinan');
-  final TextEditingController descriptionController = TextEditingController(
-      text: 'We urgently need a skilled wedding photograph...');
-  final TextEditingController jobTypeController =
-      TextEditingController(text: 'Part-time');
-  final TextEditingController scheduleController =
-      TextEditingController(text: 'Weekends');
-  final TextEditingController skillController = TextEditingController(
-      text: 'Java, JavaScript, Flutter, Microsoft Office');
-  final TextEditingController payController =
-      TextEditingController(text: 'From ₱200.00 per hour');
-  final TextEditingController supplementalPayController =
-      TextEditingController(text: 'Tips, Bonus Pay');
-  final TextEditingController requireResumeController =
-      TextEditingController(text: 'Yes, require a resume');
-  final TextEditingController hiringTimelineController =
-      TextEditingController(text: '2-4 weeks');
-  final TextEditingController applicationDeadlineController =
-      TextEditingController(text: '07/25/2024');
+  late TextEditingController jobTitleController =
+      TextEditingController(text: widget.jobTitleController.text);
+  late TextEditingController jobDescriptionController =
+      TextEditingController(text: widget.jobDescriptionController.text);
+
+  late TextEditingController openingsController = TextEditingController(
+      text: widget.numOfPeopleToHire == 'More than one person'
+          ? widget.numPeople
+          : widget.numOfPeopleToHire);
+  late TextEditingController locationController = TextEditingController(
+      text:
+          '${widget.region}, ${widget.province}, ${widget.city}, ${widget.barangay}, ${widget.otherLocation.text}');
+  late TextEditingController jobTypeController =
+      TextEditingController(text: widget.jobType);
+  late TextEditingController scheduleController =
+      TextEditingController(text: widget.schedule);
+  late TextEditingController skillController =
+      TextEditingController(text: widget.skills.join(', '));
+
+  late TextEditingController payController = TextEditingController(
+      text: widget.selectedRate.isNotEmpty
+          ? 'From ₱${widget.minRate.text} to ₱${widget.maxRate.text} ${widget.selectedRate}'
+          : 'Pay not specified');
+  late TextEditingController supplementalPayController = TextEditingController(
+      text: widget.supplementalPay.isNotEmpty
+          ? widget.supplementalPay.join(', ')
+          : 'None');
+  late TextEditingController requireResumeController =
+      TextEditingController(text: widget.resumeRequiredAns);
+  late TextEditingController hiringTimelineController =
+      TextEditingController(text: widget.hiringTimeline);
+  late TextEditingController applicationDeadlineController =
+      TextEditingController(
+          text: widget.appDeadlineAns == 'Yes'
+              ? DateFormat.yMMMd().format(widget.appDeadlineDate)
+              : 'No Deadline');
   final TextEditingController updatesController =
-      TextEditingController(text: 'huzzle@gmail.com');
-  final TextEditingController preScreeningController = TextEditingController(
-      text: 'Will you be able to reliably commute or relocate...');
+      TextEditingController(text: 'huzzle@gmail.com'); // change this
+  late TextEditingController preScreeningController = TextEditingController(
+      text: widget.prescreenQuestions.isNotEmpty
+          ? widget.prescreenQuestions.join(', ')
+          : 'None');
+
+  //Get current date
+  String formattedCurrentDate = DateFormat.yMMMd().format(DateTime.now());
 
   void _submitJobPost() {
     // if (_formKey.currentState!.validate()) {
-    widget.nextPage();
+    widget.submitForm();
+
+    print("Job Title: ${jobTitleController.text}");
+    print("Job Description: ${jobDescriptionController.text}");
+    print("Job Type: ${jobTypeController.text}");
+    print("Job Location: ${locationController.text}");
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.user.uid) // UID of the user
+        .collection('job_posts')
+        .add({
+      'jobTitle': jobTitleController.text,
+      'jobDescription': jobDescriptionController.text,
+      'numberOfPeopleToHire': openingsController.text,
+      'jobPostLocation': locationController.text,
+      'jobType': jobTypeController.text,
+      'hoursPerWeek': scheduleController.text,
+      'skills': skillController.text,
+      'payRate': payController.text,
+      'supplementalPay': supplementalPayController.text,
+      'isResumeRequired': requireResumeController.text,
+      'applicationDeadline': applicationDeadlineController.text,
+      'hiringTimeline': hiringTimelineController.text,
+      'updatesController': updatesController.text,
+      'preScreenQuestions': preScreeningController.text,
+      'status': "open",
+      'posted_at': formattedCurrentDate,
+    }).then((value) {
+      print('Job post added successfully!');
+    }).catchError((error) {
+      print('Error adding job post: $error');
+    });
     // }
   }
 
@@ -107,7 +204,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
                         _buildJobDetailRow('Location', locationController),
                         const Gap(10),
                         _buildJobDetailRow(
-                            'Description', descriptionController),
+                            'Description', jobDescriptionController),
                         const Gap(10),
                         _buildJobDetailRow('Job type', jobTypeController),
                         const Gap(10),

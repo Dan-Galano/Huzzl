@@ -6,10 +6,13 @@ import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
+import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/companyProfile.dart';
+import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
+import 'package:huzzl_web/widgets/navbar/navbar_home.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class RecruiterHomeScreen extends StatefulWidget {
@@ -22,44 +25,67 @@ class RecruiterHomeScreen extends StatefulWidget {
 class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   Map<String, dynamic>? companyData;
   Map<String, dynamic>? userData;
+  List<Map<String, dynamic>> jobPostsData = [];
+  User? user;
   bool? isStandaloneCompany;
+
   void getcompanyData() async {
     // Get the current user after they sign in
-    User? user = FirebaseAuth.instance.currentUser;
+    setState(() {
+      user = FirebaseAuth.instance.currentUser;
+    });
 
     if (user != null) {
       // The UID of the signed-in user
-      String uid = user.uid;
+      String uid = user!.uid;
 
-      // Company Info
-      DocumentSnapshot companyDocument = await FirebaseFirestore.instance
-          .collection(
-              'recruiters_company_info') // Assuming 'companyData' is the collection
-          .doc(uid) // Access the document with the user's UID
+      // Fetch company info from the subcollection
+      QuerySnapshot companySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('company_information')
           .get();
-      //USer info
+
+      QuerySnapshot jobPostsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('job_posts')
+          .get();
+
+      // Fetch user info
       DocumentSnapshot userDocument = await FirebaseFirestore.instance
-          .collection('users') // Assuming 'companyData' is the collection
+          .collection('users') // Access the 'users' collection
           .doc(uid) // Access the document with the user's UID
           .get();
 
-      // Check if the document exists
-      if (companyDocument.exists && userDocument.exists) {
-        // Get the user's data
+      // Check if the user document exists and the company subcollection has data
+      if (companySnapshot.docs.isNotEmpty && userDocument.exists) {
         setState(() {
-          companyData = companyDocument.data() as Map<String, dynamic>;
+          // Extract the first document from the company_information subcollection (or handle multiple documents as needed)
+          companyData =
+              companySnapshot.docs.first.data() as Map<String, dynamic>;
           userData = userDocument.data() as Map<String, dynamic>;
-
+          jobPostsData = jobPostsSnapshot.docs
+              .map((doc) => doc.data() as Map<String, dynamic>)
+              .toList();
+          print(jobPostsData);
+          print(companyData!["companySize"]);
+          // Check company size field to set the isStandaloneCompany flag
           if (companyData!["companySize"] == "It's just me") {
             isStandaloneCompany = true;
           } else {
             isStandaloneCompany = false;
           }
+
+          // Update the user and company data
+          this.companyData = companyData;
+          this.userData = userData;
         });
 
-        print("User Data: ${companyData.toString()}");
+        print("Company Data: ${companyData.toString()}");
+        print("User Data: ${userData.toString()}");
       } else {
-        print("No user data found for UID: $uid");
+        print("No company or user data found for UID: $uid");
       }
     } else {
       print("No user signed in.");
@@ -72,7 +98,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 5;
+  int? _selectedIndex = 0;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
   bool _isCalendarScreen = false;
@@ -110,15 +136,30 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     if (isStandaloneCompany!) {
       switch (_selectedIndex) {
         case 0:
-          return buildAdminContent(context, userData);
-        case 1:
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
+        case 1:
+          return JobScreens(
+            jobPostsData: jobPostsData,
+            user: user!,
+          );
         case 2:
-          return JobScreens();
-        case 3:
+          if (_isApplicationScreen) {
+            return ApplicationScreen(
+              onBack: () => toggleApplicationScreen(false),
+            );
+          } else if (_isSlApplicationScreen) {
+            return SlApplicationScreen(
+              onBack: () => toggleSlApplicationScreen(false),
+            );
+          }
           return buildCandidatesContent(context);
-        case 4:
+        case 3:
+          if (_isCalendarScreen) {
+            return InterviewCalendar(
+              onBack: () => toggleCalendarScreen(false),
+            );
+          }
           return buildInterviewsContent();
         default:
           return Text("No content available");
@@ -133,7 +174,10 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         case 2:
           return BranchesScreen();
         case 3:
-          return JobScreens();
+          return JobScreens(
+            jobPostsData: jobPostsData,
+            user: user!,
+          );
         case 4:
           if (_isApplicationScreen) {
             return ApplicationScreen(
@@ -159,14 +203,14 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   }
 
   //logout
-  void logOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      print("User logged out successfully.");
-    } catch (e) {
-      print("Error signing out: $e");
-    }
-  }
+  // void logOut() async {
+  //   try {
+  //     await FirebaseAuth.instance.signOut();
+  //     print("User logged out successfully.");
+  //   } catch (e) {
+  //     print("Error signing out: $e");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -188,8 +232,98 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           ),
           const SizedBox(width: 10),
           IconButton(
-            onPressed: () {
-              logOut();
+            onPressed: () async {
+              final RenderBox button = context.findRenderObject() as RenderBox;
+              final RenderBox overlay =
+                  Overlay.of(context).context.findRenderObject() as RenderBox;
+              final position =
+                  button.localToGlobal(Offset.zero, ancestor: overlay);
+              await showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  overlay.size.width - position.dx,
+                  position.dy + 55,
+                  position.dx + 30,
+                  overlay.size.height - position.dy,
+                ),
+                items: [
+                  const PopupMenuItem(
+                    value: 'company_profile',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.apartment_rounded,
+                          color: Color(0xff373030),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Company Profile',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'close_account',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.close_outlined,
+                          color: Color(0xff373030),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Close Account',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.logout_rounded,
+                          color: Color(0xff373030),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Log Out',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ).then((value) {
+                switch (value) {
+                  case 'company_profile':
+                    showCompanyProfile(context);
+                    break;
+                  case 'close_account':
+                    showCloseAccountDialog(context);
+                    break;
+                  case 'logout':
+                    showRecruiterLogoutDialog(context);
+                    break;
+                }
+              });
             },
             icon: Image.asset('assets/images/building-icon-recruiter.png',
                 width: 25),
@@ -214,31 +348,26 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                         destinations: <NavigationRailDestination>[
                           NavigationRailDestination(
                             icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Admin', 0),
+                                'assets/images/manager-tab.png', 'Managers', 0),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
                             icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Managers', 1),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/jobs-tab.png', 'Jobs', 2),
+                                'assets/images/jobs-tab.png', 'Jobs', 1),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
                             icon: _buildNavItem(
                                 'assets/images/candidates-tab.png',
                                 'Candidates',
-                                3),
+                                2),
                             label: const SizedBox.shrink(),
                           ),
                           NavigationRailDestination(
                             icon: _buildNavItem(
                                 'assets/images/interview-tab.png',
                                 'Interviews',
-                                4),
+                                3),
                             label: const SizedBox.shrink(),
                           ),
                         ],

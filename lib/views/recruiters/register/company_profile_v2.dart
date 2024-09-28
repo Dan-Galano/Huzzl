@@ -153,9 +153,9 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
       try {
         // Store data in Firestore
         await FirebaseFirestore.instance
-            .collection('recruiters_company_info')
+            .collection('users')
             .doc(widget.userCredential.user!.uid)
-            .set({
+            .collection("company_information").add({
           'uid': widget.userCredential.user!.uid,
           'companyName': _companyName.text,
           'ceoFirstName': _CEOFirstName.text,

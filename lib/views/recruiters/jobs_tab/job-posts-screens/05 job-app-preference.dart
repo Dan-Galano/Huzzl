@@ -3,30 +3,53 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class JobApplicationPreferences extends StatefulWidget {
+  // resumeAnswer: resumeAnswer,
+  // onResumeAnsChange: (value) =>
+  //     setState(() => resumeAnswer = value!),
+  // appDeadlineAns: appDeadlineAns,
+  // onAppDeadlineChange: (value) =>
+  //     setState(() => appDeadlineAns = value!),
+  // selectedAppDeadlineDate: appDeadlineDate,
+  // onAppDeadlineDateChange: (value) =>
+  //     setState(() => appDeadlineDate = value!),
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final VoidCallback cancel;
+  String resumeAnswer;
+  final ValueChanged<String?> onResumeAnsChanged;
+  String appDeadlineAns;
+  final ValueChanged<String?> onAppDeadlineAnsChanged;
+  DateTime selectedAppDeadlineDate;
+  final ValueChanged<DateTime?> onAppDeadlineDateChanged;
 
-  const JobApplicationPreferences(
+  JobApplicationPreferences(
       {super.key,
       required this.nextPage,
       required this.previousPage,
-      required this.cancel});
+      required this.cancel,
+      required this.resumeAnswer,
+      required this.onResumeAnsChanged,
+      required this.appDeadlineAns,
+      required this.onAppDeadlineAnsChanged,
+      required this.selectedAppDeadlineDate,
+      required this.onAppDeadlineDateChanged});
 
   @override
   State<JobApplicationPreferences> createState() =>
       _JobApplicationPreferencesState();
 }
 
-enum Answer { yes, no }
+// enum Answer { yes, no }
 
 class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
   final _formKey = GlobalKey<FormState>();
 
-  Answer? _resumeAnswer = Answer.yes;
-  Answer? _deadlineAnswer = Answer.yes;
+  // Answer? _resumeAnswer = Answer.yes;
+  // Answer? _deadlineAnswer = Answer.yes;
+  String _resumeAnswer = 'Yes';
+  String _deadlineAnswer = 'Yes';
 
-  DateTime? _selectedDate;
+  // DateTime? _selectedDate;
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -34,10 +57,11 @@ class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null && picked != widget.selectedAppDeadlineDate) {
       setState(() {
-        _selectedDate = picked;
+        widget.selectedAppDeadlineDate = picked;
       });
+      widget.onAppDeadlineDateChanged(picked);
     }
   }
 
@@ -92,7 +116,7 @@ class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
                       ),
                       const SizedBox(height: 18),
                       const Text(
-                        'Require potential candidates for a resume?',
+                        'Is resume required?',
                         style: TextStyle(
                           fontFamily: 'Galano',
                           fontWeight: FontWeight.w600,
@@ -106,13 +130,14 @@ class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
                             fontFamily: 'Galano',
                           ),
                         ),
-                        leading: Radio<Answer>(
-                          value: Answer.yes,
-                          groupValue: _resumeAnswer,
-                          onChanged: (Answer? value) {
+                        leading: Radio<String>(
+                          value: 'Yes',
+                          groupValue: widget.resumeAnswer,
+                          onChanged: (String? value) {
                             setState(() {
-                              _resumeAnswer = value;
+                              widget.resumeAnswer = value!;
                             });
+                            widget.onResumeAnsChanged(value);
                           },
                         ),
                       ),
@@ -123,13 +148,14 @@ class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
                             fontFamily: 'Galano',
                           ),
                         ),
-                        leading: Radio<Answer>(
-                          value: Answer.no,
-                          groupValue: _resumeAnswer,
-                          onChanged: (Answer? value) {
+                        leading: Radio<String>(
+                          value: 'No',
+                          groupValue: widget.resumeAnswer,
+                          onChanged: (String? value) {
                             setState(() {
-                              _resumeAnswer = value;
+                              widget.resumeAnswer = value!;
                             });
+                            widget.onResumeAnsChanged(value);
                           },
                         ),
                       ),
@@ -144,30 +170,32 @@ class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
                       ),
                       ListTile(
                         title: const Text('Yes'),
-                        leading: Radio<Answer>(
-                          value: Answer.yes,
-                          groupValue: _deadlineAnswer,
-                          onChanged: (Answer? value) {
+                        leading: Radio<String>(
+                          value: 'Yes',
+                          groupValue: widget.appDeadlineAns,
+                          onChanged: (String? value) {
                             setState(() {
-                              _deadlineAnswer = value;
+                              widget.appDeadlineAns = value!;
                             });
+                            widget.onAppDeadlineAnsChanged(value);
                           },
                         ),
                       ),
                       ListTile(
                         title: const Text('No'),
-                        leading: Radio<Answer>(
-                          value: Answer.no,
-                          groupValue: _deadlineAnswer,
-                          onChanged: (Answer? value) {
+                        leading: Radio<String>(
+                          value: 'No',
+                          groupValue: widget.appDeadlineAns,
+                          onChanged: (String? value) {
                             setState(() {
-                              _deadlineAnswer = value;
+                              widget.appDeadlineAns = value!;
                             });
+                            widget.onAppDeadlineAnsChanged(value);
                           },
                         ),
                       ),
                       const SizedBox(height: 10),
-                      if (_deadlineAnswer == Answer.yes)
+                      if (widget.appDeadlineAns == 'Yes')
                         Container(
                           width: 250,
                           height: 40,
@@ -185,10 +213,10 @@ class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
                                 children: [
                                   const SizedBox(width: 10),
                                   Text(
-                                    _selectedDate == null
+                                    widget.selectedAppDeadlineDate == null
                                         ? 'MM/DD/YY'
-                                        : DateFormat.yMMMd()
-                                            .format(_selectedDate!),
+                                        : DateFormat.yMMMd().format(
+                                            widget.selectedAppDeadlineDate!),
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontFamily: 'Galano',

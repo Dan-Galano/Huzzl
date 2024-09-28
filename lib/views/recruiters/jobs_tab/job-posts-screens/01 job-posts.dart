@@ -7,8 +7,31 @@ import 'package:http/http.dart' as http;
 class JobPosts extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback cancel;
+  final TextEditingController jobTitleController;
+  String numOfPeopleToHire;
+  final ValueChanged<String?> onNumOfPeopleToHireChanged;
+  final ValueChanged<String?> onNumPeopleChanged;
+  final ValueChanged<String?> onRegionChanged;
+  final ValueChanged<String?> onProvinceChanged;
+  final ValueChanged<String?> onCityChanged;
+  final ValueChanged<String?> onBarangayChanged;
+  final TextEditingController otherLocation;
+  final TextEditingController jobDescriptionController;
 
-  JobPosts({required this.nextPage, required this.cancel});
+  JobPosts({
+    required this.nextPage,
+    required this.cancel,
+    required this.jobTitleController,
+    required this.numOfPeopleToHire,
+    required this.onNumOfPeopleToHireChanged,
+    required this.onNumPeopleChanged,
+    required this.onRegionChanged,
+    required this.onProvinceChanged,
+    required this.onCityChanged,
+    required this.onBarangayChanged,
+    required this.otherLocation,
+    required this.jobDescriptionController,
+  });
 
   @override
   _JobPostsState createState() => _JobPostsState();
@@ -16,18 +39,13 @@ class JobPosts extends StatefulWidget {
 
 class _JobPostsState extends State<JobPosts> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _jobTitleController = TextEditingController();
-  final TextEditingController _jobDescController = TextEditingController();
-
-  String _hiringOption = 'One person';
-  String? _selectedValue; // if more than one perso is selected
+  String?
+      _selectedValue; // if more than one person is selected/value will be stored here
 
   String? selectedRegion;
   String? selectedProvince;
   String? selectedCity;
   String? selectedBarangay;
-  final TextEditingController otherLocationInformation =
-      TextEditingController();
 
   List<dynamic> regions = [];
   List<dynamic> provinces = [];
@@ -64,7 +82,7 @@ class _JobPostsState extends State<JobPosts> {
     if (response.statusCode == 200) {
       setState(() {
         provinces = jsonDecode(response.body);
-        resetSelections();
+        // resetSelections();
       });
     } else {
       throw Exception('Failed to load provinces');
@@ -77,7 +95,7 @@ class _JobPostsState extends State<JobPosts> {
     if (response.statusCode == 200) {
       setState(() {
         cities = jsonDecode(response.body);
-        resetCityAndBarangaySelections();
+        // resetCityAndBarangaySelections();
       });
     } else {
       throw Exception('Failed to load cities');
@@ -90,26 +108,26 @@ class _JobPostsState extends State<JobPosts> {
     if (response.statusCode == 200) {
       setState(() {
         barangays = jsonDecode(response.body);
-        selectedBarangay = null; // Reset selected barangay
+        // selectedBarangay = null; // Reset selected barangay
       });
     } else {
       throw Exception('Failed to load barangays');
     }
   }
 
-  void resetSelections() {
-    selectedProvince = null;
-    selectedCity = null;
-    selectedBarangay = null;
-    cities = [];
-    barangays = [];
-  }
+  // void resetSelections() {
+  //   selectedProvince = null;
+  //   selectedCity = null;
+  //   selectedBarangay = null;
+  //   cities = [];
+  //   barangays = [];
+  // }
 
-  void resetCityAndBarangaySelections() {
-    selectedCity = null;
-    selectedBarangay = null;
-    barangays = [];
-  }
+  // void resetCityAndBarangaySelections() {
+  //   selectedCity = null;
+  //   selectedBarangay = null;
+  //   barangays = [];
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +181,7 @@ class _JobPostsState extends State<JobPosts> {
                   ],
                 ),
                 TextFormField(
-                  controller: _jobTitleController,
+                  controller: widget.jobTitleController,
                   decoration: customInputDecoration(),
                   validator: (value) {
                     if (value!.isEmpty || value == null) {
@@ -205,12 +223,13 @@ class _JobPostsState extends State<JobPosts> {
                     ),
                   ),
                   value: 'One person',
-                  groupValue: _hiringOption,
+                  groupValue: widget.numOfPeopleToHire,
                   onChanged: (value) {
                     setState(() {
-                      _hiringOption = value!;
+                      widget.numOfPeopleToHire = value!;
                       _selectedValue = null; // Reset dropdown value
                     });
+                    widget.onNumOfPeopleToHireChanged(value);
                   },
                 ),
                 RadioListTile<String>(
@@ -224,22 +243,23 @@ class _JobPostsState extends State<JobPosts> {
                     ),
                   ),
                   value: 'More than one person',
-                  groupValue: _hiringOption,
+                  groupValue: widget.numOfPeopleToHire,
                   onChanged: (value) {
                     setState(() {
-                      _hiringOption = value!;
+                      widget.numOfPeopleToHire = value!;
                       _selectedValue = null; // Reset dropdown value
                     });
+                    widget.onNumOfPeopleToHireChanged(value);
                   },
                 ),
                 Gap(10),
-                if (_hiringOption == 'More than one person') ...[
+                if (widget.numOfPeopleToHire == 'More than one person') ...[
                   DropdownButtonFormField<String>(
                     decoration: customInputDecoration(),
                     value: _selectedValue,
                     hint: const Text("Select an option"),
                     items: <String>[
-                      '1',
+                      // '1',
                       '2',
                       '3',
                       '4',
@@ -260,6 +280,13 @@ class _JobPostsState extends State<JobPosts> {
                       setState(() {
                         _selectedValue = newValue;
                       });
+                      widget.onNumPeopleChanged(newValue);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Required to select";
+                      }
+                      return null;
                     },
                   ),
                 ],
@@ -336,7 +363,7 @@ class _JobPostsState extends State<JobPosts> {
                   ],
                 ),
                 TextFormField(
-                  controller: _jobDescController,
+                  controller: widget.jobDescriptionController,
                   minLines: 3,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
@@ -405,14 +432,15 @@ class _JobPostsState extends State<JobPosts> {
             child: Text(region['name']),
           );
         }).toList(),
-        onChanged: (value) {
+        onChanged: (String? newValue) {
           setState(() {
-            selectedRegion = value;
-            resetSelections();
+            selectedRegion = newValue;
+            // resetSelections();
           });
-          if (value != null) {
+          widget.onRegionChanged(newValue);
+          if (newValue != null) {
             final selectedRegionCode = regions.firstWhere(
-              (region) => region['name'] == value,
+              (region) => region['name'] == newValue,
               orElse: () => null,
             )['code'];
             if (selectedRegionCode != null) {
@@ -446,14 +474,15 @@ class _JobPostsState extends State<JobPosts> {
             child: Text(province['name']),
           );
         }).toList(),
-        onChanged: (value) {
+        onChanged: (String? newValue) {
           setState(() {
-            selectedProvince = value;
-            resetCityAndBarangaySelections();
+            selectedProvince = newValue;
+            // resetCityAndBarangaySelections();
           });
-          if (value != null) {
+          widget.onProvinceChanged(newValue);
+          if (newValue != null) {
             final selectedProvinceCode = provinces.firstWhere(
-              (province) => province['name'] == value,
+              (province) => province['name'] == newValue,
               orElse: () => null,
             )['code'];
             if (selectedProvinceCode != null) {
@@ -487,15 +516,16 @@ class _JobPostsState extends State<JobPosts> {
             child: Text(city['name']),
           );
         }).toList(),
-        onChanged: (value) {
+        onChanged: (String? newValue) {
           setState(() {
-            selectedCity = value;
-            selectedBarangay = null;
-            barangays = [];
+            selectedCity = newValue;
+            // selectedBarangay = null;
+            // barangays = [];
           });
-          if (value != null) {
+          widget.onCityChanged(newValue);
+          if (newValue != null) {
             final selectedCitiesCode = cities.firstWhere(
-              (city) => city['name'] == value,
+              (city) => city['name'] == newValue,
               orElse: () => null,
             )['code'];
             if (selectedCitiesCode != null) {
@@ -529,10 +559,11 @@ class _JobPostsState extends State<JobPosts> {
             child: Text(barangay['name']),
           );
         }).toList(),
-        onChanged: (value) {
+        onChanged: (String? newValue) {
           setState(() {
-            selectedBarangay = value;
+            selectedBarangay = newValue;
           });
+          widget.onBarangayChanged(newValue);
         },
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -550,7 +581,7 @@ class _JobPostsState extends State<JobPosts> {
       children: [
         Text('If the location is not listed above, please enter it here:'),
         TextFormField(
-          controller: otherLocationInformation,
+          controller: widget.otherLocation,
           decoration: InputDecoration(
             isDense: true,
             border: OutlineInputBorder(
@@ -558,6 +589,7 @@ class _JobPostsState extends State<JobPosts> {
             ),
           ),
         ),
+        Gap(10),
       ],
     );
   }
