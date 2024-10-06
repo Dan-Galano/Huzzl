@@ -8,6 +8,8 @@ class JobPosts extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback cancel;
   final TextEditingController jobTitleController;
+  String selectedIndustry;
+  final ValueChanged<String?> onselectedIndustryChanged;
   String numOfPeopleToHire;
   final ValueChanged<String?> onNumOfPeopleToHireChanged;
   final ValueChanged<String?> onNumPeopleChanged;
@@ -22,6 +24,8 @@ class JobPosts extends StatefulWidget {
     required this.nextPage,
     required this.cancel,
     required this.jobTitleController,
+    required this.selectedIndustry,
+    required this.onselectedIndustryChanged,
     required this.numOfPeopleToHire,
     required this.onNumOfPeopleToHireChanged,
     required this.onNumPeopleChanged,
@@ -131,6 +135,38 @@ class _JobPostsState extends State<JobPosts> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> _industries = [
+      '',
+      'Aerospace & Defense',
+      'Agriculture',
+      'Arts, Entertainment & Recreation',
+      'Automotive',
+      'Education',
+      'Energy, Mining & Utilities',
+      'Fashion & Beauty',
+      'Finance & Accounting',
+      'Food & Beverage',
+      'Government & Public Administration',
+      'Healthcare',
+      'Hotels & Travel Accommodation',
+      'Human Resources & Staffing',
+      'Information Technology',
+      'Insurance',
+      'Legal',
+      'Management & Consulting',
+      'Manufacturing',
+      'Media & Entertainment',
+      'Military & Defense',
+      'Mining',
+      'Real Estate',
+      'Retail & Consumer Goods',
+      'Sales & Marketing',
+      'Science & Medicine',
+      'Sports & Medicine',
+      'Supply Chain',
+      'Transportation & Warehousing',
+      'Travel & Hospitality',
+    ];
     return SingleChildScrollView(
       child: Center(
         child: Container(
@@ -190,6 +226,55 @@ class _JobPostsState extends State<JobPosts> {
                   },
                 ),
                 SizedBox(height: 20),
+                Row(
+                  children: [
+                    Text(
+                      'Industry',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff202855),
+                      ),
+                    ),
+                    Text(
+                      ' *',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.redAccent,
+                      ),
+                    )
+                  ],
+                ),
+                //Industry (Wala pa sa database)
+                DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  hint: const Text('Select an industry'),
+                  decoration: customInputDecoration(),
+                  value: widget.selectedIndustry,
+                  items: _industries
+                      .map<DropdownMenuItem<String>>((String industry) {
+                    return DropdownMenuItem<String>(
+                      value: industry,
+                      child: Text(industry),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      widget.selectedIndustry = newValue!;
+                    });
+                    widget.onselectedIndustryChanged(newValue);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Industry is required.';
+                    }
+                    return null;
+                  },
+                ),
+                Gap(20),
                 Row(
                   children: [
                     Text(
@@ -371,8 +456,13 @@ class _JobPostsState extends State<JobPosts> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Job description is required.";
-                    } else if (value.length < 30) {
-                      return "Job description must be at least 30 characters.";
+                    } else {
+                      // Split the text into words using space as the separator
+                      List<String> words = value.trim().split(RegExp(r'\s+'));
+                      if (words.length < 30) {
+                        // if (words.length < 30) {
+                        return "Job description must be at least 30 words.";
+                      }
                     }
                     return null; // Return null if validation passes
                   },

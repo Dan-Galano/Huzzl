@@ -8,6 +8,7 @@ class EditJobDetails extends StatefulWidget {
   final VoidCallback submitForm;
   final VoidCallback previousPage;
   final TextEditingController jobTitleController;
+  String industry; // one or more
   String numOfPeopleToHire; // one or more
   String numPeople; // 1 to 10+
   final String region;
@@ -19,6 +20,7 @@ class EditJobDetails extends StatefulWidget {
   final String jobType;
   final String schedule;
   final List<String> skills;
+  final List<String> responsibilities;
   final String selectedRate;
   final TextEditingController minRate;
   final TextEditingController maxRate;
@@ -26,7 +28,7 @@ class EditJobDetails extends StatefulWidget {
   final String resumeRequiredAns;
   final String appDeadlineAns;
   DateTime appDeadlineDate;
-  final String hiringTimeline;
+  // final String hiringTimeline;
   final List<String> prescreenQuestions;
   final User user;
 
@@ -35,6 +37,7 @@ class EditJobDetails extends StatefulWidget {
     required this.submitForm,
     required this.previousPage,
     required this.jobTitleController,
+    required this.industry,
     required this.numOfPeopleToHire,
     required this.numPeople,
     required this.region,
@@ -46,6 +49,7 @@ class EditJobDetails extends StatefulWidget {
     required this.jobType,
     required this.schedule,
     required this.skills,
+    required this.responsibilities,
     required this.selectedRate,
     required this.minRate,
     required this.maxRate,
@@ -53,7 +57,7 @@ class EditJobDetails extends StatefulWidget {
     required this.resumeRequiredAns,
     required this.appDeadlineAns,
     required this.appDeadlineDate,
-    required this.hiringTimeline,
+    // required this.hiringTimeline,
     required this.prescreenQuestions,
     required this.user,
   });
@@ -68,6 +72,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   // samples
   late TextEditingController jobTitleController =
       TextEditingController(text: widget.jobTitleController.text);
+  late TextEditingController industryController =
+      TextEditingController(text: widget.industry);
   late TextEditingController jobDescriptionController =
       TextEditingController(text: widget.jobDescriptionController.text);
 
@@ -84,6 +90,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
       TextEditingController(text: widget.schedule);
   late TextEditingController skillController =
       TextEditingController(text: widget.skills.join(', '));
+  late TextEditingController responsibilitiesController =
+      TextEditingController(text: widget.responsibilities.join(', '));
 
   late TextEditingController payController = TextEditingController(
       text: widget.selectedRate.isNotEmpty
@@ -95,8 +103,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
           : 'None');
   late TextEditingController requireResumeController =
       TextEditingController(text: widget.resumeRequiredAns);
-  late TextEditingController hiringTimelineController =
-      TextEditingController(text: widget.hiringTimeline);
+  // late TextEditingController hiringTimelineController =
+  //     TextEditingController(text: widget.hiringTimeline);
   late TextEditingController applicationDeadlineController =
       TextEditingController(
           text: widget.appDeadlineAns == 'Yes'
@@ -117,6 +125,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
     widget.submitForm();
 
     print("Job Title: ${jobTitleController.text}");
+    print("Job Industry: ${industryController.text}");
     print("Job Description: ${jobDescriptionController.text}");
     print("Job Type: ${jobTypeController.text}");
     print("Job Location: ${locationController.text}");
@@ -127,6 +136,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
         .collection('job_posts')
         .add({
       'jobTitle': jobTitleController.text,
+      'jobIndustry': industryController.text,
       'jobDescription': jobDescriptionController.text,
       'numberOfPeopleToHire': openingsController.text,
       'jobPostLocation': locationController.text,
@@ -137,7 +147,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
       'supplementalPay': supplementalPayController.text,
       'isResumeRequired': requireResumeController.text,
       'applicationDeadline': applicationDeadlineController.text,
-      'hiringTimeline': hiringTimelineController.text,
+      // 'hiringTimeline': hiringTimelineController.text,
       'updatesController': updatesController.text,
       'preScreenQuestions': preScreeningController.text,
       'status': "open",
@@ -198,6 +208,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
                       children: [
                         _buildJobDetailRow('Job title', jobTitleController),
                         const Gap(10),
+                        _buildJobDetailRow('Job industry', industryController),
+                        const Gap(10),
                         _buildJobDetailRow(
                             'Number of openings', openingsController),
                         const Gap(10),
@@ -212,6 +224,9 @@ class _EditJobDetailsState extends State<EditJobDetails> {
                         const Gap(10),
                         _buildJobDetailRow('Skill', skillController),
                         const Gap(10),
+                        _buildJobDetailRow(
+                            'Responsibilities', responsibilitiesController),
+                        const Gap(10),
                         _buildJobDetailRow('Pay', payController),
                         const Gap(10),
                         _buildJobDetailRow(
@@ -219,9 +234,9 @@ class _EditJobDetailsState extends State<EditJobDetails> {
                         const Gap(10),
                         _buildJobDetailRow(
                             'Require resume', requireResumeController),
-                        const Gap(10),
-                        _buildJobDetailRow(
-                            'Hiring timeline', hiringTimelineController),
+                        // const Gap(10),
+                        // _buildJobDetailRow(
+                        //     'Hiring timeline', hiringTimelineController),
                         const Gap(10),
                         _buildJobDetailRow('Application deadline',
                             applicationDeadlineController),

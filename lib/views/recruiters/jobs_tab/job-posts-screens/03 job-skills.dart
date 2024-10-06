@@ -6,13 +6,16 @@ class JobSkills extends StatefulWidget {
   final VoidCallback previousPage;
   final VoidCallback cancel;
   final List<String> selectedSkills;
+  final List<String> responsibilities;
 
-  const JobSkills(
-      {super.key,
-      required this.nextPage,
-      required this.previousPage,
-      required this.cancel,
-      required this.selectedSkills});
+  const JobSkills({
+    super.key,
+    required this.nextPage,
+    required this.previousPage,
+    required this.cancel,
+    required this.selectedSkills,
+    required this.responsibilities,
+  });
 
   @override
   State<JobSkills> createState() => _JobSkillsState();
@@ -21,6 +24,8 @@ class JobSkills extends StatefulWidget {
 class _JobSkillsState extends State<JobSkills> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _responsibilitiesController =
+      TextEditingController();
 
   List<String> _suggestions = [];
   final List<String> _skills = [
@@ -35,6 +40,22 @@ class _JobSkillsState extends State<JobSkills> {
     'Problem Solving',
     'Team Collaboration',
   ];
+
+  void _addResponsibility() {
+    final questionText = _responsibilitiesController.text.trim();
+    if (questionText.isNotEmpty) {
+      setState(() {
+        widget.responsibilities.add(questionText);
+        _responsibilitiesController.clear();
+      });
+    }
+  }
+
+  void _deleteResponsibilityClickedItem(int index) {
+    setState(() {
+      widget.responsibilities.removeAt(index);
+    });
+  }
 
   void _submitJobSkills() {
     if (_formKey.currentState!.validate()) {
@@ -65,33 +86,27 @@ class _JobSkillsState extends State<JobSkills> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Gap(40),
-        Center(
-          child: Container(
-            alignment: Alignment.centerLeft,
-            height: 35,
-            width: 860,
-            // color: Colors.blue,
-            child: IconButton(
-              onPressed: widget.previousPage,
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Color(0xFFFE9703),
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding:
+            EdgeInsets.symmetric(horizontal: screenWidth * 0.2, vertical: 40),
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              height: 35,
+              child: IconButton(
+                onPressed: widget.previousPage,
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Color(0xFFFE9703),
+                ),
               ),
             ),
-          ),
-        ),
-        Gap(40),
-        Center(
-          child: Container(
-            alignment: Alignment.centerLeft,
-            height: 400,
-            width: 630,
-            // color: Colors.red,
-            child: Form(
+            Gap(20),
+            Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,31 +127,24 @@ class _JobSkillsState extends State<JobSkills> {
                   ),
                   const SizedBox(height: 20),
                   const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Skill ',
-                            style: TextStyle(
-                              fontFamily: 'Galano',
-                            ),
-                          ),
-                          Text(
-                            '*',
-                            style: TextStyle(
-                              fontFamily: 'Galano',
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Skill ',
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                        ),
                       ),
-                      Icon(
-                        Icons.add,
-                        size: 30,
+                      Text(
+                        '*',
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                          color: Colors.red,
+                        ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _controller,
                     onChanged: _updateSuggestions,
@@ -144,9 +152,9 @@ class _JobSkillsState extends State<JobSkills> {
                       fontFamily: 'Galano',
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Flutter',
+                      hintText: 'Type a skill...',
                       contentPadding: const EdgeInsets.symmetric(
-                        vertical: 5.0,
+                        vertical: 10.0,
                         horizontal: 10.0,
                       ),
                       enabledBorder: OutlineInputBorder(
@@ -163,13 +171,6 @@ class _JobSkillsState extends State<JobSkills> {
                         ),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color(0xffD1E1FF),
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
                     ),
                     validator: (value) {
                       if (widget.selectedSkills.isEmpty) {
@@ -177,100 +178,143 @@ class _JobSkillsState extends State<JobSkills> {
                       } else if (widget.selectedSkills.length < 2) {
                         return "Please select at least 2 skills";
                       }
+                      return null; // Validation success
                     },
                   ),
-                  const SizedBox(height: 15),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        // Display clicked items when not typing
-                        if (_controller.text.isEmpty)
-                          ListView.builder(
-                            itemCount: widget.selectedSkills.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 3),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: const Color(0xffD1E1FF),
-                                      width: 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  ),
-                                  child: ListTile(
-                                    title: Text(
-                                      widget.selectedSkills[index],
-                                      style: const TextStyle(
-                                        fontFamily: 'Galano',
-                                      ),
-                                    ),
-                                    trailing: IconButton(
-                                      onPressed: () {
-                                        _deleteClickedItem(index);
-                                      },
-                                      icon: const Icon(Icons.delete_outline),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        // Display suggestions when typing
-                        if (_controller.text.isNotEmpty)
-                          ListView.builder(
-                            itemCount: _suggestions.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 3),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: const Color(0xffD1E1FF),
-                                      width: 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  ),
-                                  child: ListTile(
-                                    title: Text(
-                                      _suggestions[index],
-                                      style: const TextStyle(
-                                        fontFamily: 'Galano',
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      // bool isSelected = widget.selectedSkills
-                                      //     .contains(_suggestions[index]);
-                                      setState(() {
-                                        widget.selectedSkills
-                                            .add(_suggestions[index]);
-                                        _controller.clear();
-                                        _suggestions.clear();
-                                      });
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                      ],
+                  const SizedBox(height: 10),
+                  // Display skills
+                  if (widget.selectedSkills.isNotEmpty)
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: widget.selectedSkills
+                          .map(
+                            (skill) => Chip(
+                              label: Text(skill),
+                              onDeleted: () => _deleteClickedItem(
+                                  widget.selectedSkills.indexOf(skill)),
+                            ),
+                          )
+                          .toList(),
                     ),
+                  const SizedBox(height: 10),
+                  // Display suggestions
+                  if (_controller.text.isNotEmpty)
+                    Container(
+                      height: 150,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xffD1E1FF),
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: ListView.builder(
+                        itemCount: _suggestions.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(_suggestions[index]),
+                            onTap: () {
+                              setState(() {
+                                widget.selectedSkills.add(_suggestions[index]);
+                                _controller.clear();
+                                _suggestions.clear();
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  const Gap(30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Responsibilities',
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add, size: 30),
+                        onPressed: _addResponsibility,
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _responsibilitiesController,
+                          style: const TextStyle(
+                            fontFamily: 'Galano',
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Add responsibility...',
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 10.0,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0xffD1E1FF),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0xffD1E1FF),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (widget.responsibilities.isEmpty) {
+                              return "Add at least one responsibility";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Responsibilities list
+                  if (widget.responsibilities.isNotEmpty)
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: widget.responsibilities.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(widget.responsibilities[index]),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_rounded),
+                            onPressed: () =>
+                                _deleteResponsibilityClickedItem(index),
+                          ),
+                        );
+                      },
+                    ),
+                  const Gap(20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                          onPressed: widget.cancel,
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(
-                                fontFamily: 'Galano', color: Color(0xffFE9703)),
-                          )),
-                      Gap(10),
+                        onPressed: widget.cancel,
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                              fontFamily: 'Galano', color: Color(0xffFE9703)),
+                        ),
+                      ),
+                      const Gap(10),
                       ElevatedButton(
-                        onPressed: () => _submitJobSkills(),
+                        onPressed: _submitJobSkills,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF0038FF),
                           padding: const EdgeInsets.symmetric(
@@ -289,9 +333,9 @@ class _JobSkillsState extends State<JobSkills> {
                 ],
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

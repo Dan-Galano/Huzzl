@@ -50,9 +50,9 @@ class _JobPayState extends State<JobPay> {
   String? selectedRate; // Default selection
 
   void _submitJobPay() {
-    if (_formKey.currentState!.validate()) {
-      widget.nextPage();
-    }
+    // if (_formKey.currentState!.validate()) {
+    widget.nextPage();
+    // }
   }
 
   @override
