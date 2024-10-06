@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
+import 'package:huzzl_web/views/recruiters/register/phone_number_verification.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -94,12 +95,20 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'password': widget.password,
       });
 
+      // Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (_) => CompanyProfileRecruiter(
+      //       userCredential: widget.userCredential,
+      //     ),
+      //   ),
+      // );
+
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => CompanyProfileRecruiter(
-            userCredential: widget.userCredential,
-          ),
-        ),
+            builder: (_) => PhoneNumberVerification(
+                  phoneNumber: "+63 987 867 5645",
+                  userCredential: widget.userCredential,
+                )),
       );
     }
   }

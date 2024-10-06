@@ -15,6 +15,7 @@ import 'package:huzzl_web/views/login/login_screen.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/register/06%20congrats.dart';
+import 'package:huzzl_web/views/recruiters/register/phone_number_verification.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -56,6 +57,9 @@ class HuzzlWeb extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
       home: AuthWrapper(),
+      // home: PhoneNumberVerification(
+      //   phoneNumber: "+63 9463823503",
+      // ),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
     );
@@ -70,17 +74,15 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-
-@override
-void initState() {
-  super.initState();
-  final jobProvider = Provider.of<JobProvider>(context, listen: false);
+  @override
+  void initState() {
+    super.initState();
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
     if (jobProvider.jobs.isEmpty) {
       jobProvider.loadJobs();
     }
+  }
 
-}
-  
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
