@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
@@ -65,21 +66,50 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
     });
 
     if (isEmailVerified) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return const AlertDialog(
-            content: Row(
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Text("Verifying your email..."),
-              ],
-            ),
-          );
-        },
-      );
+          showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              backgroundColor: Colors.transparent,
+              content: Container(
+                width: 105,
+                height: 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                ),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Gap(10),
+                      Image.asset(
+                        'assets/images/huzzl_loading.gif',
+                        height: 100,
+                        width: 100,
+                      ),
+                      Gap(10),
+                      Text(
+                        "Verifying...",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Color(0xFFfd7206),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+
       timer?.cancel();
 
       await FirebaseFirestore.instance

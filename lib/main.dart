@@ -23,6 +23,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+
   );
   // runApp(const HuzzlWeb());
   runApp(ChangeNotifierProvider(
@@ -74,10 +75,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
 @override
 void initState() {
   super.initState();
-  final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    if (jobProvider.jobs.isEmpty) {
-      jobProvider.loadJobs();
-    }
+  // final jobProvider = Provider.of<JobProvider>(context, listen: false);
+  //   if (jobProvider.jobs.isEmpty) {
+  //     jobProvider.loadJobs();
+  //   }
 
 }
   

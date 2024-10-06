@@ -475,17 +475,33 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginRegister(),));
-                            },
-                            child: const Text(
-                              'Already have an account? Sign in here.',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontFamily: 'Galano',
+                          Row(
+                            children: [
+                              const Text(
+                                "Already have an account? ",
+                                style: TextStyle(
+                                  fontFamily: "Galano",
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) {
+                                      return LoginRegister();
+                                    },
+                                  ));
+                                },
+                                child: const Text(
+                                  "Sign in",
+                                  style: TextStyle(
+                                    fontFamily: "Galano",
+                                    fontSize: 16,
+                                    color: Color(0xFF0038FF),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                           SizedBox(
                             width: 200,

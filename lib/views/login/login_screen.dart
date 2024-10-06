@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:gap/gap.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -34,6 +36,97 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isError = false;
   String errorMessage = "";
+
+  Future<void> signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        EasyLoading.showToast(
+          "Google Sign-In canceled.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      User? user = userCredential.user;
+
+      if (user == null) {
+        EasyLoading.showToast(
+          "User not found.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+
+      print("User signed in: ${user.email}, UID: ${user.uid}");
+
+      try {
+        var userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (!userDoc.exists) {
+          EasyLoading.showToast(
+            "This account doesn't exist. Please sign up first.",
+            dismissOnTap: true,
+            toastPosition: EasyLoadingToastPosition.top,
+            duration: Duration(seconds: 3),
+          );
+          await FirebaseAuth.instance.signOut();
+          await GoogleSignIn().signOut();
+          return;
+        } else {
+          String? role = userDoc.data()?['role'];
+          print("User role: $role");
+
+          if (role != null) {
+            if (role == 'jobseeker') {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => JobseekerMainScreen()));
+            } else if (role == 'recruiter') {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => RecruiterHomeScreen()));
+            }
+          } else {
+            print("Role is null, handling error");
+          }
+        }
+      } catch (e) {
+        print("Error fetching user document: $e");
+        EasyLoading.showToast(
+          "Error fetching user data.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+      }
+    } catch (e) {
+      print('Google Sign-In Error: $e');
+      EasyLoading.showToast(
+        "Google Sign-In failed: $e",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+    }
+  }
 
   Future<void> login(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -116,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 670,
+      width: 500,
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Form(
         key: _formKey,
@@ -276,6 +369,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     color: Colors.blue,
                     fontFamily: 'Galano',
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
@@ -284,25 +378,83 @@ class _LoginScreenState extends State<LoginScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(
-                  onPressed: widget.onToggle,
-                  child: const Text(
-                    'Don\'t have an account? Sign up',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontFamily: 'Galano',
-                    ),
+                Expanded(
+                  child: BlueFilledCircleButton(
+                    width: 150,
+                    onPressed: () => login(context),
+                    text: 'Login',
                   ),
-                ),
-                BlueFilledCircleButton(
-                  width: 150,
-                  onPressed: () => login(context),
-                  text: 'Login',
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+            // const Text(
+            //   'or',
+            //   style: TextStyle(
+            //     fontSize: 16,
+            //     color: Color(0xff373030),
+            //     fontFamily: 'Galano',
+            //   ),
+            // ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(child: _buildGoogleSignInButton()),
+              ],
+            ),
+
+            Gap(10),
+
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Don't have an account? ",
+                    style: TextStyle(
+                      fontFamily: "Galano",
+                      fontSize: 16,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: widget.onToggle,
+                    child: const Text(
+                      "Sign up",
+                      style: TextStyle(
+                        fontFamily: "Galano",
+                        fontSize: 16,
+                        color: Color(0xFF0038FF),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    return OutlinedButton.icon(
+      onPressed: () => signInWithGoogle(context),
+      icon: Image.asset(
+        'assets/images/google_logo.png',
+        height: 24.0,
+        width: 24.0,
+      ),
+      label: const Text(
+        'Sign in with Google',
+        style: TextStyle(
+          fontFamily: 'Galano',
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+      ),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+        side: const BorderSide(color: Colors.black),
       ),
     );
   }

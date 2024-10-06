@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gap/gap.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/register/02%20verify_email.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -43,24 +46,68 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   void submitRegistrationRecruiter() async {
     if (_formKey.currentState!.validate()) {
       try {
-        //creating user
+        //  creating user
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _email.text,
           password: _password.text,
         );
 
+        // showDialog(
+        //   context: context,
+        //   barrierDismissible: false,
+        //   builder: (context) {
+        //     return const AlertDialog(
+        //       content: Row(
+        //         children: [
+        //           CircularProgressIndicator(),
+        //           SizedBox(width: 20),
+        //           Text("Registering..."),
+        //         ],
+        //       ),
+        //     );
+        //   },
+        // );
+
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) {
-            return const AlertDialog(
-              content: Row(
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 20),
-                  Text("Registering..."),
-                ],
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              backgroundColor: Colors.transparent,
+              content: Container(
+                width: 105,
+                height: 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                ),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Gap(10),
+                      Image.asset(
+                        'assets/images/huzzl_loading.gif',
+                        height: 100,
+                        width: 100,
+                      ),
+                      Gap(10),
+                      Text(
+                        "Creating...",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Color(0xFFfd7206),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },
@@ -156,6 +203,12 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                             ),
                           ),
                           const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Expanded(child: _buildGoogleSignUpButton()),
+                            ],
+                          ),
+                          Gap(10),
                           const Text(
                             "Email",
                             style: TextStyle(
@@ -490,5 +543,118 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
         ],
       ),
     );
+  }
+
+  Widget _buildGoogleSignUpButton() {
+    return OutlinedButton.icon(
+      onPressed: () => signUpWithGoogle(context),
+      icon: Image.asset(
+        'assets/images/google_logo.png',
+        height: 24.0,
+        width: 24.0,
+      ),
+      label: const Text(
+        'Continue with Google',
+        style: TextStyle(
+          fontFamily: 'Galano',
+          fontSize: 16.0,
+          color: Colors.black,
+        ),
+      ),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+        side: const BorderSide(color: Colors.black),
+      ),
+    );
+  }
+
+  Future<void> signUpWithGoogle(BuildContext context) async {
+    //not connected pa, for checking pa lang if the google acc is existing or available
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        EasyLoading.showToast(
+          "⚠️ Google Sign-Up canceled.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final String email = googleUser.email;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        var userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          await FirebaseAuth.instance.signOut();
+          EasyLoading.showToast(
+            "Account already exists. Please sign in.",
+            dismissOnTap: true,
+            toastPosition: EasyLoadingToastPosition.top,
+            duration: Duration(seconds: 3),
+          );
+
+          return;
+        } else {
+          // await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          //   'email': user.email ?? '',
+          //   'name': user.displayName ?? 'No Name',
+          //   'profilePicture': user.photoURL ?? '',
+          //   'createdAt': FieldValue.serverTimestamp(),
+          //   'role': 'jobseeker',
+          // });
+          EasyLoading.instance
+            ..displayDuration = const Duration(milliseconds: 1500)
+            ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+            ..loadingStyle = EasyLoadingStyle.custom
+            ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+            ..textColor = Colors.white
+            ..fontSize = 16.0
+            ..indicatorColor = Colors.white
+            ..maskColor = Colors.black.withOpacity(0.5)
+            ..userInteractions = false
+            ..dismissOnTap = true;
+          EasyLoading.showToast(
+            "Account available!",
+            dismissOnTap: true,
+            toastPosition: EasyLoadingToastPosition.top,
+            duration: Duration(seconds: 3),
+          );
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      EasyLoading.showToast(
+        "hahahaha.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+    } catch (e) {
+      EasyLoading.showToast(
+        "An unexpected error occurred. Chek your internet connection.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+    }
   }
 }
