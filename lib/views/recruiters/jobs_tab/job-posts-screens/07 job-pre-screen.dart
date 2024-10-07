@@ -83,27 +83,29 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                         const Text(
                           'Pre-screen applicants',
                           style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff202855),
                           ),
                         ),
                         const Text(
                           'Write your own question to ask applicants.',
                           style: TextStyle(
-                            fontFamily: 'Galano',
+                            fontSize: 16,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          'Question/s ',
-                          style: TextStyle(
-                            fontFamily: 'Galano',
-                          ),
-                        ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            const Text(
+                              'Question/s ',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff202855),
+                              ),
+                            ),
                             IconButton(
                               icon: const Icon(Icons.add, size: 30),
                               onPressed: _addQuestion,
@@ -113,9 +115,6 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                         Gap(10),
                         TextField(
                           controller: _controller,
-                          style: const TextStyle(
-                            fontFamily: 'Galano',
-                          ),
                           decoration: InputDecoration(
                             hintText: 'Type your question here',
                             contentPadding: const EdgeInsets.symmetric(
@@ -157,9 +156,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                                   child: ListTile(
                                     title: Text(
                                       widget.prescreenQuestions[index],
-                                      style: const TextStyle(
-                                        fontFamily: 'Galano',
-                                      ),
+                                      style: const TextStyle(),
                                     ),
                                     trailing: IconButton(
                                       onPressed: () {
@@ -183,8 +180,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                           onPressed: widget.cancel,
                           child: const Text(
                             'Cancel',
-                            style: TextStyle(
-                                fontFamily: 'Galano', color: Color(0xffFE9703)),
+                            style: TextStyle(color: Color(0xffFE9703)),
                           )),
                       Gap(10),
                       ElevatedButton(
@@ -198,7 +194,6 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.white,
-                              fontFamily: 'Galano',
                               fontWeight: FontWeight.w700,
                             )),
                       ),

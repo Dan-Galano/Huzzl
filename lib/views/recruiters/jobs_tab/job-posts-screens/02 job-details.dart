@@ -44,237 +44,224 @@ class _JobDetailsState extends State<JobDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          Gap(40),
-          Center(
-            child: Container(
-              alignment: Alignment.centerLeft,
-              height: 35,
-              width: 860,
-              child: IconButton(
-                onPressed: widget.previousPage,
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Color(0xFFFE9703),
-                ),
+    return Column(
+      children: [
+        const Gap(40),
+        Center(
+          child: Container(
+            alignment: Alignment.centerLeft,
+            height: 35,
+            width: 860,
+            child: IconButton(
+              onPressed: widget.previousPage,
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Color(0xFFFE9703),
               ),
             ),
           ),
-          Container(
-            width: 630,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Gap(30),
-                Text(
-                  'Add Job Details',
+        ),
+        SizedBox(
+          width: 630,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(30),
+              const Text(
+                'Add Job Details',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff202855),
+                ),
+              ),
+              const Text(
+                'Please provide the following to complete a job post.',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              const Gap(10),
+              const Row(
+                children: [
+                  Text(
+                    'Job type',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff202855),
+                    ),
+                  ),
+                  Text(
+                    ' *',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.redAccent,
+                    ),
+                  )
+                ],
+              ),
+              const Gap(10),
+              Wrap(
+                spacing: 12.0,
+                runSpacing: 8.0,
+                children: jobTypes.map((jobType) {
+                  bool isSelected = widget.selectedJobType == jobType;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          widget.selectedJobType = jobType;
+                          print('Selected Job Type: ${widget.selectedJobType}');
+                        });
+                        widget.onJobTypeChanged(widget.selectedJobType);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: const Color(0xFF21254A)),
+                          borderRadius: BorderRadius.circular(20),
+                          color: isSelected
+                              ? const Color(0xFF21254A)
+                              : Colors.white,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add,
+                                size: 16,
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF21254A)),
+                            const SizedBox(width: 4),
+                            Text(
+                              jobType,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF21254A),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const Gap(10),
+              if (showError)
+                const Text(
+                  'Please select a job type.',
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                ),
+              const Gap(20),
+              const Divider(
+                color: Colors.grey,
+              ),
+              const Gap(20),
+              const Text(
+                'Hours per week',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff202855),
+                ),
+              ),
+              Gap(10),
+              RadioListTile<String>(
+                title: const Text(
+                  'More than 30 hrs/week',
                   style: TextStyle(
-                    fontFamily: 'Galano',
-                    fontSize: 30,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Color(0xff202855),
                   ),
                 ),
-                Text(
-                  'Please provide the following to complete a job post.',
+                value: 'More than 30 hrs/week',
+                groupValue: widget.hrsPerWeek,
+                onChanged: (value) {
+                  setState(() {
+                    widget.hrsPerWeek = value!;
+                  });
+                  widget.onHrsPerWeekChanged(value);
+                },
+              ),
+              RadioListTile<String>(
+                title: const Text(
+                  'Less than 30 hrs/week',
                   style: TextStyle(
-                    fontFamily: 'Galano',
                     fontSize: 16,
-                  ),
-                ),
-                Gap(10),
-                Row(
-                  children: [
-                    Text(
-                      'Job type',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff202855),
-                      ),
-                    ),
-                    Text(
-                      ' *',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
-                      ),
-                    )
-                  ],
-                ),
-                Gap(10),
-                Wrap(
-                  spacing: 12.0,
-                  runSpacing: 8.0,
-                  children: jobTypes.map((jobType) {
-                    bool isSelected = widget.selectedJobType == jobType;
-                    return MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            widget.selectedJobType = jobType;
-                            print(
-                                'Selected Job Type: ${widget.selectedJobType}');
-                          });
-                          widget.onJobTypeChanged(widget.selectedJobType);
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Color(0xFF21254A)),
-                            borderRadius: BorderRadius.circular(20),
-                            color:
-                                isSelected ? Color(0xFF21254A) : Colors.white,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.add,
-                                  size: 16,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Color(0xFF21254A)),
-                              SizedBox(width: 4),
-                              Text(
-                                jobType,
-                                style: TextStyle(
-                                  fontFamily: 'Galano',
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Color(0xFF21254A),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                Gap(10),
-                if (showError)
-                  Text(
-                    'Please select a job type.',
-                    style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.w500),
-                  ),
-                Gap(20),
-                Divider(
-                  color: Colors.grey,
-                ),
-                Gap(20),
-                Text(
-                  'Hours per week',
-                  style: TextStyle(
-                    fontFamily: 'Galano',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: Color(0xff202855),
                   ),
                 ),
-                Gap(10),
-                RadioListTile<String>(
-                  title: const Text(
-                    'More than 30 hrs/week',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff202855),
-                    ),
+                value: 'Less than 30 hrs/week',
+                groupValue: widget.hrsPerWeek,
+                onChanged: (value) {
+                  setState(() {
+                    widget.hrsPerWeek = value!;
+                  });
+                  widget.onHrsPerWeekChanged(value);
+                },
+              ),
+              RadioListTile<String>(
+                title: const Text(
+                  'I’m not sure',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xff202855),
                   ),
-                  value: 'More than 30 hrs/week',
-                  groupValue: widget.hrsPerWeek,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.hrsPerWeek = value!;
-                    });
-                    widget.onHrsPerWeekChanged(value);
-                  },
                 ),
-                RadioListTile<String>(
-                  title: const Text(
-                    'Less than 30 hrs/week',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff202855),
+                value: 'I’m not sure',
+                groupValue: widget.hrsPerWeek,
+                onChanged: (value) {
+                  setState(() {
+                    widget.hrsPerWeek = value!;
+                  });
+                  widget.onHrsPerWeekChanged(value);
+                },
+              ),
+              Divider(
+                color: Colors.grey,
+              ),
+              Gap(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: widget.cancel,
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Color(0xffFE9703)),
+                      )),
+                  Gap(10),
+                  ElevatedButton(
+                    onPressed: () => _submitJobDetails(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0038FF),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 30),
                     ),
-                  ),
-                  value: 'Less than 30 hrs/week',
-                  groupValue: widget.hrsPerWeek,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.hrsPerWeek = value!;
-                    });
-                    widget.onHrsPerWeekChanged(value);
-                  },
-                ),
-                RadioListTile<String>(
-                  title: const Text(
-                    'I’m not sure',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff202855),
-                    ),
-                  ),
-                  value: 'I’m not sure',
-                  groupValue: widget.hrsPerWeek,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.hrsPerWeek = value!;
-                    });
-                    widget.onHrsPerWeekChanged(value);
-                  },
-                ),
-                Divider(
-                  color: Colors.grey,
-                ),
-                Gap(10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                        onPressed: widget.cancel,
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                              fontFamily: 'Galano', color: Color(0xffFE9703)),
+                    child: const Text('Next',
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
                         )),
-                    Gap(10),
-                    ElevatedButton(
-                      onPressed: () => _submitJobDetails(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0038FF),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 30),
-                      ),
-                      child: const Text('Next',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.white,
-                            fontFamily: 'Galano',
-                            fontWeight: FontWeight.w700,
-                          )),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

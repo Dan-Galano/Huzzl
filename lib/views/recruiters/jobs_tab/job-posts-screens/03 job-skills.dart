@@ -89,24 +89,25 @@ class _JobSkillsState extends State<JobSkills> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
-      child: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: screenWidth * 0.2, vertical: 40),
-        child: Column(
-          children: [
-            Container(
-              alignment: Alignment.centerLeft,
-              height: 35,
-              child: IconButton(
-                onPressed: widget.previousPage,
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Color(0xFFFE9703),
-                ),
+      child: Column(
+        children: [
+          const Gap(40),
+          Container(
+            alignment: Alignment.centerLeft,
+            height: 35,
+            width: 860,
+            child: IconButton(
+              onPressed: widget.previousPage,
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Color(0xFFFE9703),
               ),
             ),
-            Gap(20),
-            Form(
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.2, vertical: 40),
+            child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,16 +115,13 @@ class _JobSkillsState extends State<JobSkills> {
                   const Text(
                     'Add Skills',
                     style: TextStyle(
-                      fontFamily: 'Galano',
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Text(
                     'What are the skills required for this job? Provide at least two (2).',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                    ),
+                    style: TextStyle(),
                   ),
                   const SizedBox(height: 20),
                   const Row(
@@ -132,14 +130,17 @@ class _JobSkillsState extends State<JobSkills> {
                       Text(
                         'Skill ',
                         style: TextStyle(
-                          fontFamily: 'Galano',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xff202855),
                         ),
                       ),
                       Text(
                         '*',
                         style: TextStyle(
-                          fontFamily: 'Galano',
-                          color: Colors.red,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.redAccent,
                         ),
                       ),
                     ],
@@ -148,9 +149,7 @@ class _JobSkillsState extends State<JobSkills> {
                   TextFormField(
                     controller: _controller,
                     onChanged: _updateSuggestions,
-                    style: const TextStyle(
-                      fontFamily: 'Galano',
-                    ),
+                    style: const TextStyle(),
                     decoration: InputDecoration(
                       hintText: 'Type a skill...',
                       contentPadding: const EdgeInsets.symmetric(
@@ -229,11 +228,26 @@ class _JobSkillsState extends State<JobSkills> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Responsibilities',
-                        style: TextStyle(
-                          fontFamily: 'Galano',
-                        ),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Responsibilities ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xff202855),
+                            ),
+                          ),
+                          Text(
+                            '*',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ],
                       ),
                       IconButton(
                         icon: const Icon(Icons.add, size: 30),
@@ -248,9 +262,7 @@ class _JobSkillsState extends State<JobSkills> {
                       Expanded(
                         child: TextFormField(
                           controller: _responsibilitiesController,
-                          style: const TextStyle(
-                            fontFamily: 'Galano',
-                          ),
+                          style: const TextStyle(),
                           decoration: InputDecoration(
                             hintText: 'Add responsibility...',
                             contentPadding: const EdgeInsets.symmetric(
@@ -308,8 +320,7 @@ class _JobSkillsState extends State<JobSkills> {
                         onPressed: widget.cancel,
                         child: const Text(
                           'Cancel',
-                          style: TextStyle(
-                              fontFamily: 'Galano', color: Color(0xffFE9703)),
+                          style: TextStyle(color: Color(0xffFE9703)),
                         ),
                       ),
                       const Gap(10),
@@ -324,7 +335,6 @@ class _JobSkillsState extends State<JobSkills> {
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.white,
-                              fontFamily: 'Galano',
                               fontWeight: FontWeight.w700,
                             )),
                       ),
@@ -333,8 +343,8 @@ class _JobSkillsState extends State<JobSkills> {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
