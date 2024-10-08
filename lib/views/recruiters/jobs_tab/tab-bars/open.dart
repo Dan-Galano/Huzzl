@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/open_job_card.dart';
 import 'package:intl/intl.dart';
 
@@ -82,12 +83,21 @@ class _OpenJobsState extends State<OpenJobs> {
                       Map<String, dynamic> jobPostIndividualData =
                           jobPostsData[index];
 
-                      return OpenJobCard(
-                        jobTitle: jobPostIndividualData["jobTitle"],
-                        jobType: jobPostIndividualData['jobType'],
-                        jobDeadline:
-                            jobPostIndividualData['applicationDeadline'],
-                        jobPostedAt: jobPostIndividualData['posted_at'],
+                      return GestureDetector(
+                        onTap: () {
+                          final homeState = context.findAncestorStateOfType<
+                              RecruiterHomeScreenState>();
+                          homeState?.toggleCandidatesScreen(
+                              true, jobPostIndividualData["jobTitle"], 0);
+                          print(jobPostIndividualData["jobTitle"]);
+                        },
+                        child: OpenJobCard(
+                          jobTitle: jobPostIndividualData["jobTitle"],
+                          jobType: jobPostIndividualData['jobType'],
+                          jobDeadline:
+                              jobPostIndividualData['applicationDeadline'],
+                          jobPostedAt: jobPostIndividualData['posted_at'],
+                        ),
                       );
                     },
                   );

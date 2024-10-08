@@ -99,13 +99,25 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   }
 
   int? _selectedIndex = 3;
+  bool _isCandidatesScreen = false;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
-  bool _isCalendarScreen = false;
+  // bool _isCalendarScreen = false;
+  String _jobTitle = '';
+  int _initialIndex = 0;
 
   void changeDestination(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  void toggleCandidatesScreen(
+      bool showCandidatesScreen, String jobTitle, int initialIndex) {
+    setState(() {
+      _isCandidatesScreen = showCandidatesScreen;
+      _jobTitle = jobTitle;
+      _initialIndex = initialIndex;
     });
   }
 
@@ -115,15 +127,10 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     });
   }
 
-  void toggleSlApplicationScreen(bool showApplicationScreen) {
+  void toggleSlApplicationScreen(bool showApplicationScreen, int initialIndex) {
     setState(() {
       _isSlApplicationScreen = showApplicationScreen;
-    });
-  }
-
-  void toggleCalendarScreen(bool showCalendarScreen) {
-    setState(() {
-      _isCalendarScreen = showCalendarScreen;
+      _initialIndex = initialIndex;
     });
   }
 
@@ -133,84 +140,42 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           child:
               CircularProgressIndicator()); // Show a loader while fetching data
     }
-    if (isStandaloneCompany!) {
-      switch (_selectedIndex) {
-        case 0:
-          return buildManagersContent(
-              context, userData, companyData, isStandaloneCompany);
-        case 1:
-          return JobScreens(
-            jobPostsData: jobPostsData,
-            user: user!,
+    switch (_selectedIndex) {
+      case 0:
+        return buildAdminContent(context, userData);
+      case 1:
+        return buildManagersContent(
+            context, userData, companyData, isStandaloneCompany);
+      case 2:
+        return BranchesScreen();
+      case 3:
+        if (_isApplicationScreen) {
+          return ApplicationScreen(
+            onBack: () => toggleApplicationScreen(false),
           );
-        case 2:
-          if (_isApplicationScreen) {
-            return ApplicationScreen(
-              onBack: () => toggleApplicationScreen(false),
-            );
-          } else if (_isSlApplicationScreen) {
-            return SlApplicationScreen(
-              onBack: () => toggleSlApplicationScreen(false),
-            );
-          }
-          return buildCandidatesContent(context);
-        case 3:
-          if (_isCalendarScreen) {
-            return InterviewCalendar(
-              onBack: () => toggleCalendarScreen(false),
-            );
-          }
-          return buildInterviewsContent();
-        default:
-          return Text("No content available");
-      }
-    } else {
-      switch (_selectedIndex) {
-        case 0:
-          return buildAdminContent(context, userData);
-        case 1:
-          return buildManagersContent(
-              context, userData, companyData, isStandaloneCompany);
-        case 2:
-          return BranchesScreen();
-        case 3:
-          return JobScreens(
-            jobPostsData: jobPostsData,
-            user: user!,
+        } else if (_isSlApplicationScreen) {
+          return SlApplicationScreen(
+            onBack: () => toggleSlApplicationScreen(false, _initialIndex),
           );
-        case 4:
-          if (_isApplicationScreen) {
-            return ApplicationScreen(
-              onBack: () => toggleApplicationScreen(false),
-            );
-          } else if (_isSlApplicationScreen) {
-            return SlApplicationScreen(
-              onBack: () => toggleSlApplicationScreen(false),
-            );
-          }
-          return buildCandidatesContent(context);
-        case 5:
-          if (_isCalendarScreen) {
-            return InterviewCalendar(
-              onBack: () => toggleCalendarScreen(false),
-            );
-          }
-          return buildInterviewsContent();
-        default:
-          return Text("No content available");
-      }
+        } else if (_isCandidatesScreen) {
+          return buildCandidatesContent(
+              context,
+              () => toggleCandidatesScreen(false, '', 0),
+              _jobTitle,
+              _initialIndex);
+        }
+        return JobScreens(
+          jobPostsData: jobPostsData,
+          user: user!,
+        );
+      case 4:
+        return buildInterviewsContent();
+      case 5:
+        return InterviewCalendar();
+      default:
+        return Text("No content available");
     }
   }
-
-  //logout
-  // void logOut() async {
-  //   try {
-  //     await FirebaseAuth.instance.signOut();
-  //     print("User logged out successfully.");
-  //   } catch (e) {
-  //     print("Error signing out: $e");
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -335,91 +300,53 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Row(
               children: [
-                isStandaloneCompany!
-                    ? NavigationRail(
-                        backgroundColor: const Color(0xFF23294F),
-                        selectedIndex: _selectedIndex,
-                        onDestinationSelected: changeDestination,
-                        minWidth: 200,
-                        labelType: NavigationRailLabelType.none,
-                        leading: const SizedBox(height: 20),
-                        useIndicator: true,
-                        indicatorColor: Colors.orange,
-                        destinations: <NavigationRailDestination>[
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Managers', 0),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/jobs-tab.png', 'Jobs', 1),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/candidates-tab.png',
-                                'Candidates',
-                                2),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/interview-tab.png',
-                                'Interviews',
-                                3),
-                            label: const SizedBox.shrink(),
-                          ),
-                        ],
-                      )
-                    : NavigationRail(
-                        backgroundColor: const Color(0xFF23294F),
-                        selectedIndex: _selectedIndex,
-                        onDestinationSelected: changeDestination,
-                        minWidth: 200,
-                        labelType: NavigationRailLabelType.none,
-                        leading: const SizedBox(height: 20),
-                        useIndicator: true,
-                        indicatorColor: Colors.orange,
-                        destinations: <NavigationRailDestination>[
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Admin', 0),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/manager-tab.png', 'Managers', 1),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/branches-tab.png',
-                                'Branches',
-                                2),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/jobs-tab.png', 'Jobs', 3),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/candidates-tab.png',
-                                'Candidates',
-                                4),
-                            label: const SizedBox.shrink(),
-                          ),
-                          NavigationRailDestination(
-                            icon: _buildNavItem(
-                                'assets/images/interview-tab.png',
-                                'Interviews',
-                                5),
-                            label: const SizedBox.shrink(),
-                          ),
-                        ],
-                      ),
+                NavigationRail(
+                  backgroundColor: const Color(0xFF23294F),
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: changeDestination,
+                  minWidth: 200,
+                  labelType: NavigationRailLabelType.none,
+                  leading: const SizedBox(height: 20),
+                  useIndicator: true,
+                  indicatorColor: Colors.orange,
+                  destinations: <NavigationRailDestination>[
+                    NavigationRailDestination(
+                      icon: _buildNavItem(
+                          'assets/images/manager-tab.png', 'Admin', 0),
+                      label: const SizedBox.shrink(),
+                    ),
+                    NavigationRailDestination(
+                      icon: _buildNavItem(
+                          'assets/images/manager-tab.png', 'Managers', 1),
+                      label: const SizedBox.shrink(),
+                    ),
+                    NavigationRailDestination(
+                      icon: _buildNavItem(
+                          'assets/images/branches-tab.png', 'Branches', 2),
+                      label: const SizedBox.shrink(),
+                    ),
+                    NavigationRailDestination(
+                      icon: _buildNavItem(
+                          'assets/images/jobs-tab.png', 'Jobs', 3),
+                      label: const SizedBox.shrink(),
+                    ),
+                    // NavigationRailDestination(
+                    //   icon: _buildNavItem(
+                    //       'assets/images/candidates-tab.png', 'Candidates', 4),
+                    //   label: const SizedBox.shrink(),
+                    // ),
+                    NavigationRailDestination(
+                      icon: _buildNavItem(
+                          'assets/images/interview-tab.png', 'Interviews', 4),
+                      label: const SizedBox.shrink(),
+                    ),
+                    NavigationRailDestination(
+                      icon: _buildNavItem(
+                          'assets/images/calendar-tab.png', 'Calendar', 5),
+                      label: const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
                 const VerticalDivider(thickness: 1, width: 1),
                 Expanded(
                   child: Padding(

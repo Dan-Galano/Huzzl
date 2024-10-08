@@ -10,106 +10,15 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/reserved.dart
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/shortlisted.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar.dart';
 
-// Widget buildCandidatesContent(BuildContext context) {
-//   return StatefulBuilder(
-//     builder: (context, setState) {
-//       TabController _tabController =
-//           TabController(length: 6, vsync: Scaffold.of(context));
-
-//       return Column(
-//         children: [
-//           Expanded(
-//             child: Padding(
-//               padding: const EdgeInsets.all(16),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   LayoutBuilder(
-//                     builder: (context, constraints) {
-//                       double screenWidth = constraints.maxWidth;
-//                       double textFieldWidth = screenWidth * 0.7;
-//                       double spacing = screenWidth > 600 ? 20 : 10;
-
-//                       return Row(
-//                         children: [
-//                           SizedBox(width: spacing),
-//                           const Text(
-//                             'Candidates',
-//                             style: TextStyle(
-//                               decoration: TextDecoration.none,
-//                               fontSize: 32,
-//                               color: Color(0xff373030),
-//                               fontFamily: 'Galano',
-//                               fontWeight: FontWeight.w700,
-//                             ),
-//                           ),
-//                           SizedBox(width: spacing),
-//                           SizedBox(
-//                             width: textFieldWidth,
-//                             child: TextField(
-//                               decoration: searchTextFieldDecoration('Search'),
-//                             ),
-//                           ),
-//                         ],
-//                       );
-//                     },
-//                   ),
-//                   Gap(10),
-//                   FilterRowWidget(),
-//                   TabBar(
-//                     tabAlignment: TabAlignment.start,
-//                     isScrollable: true,
-//                     controller: _tabController,
-//                     labelColor: Colors.black,
-//                     unselectedLabelColor: Colors.grey,
-//                     indicatorColor: Colors.orange,
-//                     labelStyle: const TextStyle(
-//                       fontSize: 14,
-//                       fontWeight: FontWeight.bold,
-//                       fontFamily: 'Galano',
-//                     ),
-//                     unselectedLabelStyle: const TextStyle(
-//                       fontSize: 12,
-//                       fontWeight: FontWeight.normal,
-//                       fontFamily: 'Galano',
-//                     ),
-//                     tabs: const [
-//                       Tab(text: '4 For Review'),
-//                       Tab(text: '0 Shortlisted'),
-//                       Tab(text: '0 Contacted'),
-//                       Tab(text: '0 Rejected'),
-//                       Tab(text: '0 Hired'),
-//                       Tab(text: '0 Reserved'),
-//                     ],
-//                   ),
-//                   Expanded(
-//                     child: TabBarView(
-//                       controller: _tabController,
-//                       children: [
-//                         ForReviewView(),
-//                         ShortlistedView(),
-//                         ContactedView(),
-//                         RejectedView(),
-//                         HiredView(),
-//                         ReservedView(),
-//                       ],
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }
-
-Widget buildCandidatesContent(BuildContext context) {
+Widget buildCandidatesContent(BuildContext context, VoidCallback onBack,
+    String jobTitle, int initialIndex) {
   return StatefulBuilder(
     builder: (context, setState) {
-      TabController _tabController =
-          TabController(length: 6, vsync: Scaffold.of(context));
+      TabController _tabController = TabController(
+        length: 6,
+        vsync: Scaffold.of(context),
+        initialIndex: initialIndex,
+      );
 
       return Column(
         children: [
@@ -119,6 +28,19 @@ Widget buildCandidatesContent(BuildContext context) {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  TextButton.icon(
+                    onPressed: onBack,
+                    label: const Text(
+                      "Back",
+                      style: TextStyle(
+                          color: Color(0xFFff9800), fontFamily: 'Galano'),
+                    ),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Color(0xFFff9800),
+                    ),
+                  ),
+                  const Gap(20),
                   LayoutBuilder(
                     builder: (context, constraints) {
                       double screenWidth = constraints.maxWidth;
@@ -128,9 +50,9 @@ Widget buildCandidatesContent(BuildContext context) {
                       return Row(
                         children: [
                           SizedBox(width: spacing),
-                          const Text(
-                            'Candidates',
-                            style: TextStyle(
+                          Text(
+                            '$jobTitle Candidates',
+                            style: const TextStyle(
                               decoration: TextDecoration.none,
                               fontSize: 32,
                               color: Color(0xff373030),
@@ -139,17 +61,17 @@ Widget buildCandidatesContent(BuildContext context) {
                             ),
                           ),
                           SizedBox(width: spacing),
-                          SizedBox(
-                            width: textFieldWidth,
-                            child: TextField(
-                              decoration: searchTextFieldDecoration('Search'),
-                            ),
-                          ),
+                          // SizedBox(
+                          //   width: textFieldWidth,
+                          //   child: TextField(
+                          //     decoration: searchTextFieldDecoration('Search'),
+                          //   ),
+                          // ),
                         ],
                       );
                     },
                   ),
-                  Gap(10),
+                  const Gap(10),
                   FilterRowWidget(),
                   CustomTabBar(tabController: _tabController),
                   Expanded(

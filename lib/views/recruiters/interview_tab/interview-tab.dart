@@ -40,18 +40,11 @@ Widget buildInterviewsContent() {
                       ),
                     ),
                     SizedBox(width: spacing),
-                    Expanded(
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
                       child: TextField(
                         decoration: searchTextFieldDecoration('Search'),
                       ),
-                    ),
-                    SizedBox(width: spacing),
-                    InterviewCalendarButton(
-                      onPressed: () {
-                          final homeState = context
-                          .findAncestorStateOfType<RecruiterHomeScreenState>();
-                      homeState?.toggleCalendarScreen(true);
-                      },
                     ),
                   ],
                 );

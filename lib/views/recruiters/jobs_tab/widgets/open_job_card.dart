@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 
 class OpenJobCard extends StatefulWidget {
   final String? jobTitle;
@@ -17,14 +18,14 @@ class OpenJobCard extends StatefulWidget {
   State<OpenJobCard> createState() => _OpenJobCardState();
 }
 
-bool isHovered = false;
-
 class _OpenJobCardState extends State<OpenJobCard> {
+  bool isHovered = false;
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      onEnter: (_) {
+      onHover: (_) {
         setState(() {
           isHovered = true;
         });
