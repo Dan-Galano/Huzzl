@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'dart:convert';
@@ -184,7 +186,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                       ),
                     ),
                     SizedBox(height: 30),
-            
+
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'Select Region',
@@ -223,7 +225,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                       },
                     ),
                     SizedBox(height: 16.0),
-            
+
                     // Show Province Dropdown only when a region is selected
                     if (selectedRegion != null)
                       DropdownButtonFormField<String>(
@@ -330,7 +332,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                           });
                         },
                       ),
-            
+
                     if (selectedBarangay != null)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,15 +351,32 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                         ],
                       ),
                     SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 130,
-                        child: BlueFilledCircleButton(
-                          onPressed: () => _submitLocationForm(),
-                          text: 'Next',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushReplacement(MaterialPageRoute(
+                                builder: (context) => JobseekerMainScreen(),
+                              ));
+                            },
+                            child: Text(
+                              'Skip',
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontSize: 17,
+                                  color: Color(0xffFE9703)),
+                            )),
+                        Gap(10),
+                        SizedBox(
+                          width: 130,
+                          child: BlueFilledCircleButton(
+                            onPressed: () => _submitLocationForm(),
+                            text: 'Next',
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                     SizedBox(height: 20),
                   ],

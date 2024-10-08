@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -131,53 +132,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Profile section
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 55,
-                        // backgroundImage: AssetImage('assets/pic.jpeg'),
-                      ),
-                      SizedBox(width: 20),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Eleanor Pena",
-                            style: TextStyle(
-                              fontFamily: 'Galano',
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff202855),
+                ListTile(
+                  onTap: () {
+                    // show Contact Information screen
+                    JobseekerMainScreenState? mainScreenState = context
+                        .findAncestorStateOfType<JobseekerMainScreenState>();
+                    mainScreenState?.switchScreen(5);
+                  },
+                  title: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 55,
+                          // backgroundImage: AssetImage('assets/pic.jpeg'),
+                        ),
+                        SizedBox(width: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Eleanor Pena",
+                              style: TextStyle(
+                                fontFamily: 'Galano',
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff202855),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "+63 908 123 4567",
-                            style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey),
-                          ),
-                          Text(
-                            "eleanor.pena@gmail.com",
-                            style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey),
-                          ),
-                          Text(
-                            "Urdaneta City, 2448",
-                            style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ],
+                            SizedBox(height: 5),
+                            Text(
+                              "+63 908 123 4567",
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey),
+                            ),
+                            Text(
+                              "eleanor.pena@gmail.com",
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey),
+                            ),
+                            Text(
+                              "Urdaneta City, 2448",
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Divider(
@@ -324,6 +333,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to qualifications screen
+                            JobseekerMainScreenState? mainScreenState =
+                                context.findAncestorStateOfType<
+                                    JobseekerMainScreenState>();
+                            mainScreenState?.switchScreen(6);
                           },
                         ),
                       ),
@@ -356,6 +369,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to job preferences screen
+                            JobseekerMainScreenState? mainScreenState =
+                                context.findAncestorStateOfType<
+                                    JobseekerMainScreenState>();
+                            mainScreenState?.switchScreen(7);
                           },
                         ),
                       ),

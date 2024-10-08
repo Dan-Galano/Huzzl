@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
@@ -257,15 +258,42 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                       ],
                     ),
                     SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 130,
-                        child: BlueFilledCircleButton(
-                          onPressed: () => _submitJobTitlesForm(),
-                          text: 'Continue',
+                    // Align(
+                    //   alignment: Alignment.centerRight,
+                    //   child: SizedBox(
+                    //     width: 130,
+                    //     child: BlueFilledCircleButton(
+                    //       onPressed: () => _submitJobTitlesForm(),
+                    //       text: 'Continue',
+                    //     ),
+                    //   ),
+                    // ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushReplacement(MaterialPageRoute(
+                                builder: (context) => JobseekerMainScreen(),
+                              ));
+                            },
+                            child: Text(
+                              'Skip',
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontSize: 17,
+                                  color: Color(0xffFE9703)),
+                            )),
+                        Gap(10),
+                        SizedBox(
+                          width: 130,
+                          child: BlueFilledCircleButton(
+                            onPressed: () => _submitJobTitlesForm(),
+                            text: 'Next',
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                     SizedBox(height: 20),
                   ],

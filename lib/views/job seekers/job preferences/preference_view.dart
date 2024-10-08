@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -16,7 +17,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   PageController _pageController = PageController();
   int _currentPage = 0;
 
-    void _nextPage() {
+  void _nextPage() {
     if (_currentPage < 4) {
       _pageController.animateToPage(
         _currentPage + 1,
@@ -40,7 +41,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
     _pageController.jumpToPage(1);
   }
 
-   @override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();

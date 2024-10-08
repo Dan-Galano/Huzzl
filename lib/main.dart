@@ -70,17 +70,15 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-
-@override
-void initState() {
-  super.initState();
-  final jobProvider = Provider.of<JobProvider>(context, listen: false);
+  @override
+  void initState() {
+    super.initState();
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
     if (jobProvider.jobs.isEmpty) {
       jobProvider.loadJobs();
     }
+  }
 
-}
-  
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(

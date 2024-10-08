@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 
 class NavBarHome extends StatefulWidget {
@@ -16,185 +17,191 @@ class _NavBarHomeState extends State<NavBarHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            child: Image.asset('assets/images/huzzl.png', width: 80),
-          ),
-          const Spacer(),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildNavButton(0, 'Home'),
-              const SizedBox(width: 20),
-              _buildNavButton(1, 'Company Reviews'),
-              const SizedBox(width: 500),
-              IconButton(
-                onPressed: () {},
-                icon: Image.asset(
-                  'assets/images/message-icon.png',
-                  width: 20,
+    return Material(
+      color: Colors.white,
+      elevation: 1,
+      shadowColor: Colors.black.withOpacity(0.5),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              child: Image.asset('assets/images/huzzl.png', width: 80),
+            ),
+            const Spacer(),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildNavButton(0, 'Home'),
+                const SizedBox(width: 20),
+                _buildNavButton(1, 'Company Reviews'),
+                const SizedBox(width: 500),
+                IconButton(
+                  onPressed: () {},
+                  icon: Image.asset(
+                    'assets/images/message-icon.png',
+                    width: 20,
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Image.asset(
-                  'assets/images/notif-icon.png',
-                  width: 20,
+                IconButton(
+                  onPressed: () {},
+                  icon: Image.asset(
+                    'assets/images/notif-icon.png',
+                    width: 20,
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () async {
-                  final RenderBox button =
-                      context.findRenderObject() as RenderBox;
-                  final RenderBox overlay = Overlay.of(context)
-                      .context
-                      .findRenderObject() as RenderBox;
-                  final position =
-                      button.localToGlobal(Offset.zero, ancestor: overlay);
-                  await showMenu(
-                    context: context,
-                    position: RelativeRect.fromLTRB(
-                      overlay.size.width - position.dx,
-                      position.dy + 55,
-                      position.dx + 30,
-                      overlay.size.height - position.dy,
-                    ),
-                    items: [
-                      PopupMenuItem(
-                        value: 'view_profile',
-                        child: Row(
-                          children: [
-                            Icon(Icons.person, color: Color(0xff373030)),
-                            SizedBox(width: 8),
-                            Text(
-                              'Profile',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xff373030),
-                                fontFamily: 'Galano',
-                              ),
-                            ),
-                          ],
-                        ),
+                IconButton(
+                  onPressed: () async {
+                    final RenderBox button =
+                        context.findRenderObject() as RenderBox;
+                    final RenderBox overlay = Overlay.of(context)
+                        .context
+                        .findRenderObject() as RenderBox;
+                    final position =
+                        button.localToGlobal(Offset.zero, ancestor: overlay);
+                    await showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        overlay.size.width - position.dx,
+                        position.dy + 55,
+                        position.dx + 30,
+                        overlay.size.height - position.dy,
                       ),
-                      PopupMenuItem(
-                        value: 'my_jobs',
-                        child: Row(
-                          children: [
-                            Icon(Icons.work, color: Color(0xff373030)),
-                            SizedBox(width: 8),
-                            Text(
-                              'My Jobs',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xff373030),
-                                fontFamily: 'Galano',
+                      items: [
+                        PopupMenuItem(
+                          value: 'view_profile',
+                          child: Row(
+                            children: [
+                              Icon(Icons.person, color: Color(0xff373030)),
+                              SizedBox(width: 8),
+                              Text(
+                                'Profile',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xff373030),
+                                  fontFamily: 'Galano',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      PopupMenuItem(
-                        value: 'my_reviews',
-                        child: Row(
-                          children: [
-                            Icon(Icons.star, color: Color(0xff373030)),
-                            SizedBox(width: 8),
-                            Text(
-                              'My Reviews',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xff373030),
-                                fontFamily: 'Galano',
+                        PopupMenuItem(
+                          value: 'my_jobs',
+                          child: Row(
+                            children: [
+                              Icon(Icons.work, color: Color(0xff373030)),
+                              SizedBox(width: 8),
+                              Text(
+                                'My Jobs',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xff373030),
+                                  fontFamily: 'Galano',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      PopupMenuItem(
-                        value: 'close_account',
-                        child: Row(
-                          children: [
-                            Icon(Icons.cancel, color: Color(0xff373030)),
-                            SizedBox(width: 8),
-                            Text(
-                              'Close Account',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xff373030),
-                                fontFamily: 'Galano',
+                        PopupMenuItem(
+                          value: 'my_reviews',
+                          child: Row(
+                            children: [
+                              Icon(Icons.star, color: Color(0xff373030)),
+                              SizedBox(width: 8),
+                              Text(
+                                'My Reviews',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xff373030),
+                                  fontFamily: 'Galano',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      PopupMenuItem(
-                        value: 'logout',
-                        child: Row(
-                          children: [
-                            Icon(Icons.logout, color: Color(0xff373030)),
-                            SizedBox(width: 8),
-                            Text(
-                              'Logout',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xff373030),
-                                fontFamily: 'Galano',
+                        PopupMenuItem(
+                          value: 'close_account',
+                          child: Row(
+                            children: [
+                              Icon(Icons.cancel, color: Color(0xff373030)),
+                              SizedBox(width: 8),
+                              Text(
+                                'Close Account',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xff373030),
+                                  fontFamily: 'Galano',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
+                        PopupMenuItem(
+                          value: 'logout',
+                          child: Row(
+                            children: [
+                              Icon(Icons.logout, color: Color(0xff373030)),
+                              SizedBox(width: 8),
+                              Text(
+                                'Logout',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xff373030),
+                                  fontFamily: 'Galano',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                    ],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ).then((value) {
-                    switch (value) {
-                      case 'view_feedback':
-                        showFeedbackViewDialog(context);
-                        break;
-                      case 'view_profile':
-                        switchScreen(4);
-                        break;
-                      case 'my_jobs':
-                        switchScreen(2);
-                        break;
-                      case 'my_reviews':
-                        switchScreen(3);
-                        break;
-                      case 'close_account':
-                        showCloseAccountDialog(context);
-                        break;
-                      case 'logout':
-                        showLogoutDialog(context);
-                        break;
-                    }
-                  });
-                },
-                icon: Image.asset(
-                  'assets/images/user-icon.png',
-                  width: 20,
+                    ).then((value) {
+                      switch (value) {
+                        case 'view_feedback':
+                          showFeedbackViewDialog(context);
+                          break;
+                        case 'view_profile':
+                          switchScreen(4);
+                          break;
+                        case 'my_jobs':
+                          switchScreen(2);
+                          break;
+                        case 'my_reviews':
+                          switchScreen(3);
+                          break;
+                        case 'close_account':
+                          showCloseAccountDialog(context);
+                          break;
+                        case 'logout':
+                          showLogoutDialog(context);
+                          break;
+                      }
+                    });
+                  },
+                  icon: Image.asset(
+                    'assets/images/user-icon.png',
+                    width: 20,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  void switchScreen(int index){
+  void switchScreen(int index) {
     widget.onItemTapped(index);
   }
 
   Widget _buildNavButton(int index, String title) {
     return Column(
       children: [
+        Gap(10),
         TextButton(
           onPressed: () {
             // setState(() {
@@ -341,15 +348,15 @@ void showCloseAccountDialog(BuildContext context) {
   );
 }
 
- void logOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      print("User logged out successfully.");
-      Navigator.of(context).pop();
-    } catch (e) {
-      print("Error signing out: $e");
-    }
+void logOut(BuildContext context) async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    print("User logged out successfully.");
+    Navigator.of(context).pop();
+  } catch (e) {
+    print("Error signing out: $e");
   }
+}
 
 void showLogoutDialog(BuildContext context) {
   showDialog(
