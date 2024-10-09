@@ -92,7 +92,8 @@ class _OpenJobsState extends State<OpenJobs> {
                       final DocumentSnapshot jobPostDoc =
                           snapshot.data!.docs[index];
                       final String jobPostId = jobPostDoc.id; // Job Post ID
-                      final int numberOfApplicants = widget.candidates
+                      //Display only open jobs
+                      final int numberOfApplicants = widget.candidates 
                           .where(
                             (candidate) => candidate.jobPostId == jobPostId,
                           )
@@ -117,6 +118,7 @@ class _OpenJobsState extends State<OpenJobs> {
                           jobDeadline:
                               jobPostIndividualData['applicationDeadline'],
                           jobPostedAt: jobPostIndividualData['posted_at'],
+                          jobPostedBy: jobPostIndividualData['posted_by'],
                           numberOfApplicants: numberOfApplicants,
                         ),
                       );

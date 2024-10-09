@@ -18,7 +18,14 @@ class JobScreens extends StatefulWidget {
   final List<Map<String, dynamic>> jobPostsData;
   final List<Candidate> candidates;
   final User user;
-  const JobScreens({required this.candidates, required this.jobPostsData, required this.user, super.key,});
+  final Map<String, dynamic> userData;
+  const JobScreens({
+    required this.candidates,
+    required this.jobPostsData,
+    required this.user,
+    required this.userData,
+    super.key,
+  });
 
   @override
   State<JobScreens> createState() => _JobScreensState();
@@ -298,6 +305,7 @@ class _JobScreensState extends State<JobScreens> {
               // hiringTimeline: selectedHiringTimeline,
               prescreenQuestions: preScreenQues,
               user: widget.user,
+              userData: widget.userData,
             ),
             JobCongratulationPage(
               goBack: _cancel, // clear niya everything tas balik sa Job tab

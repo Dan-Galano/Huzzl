@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:intl/intl.dart';
 
 class OpenJobCard extends StatefulWidget {
   final String? jobTitle;
   final String? jobDeadline;
   final String? jobPostedAt;
+  final String? jobPostedBy;
   final String? jobType;
   final int numberOfApplicants;
   const OpenJobCard({
+    super.key,
     required this.jobTitle,
     required this.jobDeadline,
     required this.jobPostedAt,
+    required this.jobPostedBy,
     required this.jobType,
     required this.numberOfApplicants,
   });
@@ -22,6 +26,37 @@ class OpenJobCard extends StatefulWidget {
 
 class _OpenJobCardState extends State<OpenJobCard> {
   bool isHovered = false;
+
+  String getTimeLeftUntilDeadline(String deadline) {
+    // Define the date format based on your deadline string
+    final DateFormat formatter = DateFormat('MMM d, yyyy');
+
+    // Parse the deadline string into a DateTime object
+    DateTime deadlineDate = formatter.parse(deadline);
+
+    // Get the current date
+    DateTime now = DateTime.now();
+
+    // Calculate the difference between the deadline and the current date
+    Duration difference = deadlineDate.difference(now);
+
+    // Convert the difference to the number of days
+    int daysLeft = difference.inDays;
+
+    // Display the appropriate message based on how many days/weeks/months left
+    if (daysLeft <= 0) {
+      return "Deadline has passed"; // Deadline already passed
+    } else if (daysLeft <= 6) {
+      return "$daysLeft day${daysLeft > 1 ? 's' : ''} left"; // Less than a week
+    } else if (daysLeft <= 27) {
+      int weeksLeft = (daysLeft / 7).ceil(); // Calculate how many weeks left
+      return "$weeksLeft week${weeksLeft > 1 ? 's' : ''} left";
+    } else {
+      // Handle months left (4 weeks = ~28 days, round to months)
+      int monthsLeft = (daysLeft / 30).ceil(); // Approximate months left
+      return "$monthsLeft month${monthsLeft > 1 ? 's' : ''} left";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +90,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
               Row(
                 children: [
                   Image.asset('assets/images/job-bag-icon.png'),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
                   // Name, Job, Branch Info
                   Column(
@@ -64,8 +99,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
                       // Name
                       Text(
                         '${widget.jobTitle}',
-                        style: TextStyle(
-                          fontFamily: 'Galano', // Custom font family
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -73,8 +107,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
                       // SizedBox(height: 4),
                       Text(
                         '${widget.jobDeadline}',
-                        style: TextStyle(
-                          fontFamily: 'Galano', // Custom font family
+                        style: const TextStyle(
                           // fontWeight: FontWeight.,
                           fontSize: 14,
                         ),
@@ -90,19 +123,17 @@ class _OpenJobCardState extends State<OpenJobCard> {
                   // Date
                   textLists(widget.jobType!),
                   const Gap(60),
-                  textLists("Juan Cruz"),
+                  textLists(widget.jobPostedBy!),
                   const Gap(70),
                   Text(
                     '${widget.numberOfApplicants} applied',
-                    style: const TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 12,
-                        color: Color(0xff3B7DFF)),
+                    style:
+                        const TextStyle(fontSize: 12, color: Color(0xff3B7DFF)),
                   ),
                   const Gap(60),
                   textLists(widget.jobPostedAt!),
                   const Gap(60),
-                  textLists("3 days left"),
+                  textLists(getTimeLeftUntilDeadline(widget.jobDeadline!)),
 
                   const Gap(60),
                   IconButton(
@@ -125,7 +156,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
                           overlay.size.height - position.dy,
                         ),
                         items: [
-                          PopupMenuItem(
+                          const PopupMenuItem(
                             value: 'pause',
                             child: Row(
                               children: [
@@ -136,7 +167,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
                               ],
                             ),
                           ),
-                          PopupMenuItem(
+                          const PopupMenuItem(
                             value: 'close',
                             child: Row(
                               children: [
@@ -147,7 +178,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
                               ],
                             ),
                           ),
-                          PopupMenuItem(
+                          const PopupMenuItem(
                             value: 'edit',
                             child: Row(
                               children: [
@@ -180,8 +211,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
   Text textLists(String text) {
     return Text(
       text,
-      style: TextStyle(
-        fontFamily: 'Galano',
+      style: const TextStyle(
         fontSize: 12,
       ),
     );

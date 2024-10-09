@@ -31,7 +31,7 @@ class EditJobDetails extends StatefulWidget {
   // final String hiringTimeline;
   final List<String> prescreenQuestions;
   final User user;
-
+  final Map<String, dynamic> userData;
   EditJobDetails({
     super.key,
     required this.submitForm,
@@ -60,6 +60,7 @@ class EditJobDetails extends StatefulWidget {
     // required this.hiringTimeline,
     required this.prescreenQuestions,
     required this.user,
+    required this.userData,
   });
 
   @override
@@ -152,6 +153,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
       'preScreenQuestions': preScreeningController.text,
       'status': "open",
       'posted_at': formattedCurrentDate,
+      'posted_by': '${widget.userData['hiringManagerFirstName']} ${widget.userData['hiringManagerLastName']}',
     }).then((value) {
       print('Job post added successfully!');
     }).catchError((error) {

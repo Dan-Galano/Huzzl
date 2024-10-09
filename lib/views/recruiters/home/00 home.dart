@@ -241,6 +241,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           candidates: _candidates,
           jobPostsData: jobPostsData,
           user: user!,
+          userData: userData!,
         );
       case 4:
         return buildInterviewsContent();
