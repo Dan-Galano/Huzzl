@@ -22,6 +22,10 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
 
+  //
+  bool isEmailAddress = false;
+  bool isPhoneNumber = false;
+
   //Password toggle
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
@@ -42,59 +46,65 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   //Submit Signup Form
   void submitRegistrationRecruiter() async {
     if (_formKey.currentState!.validate()) {
+      // if (isEmailAddress) {
+      //   print("Email Address");
+      // }
+      // if (isPhoneNumber) {
+      //   print("Phne Number");
+      // }
       try {
         //creating user
-        UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _email.text,
-          password: _password.text,
-        );
-
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return const AlertDialog(
-              content: Row(
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 20),
-                  Text("Registering..."),
-                ],
-              ),
-            );
-          },
-        );
-
-        setState(() {
-          isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-        });
-
-        if (!isEmailVerified) {
-          try {
-            final user = FirebaseAuth.instance.currentUser!;
-            await user.sendEmailVerification();
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(e.toString())),
-            );
-          }
-        }
-
-        //Go to verify email
-        Navigator.of(context).push(
-          MaterialPageRoute(
+        if (isEmailAddress) {
+          UserCredential userCredential =
+              await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: _email.text,
+            password: _password.text,
+          );
+          showDialog(
+            context: context,
+            barrierDismissible: false,
             builder: (context) {
-              return VerifyEmailRecruiter(
-                userCredential: userCredential,
-                email: _email.text,
-                fname: _firstName.text,
-                lname: _lastName.text,
-                password: _password.text,
+              return const AlertDialog(
+                content: Row(
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(width: 20),
+                    Text("Registering..."),
+                  ],
+                ),
               );
             },
-          ),
-        );
+          );
+          setState(() {
+            isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+          });
+
+          if (!isEmailVerified) {
+            try {
+              final user = FirebaseAuth.instance.currentUser!;
+              await user.sendEmailVerification();
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(e.toString())),
+              );
+            }
+          }
+
+          //Go to verify email
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return VerifyEmailRecruiter(
+                  userCredential: userCredential,
+                  email: _email.text,
+                  fname: _firstName.text,
+                  lname: _lastName.text,
+                  password: _password.text,
+                );
+              },
+            ),
+          );
+        } else if (isPhoneNumber) {}
       } on FirebaseAuthException catch (e) {
         // ScaffoldMessenger.of(context).showSnackBar(
         //   SnackBar(content: Text("Error: ${e.message}")),
@@ -157,7 +167,7 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                           ),
                           const SizedBox(height: 20),
                           const Text(
-                            "Email",
+                            "Email or Phone Number",
                             style: TextStyle(
                               fontSize: 16,
                               color: Color(0xff373030),
@@ -193,12 +203,30 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                               ),
                             ),
                             validator: (value) {
-                              if (value!.isEmpty || value == null) {
-                                return "Email Address is required.";
+                              if (value == null || value.trim().isEmpty) {
+                                return "This field is required.";
                               }
-                              if (!EmailValidator.validate(value)) {
-                                return "Please provide a valid email address.";
+
+                              String inputtedValue = value.trim();
+
+                              if (EmailValidator.validate(inputtedValue)) {
+                                setState(() {
+                                  isEmailAddress = true;
+                                  isPhoneNumber = false;
+                                });
+                                return null;
                               }
+                              final RegExp phoneRegex =
+                                  RegExp(r'^(09|\+639)\d{9}$');
+                              if (phoneRegex.hasMatch(inputtedValue)) {
+                                setState(() {
+                                  isPhoneNumber = true;
+                                  isEmailAddress = false;
+                                });
+                                return null;
+                              }
+
+                              return "Please provide a valid email address or phone number.";
                             },
                           ),
                           const SizedBox(height: 20),
