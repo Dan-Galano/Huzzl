@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/admin/admin_tab.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/companyProfile.dart';
@@ -28,6 +29,69 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   List<Map<String, dynamic>> jobPostsData = [];
   User? user;
   bool? isStandaloneCompany;
+
+  final List<Candidate> _candidates = [
+    Candidate(
+      id: '1',
+      name: 'Allen James Alvaro',
+      profession: "Drummer/Guitarist",
+      jobPostId: "FXZd9yEXNPFpKfwXQ401",
+      companyAppliedTo: "Cong's Unbilibabol Basketbol",
+      applicationDate: DateTime.now(),
+      status: "For Review",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 0,
+    ),
+    Candidate(
+      id: '2',
+      name: 'Patrick John Tomas',
+      jobPostId: "FXZd9yEXNPFpKfwXQ401",
+      profession: "Drummer/Back-up Vocalist",
+      companyAppliedTo: "December Avenue",
+      applicationDate: DateTime.now(),
+      status: "For Review",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 0,
+    ),
+    Candidate(
+      id: '3',
+      name: 'Monica Ave',
+      profession: "Drummer/Back-up Vocalist",
+      jobPostId: "FXZd9yEXNPFpKfwXQ401",
+      companyAppliedTo: "Rouge",
+      applicationDate: DateTime.now(),
+      status: "Shortlisted",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 0,
+    ),
+    Candidate(
+      id: '4',
+      name: 'John Doe',
+      jobPostId: "INPFHCDYGbCNBfu6fePe",
+      profession: "Drummer/Back-up Vocalist",
+      companyAppliedTo: "Sugarry Sweet",
+      applicationDate: DateTime.now(),
+      status: "Contacted",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 0,
+    ),
+    Candidate(
+      id: '5',
+      name: 'John Wick',
+      profession: "Metal Drummer",
+      jobPostId: "INPFHCDYGbCNBfu6fePe",
+      companyAppliedTo: "Sugarry Sweet",
+      applicationDate: DateTime.now(),
+      status: "Contacted",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 2,
+    ),
+  ];
 
   void getcompanyData() async {
     // Get the current user after they sign in
@@ -103,6 +167,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
   // bool _isCalendarScreen = false;
+  String _jobPostId = '';
   String _jobTitle = '';
   int _initialIndex = 0;
 
@@ -113,8 +178,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   }
 
   void toggleCandidatesScreen(
-      bool showCandidatesScreen, String jobTitle, int initialIndex) {
+    bool showCandidatesScreen,
+    String jobPostId,
+    String jobTitle,
+    int initialIndex,
+  ) {
     setState(() {
+      _jobPostId = jobPostId;
       _isCandidatesScreen = showCandidatesScreen;
       _jobTitle = jobTitle;
       _initialIndex = initialIndex;
@@ -159,12 +229,16 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           );
         } else if (_isCandidatesScreen) {
           return buildCandidatesContent(
-              context,
-              () => toggleCandidatesScreen(false, '', 0),
-              _jobTitle,
-              _initialIndex);
+            context,
+            () => toggleCandidatesScreen(false, '', '', 0),
+            _jobPostId,
+            _jobTitle,
+            _candidates,
+            _initialIndex,
+          );
         }
         return JobScreens(
+          candidates: _candidates,
           jobPostsData: jobPostsData,
           user: user!,
         );

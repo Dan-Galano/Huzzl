@@ -2,13 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/open_job_card.dart';
 import 'package:intl/intl.dart';
 
 class OpenJobs extends StatefulWidget {
   final User user;
-  const OpenJobs({required this.user});
+  final List<Candidate> candidates;
+  const OpenJobs({required this.user, required this.candidates});
 
   @override
   State<OpenJobs> createState() => _OpenJobsState();
@@ -77,19 +79,37 @@ class _OpenJobsState extends State<OpenJobs> {
                       .map((doc) => doc.data() as Map<String, dynamic>)
                       .toList();
 
+                  final openJobs = jobPostsData
+                      .where(
+                        (jobPost) => jobPost.containsValue('open'),
+                      )
+                      .toList();
                   return ListView.builder(
-                    itemCount: jobPostsData.length,
+                    itemCount: openJobs.length,
                     itemBuilder: (context, index) {
                       Map<String, dynamic> jobPostIndividualData =
-                          jobPostsData[index];
+                          openJobs[index];
+                      final DocumentSnapshot jobPostDoc =
+                          snapshot.data!.docs[index];
+                      final String jobPostId = jobPostDoc.id; // Job Post ID
+                      final int numberOfApplicants = widget.candidates
+                          .where(
+                            (candidate) => candidate.jobPostId == jobPostId,
+                          )
+                          .toList()
+                          .length;
 
                       return GestureDetector(
                         onTap: () {
                           final homeState = context.findAncestorStateOfType<
                               RecruiterHomeScreenState>();
                           homeState?.toggleCandidatesScreen(
-                              true, jobPostIndividualData["jobTitle"], 0);
-                          print(jobPostIndividualData["jobTitle"]);
+                            true,
+                            jobPostId,
+                            jobPostIndividualData["jobTitle"],
+                            0,
+                          );
+                          // print(jobPostId);
                         },
                         child: OpenJobCard(
                           jobTitle: jobPostIndividualData["jobTitle"],
@@ -97,6 +117,7 @@ class _OpenJobsState extends State<OpenJobs> {
                           jobDeadline:
                               jobPostIndividualData['applicationDeadline'],
                           jobPostedAt: jobPostIndividualData['posted_at'],
+                          numberOfApplicants: numberOfApplicants,
                         ),
                       );
                     },

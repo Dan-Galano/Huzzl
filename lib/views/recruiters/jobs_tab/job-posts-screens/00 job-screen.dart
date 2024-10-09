@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/01%20job-posts.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/02%20job-details.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/03%20job-skills.dart';
@@ -15,8 +16,9 @@ import 'package:intl/intl.dart';
 
 class JobScreens extends StatefulWidget {
   final List<Map<String, dynamic>> jobPostsData;
+  final List<Candidate> candidates;
   final User user;
-  const JobScreens({required this.jobPostsData, required this.user, super.key});
+  const JobScreens({required this.candidates, required this.jobPostsData, required this.user, super.key,});
 
   @override
   State<JobScreens> createState() => _JobScreensState();
@@ -183,6 +185,7 @@ class _JobScreensState extends State<JobScreens> {
           controller: _pageController,
           children: [
             JobTab(
+              candidates: widget.candidates,
               postJob: _goToPostJob,
               jobPostsData: widget.jobPostsData,
               user: widget.user,

@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:intl/intl.dart';
 
 class ForReviewCard extends StatefulWidget {
+  Candidate candidate;
+  ForReviewCard({super.key, required this.candidate});
+
   @override
   State<ForReviewCard> createState() => _ForReviewCardState();
 }
 
 class _ForReviewCardState extends State<ForReviewCard> {
   bool _isHovered = false;
+
   @override
   Widget build(BuildContext context) {
+    String date = DateFormat('d MMM yyyy, h:mma')
+        .format(widget.candidate.applicationDate);
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -49,9 +57,8 @@ class _ForReviewCardState extends State<ForReviewCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Eleanor Pena',
+                        widget.candidate.name,
                         style: TextStyle(
-                          fontFamily: 'Galano',
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -62,9 +69,8 @@ class _ForReviewCardState extends State<ForReviewCard> {
                           Icon(Icons.badge, size: 16, color: Colors.grey),
                           SizedBox(width: 4),
                           Text(
-                            'Vocalist',
+                            widget.candidate.profession,
                             style: TextStyle(
-                              fontFamily: 'Galano',
                               color: Colors.grey.shade800,
                               fontSize: 14,
                             ),
@@ -77,9 +83,8 @@ class _ForReviewCardState extends State<ForReviewCard> {
                           Icon(Icons.home, size: 16, color: Colors.grey),
                           SizedBox(width: 4),
                           Text(
-                            'Urdaneta Branch',
+                            widget.candidate.companyAppliedTo,
                             style: TextStyle(
-                              fontFamily: 'Galano',
                               color: Colors.grey.shade500,
                               fontSize: 14,
                             ),
@@ -93,14 +98,13 @@ class _ForReviewCardState extends State<ForReviewCard> {
               Row(
                 children: [
                   Text(
-                    '10 Jul 2024, 5:38pm',
+                    date,
                     style: TextStyle(
-                      fontFamily: 'Galano',
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
                   ),
-                  Gap(100),
+                  const Gap(100),
                   TextButton(
                     onPressed: () {
                       final homeState = context
@@ -108,17 +112,16 @@ class _ForReviewCardState extends State<ForReviewCard> {
                       homeState?.toggleApplicationScreen(true);
                     },
                     style: TextButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       backgroundColor: Colors.blue.shade50,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Review application',
                       style: TextStyle(
-                        fontFamily: 'Galano',
                         fontSize: 14,
                         color: Colors.blue,
                       ),

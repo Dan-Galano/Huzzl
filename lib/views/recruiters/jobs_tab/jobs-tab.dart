@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/closed.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/open.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/paused.dart';
@@ -8,10 +9,12 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/jobfilterrow.dart';
 
 class JobTab extends StatefulWidget {
   final VoidCallback postJob;
+  final List<Candidate> candidates;
   final List<Map<String, dynamic>> jobPostsData;
   final User user;
   const JobTab({
     super.key,
+    required this.candidates,
     required this.postJob,
     required this.jobPostsData,
     required this.user,
@@ -119,6 +122,7 @@ class _JobTabState extends State<JobTab> {
                           OpenJobs(
                             // jobPostsData: widget.jobPostsData,
                             user: widget.user,
+                            candidates: widget.candidates,
                           ),
                           PausedJobs(),
                           ClosedJobs(),

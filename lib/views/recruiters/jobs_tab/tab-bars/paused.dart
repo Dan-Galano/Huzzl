@@ -38,7 +38,7 @@ class PausedJobs extends StatelessWidget {
       padding: const EdgeInsets.only(right: 60),
       child: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           color: Color(0xff3B7DFF),
           fontSize: 14,
           fontWeight: FontWeight.w600,

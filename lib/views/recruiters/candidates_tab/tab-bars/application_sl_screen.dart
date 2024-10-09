@@ -6,6 +6,7 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/reject
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/resume_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/skillchip.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar_inside.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -251,7 +252,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                   ),
                                   Gap(10),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      final homeState =
+                                          context.findAncestorStateOfType<
+                                              RecruiterHomeScreenState>();
+                                      homeState!.changeDestination(5);
+                                    },
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 29, vertical: 8),
@@ -282,7 +288,7 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                             ],
                           ),
                           const Gap(30),
-                            TabBarInside(
+                          TabBarInside(
                             tabController: _tabController,
                             tabs: const [
                               Tab(text: 'Application'),

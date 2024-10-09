@@ -1,5 +1,7 @@
+import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 
 class JobSkills extends StatefulWidget {
   final VoidCallback nextPage;
@@ -27,18 +29,51 @@ class _JobSkillsState extends State<JobSkills> {
   final TextEditingController _responsibilitiesController =
       TextEditingController();
 
+  SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
+
   List<String> _suggestions = [];
   final List<String> _skills = [
+    'Adaptability',
+    'Analytical Thinking',
+    'Attention to Detail',
+    'Bilingual Communication',
+    'Branding Skills',
+    'Business Writing',
+    'Change Management',
+    'Collaboration',
     'Communication Skills',
-    'Critical Thinking',
-    'Project Management',
-    'Coding/Programming',
-    'Data Analysis',
-    'Time Management',
+    'Conflict Resolution',
     'Creative Thinking',
-    'Public Speaking',
+    'Critical Thinking',
+    'Customer Service',
+    'Data Analysis',
+    'Decision Making',
+    'Emotional Intelligence',
+    'Financial Literacy',
+    'Flexibility',
+    'Interpersonal Skills',
+    'Leadership',
+    'Motivational Skills',
+    'Negotiation',
+    'Networking',
+    'Open-Mindedness',
+    'Organization',
+    'Personal Branding',
     'Problem Solving',
+    'Project Management',
+    'Public Speaking',
+    'Research Skills',
+    'Resilience',
+    'Sales Skills',
+    'Strategic Planning',
+    'Stress Management',
     'Team Collaboration',
+    'Technical Proficiency',
+    'Time Management',
+    'Training and Mentoring',
+    'Trend Analysis',
+    'Vendor Management',
+    'Written Communication',
   ];
 
   void _addResponsibility() {
@@ -82,6 +117,66 @@ class _JobSkillsState extends State<JobSkills> {
     setState(() {
       widget.selectedSkills.removeAt(index);
     });
+  }
+
+  List<String> getSuggestions(String query) {
+    List<String> matches = _skills
+        .where((item) =>
+            item.toLowerCase().contains(query.toLowerCase()) &&
+            !widget.selectedSkills.contains(item)) // Exclude selected skills
+        .toList();
+    return matches;
+  }
+
+  Widget buildSearchDropdown() {
+    return GestureDetector(
+      onTap: () {
+        suggestionBoxController.close();
+      },
+      child: DropDownSearchFormField<String>(
+        // Change type to Applicant
+        textFieldConfiguration: TextFieldConfiguration(
+          controller: _controller,
+          decoration: customHintTextInputDecoration('Type a skill...'),
+        ),
+        suggestionsCallback: (pattern) async {
+          return await getSuggestions(pattern); // Now returns List<Applicant>
+        },
+        itemBuilder: (context, applicant) {
+          // Change to accept Applicant
+          return ListTile(
+            onTap: () {
+              setState(() {
+                widget.selectedSkills.add(applicant);
+                _controller.clear();
+                _suggestions.clear();
+                suggestionBoxController.close();
+              });
+            },
+            title: Text(applicant), // Show applicant's name
+          );
+        },
+        itemSeparatorBuilder: (context, index) {
+          return const Divider();
+        },
+        onSuggestionSelected: _updateSuggestions,
+        suggestionsBoxController: suggestionBoxController,
+        validator: (value) {
+          if (widget.selectedSkills.isEmpty) {
+            return "Skill Required";
+          } else if (widget.selectedSkills.length < 2) {
+            return "Please select at least 2 skills";
+          }
+          return null; // Validation success
+        },
+
+        displayAllSuggestionWhenTap: true,
+        suggestionsBoxDecoration: SuggestionsBoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 
   @override
@@ -146,40 +241,7 @@ class _JobSkillsState extends State<JobSkills> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _controller,
-                    onChanged: _updateSuggestions,
-                    style: const TextStyle(),
-                    decoration: InputDecoration(
-                      hintText: 'Type a skill...',
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10.0,
-                        horizontal: 10.0,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color(0xffD1E1FF),
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color(0xffD1E1FF),
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (widget.selectedSkills.isEmpty) {
-                        return "Skill Required";
-                      } else if (widget.selectedSkills.length < 2) {
-                        return "Please select at least 2 skills";
-                      }
-                      return null; // Validation success
-                    },
-                  ),
+                  buildSearchDropdown(),
                   const SizedBox(height: 10),
                   // Display skills
                   if (widget.selectedSkills.isNotEmpty)
@@ -196,7 +258,7 @@ class _JobSkillsState extends State<JobSkills> {
                           )
                           .toList(),
                     ),
-                  const SizedBox(height: 10),
+                  // const SizedBox(height: 10),
                   // Display suggestions
                   if (_controller.text.isNotEmpty)
                     Container(

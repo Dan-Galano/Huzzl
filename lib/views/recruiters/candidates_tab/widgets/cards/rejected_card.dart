@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/movetoReserved_confirm_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/feedback_view_dialog.dart';
+import 'package:intl/intl.dart';
 
 class RejectedCard extends StatefulWidget {
+  Candidate candidate;
+  RejectedCard({super.key, required this.candidate});
+
   @override
   State<RejectedCard> createState() => _RejectedCardState();
 }
@@ -13,6 +18,11 @@ class _RejectedCardState extends State<RejectedCard>
   bool _isHovered = false;
   @override
   Widget build(BuildContext context) {
+    String date = DateFormat('d MMM yyyy, h:mma')
+        .format(widget.candidate.dateRejected)
+        .toLowerCase();
+    String formattedDate =
+        DateFormat('MMMM d, yyyy').format(widget.candidate.dateRejected);
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -29,11 +39,11 @@ class _RejectedCardState extends State<RejectedCard>
         child: Stack(
           children: [
             AnimatedContainer(
-              duration: Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: 100),
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: _isHovered
-                    ? Color.fromARGB(17, 121, 121, 121)
+                    ? const Color.fromARGB(17, 121, 121, 121)
                     : Colors.transparent,
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(10),
@@ -43,29 +53,29 @@ class _RejectedCardState extends State<RejectedCard>
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 24,
                         backgroundImage: AssetImage('assets/images/pfp.png'),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Eleanor Pena',
-                            style: TextStyle(
+                            widget.candidate.name,
+                            style: const TextStyle(
                               fontFamily: 'Galano',
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Row(
                             children: [
-                              Icon(Icons.badge, size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
+                              const Icon(Icons.badge, size: 16, color: Colors.grey),
+                              const SizedBox(width: 4),
                               Text(
-                                'Vocalist',
+                                widget.candidate.profession,
                                 style: TextStyle(
                                   fontFamily: 'Galano',
                                   color: Colors.grey.shade800,
@@ -74,13 +84,13 @@ class _RejectedCardState extends State<RejectedCard>
                               ),
                             ],
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Row(
                             children: [
-                              Icon(Icons.home, size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
+                              const Icon(Icons.home, size: 16, color: Colors.grey),
+                              const SizedBox(width: 4),
                               Text(
-                                'Urdaneta Branch',
+                                widget.candidate.companyAppliedTo,
                                 style: TextStyle(
                                   fontFamily: 'Galano',
                                   color: Colors.grey.shade500,
@@ -101,24 +111,24 @@ class _RejectedCardState extends State<RejectedCard>
                             'assets/images/chat-icon-recruiter.png',
                             width: 20),
                       ),
-                      Gap(40),
+                      const Gap(40),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(69, 215, 74, 74),
-                          border: Border.all(color: Color(0xFFd74a4a)),
+                          color: const Color.fromARGB(69, 215, 74, 74),
+                          border: Border.all(color: const Color(0xFFd74a4a)),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          "Rejected on July 23, 2024",
-                          style: TextStyle(
+                          "Rejected on $formattedDate",
+                          style: const TextStyle(
                             color: Color(0xFFd74a4a),
                             fontFamily: 'Galano',
                           ),
                         ),
                       ),
-                      Gap(40),
+                      const Gap(40),
                     ],
                   ),
                 ],
@@ -128,7 +138,7 @@ class _RejectedCardState extends State<RejectedCard>
               top: 8,
               right: 8,
               child: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.more_vert,
                   size: 20,
                   color: Colors.grey,
@@ -152,7 +162,7 @@ class _RejectedCardState extends State<RejectedCard>
                       overlay.size.height - position.dy,
                     ),
                     items: [
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: 'view_previous_feedback',
                         child: Row(
                           children: [
@@ -162,24 +172,25 @@ class _RejectedCardState extends State<RejectedCard>
                           ],
                         ),
                       ),
-                      PopupMenuItem(
-                        value: 'move_to_reserved',
-                        child: Row(
-                          children: [
-                            Icon(Icons.drive_file_move_outlined,
-                                color: Colors.grey),
-                            SizedBox(width: 8),
-                            Text('Move to Reserved'),
-                          ],
-                        ),
-                      ),
+                      // PopupMenuItem(
+                      //   value: 'move_to_reserved',
+                      //   child: Row(
+                      //     children: [
+                      //       Icon(Icons.drive_file_move_outlined,
+                      //           color: Colors.grey),
+                      //       SizedBox(width: 8),
+                      //       Text('Move to Reserved'),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ).then((value) {
-                    if (value == 'move_to_reserved') {
-                      showMoveToReservedConfirmationDialog(context);
-                    } else if (value == 'view_previous_feedback') {
-                      showFeedbackViewDialog(context, this);
+                    if (value == 'view_previous_feedback') {
+                      showFeedbackViewDialog(context, this); //PASS THE VALUE
                     }
+                    // else if (value == 'move_to_reserved') {
+                    //   showMoveToReservedConfirmationDialog(context);
+                    // }
                   });
                 },
               ),

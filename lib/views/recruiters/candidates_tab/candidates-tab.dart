@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/candidates_widgets.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/contacted.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/filterrow.dart';
@@ -10,15 +11,24 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/reserved.dart
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/shortlisted.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar.dart';
 
-Widget buildCandidatesContent(BuildContext context, VoidCallback onBack,
-    String jobTitle, int initialIndex) {
+Widget buildCandidatesContent(
+  BuildContext context,
+  VoidCallback onBack,
+  String jobPostId,
+  String jobTitle,
+  List<Candidate> candidates,
+  int initialIndex,
+) {
+  
   return StatefulBuilder(
     builder: (context, setState) {
       TabController _tabController = TabController(
-        length: 6,
+        length: 5,
         vsync: Scaffold.of(context),
         initialIndex: initialIndex,
       );
+
+      // print(jobPostId);
 
       return Column(
         children: [
@@ -73,17 +83,46 @@ Widget buildCandidatesContent(BuildContext context, VoidCallback onBack,
                   ),
                   const Gap(10),
                   FilterRowWidget(),
-                  CustomTabBar(tabController: _tabController),
+                  CustomTabBar(
+                    tabController: _tabController,
+                    candidates: candidates,
+                    jobPostId: jobPostId,
+                  ),
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,
                       children: [
-                        ForReviewView(),
-                        ShortlistedView(),
-                        ContactedView(),
-                        RejectedView(),
-                        HiredView(),
-                        ReservedView(),
+                        ForReviewView(
+                            candidates: candidates
+                                .where((candidate) =>
+                                    candidate.status == "For Review" &&
+                                    candidate.jobPostId == jobPostId)
+                                .toList()),
+                        ShortlistedView(
+                            candidates: candidates
+                                .where((candidate) =>
+                                    candidate.status == "Shortlisted" &&
+                                    candidate.jobPostId == jobPostId)
+                                .toList()),
+                        ContactedView(
+                            candidates: candidates
+                                .where((candidate) =>
+                                    candidate.status == "Contacted" &&
+                                    candidate.jobPostId == jobPostId)
+                                .toList()),
+                        RejectedView(
+                            candidates: candidates
+                                .where((candidate) =>
+                                    candidate.status == "Rejected" &&
+                                    candidate.jobPostId == jobPostId)
+                                .toList()),
+                        HiredView(
+                            candidates: candidates
+                                .where((candidate) =>
+                                    candidate.status == "Hired" &&
+                                    candidate.jobPostId == jobPostId)
+                                .toList()),
+                        // ReservedView(),
                       ],
                     ),
                   ),

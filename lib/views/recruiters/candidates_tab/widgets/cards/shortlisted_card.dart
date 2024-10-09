@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/moveback_confirmation_dialog.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:intl/intl.dart';
 
 class ShortListedCard extends StatefulWidget {
+  Candidate candidate;
+  ShortListedCard({super.key, required this.candidate});
+
   @override
   State<ShortListedCard> createState() => _ShortListedCardState();
 }
@@ -12,6 +17,8 @@ class _ShortListedCardState extends State<ShortListedCard> {
   bool _isHovered = false;
   @override
   Widget build(BuildContext context) {
+    String date = DateFormat('d MMM yyyy, h:mma')
+        .format(widget.candidate.applicationDate);
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -51,7 +58,7 @@ class _ShortListedCardState extends State<ShortListedCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Eleanor Pena',
+                            widget.candidate.name,
                             style: TextStyle(
                               fontFamily: 'Galano',
                               fontWeight: FontWeight.bold,
@@ -64,7 +71,7 @@ class _ShortListedCardState extends State<ShortListedCard> {
                               Icon(Icons.badge, size: 16, color: Colors.grey),
                               SizedBox(width: 4),
                               Text(
-                                'Vocalist',
+                                widget.candidate.profession,
                                 style: TextStyle(
                                   fontFamily: 'Galano',
                                   color: Colors.grey.shade800,
@@ -79,7 +86,7 @@ class _ShortListedCardState extends State<ShortListedCard> {
                               Icon(Icons.home, size: 16, color: Colors.grey),
                               SizedBox(width: 4),
                               Text(
-                                'Urdaneta Branch',
+                                widget.candidate.companyAppliedTo,
                                 style: TextStyle(
                                   fontFamily: 'Galano',
                                   color: Colors.grey.shade500,
@@ -95,7 +102,7 @@ class _ShortListedCardState extends State<ShortListedCard> {
                   Row(
                     children: [
                       Text(
-                        '14 Jul 2024, 8:00am',
+                        date,
                         style: TextStyle(
                           fontFamily: 'Galano',
                           fontWeight: FontWeight.bold,

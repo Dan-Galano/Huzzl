@@ -7,11 +7,13 @@ class OpenJobCard extends StatefulWidget {
   final String? jobDeadline;
   final String? jobPostedAt;
   final String? jobType;
+  final int numberOfApplicants;
   const OpenJobCard({
     required this.jobTitle,
     required this.jobDeadline,
     required this.jobPostedAt,
     required this.jobType,
+    required this.numberOfApplicants,
   });
 
   @override
@@ -87,22 +89,22 @@ class _OpenJobCardState extends State<OpenJobCard> {
                 children: [
                   // Date
                   textLists(widget.jobType!),
-                  Gap(60),
+                  const Gap(60),
                   textLists("Juan Cruz"),
-                  Gap(70),
+                  const Gap(70),
                   Text(
-                    '1 applied',
-                    style: TextStyle(
+                    '${widget.numberOfApplicants} applied',
+                    style: const TextStyle(
                         fontFamily: 'Galano',
                         fontSize: 12,
                         color: Color(0xff3B7DFF)),
                   ),
-                  Gap(60),
+                  const Gap(60),
                   textLists(widget.jobPostedAt!),
-                  Gap(60),
+                  const Gap(60),
                   textLists("3 days left"),
 
-                  Gap(60),
+                  const Gap(60),
                   IconButton(
                     onPressed: () async {
                       final RenderBox button =
