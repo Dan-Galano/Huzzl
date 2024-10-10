@@ -19,7 +19,6 @@ Widget buildCandidatesContent(
   List<Candidate> candidates,
   int initialIndex,
 ) {
-  
   return StatefulBuilder(
     builder: (context, setState) {
       TabController _tabController = TabController(
@@ -28,7 +27,7 @@ Widget buildCandidatesContent(
         initialIndex: initialIndex,
       );
 
-      // print(jobPostId);
+      print("CANDIDATE SCREEN $jobTitle JOB ID: $jobPostId");
 
       return Column(
         children: [

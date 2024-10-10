@@ -19,12 +19,13 @@ class JobScreens extends StatefulWidget {
   final List<Candidate> candidates;
   final User user;
   final Map<String, dynamic> userData;
+  final int initialIndex;
   const JobScreens({
     required this.candidates,
     required this.jobPostsData,
     required this.user,
     required this.userData,
-    super.key,
+    super.key, required this.initialIndex,
   });
 
   @override
@@ -196,6 +197,7 @@ class _JobScreensState extends State<JobScreens> {
               postJob: _goToPostJob,
               jobPostsData: widget.jobPostsData,
               user: widget.user,
+              initialIndex: widget.initialIndex,
             ),
             JobPosts(
               nextPage: _nextPage,

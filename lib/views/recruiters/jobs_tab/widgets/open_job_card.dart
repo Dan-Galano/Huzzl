@@ -119,23 +119,15 @@ class _OpenJobCardState extends State<OpenJobCard> {
 
               // Right section
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   // Date
                   textLists(widget.jobType!),
-                  const Gap(60),
                   textLists(widget.jobPostedBy!),
-                  const Gap(70),
-                  Text(
-                    '${widget.numberOfApplicants} applied',
-                    style:
-                        const TextStyle(fontSize: 12, color: Color(0xff3B7DFF)),
-                  ),
-                  const Gap(60),
+                  blueTextList('${widget.numberOfApplicants} applied'),
                   textLists(widget.jobPostedAt!),
-                  const Gap(60),
                   textLists(getTimeLeftUntilDeadline(widget.jobDeadline!)),
 
-                  const Gap(60),
                   IconButton(
                     onPressed: () async {
                       final RenderBox button =
@@ -208,11 +200,32 @@ class _OpenJobCardState extends State<OpenJobCard> {
     );
   }
 
-  Text textLists(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
+  SizedBox textLists(String text) {
+    return SizedBox(
+      width: 160,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 12,
+          ),
+        ),
+      ),
+    );
+  }
+
+  SizedBox blueTextList(String text) {
+    return SizedBox(
+      width: 160,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12, color: Color(0xff3B7DFF)),
+        ),
       ),
     );
   }

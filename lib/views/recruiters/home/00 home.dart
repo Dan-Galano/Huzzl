@@ -91,7 +91,77 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
       dateRejected: DateTime.now(),
       interviewCount: 2,
     ),
+    Candidate(
+      id: '6',
+      name: 'Spongebob Squarepants',
+      profession: "Reggae Drummer",
+      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+      companyAppliedTo: "Halo",
+      applicationDate: DateTime.now(),
+      status: "Shortlisted",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 1,
+    ),
+    Candidate(
+      id: '7',
+      name: 'Jake Gyllenhaal',
+      profession: "Pop Drummer",
+      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+      companyAppliedTo: "Halo",
+      applicationDate: DateTime.now(),
+      status: "For Review",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 1,
+    ),
+    Candidate(
+      id: '8',
+      name: 'John Mayer',
+      profession: "Blues Drummer",
+      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+      companyAppliedTo: "Gravity",
+      applicationDate: DateTime.now(),
+      status: "Contacted",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 1,
+    ),
+    Candidate(
+      id: '9',
+      name: 'Mike Portnoy',
+      profession: "Progressive Metal Drummer",
+      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+      companyAppliedTo: "Dream Theater",
+      applicationDate: DateTime.now(),
+      status: "Hired",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 1,
+    ),
+    Candidate(
+      id: '10',
+      name: 'Jame Belmoro',
+      profession: "Simpleng Drummer",
+      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+      companyAppliedTo: "The Smokers",
+      applicationDate: DateTime.now(),
+      status: "Rejected",
+      dateLastInterviewed: DateTime.now(),
+      dateRejected: DateTime.now(),
+      interviewCount: 1,
+    ),
   ];
+
+  int? _selectedIndex = 3;
+  bool _isCandidatesScreen = false;
+  bool _isApplicationScreen = false;
+  bool _isSlApplicationScreen = false;
+  // bool _isCalendarScreen = false;
+  String _jobPostId = '';
+  String _jobTitle = '';
+  int _initialIndex = 0;
+  int _jobTabInitialIndex = 0;
 
   void getcompanyData() async {
     // Get the current user after they sign in
@@ -162,15 +232,6 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     getcompanyData();
   }
 
-  int? _selectedIndex = 3;
-  bool _isCandidatesScreen = false;
-  bool _isApplicationScreen = false;
-  bool _isSlApplicationScreen = false;
-  // bool _isCalendarScreen = false;
-  String _jobPostId = '';
-  String _jobTitle = '';
-  int _initialIndex = 0;
-
   void changeDestination(int index) {
     setState(() {
       _selectedIndex = index;
@@ -182,12 +243,14 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     String jobPostId,
     String jobTitle,
     int initialIndex,
+    int jobTabInitialIndex,
   ) {
     setState(() {
       _jobPostId = jobPostId;
       _isCandidatesScreen = showCandidatesScreen;
       _jobTitle = jobTitle;
       _initialIndex = initialIndex;
+      _jobTabInitialIndex = jobTabInitialIndex;
     });
   }
 
@@ -230,7 +293,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         } else if (_isCandidatesScreen) {
           return buildCandidatesContent(
             context,
-            () => toggleCandidatesScreen(false, '', '', 0),
+            () => toggleCandidatesScreen(false, '', '', 0, _jobTabInitialIndex),
             _jobPostId,
             _jobTitle,
             _candidates,
@@ -242,6 +305,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           jobPostsData: jobPostsData,
           user: user!,
           userData: userData!,
+          initialIndex: _jobTabInitialIndex,
         );
       case 4:
         return buildInterviewsContent();

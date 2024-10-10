@@ -2,7 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class PausedJobCard extends StatefulWidget {
-  PausedJobCard({super.key});
+  final String? jobTitle;
+  final String? jobDeadline;
+  final String? jobPostedAt;
+  final String? jobPostedBy;
+  final String? jobType;
+  final int numberOfApplicants;
+  const PausedJobCard(
+      {super.key,
+      this.jobTitle,
+      this.jobPostedAt,
+      this.jobPostedBy,
+      this.jobType,
+      required this.numberOfApplicants,
+      this.jobDeadline});
 
   @override
   State<PausedJobCard> createState() => _PausedJobCardState();
@@ -43,7 +56,7 @@ class _PausedJobCardState extends State<PausedJobCard> {
               Row(
                 children: [
                   Image.asset('assets/images/job-bag-icon.png'),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
                   // Name, Job, Branch Info
                   Column(
@@ -51,16 +64,16 @@ class _PausedJobCardState extends State<PausedJobCard> {
                     children: [
                       // Name
                       Text(
-                        'Need Vocalist',
-                        style: TextStyle(
+                        '${widget.jobTitle}',
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
                       // SizedBox(height: 4),
                       Text(
-                        'January 18, 2024 at Brgy. Moreno, Binalonan, Pangasinan',
-                        style: TextStyle(
+                        'Paused on ${widget.jobDeadline}', //need pa palitan ng paused date talaga. currently: jobDeadline
+                        style: const TextStyle(
                           // fontWeight: FontWeight.,
                           fontSize: 14,
                         ),
@@ -72,21 +85,74 @@ class _PausedJobCardState extends State<PausedJobCard> {
 
               // Right section
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   // Date
-                  textLists("Part-time"),
-                  Gap(60),
-                  textLists("Juan Cruz"),
-                  Gap(70),
-                  Text(
-                    '1 applied',
-                    style: TextStyle(fontSize: 12, color: Color(0xff3B7DFF)),
-                  ),
-                  Gap(60),
-                  textLists("05/12/2024"),
-                  Gap(60),
+                  textLists(widget.jobType!),
+                  textLists(widget.jobPostedBy!),
+                  blueTextList('${widget.numberOfApplicants} applied'),
+                  textLists(widget.jobPostedAt!),
+
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final RenderBox button =
+                          context.findRenderObject() as RenderBox;
+                      final RenderBox overlay = Overlay.of(context)
+                          .context
+                          .findRenderObject() as RenderBox;
+
+                      final position =
+                          button.localToGlobal(Offset.zero, ancestor: overlay);
+
+                      await showMenu(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          position.dx,
+                          position.dy,
+                          overlay.size.width - position.dx - button.size.width,
+                          overlay.size.height - position.dy,
+                        ),
+                        items: [
+                          const PopupMenuItem(
+                            value: 'Re-open',
+                            child: Row(
+                              children: [
+                                Icon(Icons.pause_circle_outline,
+                                    color: Colors.grey),
+                                SizedBox(width: 8),
+                                Text('Re-open'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'close',
+                            child: Row(
+                              children: [
+                                Icon(Icons.stop_circle_outlined,
+                                    color: Colors.grey),
+                                SizedBox(width: 8),
+                                Text('Close'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit_note_outlined,
+                                    color: Colors.grey),
+                                SizedBox(width: 8),
+                                Text('Edit'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ).then((value) {
+                        // if (value == 'move_back_for_review') {
+                        //   moveBackToReviewDialog(context);
+                        // }
+                      });
+                    },
                     icon: Image.asset(
                         'assets/images/three-dot-icon-data-table.png'),
                   ),
@@ -99,11 +165,32 @@ class _PausedJobCardState extends State<PausedJobCard> {
     );
   }
 
-  Text textLists(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 12,
+  SizedBox textLists(String text) {
+    return SizedBox(
+      width: 160,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 12,
+          ),
+        ),
+      ),
+    );
+  }
+
+  SizedBox blueTextList(String text) {
+    return SizedBox(
+      width: 160,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12, color: Color(0xff3B7DFF)),
+        ),
       ),
     );
   }

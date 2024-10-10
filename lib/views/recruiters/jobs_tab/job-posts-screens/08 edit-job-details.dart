@@ -148,17 +148,25 @@ class _EditJobDetailsState extends State<EditJobDetails> {
       'supplementalPay': supplementalPayController.text,
       'isResumeRequired': requireResumeController.text,
       'applicationDeadline': applicationDeadlineController.text,
-      // 'hiringTimeline': hiringTimelineController.text,
       'updatesController': updatesController.text,
       'preScreenQuestions': preScreeningController.text,
       'status': "open",
       'posted_at': formattedCurrentDate,
-      'posted_by': '${widget.userData['hiringManagerFirstName']} ${widget.userData['hiringManagerLastName']}',
-    }).then((value) {
-      print('Job post added successfully!');
+      'posted_by':
+          '${widget.userData['hiringManagerFirstName']} ${widget.userData['hiringManagerLastName']}',
+    }).then((docRef) {
+      // Add the document ID to the job post
+      docRef.update({
+        'jobPostID': docRef.id,
+      }).then((_) {
+        print('Job post added successfully with ID: ${docRef.id}');
+      }).catchError((error) {
+        print('Error updating job post with ID: $error');
+      });
     }).catchError((error) {
       print('Error adding job post: $error');
     });
+
     // }
   }
 

@@ -12,12 +12,14 @@ class JobTab extends StatefulWidget {
   final List<Candidate> candidates;
   final List<Map<String, dynamic>> jobPostsData;
   final User user;
+  final int initialIndex;
   const JobTab({
     super.key,
     required this.candidates,
     required this.postJob,
     required this.jobPostsData,
     required this.user,
+    required this.initialIndex,
   });
 
   @override
@@ -30,7 +32,7 @@ class _JobTabState extends State<JobTab> {
     return StatefulBuilder(
       builder: (context, setState) {
         TabController _tabController =
-            TabController(length: 3, vsync: Scaffold.of(context));
+            TabController(length: 3, vsync: Scaffold.of(context), initialIndex: widget.initialIndex);
 
         return Column(
           children: [
@@ -124,8 +126,14 @@ class _JobTabState extends State<JobTab> {
                             user: widget.user,
                             candidates: widget.candidates,
                           ),
-                          PausedJobs(),
-                          ClosedJobs(),
+                          PausedJobs(
+                            user: widget.user,
+                            candidates: widget.candidates,
+                          ),
+                          ClosedJobs(
+                            user: widget.user,
+                            candidates: widget.candidates,
+                          ),
                         ],
                       ),
                     ),
