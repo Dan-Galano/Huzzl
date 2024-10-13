@@ -14,12 +14,14 @@ class VerifyEmailRecruiter extends StatefulWidget {
   String fname;
   String lname;
   String password;
+  String phoneNumber;
   VerifyEmailRecruiter({
     required this.userCredential,
     required this.email,
     required this.fname,
     required this.lname,
     required this.password,
+    required this.phoneNumber,
     super.key,
   });
 
@@ -95,18 +97,18 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'password': widget.password,
       });
 
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (_) => CompanyProfileRecruiter(
-      //       userCredential: widget.userCredential,
-      //     ),
-      //   ),
-      // );
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => CompanyProfileRecruiter(
+            userCredential: widget.userCredential,
+          ),
+        ),
+      );
 
       Navigator.of(context).push(
         MaterialPageRoute(
             builder: (_) => PhoneNumberVerification(
-                  phoneNumber: "+63 987 867 5645",
+                  phoneNumber: widget.phoneNumber,
                   userCredential: widget.userCredential,
                 )),
       );

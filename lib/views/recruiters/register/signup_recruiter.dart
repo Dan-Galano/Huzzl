@@ -19,8 +19,11 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   final _email = TextEditingController();
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
+  final _phoneNumber = TextEditingController();
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
+
+  String phoneNumberInputted = "";
 
   //Password toggle
   bool isPasswordVisible = false;
@@ -91,6 +94,7 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                 fname: _firstName.text,
                 lname: _lastName.text,
                 password: _password.text,
+                phoneNumber: phoneNumberInputted,
               );
             },
           ),
@@ -316,6 +320,57 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            "Phone number",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff373030),
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                          TextFormField(
+                            controller: _phoneNumber,
+                            maxLength: 10,
+                            decoration: InputDecoration(
+                              prefixText: "+63",
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
+                              isDense: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD1E1FF),
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              phoneNumberInputted = "+63${value!}";
+                              if (value!.isEmpty || value == null) {
+                                return "Phone number is required.";
+                              }
+                              final RegExp phoneRegex =
+                                  RegExp(r'^(09|\+639)\d{9}$');
+                              if (!phoneRegex.hasMatch(phoneNumberInputted)) {
+                                return "Provide a valid Phone number.";
+                              }
+                            },
                           ),
                           const SizedBox(height: 20),
                           const Text(

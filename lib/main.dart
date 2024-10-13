@@ -15,6 +15,7 @@ import 'package:huzzl_web/views/login/login_screen.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/register/06%20congrats.dart';
+import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
 import 'package:huzzl_web/views/recruiters/register/phone_number_verification.dart';
 import 'package:provider/provider.dart';
 
@@ -74,65 +75,117 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  User? currentUser; // Track the currently logged-in user
+
   @override
   void initState() {
     super.initState();
+    // Load initial jobs
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
     if (jobProvider.jobs.isEmpty) {
       jobProvider.loadJobs();
     }
+
+    // Manually check if the user is logged in
+    currentUser = FirebaseAuth.instance.currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
+    // If currentUser is null, show the login screen
+    if (currentUser == null) {
+      return LoginRegister(); // If no user is logged in, show login
+    }
+
+    // Fetch the current user's data from Firestore
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasData) {
-          return FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(snapshot.data!.uid)
-                .get(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                // print(snapshot.data!.id);
-                // print('User Document ID (uid): ${snapshot.data!.id}');
-                print('Fetching user document...');
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              print('TEST');
-              if (snapshot.hasError) {
-                print('Error: ${snapshot.error}');
-                return ErrorWidget(snapshot.error.toString());
-              }
-              if (snapshot.hasData && snapshot.data!.exists) {
-                print('Data: ${snapshot.data}');
-                var userData = snapshot.data!.data() as Map<String, dynamic>;
-                String userType = userData['role'];
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return ErrorWidget(snapshot.error.toString());
+        } else if (snapshot.hasData && snapshot.data!.exists) {
+          var userData = snapshot.data!.data() as Map<String, dynamic>;
+          String userType = userData['role'];
 
-                if (userType == 'jobseeker') {
-                  return JobseekerMainScreen();
-                } else if (userType == 'recruiter') {
-                  return RecruiterHomeScreen();
-                } else {
-                  return LoginRegister();
-                }
-              }
-              return LoginRegister();
-            },
-          );
-        } else {
-          print("LOGIN!");
-          return LoginRegister();
+          if (userType == 'jobseeker') {
+            return JobseekerMainScreen();
+          } else if (userType == 'recruiter') {
+            return RecruiterHomeScreen();
+          } else {
+            return LoginRegister();
+          }
         }
+        return LoginRegister();
       },
     );
   }
 }
+
+// class _AuthWrapperState extends State<AuthWrapper> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     final jobProvider = Provider.of<JobProvider>(context, listen: false);
+//     if (jobProvider.jobs.isEmpty) {
+//       jobProvider.loadJobs();
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return StreamBuilder<User?>(
+//       stream: FirebaseAuth.instance.authStateChanges(),
+//       builder: (context, snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return Center(
+//             child: CircularProgressIndicator(),
+//           );
+//         } else if (snapshot.hasData) {
+//           return FutureBuilder<DocumentSnapshot>(
+//             future: FirebaseFirestore.instance
+//                 .collection('users')
+//                 .doc(snapshot.data!.uid)
+//                 .get(),
+//             builder: (context, snapshot) {
+//               if (snapshot.connectionState == ConnectionState.waiting) {
+//                 // print(snapshot.data!.id);
+//                 // print('User Document ID (uid): ${snapshot.data!.id}');
+//                 print('Fetching user document...');
+//                 return Center(
+//                   child: CircularProgressIndicator(),
+//                 );
+//               }
+//               print('TEST');
+//               if (snapshot.hasError) {
+//                 print('Error: ${snapshot.error}');
+//                 return ErrorWidget(snapshot.error.toString());
+//               }
+//               if (snapshot.hasData && snapshot.data!.exists) {
+//                 print('Data: ${snapshot.data}');
+//                 var userData = snapshot.data!.data() as Map<String, dynamic>;
+//                 String userType = userData['role'];
+
+//                 if (userType == 'jobseeker') {
+//                   return JobseekerMainScreen();
+//                 } else if (userType == 'recruiter') {
+//                   return RecruiterHomeScreen();
+//                 } else {
+//                   return LoginRegister();
+//                 }
+//               }
+//               return LoginRegister();
+//             },
+//           );
+//         } else {
+//           print("LOGIN!");
+//           return LoginRegister();
+//         }
+//       },
+//     );
+//   }
+// }

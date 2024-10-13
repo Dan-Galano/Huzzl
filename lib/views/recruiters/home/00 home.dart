@@ -167,7 +167,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     } else {
       switch (_selectedIndex) {
         case 0:
-          return buildAdminContent(context, userData);
+          return buildAdminContent(context, userData, user!);
         case 1:
           return buildManagersContent(
               context, userData, companyData, isStandaloneCompany);
