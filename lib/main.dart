@@ -58,6 +58,7 @@ class HuzzlWeb extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
       home: AuthWrapper(),
+      // home: CompanyProfileRecruiter()
       // home: PhoneNumberVerification(
       //   phoneNumber: "+63 9463823503",
       // ),

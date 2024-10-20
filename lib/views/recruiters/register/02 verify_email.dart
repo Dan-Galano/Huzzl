@@ -93,6 +93,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'role': "recruiter",
         'hiringManagerFirstName': widget.fname,
         'hiringManagerLastName': widget.lname,
+        'phone': widget.phoneNumber,
         'email': widget.email,
         'password': widget.password,
       });

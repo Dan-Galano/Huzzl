@@ -37,6 +37,7 @@ dependencies:
   file_picker: 8.0.7
   firebase_auth: ^5.1.2
   firebase_core: ^3.2.0
+  firebase_storage: ^12.1.1
   flutter:
     sdk: flutter
   flutter_easyloading: ^3.0.5

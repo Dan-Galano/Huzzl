@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -28,8 +31,8 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
   final _CEOFirstName = TextEditingController();
   final _CEOLastName = TextEditingController();
   final _description = TextEditingController();
-  var _companyWebsite = TextEditingController();
-  var _socialMediaLinks = TextEditingController();
+  final _companyWebsite = TextEditingController();
+  final _socialMediaLinks = TextEditingController();
 
   String? selectedRegion;
   String? selectedProvince;
@@ -165,32 +168,95 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
 
   //Business Docs File
   List<String> fileNames = []; // List to hold file names
+  double containerHeight = 100;
+  bool isFileNamesEmpty = false;
+  PlatformFile? pickedFile;
+
+  List<PlatformFile> pickedFiles = [];
 
   void _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg'],
     );
 
     if (result != null) {
       setState(() {
-        // Add the selected file names to the list
-        fileNames.addAll(result.files.map((file) => file.name));
+        pickedFiles = result.files; // Store all picked files
+        fileNames.clear();
+        containerHeight = 100;
+
+        for (var file in pickedFiles) {
+          fileNames.add(file.name);
+          containerHeight += 15; // Increase height for each new file
+        }
       });
     }
   }
 
-  void _onDropFile(PlatformFile file) {
-    setState(() {
-      // Add the dropped file name to the list
-      fileNames.add(file.name);
-    });
+  Future<void> uploadFiles() async {
+    if (fileNames.isEmpty) {
+      print("No files selected.");
+      return;
+    }
+
+    for (var pickedFile in pickedFiles) {
+      try {
+        final path =
+            'BusinessDocuments/${widget.userCredential.user!.uid}/${pickedFile.name}';
+
+        if (pickedFile.bytes != null) {
+          // Upload using bytes for web
+          print("Uploading file in web using bytes: ${pickedFile.name}...");
+          final Uint8List fileBytes = pickedFile.bytes!;
+
+          final ref = FirebaseStorage.instance.ref().child(path);
+          final uploadTask = ref.putData(fileBytes);
+
+          // Monitor upload progress
+          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+            print(
+                'Upload progress for ${pickedFile.name}: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+          }, onError: (e) {
+            print("Error during file upload: $e");
+          });
+
+          // Await the task completion
+          final snapshot = await uploadTask;
+          final downloadUrl = await snapshot.ref.getDownloadURL();
+          print("File uploaded successfully: $downloadUrl");
+        } else {
+          throw Exception("No valid file data found for ${pickedFile.name}.");
+        }
+      } catch (e) {
+        print("File upload failed for ${pickedFile.name}: $e");
+      }
+    }
   }
 
   //SubmitForm
   void submitCompanyProfileForm() async {
-    if (_formkey.currentState!.validate()) {
+    if (fileNames.isEmpty) {
+      setState(() {
+        isFileNamesEmpty = true;
+      });
+    } else if (fileNames.isNotEmpty) {
+      setState(() {
+        isFileNamesEmpty = false;
+      });
+    }
+    if (_formkey.currentState!.validate() && fileNames.isNotEmpty) {
+      print("OKAY NA YUNG FORM");
       try {
+        //upload Documents
+        await uploadFiles();
+        // Social Links
+        String inputSocialMedia = _socialMediaLinks.text;
+        List<String> socialMediaLinks =
+            inputSocialMedia.split(',').map((link) => link.trim()).toList();
+        print("Socials: $socialMediaLinks");
+
         // Store data in Firestore
         await FirebaseFirestore.instance
             .collection('users')
@@ -210,6 +276,8 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
           'companyDescription': _description.text,
           'companyWebsite':
               _companyWebsite.text.isNotEmpty ? _companyWebsite.text : 'none',
+          'companyLinks':
+              _socialMediaLinks.text.isNotEmpty ? socialMediaLinks : "none",
         });
 
         // Navigate to RecruiterHomeScreen after successful submission
@@ -810,7 +878,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                           ),
                         ),
                         TextFormField(
-                          controller: _socialMediaLinks,
+                          controller: _companyWebsite,
                           style: const TextStyle(
                             fontSize: 12,
                             fontFamily: "Galano",
@@ -876,7 +944,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                           ],
                         ),
                         TextFormField(
-                          controller: _companyWebsite,
+                          controller: _socialMediaLinks,
                           style: const TextStyle(
                             fontSize: 12,
                             fontFamily: "Galano",
@@ -928,6 +996,15 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        if (isFileNamesEmpty)
+                          const Text(
+                            "Business document is required.",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.red,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
                         const SizedBox(height: 10),
                         const Text(
                           "Some acceptable documents include:",
@@ -962,53 +1039,126 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                               .toList(),
                         ),
                         const SizedBox(height: 10),
-                        DragTarget<PlatformFile>(
-                          onAccept: (file) => _onDropFile(
-                              file), // Expecting a single PlatformFile
-                          builder: (context, candidateData, rejectedData) {
-                            return Container(
-                              height: 150,
-                              width: 300,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.blueAccent,
-                                    style: BorderStyle.solid,
-                                    width: 2),
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.grey[200],
+                        Container(
+                          height: 150,
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.blueAccent,
+                                style: BorderStyle.solid,
+                                width: 2),
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey[200],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.upload_file,
+                                  size: 40, color: Colors.blueAccent),
+                              const Text("Upload your files here"),
+                              GestureDetector(
+                                onTap: _pickFile,
+                                child: const Text(
+                                  "Select a file",
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline),
+                                ),
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.upload_file,
-                                      size: 40, color: Colors.blueAccent),
-                                  Text("Drag and drop here, or"),
-                                  GestureDetector(
-                                    onTap: _pickFile,
-                                    child: Text(
-                                      "Select a file",
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline),
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  // Display selected or dropped files
-                                  if (fileNames.isNotEmpty)
-                                    Expanded(
-                                      child: ListView.builder(
-                                        itemCount: fileNames.length,
-                                        itemBuilder: (context, index) {
-                                          return Text(fileNames[index],
-                                              style: TextStyle(fontSize: 16));
-                                        },
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            );
-                          },
+                              SizedBox(height: 10),
+                              // Display selected or dropped files
+                            ],
+                          ),
                         ),
+                        if (pickedFiles
+                            .isNotEmpty) // Check if there are picked files
+                          SizedBox(
+                            height: containerHeight,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                Expanded(
+                                  child: ListView.builder(
+                                    itemCount: pickedFiles
+                                        .length, // Use pickedFiles.length
+                                    itemBuilder: (context, index) {
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            pickedFiles[index]
+                                                .name, // Display file name
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                // Remove the file from pickedFiles and update containerHeight
+                                                containerHeight -=
+                                                    15; // Adjust height accordingly
+                                                pickedFiles.removeAt(index);
+                                              });
+                                            },
+                                            icon: const Icon(Icons.close),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        // DragTarget<PlatformFile>(
+                        //   onAccept: (file) => _onDropFile(
+                        //       file), // Expecting a single PlatformFile
+                        //   builder: (context, candidateData, rejectedData) {
+                        //     return Container(
+                        //       height: 150,
+                        //       width: 300,
+                        //       decoration: BoxDecoration(
+                        //         border: Border.all(
+                        //             color: Colors.blueAccent,
+                        //             style: BorderStyle.solid,
+                        //             width: 2),
+                        //         borderRadius: BorderRadius.circular(12),
+                        //         color: Colors.grey[200],
+                        //       ),
+                        //       child: Column(
+                        //         mainAxisAlignment: MainAxisAlignment.center,
+                        //         children: [
+                        //           Icon(Icons.upload_file,
+                        //               size: 40, color: Colors.blueAccent),
+                        //           GestureDetector(
+                        //             onTap: _pickFile,
+                        //             child: Text(
+                        //               "Select a file",
+                        //               style: TextStyle(
+                        //                   color: Colors.blue,
+                        //                   decoration: TextDecoration.underline),
+                        //             ),
+                        //           ),
+                        //           SizedBox(height: 10),
+                        //           // Display selected or dropped files
+                        //           if (fileNames.isNotEmpty)
+                        //             Expanded(
+                        //               child: ListView.builder(
+                        //                 itemCount: fileNames.length,
+                        //                 itemBuilder: (context, index) {
+                        //                   return Text(fileNames[index],
+                        //                       style: TextStyle(fontSize: 16));
+                        //                 },
+                        //               ),
+                        //             ),
+                        //         ],
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
                         const SizedBox(height: 30),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,

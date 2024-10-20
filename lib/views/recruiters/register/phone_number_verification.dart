@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
@@ -27,10 +29,28 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
   bool _isCodeSent = false;
   bool _isLoading = false;
 
+  int _remainingSeconds = 300; // 2 minutes timer
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
     _sendVerificationCode(); // Automatically send OTP when the screen loads
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        setState(() {
+          _remainingSeconds--;
+        });
+      } else {
+        setState(() {
+          _isCodeSent = false; // Show the "Resend a new code" button
+        });
+        timer.cancel();
+      }
+    });
   }
 
   void _sendVerificationCode() async {
@@ -62,6 +82,10 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
           _verificationId = verificationId;
           _isCodeSent = true;
           _isLoading = false;
+          if (_isCodeSent) {
+            _startTimer();
+          }
+          _remainingSeconds = 300; // Reset timer to 2 minutes
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Code sent to ${widget.phoneNumber}')),
@@ -95,11 +119,8 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
 
         // Link the phone number with the current user account
         await _linkPhoneNumberWithCredential(credential);
-
-        // Navigate to the next screen if sign-in is successful
-        _navigateToNextScreen();
-      } catch (e) {
-        // Handle error (e.g. invalid code)
+      } on FirebaseAuthException catch (e) {
+        // Handle error (e.g., invalid code)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Invalid code. Please try again.')),
         );
@@ -121,15 +142,22 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Phone number linked successfully!')),
         );
+        // Navigate to the next screen after successful verification
+        _navigateToNextScreen();
       } else {
         // If no user is signed in, sign in with the phone credential
         await _auth.signInWithCredential(credential);
+        // Navigate to the next screen after successful sign-in
+        _navigateToNextScreen();
       }
     } on FirebaseAuthException catch (e) {
       print('Error linking phone number: ${e.message}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error linking phone number: ${e.message}')),
       );
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -149,6 +177,8 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
 
   @override
   Widget build(BuildContext context) {
+    final minutes = (_remainingSeconds ~/ 60).toString().padLeft(2, '0');
+    final seconds = (_remainingSeconds % 60).toString().padLeft(2, '0');
     return Scaffold(
       body: Column(
         children: [
@@ -319,13 +349,24 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
                                     const Text(
                                         "It may take a minute to receive your code."),
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text("Haven't received it?"),
-                                        TextButton(
-                                          onPressed: () {},
-                                          child:
-                                              const Text("Resend a new code"),
-                                        ),
+                                        const Text("Haven't received it? "),
+                                        _isCodeSent
+                                            ? Text(
+                                                "$minutes:$seconds",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            : TextButton(
+                                                onPressed: () {
+                                                  _sendVerificationCode();
+                                                },
+                                                child: const Text(
+                                                    "Resend a new code"),
+                                              ),
                                       ],
                                     )
                                   ],
