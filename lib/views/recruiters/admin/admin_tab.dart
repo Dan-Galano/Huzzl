@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/admin/views/active_view.dart';
@@ -5,7 +6,7 @@ import 'package:huzzl_web/views/recruiters/admin/views/archive_view.dart';
 import 'package:huzzl_web/views/recruiters/admin/widgets/add_user_modal.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
 
-Widget buildAdminContent(BuildContext context, userData) {
+Widget buildAdminContent(BuildContext context, userData, User user) {
   return StatefulBuilder(
     builder: (context, setState) {
       TabController _tabController =
@@ -31,15 +32,21 @@ Widget buildAdminContent(BuildContext context, userData) {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: const Icon(Icons.arrow_forward_ios_rounded),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
               contentPadding: EdgeInsets.all(20),
               insetPadding: EdgeInsets.all(20),
-              content: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
-                child: const MyFormModal(),
+              content: SingleChildScrollView(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: MyFormModal(
+                    user: user,
+                    recruiterEmail: userData["email"],
+                    recruiterPassword: userData["password"],
+                  ),
+                ),
               ),
             );
           },
@@ -153,7 +160,10 @@ Widget buildAdminContent(BuildContext context, userData) {
                 controller: _tabController,
                 children: [
                   // Active Tab Content
-                  CompanyAdminsActive(userData: userData),
+                  CompanyAdminsActive(
+                    userData: userData,
+                    user: user,
+                  ),
 
                   // Archive Tab Content
                   CompanyAdminsArchive(userData: userData),

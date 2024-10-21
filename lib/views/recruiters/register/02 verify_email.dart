@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
+import 'package:huzzl_web/views/recruiters/register/phone_number_verification.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -13,12 +14,14 @@ class VerifyEmailRecruiter extends StatefulWidget {
   String fname;
   String lname;
   String password;
+  String phoneNumber;
   VerifyEmailRecruiter({
     required this.userCredential,
     required this.email,
     required this.fname,
     required this.lname,
     required this.password,
+    required this.phoneNumber,
     super.key,
   });
 
@@ -90,6 +93,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'role': "recruiter",
         'hiringManagerFirstName': widget.fname,
         'hiringManagerLastName': widget.lname,
+        'phone': widget.phoneNumber,
         'email': widget.email,
         'password': widget.password,
       });
@@ -100,6 +104,14 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
             userCredential: widget.userCredential,
           ),
         ),
+      );
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (_) => PhoneNumberVerification(
+                  phoneNumber: widget.phoneNumber,
+                  userCredential: widget.userCredential,
+                )),
       );
     }
   }

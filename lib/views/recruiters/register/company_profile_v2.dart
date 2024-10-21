@@ -1,16 +1,24 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 class CompanyProfileRecruiter extends StatefulWidget {
   UserCredential userCredential;
-  CompanyProfileRecruiter({required this.userCredential, super.key});
+  CompanyProfileRecruiter({
+    required this.userCredential,
+    super.key,
+  });
 
   @override
   State<CompanyProfileRecruiter> createState() =>
@@ -23,7 +31,8 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
   final _CEOFirstName = TextEditingController();
   final _CEOLastName = TextEditingController();
   final _description = TextEditingController();
-  var _companyWebsite = TextEditingController();
+  final _companyWebsite = TextEditingController();
+  final _socialMediaLinks = TextEditingController();
 
   String? selectedRegion;
   String? selectedProvince;
@@ -35,6 +44,17 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
   List provinces = [];
   List cities = [];
   List barangays = [];
+
+  //List of documents for business verification
+  List<String> businessDocs = <String>[
+    "Article of incorporation",
+    "Business licence",
+    "Company liability insurance",
+    "Office utility bill",
+    "Lease of franchise agreement",
+    "Tax permit",
+    "Staffing agency employment letter or payslip",
+  ];
 
   @override
   void initState() {
@@ -146,16 +166,103 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
     'more than 1,000 employees',
   ];
 
+  //Business Docs File
+  List<String> fileNames = []; // List to hold file names
+  double containerHeight = 100;
+  bool isFileNamesEmpty = false;
+  PlatformFile? pickedFile;
+
+  List<PlatformFile> pickedFiles = [];
+
+  void _pickFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg'],
+    );
+
+    if (result != null) {
+      setState(() {
+        pickedFiles = result.files; // Store all picked files
+        fileNames.clear();
+        containerHeight = 100;
+
+        for (var file in pickedFiles) {
+          fileNames.add(file.name);
+          containerHeight += 15; // Increase height for each new file
+        }
+      });
+    }
+  }
+
+  Future<void> uploadFiles() async {
+    if (fileNames.isEmpty) {
+      print("No files selected.");
+      return;
+    }
+
+    for (var pickedFile in pickedFiles) {
+      try {
+        final path =
+            'BusinessDocuments/${widget.userCredential.user!.uid}/${pickedFile.name}';
+
+        if (pickedFile.bytes != null) {
+          // Upload using bytes for web
+          print("Uploading file in web using bytes: ${pickedFile.name}...");
+          final Uint8List fileBytes = pickedFile.bytes!;
+
+          final ref = FirebaseStorage.instance.ref().child(path);
+          final uploadTask = ref.putData(fileBytes);
+
+          // Monitor upload progress
+          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+            print(
+                'Upload progress for ${pickedFile.name}: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+          }, onError: (e) {
+            print("Error during file upload: $e");
+          });
+
+          // Await the task completion
+          final snapshot = await uploadTask;
+          final downloadUrl = await snapshot.ref.getDownloadURL();
+          print("File uploaded successfully: $downloadUrl");
+        } else {
+          throw Exception("No valid file data found for ${pickedFile.name}.");
+        }
+      } catch (e) {
+        print("File upload failed for ${pickedFile.name}: $e");
+      }
+    }
+  }
 
   //SubmitForm
   void submitCompanyProfileForm() async {
-    if (_formkey.currentState!.validate()) {
+    if (fileNames.isEmpty) {
+      setState(() {
+        isFileNamesEmpty = true;
+      });
+    } else if (fileNames.isNotEmpty) {
+      setState(() {
+        isFileNamesEmpty = false;
+      });
+    }
+    if (_formkey.currentState!.validate() && fileNames.isNotEmpty) {
+      print("OKAY NA YUNG FORM");
       try {
+        //upload Documents
+        await uploadFiles();
+        // Social Links
+        String inputSocialMedia = _socialMediaLinks.text;
+        List<String> socialMediaLinks =
+            inputSocialMedia.split(',').map((link) => link.trim()).toList();
+        print("Socials: $socialMediaLinks");
+
         // Store data in Firestore
         await FirebaseFirestore.instance
             .collection('users')
             .doc(widget.userCredential.user!.uid)
-            .collection("company_information").add({
+            .collection("company_information")
+            .add({
           'uid': widget.userCredential.user!.uid,
           'companyName': _companyName.text,
           'ceoFirstName': _CEOFirstName.text,
@@ -169,6 +276,8 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
           'companyDescription': _description.text,
           'companyWebsite':
               _companyWebsite.text.isNotEmpty ? _companyWebsite.text : 'none',
+          'companyLinks':
+              _socialMediaLinks.text.isNotEmpty ? socialMediaLinks : "none",
         });
 
         // Navigate to RecruiterHomeScreen after successful submission
@@ -190,6 +299,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
 
   @override
   Widget build(BuildContext context) {
+    double containerPadding = MediaQuery.of(context).size.width * 0.2;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -199,7 +309,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 550),
+                  padding: EdgeInsets.symmetric(horizontal: containerPadding),
                   child: Form(
                     key: _formkey,
                     child: Column(
@@ -751,6 +861,10 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                             if (value!.isEmpty || value == null) {
                               return "Company description is required.";
                             }
+                            List<String> descriptionWords = value.split(' ');
+                            if (descriptionWords.length < 100) {
+                              return "Compay description should contain at least 100 words";
+                            }
                           },
                         ),
                         const SizedBox(height: 20),
@@ -765,7 +879,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                         ),
                         TextFormField(
                           controller: _companyWebsite,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontFamily: "Galano",
                           ),
@@ -806,6 +920,245 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                           //   }
                           // },
                         ),
+                        const SizedBox(height: 20),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Social Media Links (optional)",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff373030),
+                                fontFamily: 'Galano',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              "Enter your company’s social media links, separating each with a comma. (Facebook link, Tiktok link)",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xff373030),
+                                fontFamily: 'Galano',
+                              ),
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                          controller: _socialMediaLinks,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: "Galano",
+                          ),
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            isDense: true,
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontFamily: "Galano",
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          // validator: (value) {
+                          //   if (value!.isEmpty || value == null) {
+                          //     return "Last name is required.";
+                          //   }
+                          // },
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Verify with document helps us confirm you work for a real business",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (isFileNamesEmpty)
+                          const Text(
+                            "Business document is required.",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.red,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Some acceptable documents include:",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        ListView(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: businessDocs
+                              .map(
+                                (item) => Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      '• ',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        item,
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                              .toList(),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          height: 150,
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.blueAccent,
+                                style: BorderStyle.solid,
+                                width: 2),
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey[200],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.upload_file,
+                                  size: 40, color: Colors.blueAccent),
+                              const Text("Upload your files here"),
+                              GestureDetector(
+                                onTap: _pickFile,
+                                child: const Text(
+                                  "Select a file",
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline),
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              // Display selected or dropped files
+                            ],
+                          ),
+                        ),
+                        if (pickedFiles
+                            .isNotEmpty) // Check if there are picked files
+                          SizedBox(
+                            height: containerHeight,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                Expanded(
+                                  child: ListView.builder(
+                                    itemCount: pickedFiles
+                                        .length, // Use pickedFiles.length
+                                    itemBuilder: (context, index) {
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            pickedFiles[index]
+                                                .name, // Display file name
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                // Remove the file from pickedFiles and update containerHeight
+                                                containerHeight -=
+                                                    15; // Adjust height accordingly
+                                                pickedFiles.removeAt(index);
+                                              });
+                                            },
+                                            icon: const Icon(Icons.close),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        // DragTarget<PlatformFile>(
+                        //   onAccept: (file) => _onDropFile(
+                        //       file), // Expecting a single PlatformFile
+                        //   builder: (context, candidateData, rejectedData) {
+                        //     return Container(
+                        //       height: 150,
+                        //       width: 300,
+                        //       decoration: BoxDecoration(
+                        //         border: Border.all(
+                        //             color: Colors.blueAccent,
+                        //             style: BorderStyle.solid,
+                        //             width: 2),
+                        //         borderRadius: BorderRadius.circular(12),
+                        //         color: Colors.grey[200],
+                        //       ),
+                        //       child: Column(
+                        //         mainAxisAlignment: MainAxisAlignment.center,
+                        //         children: [
+                        //           Icon(Icons.upload_file,
+                        //               size: 40, color: Colors.blueAccent),
+                        //           GestureDetector(
+                        //             onTap: _pickFile,
+                        //             child: Text(
+                        //               "Select a file",
+                        //               style: TextStyle(
+                        //                   color: Colors.blue,
+                        //                   decoration: TextDecoration.underline),
+                        //             ),
+                        //           ),
+                        //           SizedBox(height: 10),
+                        //           // Display selected or dropped files
+                        //           if (fileNames.isNotEmpty)
+                        //             Expanded(
+                        //               child: ListView.builder(
+                        //                 itemCount: fileNames.length,
+                        //                 itemBuilder: (context, index) {
+                        //                   return Text(fileNames[index],
+                        //                       style: TextStyle(fontSize: 16));
+                        //                 },
+                        //               ),
+                        //             ),
+                        //         ],
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
                         const SizedBox(height: 30),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,

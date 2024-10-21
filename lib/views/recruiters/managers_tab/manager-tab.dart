@@ -231,8 +231,12 @@ Widget buildManagersContent(
                       controller: _tabTwoController,
                       children: [
                         // Active Tab Content
-                        CompanyAdminsActive(
-                          userData: userData,
+                        // CompanyAdminsActive(
+                        //   userData: userData,
+                        //   user: user,
+                        // ),
+                        Center(
+                          child: Text("Active"),
                         ),
                         // Archive Tab Content
                         Center(
