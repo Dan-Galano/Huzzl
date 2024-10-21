@@ -138,7 +138,7 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       home: Scaffold(
         body: Column(
           children: [
-            const NavBarLoginRegister(),
+             NavBarLoginRegister(),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),

@@ -150,7 +150,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
     return Scaffold(
       body: Column(
         children: [
-          const NavBarLoginRegister(),
+           NavBarLoginRegister(),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20.0),

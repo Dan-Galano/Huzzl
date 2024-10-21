@@ -5,13 +5,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
+import 'package:huzzl_web/responsive_sizes.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
-import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
-import 'package:huzzl_web/widgets/textfield/lightblue_hinttext.dart';
-import 'package:huzzl_web/widgets/textfield/lightblue_textfield.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -61,7 +58,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
-
       User? user = userCredential.user;
 
       if (user == null) {
@@ -89,8 +85,14 @@ class _LoginScreenState extends State<LoginScreen> {
             toastPosition: EasyLoadingToastPosition.top,
             duration: Duration(seconds: 3),
           );
-          await FirebaseAuth.instance.signOut();
+
+          // Delete the user account from Firebase Authentication
+          await user
+              .delete(); // This deletes the user from Firebase Authentication
+
+          // Sign out from Google
           await GoogleSignIn().signOut();
+
           return;
         } else {
           String? role = userDoc.data()?['role'];
@@ -110,12 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       } catch (e) {
         print("Error fetching user document: $e");
-        EasyLoading.showToast(
-          "Error fetching user data.",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-        );
       }
     } catch (e) {
       print('Google Sign-In Error: $e');
@@ -208,254 +204,270 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 500,
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Login your account',
-              style: TextStyle(
-                fontSize: 32,
-                color: Color(0xff373030),
-                fontFamily: 'Galano',
-                fontWeight: FontWeight.w700,
+    return ResponsiveBuilder(builder: (context, sizeInfo) {
+      return Container(
+        width: 500,
+        padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveSizes.paddingLarge(sizeInfo)),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Log in to Huzzl',
+                style: TextStyle(
+                  fontSize: ResponsiveSizes.titleTextSize(sizeInfo),
+                  color: Color(0xff373030),
+                  fontFamily: 'Galano',
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            //ERROR MESSAGE
-            isError
-                ? Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          errorMessage,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.red,
-                            fontFamily: 'Galano',
+              //ERROR MESSAGE
+              isError
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            errorMessage,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.red,
+                              fontFamily: 'Galano',
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                : const SizedBox(),
-            const SizedBox(height: 20),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Email',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xff373030),
-                  fontFamily: 'Galano',
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: emailController,
-              decoration: InputDecoration(
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                isDense: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFD1E1FF),
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFD1E1FF),
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFD1E1FF),
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                if (value!.isEmpty || value == null) {
-                  return "Email Address is required.";
-                }
-                if (!EmailValidator.validate(value)) {
-                  return "Please provide a valid email address.";
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Password',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xff373030),
-                  fontFamily: 'Galano',
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: passwordController,
-              style: const TextStyle(
-                fontFamily: 'Galano',
-              ),
-              obscureText: isPasswordVisible ? false : true,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      togglePasswordVisibility();
-                    },
-                    icon: isPasswordVisible
-                        ? const Icon(Icons.visibility)
-                        : const Icon(Icons.visibility_off)),
-                hintText: "Password (8 or more characters)",
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                isDense: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFD1E1FF),
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFD1E1FF),
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFD1E1FF),
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                if (value!.isEmpty || value == null) {
-                  return "Password is required.";
-                }
-                if (value.length < 8) {
-                  return 'Password must be at least 8 characters long';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 5),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  //
-                },
-                child: const Text(
-                  'Forgot password?',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontFamily: 'Galano',
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: BlueFilledCircleButton(
-                    width: 150,
-                    onPressed: () => login(context),
-                    text: 'Login',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            // const Text(
-            //   'or',
-            //   style: TextStyle(
-            //     fontSize: 16,
-            //     color: Color(0xff373030),
-            //     fontFamily: 'Galano',
-            //   ),
-            // ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: _buildGoogleSignInButton()),
-              ],
-            ),
+                      ],
+                    )
+                  : const SizedBox(),
 
-            Gap(10),
-
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Gap(30),
+              Row(
                 children: [
-                  const Text(
-                    "Don't have an account? ",
-                    style: TextStyle(
-                      fontFamily: "Galano",
-                      fontSize: 16,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: widget.onToggle,
-                    child: const Text(
-                      "Sign up",
-                      style: TextStyle(
-                        fontFamily: "Galano",
-                        fontSize: 16,
-                        color: Color(0xFF0038FF),
-                      ),
-                    ),
-                  )
+                  Expanded(child: _buildGoogleSignInButton()),
                 ],
               ),
-            ),
-          ],
+              Gap(20),
+              Text(
+                "or",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                  fontWeight: FontWeight.w100,
+                ),
+              ),
+              Gap(20),
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Email',
+                  style: TextStyle(
+                    fontSize: ResponsiveSizes.noteTextSize(sizeInfo),
+                    color: Color(0xff373030),
+                    fontFamily: 'Galano',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFD1E1FF),
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFD1E1FF),
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFD1E1FF),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty || value == null) {
+                    return "Email Address is required.";
+                  }
+                  if (!EmailValidator.validate(value)) {
+                    return "Please provide a valid email address.";
+                  }
+                },
+              ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Password',
+                  style: TextStyle(
+                    fontSize: ResponsiveSizes.noteTextSize(sizeInfo),
+                    color: Color(0xff373030),
+                    fontFamily: 'Galano',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: passwordController,
+                style: const TextStyle(
+                  fontFamily: 'Galano',
+                ),
+                obscureText: isPasswordVisible ? false : true,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        togglePasswordVisibility();
+                      },
+                      icon: isPasswordVisible
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off)),
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFD1E1FF),
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFD1E1FF),
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFD1E1FF),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty || value == null) {
+                    return "Password is required.";
+                  }
+
+                  return null;
+                },
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    //
+                  },
+                  child: Text(
+                    'Forgot password?',
+                    style: TextStyle(
+                      fontSize: ResponsiveSizes.noteTextSize(sizeInfo),
+                      color: Colors.blue,
+                      fontFamily: 'Galano',
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: BlueFilledCircleButton(
+                      onPressed: () => login(context),
+                      text: 'Log in',
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+              // const Text(
+              //   'or',
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     color: Color(0xff373030),
+              //     fontFamily: 'Galano',
+              //   ),
+              // ),
+
+              Gap(10),
+
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account?",
+                      style: TextStyle(
+                        fontFamily: "Galano",
+                        fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: widget.onToggle,
+                      child: Text(
+                        "Sign up",
+                        style: TextStyle(
+                          fontFamily: "Galano",
+                          fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                          color: Colors.blue,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildGoogleSignInButton() {
-    return OutlinedButton.icon(
-      onPressed: () => signInWithGoogle(context),
-      icon: Image.asset(
-        'assets/images/google_logo.png',
-        height: 24.0,
-        width: 24.0,
-      ),
-      label: const Text(
-        'Sign in with Google',
-        style: TextStyle(
-          fontFamily: 'Galano',
-          fontSize: 16.0,
-          color: Colors.black,
+    return ResponsiveBuilder(builder: (context, sizeInfo) {
+      return OutlinedButton.icon(
+        onPressed: () => signInWithGoogle(context),
+        icon: Image.asset(
+          'assets/images/google_logo.png',
+          height: ResponsiveSizes.googlePNG(sizeInfo),
+          width: ResponsiveSizes.googlePNG(sizeInfo),
         ),
-      ),
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-        side: const BorderSide(color: Colors.black),
-      ),
-    );
+        label: Text(
+          'Continue with Google',
+          style: TextStyle(
+            fontFamily: 'Galano',
+            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+            color: Colors.black,
+            fontWeight: FontWeight.w100,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          padding: EdgeInsets.all(
+            ResponsiveSizes.submitButtonPadding(sizeInfo),
+          ),
+          side: const BorderSide(
+            color: Color.fromARGB(255, 65, 65, 65),
+            width: 0.5,
+          ),
+        ),
+      );
+    });
   }
 }

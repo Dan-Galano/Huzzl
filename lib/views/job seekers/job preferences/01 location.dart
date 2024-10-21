@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;

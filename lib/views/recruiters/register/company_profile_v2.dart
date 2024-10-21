@@ -1,15 +1,19 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:huzzl_web/responsive_sizes.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:http/http.dart' as http;
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:drop_down_search_field/drop_down_search_field.dart';
+import 'package:change_case/change_case.dart';
 
 class CompanyProfileRecruiter extends StatefulWidget {
-  UserCredential userCredential;
+  final UserCredential userCredential;
   CompanyProfileRecruiter({required this.userCredential, super.key});
 
   @override
@@ -18,84 +22,228 @@ class CompanyProfileRecruiter extends StatefulWidget {
 }
 
 class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
-  final _formkey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
   final _companyName = TextEditingController();
-  final _CEOFirstName = TextEditingController();
-  final _CEOLastName = TextEditingController();
+  final _ceoFirstName = TextEditingController();
+  final _ceoLastName = TextEditingController();
   final _description = TextEditingController();
-  var _companyWebsite = TextEditingController();
+  final _companyWebsite = TextEditingController();
 
+  bool isProvinceVisible = true;
+
+  bool iscompanyNameValid = true;
+  bool isceoFirstNameValid = true;
+  bool isceoLastNameValid = true;
+  bool isdescriptionValid = true;
+  bool iscompanyWebsiteValid = true;
+  bool isHouseValid = true;
+  String? errorMessage;
+
+  FocusNode companyNameFocusNode = FocusNode();
+  FocusNode ceoFirstNameFocusNode = FocusNode();
+  FocusNode ceoLastNameFocusNode = FocusNode();
+  FocusNode regionFocusNode = FocusNode();
+  FocusNode provinceFocusNode = FocusNode();
+  FocusNode cityFocusNode = FocusNode();
+  FocusNode barangayFocusNode = FocusNode();
+  FocusNode houseFocusNode = FocusNode();
+  FocusNode industryFocusNode = FocusNode();
+  FocusNode sizeFocusNode = FocusNode();
+  FocusNode descriptionFocusNode = FocusNode();
+
+  final companyNameFieldKey = GlobalKey<FormFieldState>();
+  final ceoFirstNameFieldKey = GlobalKey<FormFieldState>();
+  final ceoLastNameFieldKey = GlobalKey<FormFieldState>();
+  final regionFieldKey = GlobalKey<FormFieldState>();
+  final provinceFieldKey = GlobalKey<FormFieldState>();
+  final cityFieldKey = GlobalKey<FormFieldState>();
+  final barangayFieldKey = GlobalKey<FormFieldState>();
+  final houseFieldKey = GlobalKey<FormFieldState>();
+  final industryFieldKey = GlobalKey<FormFieldState>();
+  final sizeFieldKey = GlobalKey<FormFieldState>();
+  final descriptionFieldKey = GlobalKey<FormFieldState>();
+  final websiteKey = GlobalKey<FormFieldState>();
+  bool hasInteracted = false;
+
+  bool isRegionValid = true;
+  bool isProvinceValid = true;
+  bool isCityValid = true;
+  bool isBarangayValid = true;
+
+  TextEditingController regionController = TextEditingController();
+  TextEditingController provinceController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController barangayController = TextEditingController();
+  TextEditingController houseController = TextEditingController();
+  List<Map<String, dynamic>> regions = [];
+  List<Map<String, dynamic>> provinces = [];
+  List<Map<String, dynamic>> cities = [];
+  List<Map<String, dynamic>> barangays = [];
   String? selectedRegion;
   String? selectedProvince;
   String? selectedCity;
   String? selectedBarangay;
-  final otherLocationInformation = TextEditingController();
-
-  List regions = [];
-  List provinces = [];
-  List cities = [];
-  List barangays = [];
+  SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
 
   @override
   void initState() {
     super.initState();
     fetchRegions();
+    companyNameFocusNode = FocusNode();
+    ceoFirstNameFocusNode = FocusNode();
+    ceoLastNameFocusNode = FocusNode();
+    regionFocusNode = FocusNode();
+    provinceFocusNode = FocusNode();
+    cityFocusNode = FocusNode();
+    barangayFocusNode = FocusNode();
+    houseFocusNode = FocusNode();
+    industryFocusNode = FocusNode();
+    sizeFocusNode = FocusNode();
+    descriptionFocusNode = FocusNode();
+
+    companyNameFocusNode.addListener(() {
+      if (!companyNameFocusNode.hasFocus) {
+        companyNameFieldKey.currentState?.validate();
+      }
+    });
+    ceoFirstNameFocusNode.addListener(() {
+      if (!ceoFirstNameFocusNode.hasFocus) {
+        ceoFirstNameFieldKey.currentState?.validate();
+      }
+    });
+
+    ceoLastNameFocusNode.addListener(() {
+      if (!ceoLastNameFocusNode.hasFocus) {
+        ceoLastNameFieldKey.currentState?.validate();
+      }
+    });
+
+
+
+    industryFocusNode.addListener(() {
+      if (!industryFocusNode.hasFocus) {
+        industryFieldKey.currentState?.validate();
+      }
+    });
+
+    sizeFocusNode.addListener(() {
+      if (!sizeFocusNode.hasFocus) {
+        sizeFieldKey.currentState?.validate();
+      }
+    });
+
+    descriptionFocusNode.addListener(() {
+      if (!descriptionFocusNode.hasFocus) {
+        descriptionFieldKey.currentState?.validate();
+      }
+    });
   }
 
+  @override
+  void dispose() {
+    companyNameFocusNode.dispose();
+    ceoFirstNameFocusNode.dispose();
+    ceoLastNameFocusNode.dispose();
+    regionFocusNode.dispose();
+    provinceFocusNode.dispose();
+    cityFocusNode.dispose();
+    barangayFocusNode.dispose();
+    houseFocusNode.dispose();
+    industryFocusNode.dispose();
+    sizeFocusNode.dispose();
+    descriptionFocusNode.dispose();
+
+    super.dispose();
+  }
+
+  //Capitalizer
+  // String capitalizeEachWord(String input) {
+  //   return input
+  //       .split(' ')
+  //       .map((word) => word.isNotEmpty
+  //           ? word[0].toUpperCase() + word.substring(1).toLowerCase()
+  //           : '')
+  //       .join(' ');
+  // }
+
+// Fetch regions from the API
   Future<void> fetchRegions() async {
     final response =
         await http.get(Uri.parse('https://psgc.gitlab.io/api/regions/'));
     if (response.statusCode == 200) {
       setState(() {
-        regions = jsonDecode(response.body);
+        // Storing the entire region object (name and code)
+        regions = List<Map<String, dynamic>>.from(jsonDecode(response.body));
       });
     } else {
       throw Exception('Failed to load regions');
     }
   }
 
-  // Fetch provinces from the API
-  Future<void> fetchProvinces(String regionCode) async {
-    final response = await http.get(
-        Uri.parse('https://psgc.gitlab.io/api/regions/$regionCode/provinces/'));
-    if (response.statusCode == 200) {
-      setState(() {
-        provinces = jsonDecode(response.body);
-        selectedProvince = null; // Reset selected province
-        cities = [];
-        selectedCity = null; // Reset selected city
-        barangays = []; // Clear barangays
-        selectedBarangay = null; // Reset selected barangay
-      });
+// Fetch provinces or cities based on the selected region
+  Future<void> fetchProvincesOrCities(String regionCode) async {
+    if (regionCode == '130000000') {
+      // If regionCode is NCR (130000000), fetch cities directly
+      await fetchCitiesForRegion(regionCode);
     } else {
-      throw Exception('Failed to load provinces');
+      final response = await http.get(Uri.parse(
+          'https://psgc.gitlab.io/api/regions/$regionCode/provinces/'));
+      if (response.statusCode == 200) {
+        setState(() {
+          provinces =
+              List<Map<String, dynamic>>.from(jsonDecode(response.body));
+          selectedProvince = null; // Reset province
+          cities = [];
+          selectedCity = null; // Reset city
+          barangays = []; // Reset barangays
+          selectedBarangay = null; // Reset barangay
+        });
+      } else {
+        throw Exception('Failed to load provinces');
+      }
     }
   }
 
-  // Fetch cities by province code
-  Future<void> fetchCities(String provinceCode) async {
+// Fetch cities directly for regions like NCR
+  Future<void> fetchCitiesForRegion(String regionCode) async {
     final response = await http.get(Uri.parse(
-        'https://psgc.gitlab.io/api/provinces/$provinceCode/cities-municipalities/'));
+        'https://psgc.gitlab.io/api/regions/$regionCode/cities-municipalities/'));
     if (response.statusCode == 200) {
       setState(() {
-        cities = jsonDecode(response.body);
-        selectedCity = null; // Reset selected city
-        selectedBarangay = null; // Reset selected barangay
-        barangays = []; // Clear barangay list
+        cities = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+        selectedCity = null; // Reset city
+        selectedBarangay = null; // Reset barangay
+        barangays = []; // Reset barangays
       });
     } else {
       throw Exception('Failed to load cities');
     }
   }
 
-  // Fetch barangays by city/municipality code
+// Fetch cities by province code
+  Future<void> fetchCities(String provinceCode) async {
+    final response = await http.get(Uri.parse(
+        'https://psgc.gitlab.io/api/provinces/$provinceCode/cities-municipalities/'));
+    if (response.statusCode == 200) {
+      setState(() {
+        cities = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+        selectedCity = null; // Reset city
+        selectedBarangay = null; // Reset barangay
+        barangays = []; // Clear barangays
+      });
+    } else {
+      throw Exception('Failed to load cities');
+    }
+  }
+
+// Fetch barangays by city/municipality code
   Future<void> fetchBarangays(String cityCode) async {
     final response = await http.get(Uri.parse(
         'https://psgc.gitlab.io/api/cities-municipalities/$cityCode/barangays/'));
     if (response.statusCode == 200) {
       setState(() {
-        barangays = jsonDecode(response.body);
-        selectedBarangay = null; // Reset selected barangay
+        barangays = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+        selectedBarangay = null; // Reset barangay
       });
     } else {
       throw Exception('Failed to load barangays');
@@ -104,6 +252,8 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
 
   //Industry
   String? _selectedIndustry;
+  bool isindustryValid = true;
+  TextEditingController industryController = TextEditingController();
   final List<String> _industries = [
     'Aerospace & Defense',
     'Agriculture',
@@ -146,38 +296,63 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
     'more than 1,000 employees',
   ];
 
-
   //SubmitForm
   void submitCompanyProfileForm() async {
-    if (_formkey.currentState!.validate()) {
+    final isValidCompanyName = companyNameFieldKey.currentState!.validate();
+    final isValidFirstName = ceoFirstNameFieldKey.currentState!.validate();
+    final isValidLastName = ceoLastNameFieldKey.currentState!.validate();
+    final isValidRegion = regionFieldKey.currentState!.validate();
+    final isValidProvince = provinceFieldKey.currentState!.validate();
+    final isValidCity = cityFieldKey.currentState!.validate();
+    final isValidBarangay = barangayFieldKey.currentState!.validate();
+    final isValidHouse = houseFieldKey.currentState!.validate();
+    final isValidIndustry = industryFieldKey.currentState!.validate();
+    final isValidSize = sizeFieldKey.currentState!.validate();
+    final isValidDescription = descriptionFieldKey.currentState!.validate();
+    final isValidWebsite = websiteKey.currentState!.validate();
+    bool isValid = isValidCompanyName &&
+        isValidFirstName &&
+        isValidLastName &&
+        isValidRegion &&
+        isValidProvince &&
+        isValidCity &&
+        isValidBarangay &&
+        isValidHouse &&
+        isValidIndustry &&
+        isValidSize &&
+        isValidDescription &&
+        isValidWebsite;
+    if (isValid) {
       try {
-        // Store data in Firestore
         await FirebaseFirestore.instance
             .collection('users')
             .doc(widget.userCredential.user!.uid)
-            .collection("company_information").add({
+            .collection("company_information")
+            .add({
           'uid': widget.userCredential.user!.uid,
-          'companyName': _companyName.text,
-          'ceoFirstName': _CEOFirstName.text,
-          'ceoLastName': _CEOLastName.text,
+          'companyName': _companyName.text.trim().toCapitalCase(),
+          'ceoFirstName': _ceoFirstName.text.trim().toCapitalCase(),
+          'ceoLastName': _ceoLastName.text.trim().toCapitalCase(),
           'region': selectedRegion ?? 'not specified',
           'province': selectedProvince ?? 'not specified',
           'city': selectedCity ?? 'not specified',
           'barangay': selectedBarangay ?? 'not specified',
-          'locationOtherInformation': otherLocationInformation.text,
+          'industry': _selectedIndustry ?? 'not specified',
+          'locationOtherInformation':
+              houseController.text.trim().toCapitalCase(),
           'companySize': _selectedSizeOfCompany,
-          'companyDescription': _description.text,
-          'companyWebsite':
-              _companyWebsite.text.isNotEmpty ? _companyWebsite.text : 'none',
+          'companyDescription': _description.text.trim().toSentenceCase(),
+          'companyWebsite': _companyWebsite.text.isNotEmpty
+              ? _companyWebsite.text.toLowerCase().trim()
+              : 'none',
         });
 
-        // Navigate to RecruiterHomeScreen after successful submission
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => const RecruiterHomeScreen(),
           ),
         );
-        print("User credential: ${widget.userCredential.user!.uid}");
+        // print("User credential: ${widget.userCredential.user!.uid}");
       } catch (e) {
         // Handle any errors
         print("Failed to submit company profile: $e");
@@ -190,145 +365,188 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            const NavBarLoginRegister(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 550),
-                  child: Form(
-                    key: _formkey,
+    return ResponsiveBuilder(builder: (context, sizeInfo) {
+      return Scaffold(
+        body: Padding(
+          padding: EdgeInsets.all(ResponsiveSizes.paddingSmall(sizeInfo)),
+          child: Column(
+            children: [
+              NavBarLoginRegister(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: sizeInfo.isDesktop
+                            ? MediaQuery.of(context).size.width * 0.2
+                            : MediaQuery.of(context).size.width * 0.1),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 30),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Company Profile",
-                                  style: TextStyle(
-                                    fontFamily: "Galano",
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Company Profile",
+                                    style: TextStyle(
+                                      fontFamily: "Galano",
+                                      fontSize: ResponsiveSizes.titleTextSize(
+                                          sizeInfo),
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  "Please provide the following to complete company profile.",
-                                  style: TextStyle(
-                                    fontFamily: "Galano",
-                                    fontSize: 16,
-                                  ),
-                                )
-                              ],
+                                  Text(
+                                    "Please provide the following to complete company profile.",
+                                    style: TextStyle(
+                                      fontFamily: "Galano",
+                                      fontSize:
+                                          ResponsiveSizes.subtitleTextSize(
+                                              sizeInfo),
+                                    ),
+                                    softWrap: true,
+                                    maxLines: null,
+                                  )
+                                ],
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 30),
-                        //Company Name
-                        const Text(
+                        Text(
                           "Company Name",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
                             color: Color(0xff373030),
                             fontFamily: 'Galano',
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        Gap(10),
                         TextFormField(
+                          key: companyNameFieldKey,
+                          focusNode: companyNameFocusNode,
                           controller: _companyName,
                           decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            isDense: true,
+                            hintText: "Company Name",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD1E1FF),
+                              borderSide: BorderSide(
+                                color: iscompanyNameValid
+                                    ? Color(0xFFD1E1FF)
+                                    : Colors
+                                        .red, // Normal or red depending on validation
                                 width: 1.5,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD1E1FF),
+                              borderSide: BorderSide(
+                                color: iscompanyNameValid
+                                    ? Color(0xFFD1E1FF)
+                                    : Colors.red, // Red border if invalid
                                 width: 1.5,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD1E1FF),
+                              borderSide: BorderSide(
+                                color: iscompanyNameValid
+                                    ? Color(0xFFD1E1FF)
+                                    : Colors.red, // Red border if invalid
                                 width: 1.5,
                               ),
                             ),
+                            errorText: iscompanyNameValid
+                                ? null
+                                : 'Company name is required.', // Display error message if invalid
                           ),
+                          onChanged: (value) {
+                            setState(() {
+                              iscompanyNameValid = value
+                                  .trim()
+                                  .isNotEmpty; // Set to true if not empty
+                            });
+                          },
                           validator: (value) {
-                            if (value!.isEmpty || value == null) {
-                              return "Company name is required.";
+                            if (value == null || value.isEmpty) {
+                              return 'Company name is required.'; // Show error message
                             }
-                            return null;
+                            return null; // No error if valid
                           },
                         ),
-                        //CEO Name
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           "Chief Executive Officer",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
                             color: Color(0xff373030),
                             fontFamily: 'Galano',
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        Gap(10),
                         Row(
                           children: [
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 8),
                                   TextFormField(
-                                    controller: _CEOFirstName,
+                                    key: ceoFirstNameFieldKey,
+                                    focusNode: ceoFirstNameFocusNode,
+                                    controller: _ceoFirstName,
                                     decoration: InputDecoration(
-                                      hintText: "First Name",
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 16.0),
-                                      isDense: true,
+                                      labelText: "First Name",
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFD1E1FF),
+                                        borderSide: BorderSide(
+                                          color: isceoFirstNameValid
+                                              ? Color(0xFFD1E1FF)
+                                              : Colors
+                                                  .red, // Normal or red depending on validation
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFD1E1FF),
+                                        borderSide: BorderSide(
+                                          color: isceoFirstNameValid
+                                              ? Color(0xFFD1E1FF)
+                                              : Colors
+                                                  .red, // Red border if invalid
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFD1E1FF),
+                                        borderSide: BorderSide(
+                                          color: isceoFirstNameValid
+                                              ? Color(0xFFD1E1FF)
+                                              : Colors
+                                                  .red, // Red border if invalid
                                           width: 1.5,
                                         ),
                                       ),
+                                      errorText: isceoFirstNameValid
+                                          ? null
+                                          : 'CEO first name is required.', // Display error message if invalid
                                     ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isceoFirstNameValid = value
+                                            .trim()
+                                            .isNotEmpty; // Set to true if not empty
+                                      });
+                                    },
                                     validator: (value) {
-                                      if (value!.isEmpty || value == null) {
-                                        return "CEO first name is required.";
+                                      if (value == null || value.isEmpty) {
+                                        return 'CEO first name is required.'; // Show error message
                                       }
+                                      return null; // No error if valid
                                     },
                                   ),
                                 ],
@@ -339,41 +557,58 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 8),
                                   TextFormField(
-                                    controller: _CEOLastName,
+                                    key: ceoLastNameFieldKey,
+                                    focusNode: ceoLastNameFocusNode,
+                                    controller: _ceoLastName,
                                     decoration: InputDecoration(
-                                      hintText: "Last Name",
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 16.0),
-                                      isDense: true,
+                                      labelText: "Last Name",
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFD1E1FF),
+                                        borderSide: BorderSide(
+                                          color: isceoLastNameValid
+                                              ? Color(0xFFD1E1FF)
+                                              : Colors
+                                                  .red, // Normal or red depending on validation
                                           width: 1.5,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFD1E1FF),
+                                        borderSide: BorderSide(
+                                          color: isceoLastNameValid
+                                              ? Color(0xFFD1E1FF)
+                                              : Colors
+                                                  .red, // Red border if invalid
                                           width: 1.5,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                          color: Color(0xFFD1E1FF),
+                                        borderSide: BorderSide(
+                                          color: isceoLastNameValid
+                                              ? Color(0xFFD1E1FF)
+                                              : Colors
+                                                  .red, // Red border if invalid
                                           width: 1.5,
                                         ),
                                       ),
+                                      errorText: isceoLastNameValid
+                                          ? null
+                                          : 'CEO last name is required.', // Display error message if invalid
                                     ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isceoLastNameValid = value
+                                            .trim()
+                                            .isNotEmpty; // Set to true if not empty
+                                      });
+                                    },
                                     validator: (value) {
-                                      if (value!.isEmpty || value == null) {
-                                        return "CEO last name is required.";
+                                      if (value == null || value.isEmpty) {
+                                        return 'CEO last name is required.'; // Show error message
                                       }
+                                      return null; // No error if valid
                                     },
                                   ),
                                 ],
@@ -383,195 +618,1691 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                         ),
                         //Headquaters
                         const SizedBox(height: 20),
-                        const Text(
-                          "Headquaters",
+                        Text(
+                          "Headquarters",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
                             color: Color(0xff373030),
                             fontFamily: 'Galano',
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        DropdownButtonFormField<String>(
-                          decoration:
-                              InputDecoration(labelText: 'Select Region'),
-                          value: selectedRegion,
-                          items:
-                              regions.map<DropdownMenuItem<String>>((region) {
-                            return DropdownMenuItem<String>(
-                              value: region['name'],
-                              child: Text(region['name']),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedRegion = value;
-                              provinces = [];
-                              selectedProvince = null;
-                              cities = [];
-                              selectedCity = null;
-                              barangays = [];
-                              selectedBarangay = null;
-                            });
+                        Gap(10),
+                        sizeInfo.isMobile
+                            ? Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      // Region Dropdown
+                                      Expanded(
+                                        child: DropDownSearchFormField<String>(
+                                          key: regionFieldKey,
+                                          hideOnEmpty: true,
+                                          hideOnError: true,
+                                          hideOnLoading: true,
+                                          autoFlipDirection: true,
+                                          textFieldConfiguration:
+                                              TextFieldConfiguration(
+                                            controller: regionController,
+                                            focusNode:
+                                                regionFocusNode, // Add FocusNode to listen for focus changes
+                                            decoration: InputDecoration(
+                                              labelText: 'Region',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              errorText: isRegionValid
+                                                  ? null
+                                                  : 'Please select a valid region.', // Show error text if invalid
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              final formattedRegionName =
+                                                  value.trim().toCapitalCase();
 
-                            if (value != null) {
-                              final selectedRegionCode = regions.firstWhere(
-                                (region) => region['name'] == value,
-                                orElse: () => null,
-                              )['code'];
+                                              String? matchedRegionCode;
+                                              for (var region in regions) {
+                                                if (region['name']
+                                                        .toLowerCase() ==
+                                                    formattedRegionName
+                                                        .toLowerCase()) {
+                                                  matchedRegionCode =
+                                                      region['code'];
+                                                  break;
+                                                }
+                                              }
 
-                              if (selectedRegionCode != null) {
-                                fetchProvinces(selectedRegionCode);
-                              }
-                            }
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Region is required.';
-                            }
-                            return null;
-                          },
-                        ),
+                                              setState(() {
+                                                if (matchedRegionCode ==
+                                                    '130000000') {
+                                                  print("""
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+""");
+                                                  isProvinceVisible = false;
+                                                } else {
+                                                  isProvinceVisible = true;
+                                                }
+                                                if (matchedRegionCode != null) {
+                                                  regionController.text =
+                                                      formattedRegionName;
+                                                  selectedRegion =
+                                                      formattedRegionName;
+                                                  provinceController.clear();
+                                                  selectedProvince = null;
+                                                  fetchProvincesOrCities(
+                                                      matchedRegionCode);
+                                                  isRegionValid =
+                                                      true; // Set the field as valid
+                                                } else {
+                                                  selectedRegion = null;
+                                                  provinceController.clear();
+                                                  selectedProvince = null;
+                                                  provinces = [];
+                                                  cityController.clear();
+                                                  selectedCity = null;
+                                                  cities = [];
+                                                  barangayController.clear();
+                                                  selectedBarangay = null;
+                                                  barangays = [];
+                                                  isRegionValid = false;
+                                                  houseController.clear();
+                                                }
+                                              });
+                                            },
+                                            onEditingComplete: () {
+                                              // When the user finishes editing, validate the region input
+                                              if (selectedRegion == null) {
+                                                setState(() {
+                                                  isRegionValid =
+                                                      false; // If no valid region is selected, mark as invalid
+                                                });
+                                              }
+                                              regionFocusNode
+                                                  .unfocus(); // Unfocus the field when editing is complete
+                                            },
+                                          ),
+                                          noItemsFoundBuilder:
+                                              (BuildContext context) => Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'No region found',
+                                              style: TextStyle(
+                                                fontSize: ResponsiveSizes
+                                                    .bodyTextSize(sizeInfo),
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          suggestionsCallback: (pattern) {
+                                            return Future.value(
+                                              regions
+                                                  .where((region) =>
+                                                      region['name']
+                                                          .toLowerCase()
+                                                          .contains(pattern
+                                                              .toLowerCase()
+                                                              .trim()))
+                                                  .map((region) =>
+                                                      region['name']),
+                                            );
+                                          },
+                                          itemBuilder: (context, region) {
+                                            return ListTile(
+                                              title: Text(region),
+                                            );
+                                          },
+                                          onSuggestionSelected: (regionName) {
+                                            setState(() {
+                                              selectedRegion = regionName;
+                                              regionController.text =
+                                                  regionName;
+                                              selectedProvince = null;
+                                              selectedCity = null;
+                                              selectedBarangay = null;
+                                              provinces = [];
+                                              cities = [];
+                                              barangays = [];
+                                              isRegionValid =
+                                                  true; // Valid region selected
+                                            });
 
-                        // Province Dropdown
-                        if (selectedRegion != null)
-                          Column(
-                            children: [
-                              SizedBox(height: 16.0),
-                              DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                    labelText: 'Select Province'),
-                                value: selectedProvince,
-                                items: provinces
-                                    .map<DropdownMenuItem<String>>((province) {
-                                  return DropdownMenuItem<String>(
-                                    value: province['name'],
-                                    child: Text(province['name']),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedProvince = value;
-                                    cities = [];
-                                    selectedCity = null;
-                                    barangays = [];
-                                    selectedBarangay = null;
-                                  });
-                                  if (value != null) {
-                                    final selectedProvinceCode =
-                                        provinces.firstWhere(
-                                      (province) => province['name'] == value,
-                                      orElse: () => null,
-                                    )['code'];
+                                            final selectedRegionData =
+                                                regions.firstWhere(
+                                              (region) =>
+                                                  region['name'] == regionName,
+                                              orElse: () =>
+                                                  {'code': '', 'name': ''},
+                                            );
 
-                                    if (selectedProvinceCode != null) {
-                                      fetchCities(selectedProvinceCode);
-                                    }
-                                  }
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Province is required.';
-                                  }
-                                  return null;
-                                },
+                                            setState(() {
+                                              if (selectedRegionData['code'] ==
+                                                  '130000000') {
+                                                print("""
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+""");
+                                                isProvinceVisible = false;
+                                              } else {
+                                                isProvinceVisible = true;
+                                              }
+                                            });
+
+                                            if (selectedRegionData['code'] !=
+                                                '') {
+                                              String regionCode =
+                                                  selectedRegionData['code'];
+                                              fetchProvincesOrCities(
+                                                  regionCode);
+                                            }
+                                          },
+                                          validator: (value) =>
+                                              value == null || value.isEmpty
+                                                  ? 'Region is required.'
+                                                  : null,
+                                        ),
+                                      ),
+                                      if (isProvinceVisible) Gap(20),
+                                      if (isProvinceVisible)
+                                        Expanded(
+                                          child:
+                                              DropDownSearchFormField<String>(
+                                            key: provinceFieldKey,
+                                            textFieldConfiguration:
+                                                TextFieldConfiguration(
+                                              controller: provinceController,
+                                              focusNode:
+                                                  provinceFocusNode, // Add FocusNode to track focus changes
+                                              enabled: selectedRegion != null,
+                                              decoration: InputDecoration(
+                                                labelText: 'Province',
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0xFFD1E1FF),
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                errorText: isProvinceValid
+                                                    ? null
+                                                    : 'Please select a valid province.', // Show error message if invalid
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0xFFD1E1FF),
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0xFFD1E1FF),
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                              ),
+                                              onChanged: (value) {
+                                                // Trim the input and capitalize each word
+                                                final formattedProvinceName =
+                                                    value
+                                                        .trim()
+                                                        .toCapitalCase();
+
+                                                String? matchedProvinceCode;
+                                                for (var province
+                                                    in provinces) {
+                                                  if (province['name']
+                                                          .toLowerCase() ==
+                                                      formattedProvinceName
+                                                          .toLowerCase()) {
+                                                    matchedProvinceCode =
+                                                        province['code'];
+                                                    break;
+                                                  }
+                                                }
+
+                                                setState(() {
+                                                  if (matchedProvinceCode !=
+                                                      null) {
+                                                    selectedProvince =
+                                                        formattedProvinceName;
+                                                    provinceController.text =
+                                                        formattedProvinceName; // Update the controller's text
+                                                    selectedCity =
+                                                        null; // Reset city selection
+                                                    selectedBarangay =
+                                                        null; // Reset barangay selection
+                                                    barangays
+                                                        .clear(); // Clear barangays list
+                                                    fetchCities(
+                                                        matchedProvinceCode); // Fetch cities for the matched province
+                                                    isProvinceValid =
+                                                        true; // Set the field as valid
+                                                  } else {
+                                                    selectedProvince = null;
+                                                    cityController.clear();
+                                                    selectedCity = null;
+                                                    cities = [];
+
+                                                    barangayController.clear();
+                                                    selectedBarangay = null;
+                                                    barangays = [];
+                                                    isProvinceValid =
+                                                        false; // Set the field as invalid
+
+                                                    houseController.clear();
+                                                  }
+                                                });
+                                              },
+                                              onEditingComplete: () {
+                                                // When the user finishes editing, validate the province input
+                                                if (selectedProvince == null) {
+                                                  setState(() {
+                                                    isProvinceValid =
+                                                        false; // If no valid province is selected, mark as invalid
+                                                  });
+                                                }
+                                                provinceFocusNode
+                                                    .unfocus(); // Unfocus the field when editing is complete
+                                              },
+                                            ),
+                                            noItemsFoundBuilder:
+                                                (BuildContext context) =>
+                                                    Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                'No province found',
+                                                style: TextStyle(
+                                                  fontSize: ResponsiveSizes
+                                                      .bodyTextSize(sizeInfo),
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                            suggestionsCallback: (pattern) {
+                                              return Future.value(
+                                                provinces
+                                                    .where((province) =>
+                                                        province['name']
+                                                            .toLowerCase()
+                                                            .contains(pattern
+                                                                .toLowerCase()
+                                                                .trim()))
+                                                    .map((province) =>
+                                                        province['name']),
+                                              );
+                                            },
+                                            itemBuilder: (context, province) {
+                                              return ListTile(
+                                                title: Text(province),
+                                              );
+                                            },
+                                            onSuggestionSelected:
+                                                (provinceName) {
+                                              // Capitalize the province name input to ensure consistency
+                                              String formattedProvinceName =
+                                                  provinceName
+                                                      .trim()
+                                                      .toCapitalCase();
+
+                                              setState(() {
+                                                selectedProvince =
+                                                    formattedProvinceName;
+                                                provinceController.text =
+                                                    formattedProvinceName; // Update the controller's text
+                                                selectedCity =
+                                                    null; // Reset city selection
+                                                selectedBarangay =
+                                                    null; // Reset barangay selection
+                                                barangays
+                                                    .clear(); // Clear barangays list
+                                                isProvinceValid =
+                                                    true; // Valid province selected
+                                              });
+
+                                              // Find the selected province's code; consider case-insensitive matching
+                                              final selectedProvinceData =
+                                                  provinces.firstWhere(
+                                                (province) =>
+                                                    province['name']
+                                                        .toLowerCase() ==
+                                                    formattedProvinceName
+                                                        .toLowerCase(),
+                                                orElse: () =>
+                                                    {}, // Provide a fallback if no match is found
+                                              );
+
+                                              // Only proceed if a valid province code was found
+                                              if (selectedProvinceData
+                                                  .isNotEmpty) {
+                                                String provinceCode =
+                                                    selectedProvinceData[
+                                                        'code'];
+                                                fetchCities(
+                                                    provinceCode); // Fetch cities for the selected province
+                                              }
+                                            },
+                                            validator: (value) =>
+                                                value == null || value.isEmpty
+                                                    ? 'Province is required.'
+                                                    : null,
+                                            enabled: selectedRegion !=
+                                                null, // Enable only if a region is selected
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  Gap(10),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: DropDownSearchFormField<String>(
+                                          key: cityFieldKey,
+                                          textFieldConfiguration:
+                                              TextFieldConfiguration(
+                                            enabled: selectedProvince != null ||
+                                                isProvinceVisible == false,
+                                            controller: cityController,
+                                            focusNode:
+                                                cityFocusNode, // Add FocusNode to track focus changes
+                                            decoration: InputDecoration(
+                                              labelText: 'City/Municipality',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              errorText: isCityValid
+                                                  ? null
+                                                  : 'Please select a valid city/municipality.', // Show error message if invalid
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              // Trim the input and capitalize each word
+                                              final formattedCityName =
+                                                  value.trim().toCapitalCase();
+
+                                              String? matchedCityCode;
+                                              for (var city in cities) {
+                                                if (city['name']
+                                                        .toLowerCase() ==
+                                                    formattedCityName
+                                                        .toLowerCase()) {
+                                                  matchedCityCode =
+                                                      city['code'];
+                                                  break;
+                                                }
+                                              }
+
+                                              setState(() {
+                                                if (matchedCityCode != null) {
+                                                  selectedCity =
+                                                      formattedCityName;
+                                                  cityController.text =
+                                                      formattedCityName; // Update the controller's text
+                                                  selectedBarangay =
+                                                      null; // Reset barangay selection
+                                                  fetchBarangays(
+                                                      matchedCityCode); // Fetch barangays for the matched city
+                                                  isCityValid =
+                                                      true; // Set the field as valid
+                                                } else {
+                                                  selectedCity = null;
+                                                  barangayController.clear();
+                                                  selectedBarangay = null;
+                                                  barangays = [];
+                                                  isCityValid =
+                                                      false; // Set the field as invalid
+
+                                                  houseController.clear();
+                                                }
+                                              });
+                                            },
+                                            onEditingComplete: () {
+                                              // When the user finishes editing, validate the city input
+                                              if (selectedCity == null) {
+                                                setState(() {
+                                                  isCityValid =
+                                                      false; // If no valid city is selected, mark as invalid
+                                                });
+                                              }
+                                              cityFocusNode
+                                                  .unfocus(); // Unfocus the field when editing is complete
+                                            },
+                                          ),
+                                          noItemsFoundBuilder:
+                                              (BuildContext context) => Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'No city/municipality found',
+                                              style: TextStyle(
+                                                fontSize: ResponsiveSizes
+                                                    .bodyTextSize(sizeInfo),
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          suggestionsCallback: (pattern) {
+                                            return Future.value(
+                                              cities
+                                                  .where((city) => city['name']
+                                                      .toLowerCase()
+                                                      .contains(pattern
+                                                          .toLowerCase()
+                                                          .trim()))
+                                                  .map((city) => city['name']),
+                                            );
+                                          },
+                                          itemBuilder: (context, city) {
+                                            return ListTile(
+                                              title: Text(city),
+                                            );
+                                          },
+                                          onSuggestionSelected: (cityName) {
+                                            // Capitalize the city name input to ensure consistency
+                                            String formattedCityName =
+                                                cityName.trim().toCapitalCase();
+
+                                            setState(() {
+                                              selectedCity = formattedCityName;
+                                              cityController.text =
+                                                  formattedCityName; // Update the controller's text
+                                              selectedBarangay =
+                                                  null; // Reset barangay selection
+                                              isCityValid =
+                                                  true; // Valid city selected
+                                            });
+
+                                            // Find the selected city's code; consider case-insensitive matching
+                                            final selectedCityData =
+                                                cities.firstWhere(
+                                              (city) =>
+                                                  city['name'].toLowerCase() ==
+                                                  formattedCityName
+                                                      .toLowerCase(),
+                                              orElse: () =>
+                                                  {}, // Provide a fallback if no match is found
+                                            );
+
+                                            // Only proceed if a valid city code was found
+                                            if (selectedCityData.isNotEmpty) {
+                                              String cityCode =
+                                                  selectedCityData['code'];
+                                              fetchBarangays(
+                                                  cityCode); // Fetch barangays for the selected city
+                                            }
+                                          },
+                                          validator: (value) => value == null ||
+                                                  value.isEmpty
+                                              ? 'City/Municipality is required.'
+                                              : null,
+                                          enabled: selectedProvince != null ||
+                                              selectedRegion ==
+                                                  'NCR', // Enable if province is selected or region is NCR
+                                        ),
+                                      ),
+                                      Gap(20),
+                                      Expanded(
+                                        child: DropDownSearchFormField<String>(
+                                          key: barangayFieldKey,
+                                          textFieldConfiguration:
+                                              TextFieldConfiguration(
+                                            controller: barangayController,
+                                            enabled: selectedCity != null,
+                                            focusNode:
+                                                barangayFocusNode, // Add FocusNode to track focus changes
+                                            decoration: InputDecoration(
+                                              labelText: 'Barangay',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              errorText: isBarangayValid
+                                                  ? null
+                                                  : 'Please select a valid barangay.', // Show error message if invalid
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              // Trim the input and capitalize each word
+                                              final formattedBarangayName =
+                                                  value.trim().toCapitalCase();
+
+                                              // Check if the input matches any barangay
+                                              String? matchedBarangayCode;
+                                              for (var barangay in barangays) {
+                                                if (barangay['name']
+                                                        .toLowerCase() ==
+                                                    formattedBarangayName
+                                                        .toLowerCase()) {
+                                                  matchedBarangayCode =
+                                                      barangay['code'];
+                                                  break;
+                                                }
+                                              }
+
+                                              setState(() {
+                                                if (matchedBarangayCode !=
+                                                    null) {
+                                                  selectedBarangay =
+                                                      formattedBarangayName;
+                                                  barangayController.text =
+                                                      formattedBarangayName; // Update the controller's text
+                                                  isBarangayValid =
+                                                      true; // Set the field as valid
+                                                } else {
+                                                  selectedBarangay =
+                                                      null; // Reset barangay selection if no match
+                                                  isBarangayValid =
+                                                      false; // Set the field as invalid
+
+                                                  houseController.clear();
+                                                }
+                                              });
+                                            },
+                                            onEditingComplete: () {
+                                              // When the user finishes editing, validate the barangay input
+                                              if (selectedBarangay == null) {
+                                                setState(() {
+                                                  isBarangayValid =
+                                                      false; // If no valid barangay is selected, mark as invalid
+                                                });
+                                              }
+                                              barangayFocusNode
+                                                  .unfocus(); // Unfocus the field when editing is complete
+                                            },
+                                          ),
+                                          noItemsFoundBuilder:
+                                              (BuildContext context) => Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'No barangay found',
+                                              style: TextStyle(
+                                                fontSize: ResponsiveSizes
+                                                    .bodyTextSize(sizeInfo),
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          suggestionsCallback: (pattern) {
+                                            return Future.value(
+                                              barangays
+                                                  .where((barangay) =>
+                                                      barangay['name']
+                                                          .toLowerCase()
+                                                          .contains(pattern
+                                                              .toLowerCase()
+                                                              .trim()))
+                                                  .map((barangay) =>
+                                                      barangay['name']),
+                                            );
+                                          },
+                                          itemBuilder: (context, barangay) {
+                                            return ListTile(
+                                              title: Text(barangay),
+                                            );
+                                          },
+                                          onSuggestionSelected: (barangayName) {
+                                            // Capitalize the barangay name input to ensure consistency
+                                            String formattedBarangayName =
+                                                barangayName
+                                                    .trim()
+                                                    .toCapitalCase();
+
+                                            setState(() {
+                                              selectedBarangay =
+                                                  formattedBarangayName;
+                                              barangayController.text =
+                                                  formattedBarangayName; // Update the controller's text
+                                              isBarangayValid =
+                                                  true; // Valid barangay selected
+                                            });
+
+                                            // Find the selected barangay's code; consider case-insensitive matching
+                                            final selectedBarangayData =
+                                                barangays.firstWhere(
+                                              (barangay) =>
+                                                  barangay['name']
+                                                      .toLowerCase() ==
+                                                  formattedBarangayName
+                                                      .toLowerCase(),
+                                              orElse: () =>
+                                                  {}, // Provide a fallback if no match is found
+                                            );
+
+                                            // Only proceed if a valid barangay code was found
+                                            if (selectedBarangayData
+                                                .isNotEmpty) {
+                                              String barangayCode =
+                                                  selectedBarangayData['code'];
+                                              // Do something with the barangay code if needed
+                                            }
+                                          },
+                                          validator: (value) =>
+                                              value == null || value.isEmpty
+                                                  ? 'Barangay is required.'
+                                                  : null,
+                                          enabled: selectedCity !=
+                                              null, // Enable only if a city is selected
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Gap(10),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextFormField(
+                                          key: houseFieldKey,
+                                          focusNode: houseFocusNode,
+                                          enabled: selectedBarangay !=
+                                              null, // Enable only if a barangay is selected
+                                          controller: houseController,
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                "Building No./House No., Street, Subdivision/Village",
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
+                                                color: isHouseValid
+                                                    ? Color(0xFFD1E1FF)
+                                                    : Colors
+                                                        .red, // Normal or red depending on validation
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
+                                                color: isHouseValid
+                                                    ? Color(0xFFD1E1FF)
+                                                    : Colors
+                                                        .red, // Red border if invalid
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
+                                                color: isHouseValid
+                                                    ? Color(0xFFD1E1FF)
+                                                    : Colors
+                                                        .red, // Red border if invalid
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorText: isHouseValid
+                                                ? null
+                                                : 'Building No./House No., Street, Subdivision/Village are required.', // Display error message if invalid
+                                          ),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              isHouseValid = value
+                                                  .trim()
+                                                  .isNotEmpty; // Set to true if not empty
+                                            });
+                                          },
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Building No./House No., Street, Subdivision/Village are required.'; // Show error message
+                                            }
+                                            return null; // No error if valid
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      // Region Dropdown
+                                      Expanded(
+                                        child: DropDownSearchFormField<String>(
+                                          key: regionFieldKey,
+                                          hideOnEmpty: true,
+                                          hideOnError: true,
+                                          hideOnLoading: true,
+                                          autoFlipDirection: true,
+                                          textFieldConfiguration:
+                                              TextFieldConfiguration(
+                                            controller: regionController,
+                                            focusNode:
+                                                regionFocusNode, // Add FocusNode to listen for focus changes
+                                            decoration: InputDecoration(
+                                              labelText: 'Region',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              errorText: isRegionValid
+                                                  ? null
+                                                  : 'Please select a valid region.', // Show error text if invalid
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              final formattedRegionName =
+                                                  value.trim().toCapitalCase();
+
+                                              String? matchedRegionCode;
+                                              for (var region in regions) {
+                                                if (region['name']
+                                                        .toLowerCase() ==
+                                                    formattedRegionName
+                                                        .toLowerCase()) {
+                                                  matchedRegionCode =
+                                                      region['code'];
+                                                  break;
+                                                }
+                                              }
+
+                                              setState(() {
+                                                if (matchedRegionCode ==
+                                                    '130000000') {
+                                                  print("""
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+""");
+                                                  isProvinceVisible = false;
+                                                } else {
+                                                  isProvinceVisible = true;
+                                                }
+                                                if (matchedRegionCode != null) {
+                                                  regionController.text =
+                                                      formattedRegionName;
+                                                  selectedRegion =
+                                                      formattedRegionName;
+                                                  provinceController.clear();
+                                                  selectedProvince = null;
+                                                  fetchProvincesOrCities(
+                                                      matchedRegionCode);
+                                                  isRegionValid =
+                                                      true; // Set the field as valid
+                                                } else {
+                                                  selectedRegion = null;
+                                                  provinceController.clear();
+                                                  selectedProvince = null;
+                                                  provinces = [];
+                                                  cityController.clear();
+                                                  selectedCity = null;
+                                                  cities = [];
+                                                  barangayController.clear();
+                                                  selectedBarangay = null;
+                                                  barangays = [];
+                                                  isRegionValid = false;
+                                                  houseController.clear();
+                                                }
+                                              });
+                                            },
+                                            onEditingComplete: () {
+                                              // When the user finishes editing, validate the region input
+                                              if (selectedRegion == null) {
+                                                setState(() {
+                                                  isRegionValid =
+                                                      false; // If no valid region is selected, mark as invalid
+                                                });
+                                              }
+                                              regionFocusNode
+                                                  .unfocus(); // Unfocus the field when editing is complete
+                                            },
+                                          ),
+                                          noItemsFoundBuilder:
+                                              (BuildContext context) => Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'No region found',
+                                              style: TextStyle(
+                                                fontSize: ResponsiveSizes
+                                                    .bodyTextSize(sizeInfo),
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          suggestionsCallback: (pattern) {
+                                            return Future.value(
+                                              regions
+                                                  .where((region) =>
+                                                      region['name']
+                                                          .toLowerCase()
+                                                          .contains(pattern
+                                                              .toLowerCase()
+                                                              .trim()))
+                                                  .map((region) =>
+                                                      region['name']),
+                                            );
+                                          },
+                                          itemBuilder: (context, region) {
+                                            return ListTile(
+                                              title: Text(region),
+                                            );
+                                          },
+                                          onSuggestionSelected: (regionName) {
+                                            setState(() {
+                                              selectedRegion = regionName;
+                                              regionController.text =
+                                                  regionName;
+                                              selectedProvince = null;
+                                              selectedCity = null;
+                                              selectedBarangay = null;
+                                              provinces = [];
+                                              cities = [];
+                                              barangays = [];
+                                              isRegionValid =
+                                                  true; // Valid region selected
+                                            });
+
+                                            final selectedRegionData =
+                                                regions.firstWhere(
+                                              (region) =>
+                                                  region['name'] == regionName,
+                                              orElse: () =>
+                                                  {'code': '', 'name': ''},
+                                            );
+
+                                            setState(() {
+                                              if (selectedRegionData['code'] ==
+                                                  '130000000') {
+                                                print("""
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
+""");
+                                                isProvinceVisible = false;
+                                              } else {
+                                                isProvinceVisible = true;
+                                              }
+                                            });
+
+                                            if (selectedRegionData['code'] !=
+                                                '') {
+                                              String regionCode =
+                                                  selectedRegionData['code'];
+                                              fetchProvincesOrCities(
+                                                  regionCode);
+                                            }
+                                          },
+                                          validator: (value) =>
+                                              value == null || value.isEmpty
+                                                  ? 'Region is required.'
+                                                  : null,
+                                        ),
+                                      ),
+                                      if (isProvinceVisible) Gap(20),
+                                      if (isProvinceVisible)
+                                        Expanded(
+                                          child:
+                                              DropDownSearchFormField<String>(
+                                            key: provinceFieldKey,
+                                            textFieldConfiguration:
+                                                TextFieldConfiguration(
+                                              controller: provinceController,
+                                              focusNode:
+                                                  provinceFocusNode, // Add FocusNode to track focus changes
+                                              enabled: selectedRegion != null,
+                                              decoration: InputDecoration(
+                                                labelText: 'Province',
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0xFFD1E1FF),
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                errorText: isProvinceValid
+                                                    ? null
+                                                    : 'Please select a valid province.', // Show error message if invalid
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0xFFD1E1FF),
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0xFFD1E1FF),
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                              ),
+                                              onChanged: (value) {
+                                                // Trim the input and capitalize each word
+                                                final formattedProvinceName =
+                                                    value
+                                                        .trim()
+                                                        .toCapitalCase();
+
+                                                String? matchedProvinceCode;
+                                                for (var province
+                                                    in provinces) {
+                                                  if (province['name']
+                                                          .toLowerCase() ==
+                                                      formattedProvinceName
+                                                          .toLowerCase()) {
+                                                    matchedProvinceCode =
+                                                        province['code'];
+                                                    break;
+                                                  }
+                                                }
+
+                                                setState(() {
+                                                  if (matchedProvinceCode !=
+                                                      null) {
+                                                    selectedProvince =
+                                                        formattedProvinceName;
+                                                    provinceController.text =
+                                                        formattedProvinceName; // Update the controller's text
+                                                    selectedCity =
+                                                        null; // Reset city selection
+                                                    selectedBarangay =
+                                                        null; // Reset barangay selection
+                                                    barangays
+                                                        .clear(); // Clear barangays list
+                                                    fetchCities(
+                                                        matchedProvinceCode); // Fetch cities for the matched province
+                                                    isProvinceValid =
+                                                        true; // Set the field as valid
+                                                  } else {
+                                                    selectedProvince = null;
+                                                    cityController.clear();
+                                                    selectedCity = null;
+                                                    cities = [];
+
+                                                    barangayController.clear();
+                                                    selectedBarangay = null;
+                                                    barangays = [];
+                                                    isProvinceValid =
+                                                        false; // Set the field as invalid
+
+                                                    houseController.clear();
+                                                  }
+                                                });
+                                              },
+                                              onEditingComplete: () {
+                                                // When the user finishes editing, validate the province input
+                                                if (selectedProvince == null) {
+                                                  setState(() {
+                                                    isProvinceValid =
+                                                        false; // If no valid province is selected, mark as invalid
+                                                  });
+                                                }
+                                                provinceFocusNode
+                                                    .unfocus(); // Unfocus the field when editing is complete
+                                              },
+                                            ),
+                                            noItemsFoundBuilder:
+                                                (BuildContext context) =>
+                                                    Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                'No province found',
+                                                style: TextStyle(
+                                                  fontSize: ResponsiveSizes
+                                                      .bodyTextSize(sizeInfo),
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                            suggestionsCallback: (pattern) {
+                                              return Future.value(
+                                                provinces
+                                                    .where((province) =>
+                                                        province['name']
+                                                            .toLowerCase()
+                                                            .contains(pattern
+                                                                .toLowerCase()
+                                                                .trim()))
+                                                    .map((province) =>
+                                                        province['name']),
+                                              );
+                                            },
+                                            itemBuilder: (context, province) {
+                                              return ListTile(
+                                                title: Text(province),
+                                              );
+                                            },
+                                            onSuggestionSelected:
+                                                (provinceName) {
+                                              // Capitalize the province name input to ensure consistency
+                                              String formattedProvinceName =
+                                                  provinceName
+                                                      .trim()
+                                                      .toCapitalCase();
+
+                                              setState(() {
+                                                selectedProvince =
+                                                    formattedProvinceName;
+                                                provinceController.text =
+                                                    formattedProvinceName; // Update the controller's text
+                                                selectedCity =
+                                                    null; // Reset city selection
+                                                selectedBarangay =
+                                                    null; // Reset barangay selection
+                                                barangays
+                                                    .clear(); // Clear barangays list
+                                                isProvinceValid =
+                                                    true; // Valid province selected
+                                              });
+
+                                              // Find the selected province's code; consider case-insensitive matching
+                                              final selectedProvinceData =
+                                                  provinces.firstWhere(
+                                                (province) =>
+                                                    province['name']
+                                                        .toLowerCase() ==
+                                                    formattedProvinceName
+                                                        .toLowerCase(),
+                                                orElse: () =>
+                                                    {}, // Provide a fallback if no match is found
+                                              );
+
+                                              // Only proceed if a valid province code was found
+                                              if (selectedProvinceData
+                                                  .isNotEmpty) {
+                                                String provinceCode =
+                                                    selectedProvinceData[
+                                                        'code'];
+                                                fetchCities(
+                                                    provinceCode); // Fetch cities for the selected province
+                                              }
+                                            },
+                                            validator: (value) =>
+                                                value == null || value.isEmpty
+                                                    ? 'Province is required.'
+                                                    : null,
+                                            enabled: selectedRegion !=
+                                                null, // Enable only if a region is selected
+                                          ),
+                                        ),
+                                      Gap(20),
+                                      Expanded(
+                                        child: DropDownSearchFormField<String>(
+                                          key: cityFieldKey,
+                                          textFieldConfiguration:
+                                              TextFieldConfiguration(
+                                            enabled: selectedProvince != null ||
+                                                isProvinceVisible == false,
+                                            controller: cityController,
+                                            focusNode:
+                                                cityFocusNode, // Add FocusNode to track focus changes
+                                            decoration: InputDecoration(
+                                              labelText: 'City/Municipality',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              errorText: isCityValid
+                                                  ? null
+                                                  : 'Please select a valid city/municipality.', // Show error message if invalid
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              // Trim the input and capitalize each word
+                                              final formattedCityName =
+                                                  value.trim().toCapitalCase();
+
+                                              String? matchedCityCode;
+                                              for (var city in cities) {
+                                                if (city['name']
+                                                        .toLowerCase() ==
+                                                    formattedCityName
+                                                        .toLowerCase()) {
+                                                  matchedCityCode =
+                                                      city['code'];
+                                                  break;
+                                                }
+                                              }
+
+                                              setState(() {
+                                                if (matchedCityCode != null) {
+                                                  selectedCity =
+                                                      formattedCityName;
+                                                  cityController.text =
+                                                      formattedCityName; // Update the controller's text
+                                                  selectedBarangay =
+                                                      null; // Reset barangay selection
+                                                  fetchBarangays(
+                                                      matchedCityCode); // Fetch barangays for the matched city
+                                                  isCityValid =
+                                                      true; // Set the field as valid
+                                                } else {
+                                                  selectedCity = null;
+                                                  barangayController.clear();
+                                                  selectedBarangay = null;
+                                                  barangays = [];
+                                                  isCityValid =
+                                                      false; // Set the field as invalid
+
+                                                  houseController.clear();
+                                                }
+                                              });
+                                            },
+                                            onEditingComplete: () {
+                                              // When the user finishes editing, validate the city input
+                                              if (selectedCity == null) {
+                                                setState(() {
+                                                  isCityValid =
+                                                      false; // If no valid city is selected, mark as invalid
+                                                });
+                                              }
+                                              cityFocusNode
+                                                  .unfocus(); // Unfocus the field when editing is complete
+                                            },
+                                          ),
+                                          noItemsFoundBuilder:
+                                              (BuildContext context) => Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'No city/municipality found',
+                                              style: TextStyle(
+                                                fontSize: ResponsiveSizes
+                                                    .bodyTextSize(sizeInfo),
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          suggestionsCallback: (pattern) {
+                                            return Future.value(
+                                              cities
+                                                  .where((city) => city['name']
+                                                      .toLowerCase()
+                                                      .contains(pattern
+                                                          .toLowerCase()
+                                                          .trim()))
+                                                  .map((city) => city['name']),
+                                            );
+                                          },
+                                          itemBuilder: (context, city) {
+                                            return ListTile(
+                                              title: Text(city),
+                                            );
+                                          },
+                                          onSuggestionSelected: (cityName) {
+                                            // Capitalize the city name input to ensure consistency
+                                            String formattedCityName =
+                                                cityName.trim().toCapitalCase();
+
+                                            setState(() {
+                                              selectedCity = formattedCityName;
+                                              cityController.text =
+                                                  formattedCityName; // Update the controller's text
+                                              selectedBarangay =
+                                                  null; // Reset barangay selection
+                                              isCityValid =
+                                                  true; // Valid city selected
+                                            });
+
+                                            // Find the selected city's code; consider case-insensitive matching
+                                            final selectedCityData =
+                                                cities.firstWhere(
+                                              (city) =>
+                                                  city['name'].toLowerCase() ==
+                                                  formattedCityName
+                                                      .toLowerCase(),
+                                              orElse: () =>
+                                                  {}, // Provide a fallback if no match is found
+                                            );
+
+                                            // Only proceed if a valid city code was found
+                                            if (selectedCityData.isNotEmpty) {
+                                              String cityCode =
+                                                  selectedCityData['code'];
+                                              fetchBarangays(
+                                                  cityCode); // Fetch barangays for the selected city
+                                            }
+                                          },
+                                          validator: (value) => value == null ||
+                                                  value.isEmpty
+                                              ? 'City/Municipality is required.'
+                                              : null,
+                                          enabled: selectedProvince != null ||
+                                              selectedRegion ==
+                                                  'NCR', // Enable if province is selected or region is NCR
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Gap(10),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: DropDownSearchFormField<String>(
+                                          key: barangayFieldKey,
+                                          textFieldConfiguration:
+                                              TextFieldConfiguration(
+                                            controller: barangayController,
+                                            enabled: selectedCity != null,
+                                            focusNode:
+                                                barangayFocusNode, // Add FocusNode to track focus changes
+                                            decoration: InputDecoration(
+                                              labelText: 'Barangay',
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              errorText: isBarangayValid
+                                                  ? null
+                                                  : 'Please select a valid barangay.', // Show error message if invalid
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color: Color(0xFFD1E1FF),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                            ),
+                                            onChanged: (value) {
+                                              // Trim the input and capitalize each word
+                                              final formattedBarangayName =
+                                                  value.trim().toCapitalCase();
+
+                                              // Check if the input matches any barangay
+                                              String? matchedBarangayCode;
+                                              for (var barangay in barangays) {
+                                                if (barangay['name']
+                                                        .toLowerCase() ==
+                                                    formattedBarangayName
+                                                        .toLowerCase()) {
+                                                  matchedBarangayCode =
+                                                      barangay['code'];
+                                                  break;
+                                                }
+                                              }
+
+                                              setState(() {
+                                                if (matchedBarangayCode !=
+                                                    null) {
+                                                  selectedBarangay =
+                                                      formattedBarangayName;
+                                                  barangayController.text =
+                                                      formattedBarangayName; // Update the controller's text
+                                                  isBarangayValid =
+                                                      true; // Set the field as valid
+                                                } else {
+                                                  selectedBarangay =
+                                                      null; // Reset barangay selection if no match
+                                                  isBarangayValid =
+                                                      false; // Set the field as invalid
+
+                                                  houseController.clear();
+                                                }
+                                              });
+                                            },
+                                            onEditingComplete: () {
+                                              // When the user finishes editing, validate the barangay input
+                                              if (selectedBarangay == null) {
+                                                setState(() {
+                                                  isBarangayValid =
+                                                      false; // If no valid barangay is selected, mark as invalid
+                                                });
+                                              }
+                                              barangayFocusNode
+                                                  .unfocus(); // Unfocus the field when editing is complete
+                                            },
+                                          ),
+                                          noItemsFoundBuilder:
+                                              (BuildContext context) => Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              'No barangay found',
+                                              style: TextStyle(
+                                                fontSize: ResponsiveSizes
+                                                    .bodyTextSize(sizeInfo),
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          suggestionsCallback: (pattern) {
+                                            return Future.value(
+                                              barangays
+                                                  .where((barangay) =>
+                                                      barangay['name']
+                                                          .toLowerCase()
+                                                          .contains(pattern
+                                                              .toLowerCase()
+                                                              .trim()))
+                                                  .map((barangay) =>
+                                                      barangay['name']),
+                                            );
+                                          },
+                                          itemBuilder: (context, barangay) {
+                                            return ListTile(
+                                              title: Text(barangay),
+                                            );
+                                          },
+                                          onSuggestionSelected: (barangayName) {
+                                            // Capitalize the barangay name input to ensure consistency
+                                            String formattedBarangayName =
+                                                barangayName
+                                                    .trim()
+                                                    .toCapitalCase();
+
+                                            setState(() {
+                                              selectedBarangay =
+                                                  formattedBarangayName;
+                                              barangayController.text =
+                                                  formattedBarangayName; // Update the controller's text
+                                              isBarangayValid =
+                                                  true; // Valid barangay selected
+                                            });
+
+                                            // Find the selected barangay's code; consider case-insensitive matching
+                                            final selectedBarangayData =
+                                                barangays.firstWhere(
+                                              (barangay) =>
+                                                  barangay['name']
+                                                      .toLowerCase() ==
+                                                  formattedBarangayName
+                                                      .toLowerCase(),
+                                              orElse: () =>
+                                                  {}, // Provide a fallback if no match is found
+                                            );
+
+                                            // Only proceed if a valid barangay code was found
+                                            if (selectedBarangayData
+                                                .isNotEmpty) {
+                                              String barangayCode =
+                                                  selectedBarangayData['code'];
+                                              // Do something with the barangay code if needed
+                                            }
+                                          },
+                                          validator: (value) =>
+                                              value == null || value.isEmpty
+                                                  ? 'Barangay is required.'
+                                                  : null,
+                                          enabled: selectedCity !=
+                                              null, // Enable only if a city is selected
+                                        ),
+                                      ),
+                                      Gap(20),
+                                      Expanded(
+                                        child: TextFormField(
+                                          key: houseFieldKey,
+                                          focusNode: houseFocusNode,
+                                          enabled: selectedBarangay !=
+                                              null, // Enable only if a barangay is selected
+                                          controller: houseController,
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                "Building No./House No., Street, Subdivision/Village",
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
+                                                color: isHouseValid
+                                                    ? Color(0xFFD1E1FF)
+                                                    : Colors
+                                                        .red, // Normal or red depending on validation
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
+                                                color: isHouseValid
+                                                    ? Color(0xFFD1E1FF)
+                                                    : Colors
+                                                        .red, // Red border if invalid
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
+                                                color: isHouseValid
+                                                    ? Color(0xFFD1E1FF)
+                                                    : Colors
+                                                        .red, // Red border if invalid
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            errorText: isHouseValid
+                                                ? null
+                                                : 'Building No./House No., Street, Subdivision/Village are required.', // Display error message if invalid
+                                          ),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              isHouseValid = value
+                                                  .trim()
+                                                  .isNotEmpty; // Set to true if not empty
+                                            });
+                                          },
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Building No./House No., Street, Subdivision/Village are required.'; // Show error message
+                                            }
+                                            return null; // No error if valid
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-
-                        // City Dropdown
-                        if (selectedProvince != null)
-                          Column(
-                            children: [
-                              SizedBox(height: 16.0),
-                              DropdownButtonFormField<String>(
+                        Gap(20),
+                        // Text(
+                        //   "Industry",
+                        //   style: TextStyle(
+                        //     fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                        //     color: Color(0xff373030),
+                        //     fontFamily: 'Galano',
+                        //     fontWeight: FontWeight.w500,
+                        //   ),
+                        // ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // DropdownButtonFormField<String>(
+                            //   key: industryFieldKey,
+                            //   focusNode: industryFocusNode,
+                            //   isExpanded: true,
+                            //   hint: const Text('Select an industry'),
+                            //   value: _selectedIndustry,
+                            //   items: _industries.map<DropdownMenuItem<String>>(
+                            //       (String industry) {
+                            //     return DropdownMenuItem<String>(
+                            //       value: industry,
+                            //       child: Text(industry),
+                            //     );
+                            //   }).toList(),
+                            //   onChanged: (String? newValue) {
+                            //     setState(() {
+                            //       _selectedIndustry = newValue;
+                            //     });
+                            //   },
+                            //   validator: (value) {
+                            //     if (value == null || value.isEmpty) {
+                            //       return 'Industry is required.';
+                            //     }
+                            //     return null;
+                            //   },
+                            // ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Industry",
+                                  style: TextStyle(
+                                    fontSize:
+                                        ResponsiveSizes.bodyTextSize(sizeInfo),
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Gap(10),
+                            DropDownSearchFormField<String>(
+                              key: industryFieldKey,
+                              hideOnEmpty: true,
+                              hideOnError: true,
+                              hideOnLoading: true,
+                              autoFlipDirection: true,
+                              textFieldConfiguration: TextFieldConfiguration(
+                                controller: industryController,
+                                focusNode: industryFocusNode,
                                 decoration: InputDecoration(
-                                    labelText: 'Select City/Municipality'),
-                                value: selectedCity,
-                                items: cities
-                                    .map<DropdownMenuItem<String>>((city) {
-                                  return DropdownMenuItem<String>(
-                                    value: city['name'],
-                                    child: Text(city['name']),
-                                  );
-                                }).toList(),
-                                onChanged: selectedProvince != null
-                                    ? (value) {
-                                        setState(() {
-                                          selectedCity = value;
-                                          barangays = [];
-                                          selectedBarangay = null;
-                                        });
-                                        if (value != null) {
-                                          final selectedCitiesCode =
-                                              cities.firstWhere(
-                                            (city) => city['name'] == value,
-                                            orElse: () => null,
-                                          )['code'];
-                                          if (selectedCitiesCode != null) {
-                                            fetchBarangays(selectedCitiesCode);
-                                          }
-                                        }
-                                      }
-                                    : null,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'City is required.';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-
-                        // Barangay Dropdown
-                        if (selectedCity != null)
-                          Column(
-                            children: [
-                              SizedBox(height: 16.0),
-                              DropdownButtonFormField<String>(
-                                decoration: InputDecoration(
-                                    labelText: 'Select Barangay'),
-                                value: selectedBarangay,
-                                items: barangays
-                                    .map<DropdownMenuItem<String>>((barangay) {
-                                  return DropdownMenuItem<String>(
-                                    value: barangay['name'],
-                                    child: Text(barangay['name']),
-                                  );
-                                }).toList(),
-                                onChanged: selectedCity != null
-                                    ? (value) {
-                                        setState(() {
-                                          selectedBarangay = value;
-                                        });
-                                      }
-                                    : null,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Barangay is required.';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-
-                        //Other information
-                        if (selectedBarangay != null)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 16.0),
-                              TextFormField(
-                                controller: otherLocationInformation,
-                                decoration: InputDecoration(
-                                  hintText: "Street Name, Building, House No.",
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 16.0),
-                                  isDense: true,
+                                  labelText: 'Select Industry',
                                   border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFD1E1FF),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  errorText: isindustryValid
+                                      ? null
+                                      : 'Please select an industry from the list only.', // Show error text if invalid
+                                  focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
                                       color: Color(0xFFD1E1FF),
@@ -585,80 +2316,103 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                                       width: 1.5,
                                     ),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(
-                                      color: Color(0xFFD1E1FF),
-                                      width: 1.5,
-                                    ),
-                                  ),
                                 ),
-                                validator: (value) {
-                                  if (value!.isEmpty || value == null) {
-                                    return "This field is required.";
+                                onChanged: (value) {
+                                  final formattedIndustryName =
+                                      value.trim().toCapitalCase();
+
+                                  String? matchedIndustry;
+                                  for (var industry in _industries) {
+                                    if (industry.toLowerCase() ==
+                                        formattedIndustryName.toLowerCase()) {
+                                      matchedIndustry = industry;
+                                      break;
+                                    }
                                   }
+
+                                  setState(() {
+                                    if (matchedIndustry != null) {
+                                      industryController.text =
+                                          formattedIndustryName;
+                                      _selectedIndustry = formattedIndustryName;
+                                      isindustryValid = true;
+                                    } else {
+                                      isindustryValid = false;
+                                    }
+                                  });
+                                },
+                                onEditingComplete: () {
+                                  // When the user finishes editing, validate the region input
+                                  if (_selectedIndustry == null) {
+                                    setState(() {
+                                      isindustryValid =
+                                          false; // If no valid region is selected, mark as invalid
+                                    });
+                                  }
+                                  industryFocusNode
+                                      .unfocus(); // Unfocus the field when editing is complete
                                 },
                               ),
-                            ],
-                          ),
-
-                        const SizedBox(height: 20),
-                        const Text(
-                          "Industry",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xff373030),
-                            fontFamily: 'Galano',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            DropdownButtonFormField<String>(
-                              isExpanded: true,
-                              hint: const Text('Select an industry'),
-                              value: _selectedIndustry,
-                              items: _industries.map<DropdownMenuItem<String>>(
-                                  (String industry) {
-                                return DropdownMenuItem<String>(
-                                  value: industry,
-                                  child: Text(industry),
+                              noItemsFoundBuilder: (BuildContext context) =>
+                                  Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'No such industry found',
+                                  style: TextStyle(
+                                    fontSize:
+                                        ResponsiveSizes.bodyTextSize(sizeInfo),
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              suggestionsCallback: (pattern) {
+                                return Future.value(
+                                  _industries
+                                      .where((industry) => industry
+                                          .toLowerCase()
+                                          .contains(
+                                              pattern.toLowerCase().trim()))
+                                      .toList(),
                                 );
-                              }).toList(),
-                              onChanged: (String? newValue) {
+                              },
+                              itemBuilder: (context, industry) {
+                                return ListTile(
+                                  title: Text(industry),
+                                );
+                              },
+                              onSuggestionSelected: (industry) {
                                 setState(() {
-                                  _selectedIndustry = newValue;
+                                  _selectedIndustry = industry;
+                                  industryController.text = industry;
+                                  isindustryValid = true;
                                 });
                               },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Industry is required.';
-                                }
-                                return null;
-                              },
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Industry is required.'
+                                      : null,
                             ),
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           "Size",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
                             color: Color(0xff373030),
                             fontFamily: 'Galano',
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        Gap(10),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             DropdownButtonFormField<String>(
+                              key: sizeFieldKey,
+                              focusNode: sizeFocusNode,
                               isExpanded: true,
-                              hint: const Text('Select size'),
-                              value: _selectedSizeOfCompany,
+                              value: _selectedSizeOfCompany ?? sizeOfCompany[0],
                               items: sizeOfCompany
                                   .map<DropdownMenuItem<String>>((String size) {
                                 return DropdownMenuItem<String>(
@@ -669,6 +2423,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                               onChanged: (String? newValue) {
                                 setState(() {
                                   _selectedSizeOfCompany = newValue;
+                                  FocusScope.of(context).unfocus();
                                 });
                               },
                               validator: (value) {
@@ -677,11 +2432,38 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                                 }
                                 return null;
                               },
+                              decoration: InputDecoration(
+                                // labelText: 'Select size',
+                                labelStyle: TextStyle(color: Colors.grey),
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 16),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 2,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF3F51B5),
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Row(
+                        Row(
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -689,7 +2471,8 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                                 Text(
                                   "Description",
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize:
+                                        ResponsiveSizes.bodyTextSize(sizeInfo),
                                     color: Color(0xff373030),
                                     fontFamily: 'Galano',
                                     fontWeight: FontWeight.w500,
@@ -698,7 +2481,8 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                                 Text(
                                   "Introduce your company to people in few lines.",
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize:
+                                        ResponsiveSizes.noteTextSize(sizeInfo),
                                     color: Color(0xff373030),
                                     fontFamily: 'Galano',
                                   ),
@@ -707,22 +2491,99 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                             ),
                           ],
                         ),
+                        Gap(20),
                         TextFormField(
+                          key: descriptionFieldKey,
+                          focusNode: descriptionFocusNode,
                           controller: _description,
                           maxLines: 7,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
                             fontFamily: "Galano",
                           ),
                           decoration: InputDecoration(
                             hintText:
                                 "Present your company by communicating your business, your market position, your company culture, etc.",
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            isDense: true,
-                            hintStyle: const TextStyle(
+                            hintStyle: TextStyle(
                               color: Colors.grey,
-                              fontSize: 12,
+                              fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                              fontFamily: "Galano",
+                              fontWeight: FontWeight.w100,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: isdescriptionValid
+                                    ? Color(0xFFD1E1FF)
+                                    : Colors
+                                        .red, // Change border color based on validation
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: isdescriptionValid
+                                    ? Color(0xFFD1E1FF)
+                                    : Colors.red, // Red border if invalid
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: isdescriptionValid
+                                    ? Color(0xFFD1E1FF)
+                                    : Colors.red, // Red border if invalid
+                                width: 1.5,
+                              ),
+                            ),
+                            errorText: isdescriptionValid
+                                ? null
+                                : 'Description is required.', // Display error message if invalid
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              isdescriptionValid = value.trim().isNotEmpty;
+                            });
+                          },
+                          validator: (value) {
+                            final wordCount = value?.trim().isEmpty == true
+                                ? 0
+                                : value!.trim().split(RegExp(r'\s+')).length;
+                            if (wordCount < 100) {
+                              return 'At least 100 words are required.'; // Show error message
+                            }
+                            return null; // No error if valid
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Company's website (optional)",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w100,
+                          ),
+                        ),
+                        Gap(10),
+                        TextFormField(
+                          key: websiteKey,
+                          controller: _companyWebsite,
+                          style: TextStyle(
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                            fontFamily: "Galano",
+                          ),
+                          decoration: InputDecoration(
+                            hintText:
+                                "(e.g., huzzl.com, www.huzzl.com, https://huzzl.com)",
+                            // contentPadding: const EdgeInsets.symmetric(
+                            //     vertical: 8.0, horizontal: 16.0),
+                            // isDense: true,
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
                               fontFamily: "Galano",
                             ),
                             border: OutlineInputBorder(
@@ -748,86 +2609,60 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
                             ),
                           ),
                           validator: (value) {
-                            if (value!.isEmpty || value == null) {
-                              return "Company description is required.";
+                            final urlPattern =
+                                r'^(https?:\/\/)?([a-zA-Z0-9_-]+\.)*[a-zA-Z0-9_-]+\.[a-zA-Z]+(\/[a-zA-Z0-9_-]*)*\/?$';
+                            final regExp = RegExp(urlPattern);
+
+                            value = value!.trim();
+
+                            if (value != null && value.isNotEmpty) {
+                              // Validate only if the value is not empty
+                              if (!regExp.hasMatch(value)) {
+                                return 'Please enter a valid website URL';
+                              }
                             }
+                            return null; // If empty, or if validation is successful
                           },
                         ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          "Company's website (optional)",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xff373030),
-                            fontFamily: 'Galano',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        TextFormField(
-                          controller: _companyWebsite,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontFamily: "Galano",
-                          ),
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            isDense: true,
-                            hintStyle: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                              fontFamily: "Galano",
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD1E1FF),
-                                width: 1.5,
+                        sizeInfo.isMobile
+                            ? SizedBox(height: 20)
+                            : SizedBox(height: 30),
+                        sizeInfo.isMobile
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    child: BlueFilledCircleButton(
+                                        onPressed: () {
+                                          submitCompanyProfileForm();
+                                        },
+                                        text: "Submit"),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  BlueFilledCircleButton(
+                                    onPressed: () {
+                                      submitCompanyProfileForm();
+                                    },
+                                    text: "Submit",
+                                    width: 150,
+                                  ),
+                                ],
                               ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD1E1FF),
-                                width: 1.5,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFD1E1FF),
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                          // validator: (value) {
-                          //   if (value!.isEmpty || value == null) {
-                          //     return "Last name is required.";
-                          //   }
-                          // },
-                        ),
-                        const SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            BlueFilledCircleButton(
-                              onPressed: () {
-                                submitCompanyProfileForm();
-                              },
-                              text: "Submit",
-                              width: 150,
-                            ),
-                          ],
-                        )
+                        sizeInfo.isMobile
+                            ? SizedBox(height: 20)
+                            : SizedBox(height: 10),
                       ],
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

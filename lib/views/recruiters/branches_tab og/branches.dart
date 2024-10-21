@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/views/active_branches_view.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/views/archive_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/views/active_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/views/archive_branches_view.dart';
 
+import 'package:side_panel/side_panel.dart';
 class BranchesScreen extends StatefulWidget {
   const BranchesScreen({super.key});
 
@@ -231,7 +232,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                           ),
                         ),
                         const SizedBox(height: 10),
-                
+
                         // Region Dropdown
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.25,
@@ -261,7 +262,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                                   (region) => region['name'] == value,
                                   orElse: () => null,
                                 )['code'];
-                
+
                                 if (selectedRegionCode != null) {
                                   fetchProvinces(selectedRegionCode).then((_) {
                                     setStateDialog(
@@ -279,7 +280,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                           ),
                         ),
                         const SizedBox(height: 10),
-                
+
                         // Province Dropdown
                         if (selectedRegion != null)
                           SizedBox(
@@ -307,10 +308,11 @@ class _BranchesScreenState extends State<BranchesScreen>
                                       if (value != null) {
                                         final selectedProvinceCode =
                                             provinces.firstWhere(
-                                          (province) => province['name'] == value,
+                                          (province) =>
+                                              province['name'] == value,
                                           orElse: () => null,
                                         )['code'];
-                
+
                                         if (selectedProvinceCode != null) {
                                           fetchCities(selectedProvinceCode)
                                               .then((_) {
@@ -330,7 +332,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                             ),
                           ),
                         const SizedBox(height: 10),
-                
+
                         // City Dropdown
                         if (selectedProvince != null)
                           SizedBox(
@@ -339,7 +341,8 @@ class _BranchesScreenState extends State<BranchesScreen>
                               decoration: customHintTextInputDecoration(
                                   'Select City/Municipality'),
                               value: selectedCity,
-                              items: cities.map<DropdownMenuItem<String>>((city) {
+                              items:
+                                  cities.map<DropdownMenuItem<String>>((city) {
                                 return DropdownMenuItem<String>(
                                   value: city['name'],
                                   child: Text(city['name']),
@@ -377,7 +380,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                             ),
                           ),
                         const SizedBox(height: 10),
-                
+
                         // Barangay Dropdown
                         if (selectedCity != null)
                           SizedBox(
@@ -409,7 +412,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                             ),
                           ),
                         const SizedBox(height: 10),
-                
+
                         // Other location information field
                         if (selectedBarangay != null)
                           SizedBox(
@@ -425,7 +428,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                               },
                             ),
                           ),
-                
+
                         const SizedBox(height: 10),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.25,
@@ -654,7 +657,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                   children: [
                     const SizedBox(width: 20),
                     const Text(
-                      'Branches',
+                      'Managers',
                       style: TextStyle(
                         decoration: TextDecoration.none,
                         fontSize: 32,

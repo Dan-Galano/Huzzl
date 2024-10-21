@@ -141,7 +141,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
       'updatesController': updatesController.text,
       'preScreenQuestions': preScreeningController.text,
       'status': "open",
-      'posted_at': formattedCurrentDate,
+      'posted_at': Timestamp.now(),
     }).then((value) {
       print('Job post added successfully!');
     }).catchError((error) {
