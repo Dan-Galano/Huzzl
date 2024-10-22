@@ -139,8 +139,6 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
       }
     });
 
-
-
     industryFocusNode.addListener(() {
       if (!industryFocusNode.hasFocus) {
         industryFieldKey.currentState?.validate();
@@ -386,8 +384,20 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
     }
   }
 
+  //Link
+  List<String> socialMediaLinks = [];
+
   //SubmitForm
   void submitCompanyProfileForm() async {
+    if (fileNames.isEmpty) {
+      setState(() {
+        isFileNamesEmpty = true;
+      });
+    } else if (fileNames.isNotEmpty) {
+      setState(() {
+        isFileNamesEmpty = false;
+      });
+    }
     final isValidCompanyName = companyNameFieldKey.currentState!.validate();
     final isValidFirstName = ceoFirstNameFieldKey.currentState!.validate();
     final isValidLastName = ceoLastNameFieldKey.currentState!.validate();
@@ -411,24 +421,20 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
         isValidIndustry &&
         isValidSize &&
         isValidDescription &&
-        isValidWebsite && fileNames.isNotEmpty;
+        isValidWebsite &&
+        fileNames.isNotEmpty;
     if (isValid) {
       try {
-        if (fileNames.isEmpty) {
-      setState(() {
-        isFileNamesEmpty = true;
-      });
-    } else if (fileNames.isNotEmpty) {
-      setState(() {
-        isFileNamesEmpty = false;
-      });
-    }
         await uploadFiles();
         // Social Links
-        String inputSocialMedia = _socialMediaLinks.text;
-        List<String> socialMediaLinks =
-            inputSocialMedia.split(',').map((link) => link.trim()).toList();
-        print("Socials: $socialMediaLinks");
+        if (_socialMediaLinks.text.isNotEmpty) {
+          String inputSocialMedia = _socialMediaLinks.text;
+          setState(() {
+            socialMediaLinks =
+                inputSocialMedia.split(',').map((link) => link.trim()).toList();
+          });
+          print("Socials: $socialMediaLinks");
+        }
         await FirebaseFirestore.instance
             .collection('users')
             .doc(widget.userCredential.user!.uid)
