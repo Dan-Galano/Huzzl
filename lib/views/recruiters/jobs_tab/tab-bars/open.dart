@@ -6,6 +6,7 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart'
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/open_job_card.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class OpenJobs extends StatefulWidget {
   final User user;
@@ -48,46 +49,33 @@ class _OpenJobsState extends State<OpenJobs> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+ return Column(
+        children: [
+          const Gap(30),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 4, // Show 5 shimmer loading items
+              itemBuilder: (BuildContext context, int index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[200]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.grey[200], // Grey background for the shimmer
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    backgroundColor: Colors.transparent,
-                    content: Container(
-                      width: 105,
-                      height: 160,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Gap(10),
-                            Image.asset(
-                              'assets/images/huzzl_loading.gif',
-                              height: 100,
-                              width: 100,
-                            ),
-                            Gap(10),
-                            Text(
-                              "Loading...",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.italic,
-                                color: Color(0xFFfd7206),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    height: 110, // Height of each placeholder card
                   ),
                 );
-              }
+              },
+            ),
+          ),
+        ],
+      );
+    }
 
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
@@ -194,46 +182,33 @@ class _OpenJobsState extends State<OpenJobs> {
                 }
               } else {
                 // Show a loading spinner or a fallback UI while fetching data
-                return Center(
-                  child: AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                return Column(
+        children: [
+          const Gap(30),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 4, // Show 5 shimmer loading items
+              itemBuilder: (BuildContext context, int index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[200]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.grey[200], // Grey background for the shimmer
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    backgroundColor: Colors.transparent,
-                    content: Container(
-                      width: 105,
-                      height: 160,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white,
-                      ),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Gap(10),
-                            Image.asset(
-                              'assets/images/huzzl_loading.gif',
-                              height: 100,
-                              width: 100,
-                            ),
-                            Gap(10),
-                            Text(
-                              "Loading...",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.italic,
-                                color: Color(0xFFfd7206),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    height: 110, // Height of each placeholder card
                   ),
                 );
-              }
+              },
+            ),
+          ),
+        ],
+      );
+      }
             },
           ),
         ),

@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/paused_job_card.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PausedJobs extends StatefulWidget {
   final User user;
@@ -46,7 +47,33 @@ class _PausedJobsState extends State<PausedJobs> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+            return Column(
+        children: [
+          const Gap(30),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 4, // Show 5 shimmer loading items
+              itemBuilder: (BuildContext context, int index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[200]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.grey[200], // Grey background for the shimmer
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    height: 110, // Height of each placeholder card
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+ 
               }
 
               if (snapshot.hasError) {
@@ -153,7 +180,33 @@ class _PausedJobsState extends State<PausedJobs> {
                 }
               } else {
                 // Show a loading spinner or a fallback UI while fetching data
-                return Center(child: CircularProgressIndicator());
+          return Column(
+        children: [
+          const Gap(30),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 4, // Show 5 shimmer loading items
+              itemBuilder: (BuildContext context, int index) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[200]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.grey[200], // Grey background for the shimmer
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    height: 110, // Height of each placeholder card
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+ 
               }
             },
           ),

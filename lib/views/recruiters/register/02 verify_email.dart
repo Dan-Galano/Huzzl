@@ -90,7 +90,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
                     children: [
                       Gap(10),
                       Image.asset(
-                        'assets/images/huzzl_loading.gif',
+                        'assets/images/gif/huzzl_loading.gif',
                         height: 100,
                         width: 100,
                       ),

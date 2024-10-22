@@ -13,7 +13,7 @@ class NavBarLoginRegister extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-              child: Image.asset('assets/images/simpson.gif',
+              child: Image.asset('assets/images/huzzl.png',
                   width: ResponsiveSizes.huzzlTextLogo(sizeInfo)),
             ),
           ],

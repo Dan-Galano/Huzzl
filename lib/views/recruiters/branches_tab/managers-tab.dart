@@ -199,7 +199,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                     children: [
                       SizedBox(height: 10),
                       Image.asset(
-                        'assets/images/huzzl_loading.gif',
+                        'assets/images/gif/huzzl_loading.gif',
                         height: 100,
                         width: 100,
                       ),
@@ -685,7 +685,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                     children: [
                       SizedBox(height: 10),
                       Image.asset(
-                        'assets/images/huzzl_loading.gif',
+                        'assets/images/gif/huzzl_loading.gif',
                         height: 100,
                         width: 100,
                       ),
