@@ -1,7 +1,7 @@
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
 
 class JobSkills extends StatefulWidget {
   final VoidCallback nextPage;

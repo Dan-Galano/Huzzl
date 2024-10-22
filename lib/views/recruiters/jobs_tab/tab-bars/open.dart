@@ -48,46 +48,45 @@ class _OpenJobsState extends State<OpenJobs> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                 return Center(
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              backgroundColor: Colors.transparent,
-              content: Container(
-                width: 105,
-                height: 160,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Gap(10),
-                      Image.asset(
-                        'assets/images/huzzl_loading.gif',
-                        height: 100,
-                        width: 100,
+                return Center(
+                  child: AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    content: Container(
+                      width: 105,
+                      height: 160,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
                       ),
-                      Gap(10),
-                      Text(
-                        "Loading...",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Color(0xFFfd7206),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Gap(10),
+                            Image.asset(
+                              'assets/images/huzzl_loading.gif',
+                              height: 100,
+                              width: 100,
+                            ),
+                            Gap(10),
+                            Text(
+                              "Loading...",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                                color: Color(0xFFfd7206),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            ),
-          );
-      
+                );
               }
 
               if (snapshot.hasError) {
@@ -127,7 +126,7 @@ class _OpenJobsState extends State<OpenJobs> {
                         (jobPost) => jobPost.containsValue('open'),
                       )
                       .toList();
-                  
+
                   if (openJobs.isEmpty) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -195,46 +194,45 @@ class _OpenJobsState extends State<OpenJobs> {
                 }
               } else {
                 // Show a loading spinner or a fallback UI while fetching data
-                 return Center(
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              backgroundColor: Colors.transparent,
-              content: Container(
-                width: 105,
-                height: 160,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Gap(10),
-                      Image.asset(
-                        'assets/images/huzzl_loading.gif',
-                        height: 100,
-                        width: 100,
+                return Center(
+                  child: AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    content: Container(
+                      width: 105,
+                      height: 160,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
                       ),
-                      Gap(10),
-                      Text(
-                        "Loading...",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Color(0xFFfd7206),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Gap(10),
+                            Image.asset(
+                              'assets/images/huzzl_loading.gif',
+                              height: 100,
+                              width: 100,
+                            ),
+                            Gap(10),
+                            Text(
+                              "Loading...",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                                color: Color(0xFFfd7206),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-            ),
-          );
-      
+                );
               }
             },
           ),

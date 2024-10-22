@@ -9,13 +9,11 @@ class NavBarLoginRegister extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveBuilder(builder: (context, sizeInfo) {
       return Padding(
-        
         padding: EdgeInsets.all(ResponsiveSizes.paddingSmall(sizeInfo)),
         child: Row(
           children: [
             SizedBox(
-              
-              child: Image.asset('assets/images/huzzl.png',
+              child: Image.asset('assets/images/simpson.gif',
                   width: ResponsiveSizes.huzzlTextLogo(sizeInfo)),
             ),
           ],

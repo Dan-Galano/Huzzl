@@ -27,8 +27,6 @@ class RecruiterHomeScreen extends StatefulWidget {
 }
 
 class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
-
-
   Map<String, dynamic>? companyData;
   Map<String, dynamic>? userData;
   List<Map<String, dynamic>> jobPostsData = [];
@@ -158,7 +156,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     ),
   ];
 
-  int? _selectedIndex = 3;
+  int? _selectedIndex = 1;
   bool _isCandidatesScreen = false;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
@@ -236,6 +234,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     super.initState();
     getcompanyData();
   }
+
   bool _isCalendarScreen = false;
 
   void changeDestination(int index) {
@@ -283,11 +282,8 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
       case 0:
         return buildAdminContent(context, userData, user!);
       case 1:
-        return buildManagersContent(
-            context, userData, companyData, isStandaloneCompany);
+        return BuildManagersTabContent();
       case 2:
-        return BranchesScreen();
-      case 3:
         if (_isApplicationScreen) {
           return ApplicationScreen(
             onBack: () => toggleApplicationScreen(false),
@@ -313,9 +309,9 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           userData: userData!,
           initialIndex: _jobTabInitialIndex,
         );
-      case 4:
+      case 3:
         return buildInterviewsContent();
-      case 5:
+      case 4:
         return InterviewCalendar();
       default:
         return Text("No content available");
@@ -341,7 +337,6 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
 
     return ResponsiveBuilder(builder: (context, sizingInformation) {
       return Scaffold(
-        
         backgroundColor: Colors.white, //hahahah dito ka nagstart bhiee
         appBar: AppBar(
           elevation: 0,
@@ -443,23 +438,18 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                     label: const SizedBox.shrink(),
                   ),
                   NavigationRailDestination(
-                    icon: _buildNavItem(
-                        'assets/images/branches-tab.png', 'Branches', 2),
-                    label: const SizedBox.shrink(),
-                  ),
-                  NavigationRailDestination(
                     icon:
-                        _buildNavItem('assets/images/jobs-tab.png', 'Jobs', 3),
+                        _buildNavItem('assets/images/jobs-tab.png', 'Jobs', 2),
                     label: const SizedBox.shrink(),
                   ),
                   NavigationRailDestination(
                     icon: _buildNavItem(
-                        'assets/images/candidates-tab.png', 'Candidates', 4),
+                        'assets/images/candidates-tab.png', 'Candidates', 3),
                     label: const SizedBox.shrink(),
                   ),
                   NavigationRailDestination(
                     icon: _buildNavItem(
-                        'assets/images/interview-tab.png', 'Interviews', 5),
+                        'assets/images/interview-tab.png', 'Interviews', 4),
                     label: const SizedBox.shrink(),
                   ),
                 ],
@@ -533,28 +523,21 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                               ),
                               NavigationRailDestination(
                                 icon: _buildNavItem(
-                                    'assets/images/branches-tab.png',
-                                    'Branches',
-                                    2),
-                                label: const SizedBox.shrink(),
-                              ),
-                              NavigationRailDestination(
-                                icon: _buildNavItem(
-                                    'assets/images/jobs-tab.png', 'Jobs', 3),
+                                    'assets/images/jobs-tab.png', 'Jobs', 2),
                                 label: const SizedBox.shrink(),
                               ),
                               NavigationRailDestination(
                                 icon: _buildNavItem(
                                     'assets/images/candidates-tab.png',
                                     'Candidates',
-                                    4),
+                                    3),
                                 label: const SizedBox.shrink(),
                               ),
                               NavigationRailDestination(
                                 icon: _buildNavItem(
                                     'assets/images/interview-tab.png',
                                     'Interviews',
-                                    5),
+                                    4),
                                 label: const SizedBox.shrink(),
                               ),
                             ],
