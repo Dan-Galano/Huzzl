@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/views/active_branches_view.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/views/archive_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/views/active_branches_view.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/views/archive_branches_view.dart';
 
+import 'package:side_panel/side_panel.dart';
 class BranchesScreen extends StatefulWidget {
   const BranchesScreen({super.key});
 
@@ -656,7 +657,7 @@ class _BranchesScreenState extends State<BranchesScreen>
                   children: [
                     const SizedBox(width: 20),
                     const Text(
-                      'Branches',
+                      'Managers',
                       style: TextStyle(
                         decoration: TextDecoration.none,
                         fontSize: 32,

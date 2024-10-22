@@ -63,7 +63,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
     return Scaffold(
       body: Column(
         children: [
-          const NavBarLoginRegister(),
+           NavBarLoginRegister(),
           Expanded(
               child: PageView(
             controller: _pageController,

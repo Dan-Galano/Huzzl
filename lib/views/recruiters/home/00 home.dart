@@ -1,20 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/admin/admin_tab.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/branches.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/branches.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/managers-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
-import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/companyProfile.dart';
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
-import 'package:huzzl_web/widgets/navbar/navbar_home.dart';
-import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+import 'package:intl/intl.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class RecruiterHomeScreen extends StatefulWidget {
   const RecruiterHomeScreen({super.key});
@@ -24,6 +27,8 @@ class RecruiterHomeScreen extends StatefulWidget {
 }
 
 class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
+
+
   Map<String, dynamic>? companyData;
   Map<String, dynamic>? userData;
   List<Map<String, dynamic>> jobPostsData = [];
@@ -231,6 +236,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     super.initState();
     getcompanyData();
   }
+  bool _isCalendarScreen = false;
 
   void changeDestination(int index) {
     setState(() {
@@ -318,190 +324,250 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const NavBarLoginRegister(),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon:
-                Image.asset('assets/images/chat-icon-recruiter.png', width: 25),
+    String convertToRelativeTime(String dateString) {
+      // Parse the string into DateTime
+      DateFormat format =
+          DateFormat('MMMM d, yyyy h:mm a'); // Date format of input string
+      DateTime dateTime =
+          format.parse(dateString); // Convert the string to DateTime
+
+      // Use timeago to calculate the relative time
+      return timeago.format(dateTime,
+          locale: 'en_short'); // e.g., "30m ago", "2h ago", "1d ago"
+    }
+
+    String dateString = "October 11, 2024 3:00 PM";
+    print(convertToRelativeTime(dateString));
+
+    return ResponsiveBuilder(builder: (context, sizingInformation) {
+      return Scaffold(
+        
+        backgroundColor: Colors.white, //hahahah dito ka nagstart bhiee
+        appBar: AppBar(
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          backgroundColor:
+              sizingInformation.isDesktop ? Colors.white : Color(0xFF23294F),
+          title: Row(
+            children: [
+              !sizingInformation.isDesktop
+                  ? SvgPicture.asset(
+                      'assets/images/huzzl_ulo.svg',
+                      height: 35,
+                    )
+                  : Image.asset('assets/images/huzzl.png', width: 100)
+            ],
           ),
-          const SizedBox(width: 10),
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset('assets/images/notif-icon-recruiter.png',
-                width: 25),
-          ),
-          const SizedBox(width: 10),
-          IconButton(
-            onPressed: () async {
-              final RenderBox button = context.findRenderObject() as RenderBox;
-              final RenderBox overlay =
-                  Overlay.of(context).context.findRenderObject() as RenderBox;
-              final position =
-                  button.localToGlobal(Offset.zero, ancestor: overlay);
-              await showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(
-                  overlay.size.width - position.dx,
-                  position.dy + 55,
-                  position.dx + 30,
-                  overlay.size.height - position.dy,
-                ),
-                items: [
-                  const PopupMenuItem(
-                    value: 'company_profile',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.apartment_rounded,
-                          color: Color(0xff373030),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Company Profile',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xff373030),
-                            fontFamily: 'Galano',
-                          ),
-                        ),
-                      ],
+          automaticallyImplyLeading: false,
+          leading: !sizingInformation.isDesktop
+              ? Builder(
+                  builder: (context) => IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer(); // Open the drawer
+                    },
+                  ),
+                )
+              : null,
+          actions: [
+            sizingInformation.isDesktop
+                ? IconButton(
+                    onPressed: () {},
+                    icon: Image.asset('assets/images/chat-icon-recruiter.png',
+                        width: 25),
+                  )
+                : IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.message,
+                      color: Colors.white,
                     ),
                   ),
-                  const PopupMenuItem(
-                    value: 'close_account',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.close_outlined,
-                          color: Color(0xff373030),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Close Account',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xff373030),
-                            fontFamily: 'Galano',
-                          ),
-                        ),
-                      ],
+            const SizedBox(width: 10),
+            sizingInformation.isDesktop
+                ? IconButton(
+                    onPressed: () {},
+                    icon: Image.asset('assets/images/notif-icon-recruiter.png',
+                        width: 25),
+                  )
+                : IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.notifications,
+                      color: Colors.white,
                     ),
                   ),
-                  const PopupMenuItem(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.logout_rounded,
-                          color: Color(0xff373030),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Log Out',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xff373030),
-                            fontFamily: 'Galano',
-                          ),
-                        ),
-                      ],
+            const SizedBox(width: 10),
+            sizingInformation.isDesktop
+                ? IconButton(
+                    onPressed: () {
+                      showRecruiterLogoutDialog(context);
+                    },
+                    icon: Image.asset(
+                        'assets/images/building-icon-recruiter.png',
+                        width: 25),
+                  )
+                : IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.business,
+                      color: Colors.white,
                     ),
+                  ),
+          ],
+        ),
+        body: Row(
+          children: [
+            if (sizingInformation.isDesktop)
+              NavigationRail(
+                backgroundColor: const Color(0xFF23294F),
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: changeDestination,
+                minWidth: 200,
+                labelType: NavigationRailLabelType.none,
+                leading: const SizedBox(height: 20),
+                useIndicator: true,
+                indicatorColor: Colors.orange,
+                destinations: <NavigationRailDestination>[
+                  NavigationRailDestination(
+                    icon: _buildNavItem(
+                        'assets/images/manager-tab.png', 'Admin', 0),
+                    label: const SizedBox.shrink(),
+                  ),
+                  NavigationRailDestination(
+                    icon: _buildNavItem(
+                        'assets/images/manager-tab.png', 'Managers', 1),
+                    label: const SizedBox.shrink(),
+                  ),
+                  NavigationRailDestination(
+                    icon: _buildNavItem(
+                        'assets/images/branches-tab.png', 'Branches', 2),
+                    label: const SizedBox.shrink(),
+                  ),
+                  NavigationRailDestination(
+                    icon:
+                        _buildNavItem('assets/images/jobs-tab.png', 'Jobs', 3),
+                    label: const SizedBox.shrink(),
+                  ),
+                  NavigationRailDestination(
+                    icon: _buildNavItem(
+                        'assets/images/candidates-tab.png', 'Candidates', 4),
+                    label: const SizedBox.shrink(),
+                  ),
+                  NavigationRailDestination(
+                    icon: _buildNavItem(
+                        'assets/images/interview-tab.png', 'Interviews', 5),
+                    label: const SizedBox.shrink(),
                   ),
                 ],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ).then((value) {
-                switch (value) {
-                  case 'company_profile':
-                    showCompanyProfile(context);
-                    break;
-                  case 'close_account':
-                    showCloseAccountDialog(context);
-                    break;
-                  case 'logout':
-                    showRecruiterLogoutDialog(context);
-                    break;
-                }
-              });
-            },
-            icon: Image.asset('assets/images/building-icon-recruiter.png',
-                width: 25),
-          ),
-          const SizedBox(width: 20),
-        ],
-      ),
-      body: companyData == null || isStandaloneCompany == null
-          ? const Center(child: CircularProgressIndicator())
-          : Row(
-              children: [
-                NavigationRail(
-                  backgroundColor: const Color(0xFF23294F),
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: changeDestination,
-                  minWidth: 200,
-                  labelType: NavigationRailLabelType.none,
-                  leading: const SizedBox(height: 20),
-                  useIndicator: true,
-                  indicatorColor: Colors.orange,
-                  destinations: <NavigationRailDestination>[
-                    NavigationRailDestination(
-                      icon: _buildNavItem(
-                          'assets/images/manager-tab.png', 'Admin', 0),
-                      label: const SizedBox.shrink(),
-                    ),
-                    NavigationRailDestination(
-                      icon: _buildNavItem(
-                          'assets/images/manager-tab.png', 'Managers', 1),
-                      label: const SizedBox.shrink(),
-                    ),
-                    NavigationRailDestination(
-                      icon: _buildNavItem(
-                          'assets/images/branches-tab.png', 'Branches', 2),
-                      label: const SizedBox.shrink(),
-                    ),
-                    NavigationRailDestination(
-                      icon: _buildNavItem(
-                          'assets/images/jobs-tab.png', 'Jobs', 3),
-                      label: const SizedBox.shrink(),
-                    ),
-                    // NavigationRailDestination(
-                    //   icon: _buildNavItem(
-                    //       'assets/images/candidates-tab.png', 'Candidates', 4),
-                    //   label: const SizedBox.shrink(),
-                    // ),
-                    NavigationRailDestination(
-                      icon: _buildNavItem(
-                          'assets/images/interview-tab.png', 'Interviews', 4),
-                      label: const SizedBox.shrink(),
-                    ),
-                    NavigationRailDestination(
-                      icon: _buildNavItem(
-                          'assets/images/calendar-tab.png', 'Calendar', 5),
-                      label: const SizedBox.shrink(),
+              ),
+            const VerticalDivider(thickness: 1, width: 1),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: buildContent(),
                     ),
                   ],
                 ),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
+              ),
+            ),
+          ],
+        ),
+
+        drawer: sizingInformation.isMobile || sizingInformation.isTablet
+            ? Container(
+                width: 250,
+                child: Drawer(
+                  child: Container(
+                    color: const Color(0xFF23294F),
                     child: Column(
                       children: [
+                        // Add the huzzl.png at the top
+                        Gap(20),
+                        Padding(
+                          padding: const EdgeInsets.all(
+                              16.0), // Adjust padding as needed
+                          child: Image.asset('assets/images/huzzl.png',
+                              width: 100), // Adjust width or path if necessary
+                        ),
+                        const SizedBox(
+                            height:
+                                10), // Add a gap before the navigation items
+
+                        // NavigationRail inside the Drawer
                         Expanded(
-                          child: buildContent(),
+                          child: NavigationRail(
+                            backgroundColor: const Color(0xFF23294F),
+                            selectedIndex: _selectedIndex,
+                            onDestinationSelected: (int index) {
+                              // Change the destination and close the drawer
+                              changeDestination(index);
+                              Navigator.of(context).pop();
+                            },
+                            minWidth: 200,
+                            labelType: NavigationRailLabelType.none,
+                            leading: const SizedBox(
+                                height: 20), // Adjust space if necessary
+                            useIndicator: true,
+                            indicatorColor: Colors.orange,
+                            destinations: <NavigationRailDestination>[
+                              NavigationRailDestination(
+                                icon: _buildNavItem(
+                                    'assets/images/manager-tab.png',
+                                    'Admin',
+                                    0),
+                                label: const SizedBox.shrink(),
+                              ),
+                              NavigationRailDestination(
+                                icon: _buildNavItem(
+                                    'assets/images/manager-tab.png',
+                                    'Managers',
+                                    1),
+                                label: const SizedBox.shrink(),
+                              ),
+                              NavigationRailDestination(
+                                icon: _buildNavItem(
+                                    'assets/images/branches-tab.png',
+                                    'Branches',
+                                    2),
+                                label: const SizedBox.shrink(),
+                              ),
+                              NavigationRailDestination(
+                                icon: _buildNavItem(
+                                    'assets/images/jobs-tab.png', 'Jobs', 3),
+                                label: const SizedBox.shrink(),
+                              ),
+                              NavigationRailDestination(
+                                icon: _buildNavItem(
+                                    'assets/images/candidates-tab.png',
+                                    'Candidates',
+                                    4),
+                                label: const SizedBox.shrink(),
+                              ),
+                              NavigationRailDestination(
+                                icon: _buildNavItem(
+                                    'assets/images/interview-tab.png',
+                                    'Interviews',
+                                    5),
+                                label: const SizedBox.shrink(),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ],
-            ),
-    );
+              )
+            : null,
+      );
+    });
   }
 
   Widget _buildNavItem(String iconPath, String label, int index) {

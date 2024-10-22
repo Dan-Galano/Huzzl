@@ -28,12 +28,14 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  change_case: ^2.1.0
   cloud_firestore: ^5.1.0
   cupertino_icons: ^1.0.6
   desktop_drop: 0.4.4
   docx_to_text: ^1.0.1
   drop_down_search_field: ^1.0.4
   email_validator: ^3.0.0
+  excel: ^4.0.6
   file_picker: 8.0.7
   firebase_auth: ^5.1.2
   firebase_core: ^3.2.0
@@ -41,19 +43,28 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_easyloading: ^3.0.5
+  flutter_svg: ^2.0.10+1
   flutter_typeahead: ^5.2.0
   flutter_web_plugins:
     sdk: flutter
   gap: ^3.0.1
+  google_sign_in: ^6.2.1
+  google_sign_in_web: ^0.12.4+2
   html: ^0.15.4
   http: ^1.2.2
   image_picker: ^1.1.2
   intl: ^0.19.0
+  modal_bottom_sheet: ^3.0.0
+  path_provider: ^2.1.4
   provider: ^6.1.2
   responsive_builder: ^0.7.1
+  shimmer: ^3.0.0
+  side_panel: ^0.1.0
   syncfusion_flutter_calendar: ^27.1.50
   syncfusion_flutter_pdf: 27.1.48
   syncfusion_flutter_pdfviewer: ^27.1.48
+  timeago: ^3.7.0
+  toggle_switch: ^2.3.0
   url_launcher: ^6.3.0
 
 dev_dependencies:
@@ -75,6 +86,8 @@ flutter:
     - assets/images/
     - assets/images/pfp/
     - assets/pdf/
+    - assets/templates/
+    - assets/templates/huzzl_bulk-upload-branches.xlsx
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

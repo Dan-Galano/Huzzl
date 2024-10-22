@@ -33,7 +33,10 @@ class _JobseekerMainScreenState extends State<JobseekerMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
+      
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(80.0),
         child: NavBarHome(

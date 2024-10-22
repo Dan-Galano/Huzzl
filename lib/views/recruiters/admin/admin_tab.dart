@@ -4,7 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/admin/views/active_view.dart';
 import 'package:huzzl_web/views/recruiters/admin/views/archive_view.dart';
 import 'package:huzzl_web/views/recruiters/admin/widgets/add_user_modal.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 Widget buildAdminContent(BuildContext context, userData, User user) {
   return StatefulBuilder(
@@ -20,7 +21,7 @@ Widget buildAdminContent(BuildContext context, userData, User user) {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Add new sub-admin",
                     style: TextStyle(
                       fontFamily: "Galano",
@@ -53,15 +54,16 @@ Widget buildAdminContent(BuildContext context, userData, User user) {
         );
       }
 
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                double screenWidth = constraints.maxWidth;
-                double textFieldWidth = screenWidth * 0.7;
-                double spacing = screenWidth > 600 ? 20 : 10;
+      return ResponsiveBuilder(builder: (context, sizeInfo) {
+        return Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  double screenWidth = constraints.maxWidth;
+                  double textFieldWidth = screenWidth * 0.7;
+                  double spacing = screenWidth > 600 ? 20 : 10;
 
                 return Row(
                   children: [
@@ -165,14 +167,15 @@ Widget buildAdminContent(BuildContext context, userData, User user) {
                     user: user,
                   ),
 
-                  // Archive Tab Content
-                  CompanyAdminsArchive(userData: userData),
-                ],
+                    // Archive Tab Content
+                    CompanyAdminsArchive(userData: userData),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      });
     },
   );
 }

@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/responsive_sizes.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 class NavBarLoginRegister extends StatelessWidget {
-  const NavBarLoginRegister({super.key});
+  NavBarLoginRegister({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(        
-        children: [
-          SizedBox(
-            child: Image.asset('assets/images/huzzl.png', width: 80),
-          ),
-        ],
-      ),
-    );
+    return ResponsiveBuilder(builder: (context, sizeInfo) {
+      return Padding(
+        
+        padding: EdgeInsets.all(ResponsiveSizes.paddingSmall(sizeInfo)),
+        child: Row(
+          children: [
+            SizedBox(
+              
+              child: Image.asset('assets/images/huzzl.png',
+                  width: ResponsiveSizes.huzzlTextLogo(sizeInfo)),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

@@ -135,7 +135,7 @@ class _RecruiterRegistrationScreenState
     return Scaffold(
       body: Column(
         children: [
-          const NavBarLoginRegister(),
+           NavBarLoginRegister(),
           Expanded(
               child: PageView(
             controller: _pageController,
