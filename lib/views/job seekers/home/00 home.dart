@@ -512,7 +512,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                   child: Column(
                                     children: [
                                       Image.asset(
-                                        'assets/images/huzzl_loading.gif',
+                                        'assets/images/gif/huzzl_loading.gif',
                                         height: 80,
                                       ),
                                       Text(

@@ -122,7 +122,45 @@ class CompanyAdminsActive extends StatelessWidget {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      backgroundColor: Colors.transparent,
+                      content: Container(
+                        width: 105,
+                        height: 160,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: Colors.white,
+                        ),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              SizedBox(height: 10),
+                              Image.asset(
+                                'assets/images/gif/huzzl_loading.gif',
+                                height: 100,
+                                width: 100,
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Almost there...",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FontStyle.italic,
+                                  color: Color(0xFFfd7206),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
                 }
 
                 if (snapshot.hasError) {

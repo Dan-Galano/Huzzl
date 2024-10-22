@@ -156,7 +156,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     ),
   ];
 
-  int? _selectedIndex = 1;
+  int? _selectedIndex = 0;
   bool _isCandidatesScreen = false;
   bool _isApplicationScreen = false;
   bool _isSlApplicationScreen = false;
@@ -274,9 +274,46 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
 
   Widget buildContent() {
     if (companyData == null || isStandaloneCompany == null) {
-      return const Center(
-          child:
-              CircularProgressIndicator()); // Show a loader while fetching data
+      return Center(
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: Colors.transparent,
+          content: Container(
+            width: 105,
+            height: 160,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+            ),
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Image.asset(
+                    'assets/images/gif/huzzl_loading.gif',
+                    height: 100,
+                    width: 100,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Almost there...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Color(0xFFfd7206),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      // Show a loader while fetching data
     }
     switch (_selectedIndex) {
       case 0:

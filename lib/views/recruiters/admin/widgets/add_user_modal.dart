@@ -3,6 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 
 class MyFormModal extends StatefulWidget {
@@ -60,13 +61,41 @@ class _MyFormModalState extends State<MyFormModal> {
         context: context,
         barrierDismissible: false,
         builder: (context) {
-          return const AlertDialog(
-            content: Row(
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Text("Creating sub-admim..."),
-              ],
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: Colors.transparent,
+            content: Container(
+              width: 105,
+              height: 160,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Gap(10),
+                    Image.asset(
+                      'assets/images/gif/huzzl_loading.gif',
+                      height: 100,
+                      width: 100,
+                    ),
+                    Gap(10),
+                    Text(
+                      "Creating sub-admin...",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFFfd7206),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         },

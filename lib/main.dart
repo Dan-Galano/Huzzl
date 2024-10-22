@@ -132,7 +132,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                       children: [
                         Gap(10),
                         Image.asset(
-                          'assets/images/huzzl_loading.gif',
+                          'assets/images/gif/huzzl_loading.gif',
                           height: 100,
                           width: 100,
                         ),
@@ -189,7 +189,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                             children: [
                               Gap(10),
                               Image.asset(
-                                'assets/images/huzzl_loading.gif',
+                                'assets/images/gif/huzzl_loading.gif',
                                 height: 100,
                                 width: 100,
                               ),
@@ -225,7 +225,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 if (userType == 'jobseeker') {
                   return JobseekerMainScreen();
                 } else if (userType == 'recruiter') {
-                
                   return RecruiterHomeScreen();
                 } else {
                   return LoginRegister();
