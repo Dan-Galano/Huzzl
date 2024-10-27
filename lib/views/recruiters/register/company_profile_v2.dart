@@ -73,6 +73,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
   final sizeFieldKey = GlobalKey<FormFieldState>();
   final descriptionFieldKey = GlobalKey<FormFieldState>();
   final websiteKey = GlobalKey<FormFieldState>();
+  final socialMediaKey = GlobalKey<FormFieldState>();
   bool hasInteracted = false;
 
   bool isRegionValid = true;
@@ -410,6 +411,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
     final isValidSize = sizeFieldKey.currentState!.validate();
     final isValidDescription = descriptionFieldKey.currentState!.validate();
     final isValidWebsite = websiteKey.currentState!.validate();
+    final isValidSocialMedia = socialMediaKey.currentState!.validate();
     bool isValid = isValidCompanyName &&
         isValidFirstName &&
         isValidLastName &&
@@ -422,6 +424,7 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
         isValidSize &&
         isValidDescription &&
         isValidWebsite &&
+        isValidSocialMedia &&
         fileNames.isNotEmpty;
     if (isValid) {
       try {
@@ -456,8 +459,9 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
           'companyWebsite': _companyWebsite.text.isNotEmpty
               ? _companyWebsite.text.toLowerCase().trim()
               : 'none',
-          'companyLinks':
-              _socialMediaLinks.text.isNotEmpty ? socialMediaLinks : "none",
+          'companyLinks': _socialMediaLinks.text.isNotEmpty
+              ? socialMediaLinks
+              : "not specified",
         });
 
         Navigator.of(context).push(
@@ -2684,6 +2688,61 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                         TextFormField(
                           key: websiteKey,
                           controller: _companyWebsite,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: "Galano",
+                          ),
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            isDense: true,
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontFamily: "Galano",
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD1E1FF),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          // validator: (value) {
+                          //   if (value!.isEmpty || value == null) {
+                          //     return "Last name is required.";
+                          //   }
+                          // },
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Company's Social Media Links (optional)",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w100,
+                          ),
+                        ),
+                        Gap(10),
+                        TextFormField(
+                          key: socialMediaKey,
+                          controller: _socialMediaLinks,
                           style: const TextStyle(
                             fontSize: 12,
                             fontFamily: "Galano",

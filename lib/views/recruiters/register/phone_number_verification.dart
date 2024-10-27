@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
 import 'package:huzzl_web/views/recruiters/register/sample.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -23,6 +24,8 @@ class PhoneNumberVerification extends StatefulWidget {
 
 class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //Last three digits of the number
+  String lastThreeDigits = "";
   String? _verificationId;
   final List<TextEditingController> _controllers =
       List.generate(6, (index) => TextEditingController());
@@ -36,6 +39,20 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
   void initState() {
     super.initState();
     _sendVerificationCode(); // Automatically send OTP when the screen loads
+    lastThreeDigitFunc();
+  }
+
+  void lastThreeDigitFunc() {
+    String phoneNumberTemp = widget.phoneNumber;
+    int numberLength = phoneNumberTemp.length - 3;
+
+    for (var i = numberLength; i < phoneNumberTemp.length; i++) {
+      setState(() {
+        lastThreeDigits += phoneNumberTemp[i];
+      });
+    }
+
+    print("Phone: $lastThreeDigits");
   }
 
   void _startTimer() {
@@ -87,8 +104,16 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
           }
           _remainingSeconds = 300; // Reset timer to 2 minutes
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Code sent to ${widget.phoneNumber}')),
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text('Code sent to ${widget.phoneNumber}')),
+        // );
+
+        EasyLoading.showToast(
+          'Code sent to *** **** *$lastThreeDigits',
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+          // maskType: EasyLoadingMaskType.black,
         );
       },
       codeAutoRetrievalTimeout: (String verificationId) {
@@ -152,8 +177,16 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
       }
     } on FirebaseAuthException catch (e) {
       print('Error linking phone number: ${e.message}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error linking phone number: ${e.message}')),
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Error linking phone number: ${e.message}')),
+      // );
+
+      EasyLoading.showToast(
+        'Error linking phone number: The code you provided is incorrect.',
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+        // maskType: EasyLoadingMaskType.black,
       );
       setState(() {
         _isLoading = false;
@@ -258,10 +291,10 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                const Text(
-                                  'Please enter the send code to *** **** *789',
+                                Text(
+                                  'Please enter the send code to *** **** *$lastThreeDigits',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontFamily: 'Galano',
                                   ),
                                 ),

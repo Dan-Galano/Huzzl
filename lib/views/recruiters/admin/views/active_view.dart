@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/admin/widgets/edit_subadmin_modal.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
+import 'package:huzzl_web/widgets/buttons/gray/grayfilled_boxbutton.dart';
 
 class CompanyAdminsActive extends StatelessWidget {
   final dynamic userData;
@@ -11,6 +16,243 @@ class CompanyAdminsActive extends StatelessWidget {
     required this.user,
     super.key,
   });
+
+  void editSubAdmin(
+    BuildContext context,
+    String fname,
+    String lname,
+    String email,
+    String phoneNumber,
+    String password,
+    List permissions,
+    String documentId,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Edit sub-admin",
+                style: TextStyle(
+                  fontFamily: "Galano",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          contentPadding: EdgeInsets.all(20),
+          insetPadding: EdgeInsets.all(20),
+          content: SingleChildScrollView(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: EditSubadminModal(
+                user: user,
+                firstName: fname,
+                lastName: lname,
+                email: email,
+                password: password,
+                phoneNumber: phoneNumber,
+                permissions: permissions,
+                documentId: documentId,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void archivedSubAdmin(BuildContext context, String documentId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            width: 600, // Set a specific width
+            height: 250, // Set a specific height
+            child: Card(
+              color: Colors.white, // Set the card color to white
+              elevation: 4, // Optional elevation for shadow effect
+              margin: EdgeInsets.zero, // Remove default margin
+              child: Padding(
+                padding:
+                    const EdgeInsets.all(20), // Add padding inside the card
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Top right close button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10), // Spacing
+                    // Centered content
+                    const Center(
+                      child: Column(
+                        children: const [
+                          Text(
+                            "Archived sub-admin?",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                          Text(
+                            "Are you sure you want to archived sub-admin?",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30), // Spacing
+                    // Button centered below text
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        BlueFilledBoxButton(
+                          onPressed: () {
+                            archiveSubAdminFunction(context, documentId);
+                          },
+                          text: "Yes",
+                          width: 180,
+                        ),
+                        GrayFilledBoxButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          text: "No",
+                          width: 180,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void archiveSubAdminFunction(
+    BuildContext context,
+    String documentId,
+  ) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: Colors.transparent,
+          content: Container(
+            width: 105,
+            height: 160,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+            ),
+            child: Center(
+              child: Column(
+                children: [
+                  const Gap(10),
+                  Image.asset(
+                    'assets/images/gif/huzzl_loading.gif',
+                    height: 100,
+                    width: 100,
+                  ),
+                  const Gap(10),
+                  const Text(
+                    "Archiving sub-admin...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Color(0xFFfd7206),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    //Create sub-admin account
+    // print("Edit form is goods: ${widget.documentId}");
+
+    try {
+      //Edit Here
+      DocumentReference userDoc = FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .collection("sub_admins")
+          .doc(documentId);
+
+      await userDoc.update({
+        "status": "archived",
+        "edited_at": DateTime.now(),
+      });
+
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    } on FirebaseAuthException catch (e) {
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text("Error: ${e.message}")),
+      // );
+      EasyLoading.showToast(
+        "⚠️ ${e.message}",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+        // maskType: EasyLoadingMaskType.black,
+      );
+      // Navigator.pop(context);
+      Navigator.of(context).pop();
+    } catch (e) {
+      EasyLoading.showToast(
+        "An unexpected error occurred.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+        // maskType: EasyLoadingMaskType.black,
+      );
+      Navigator.pop(context);
+    }
+
+    // print("SUBMITTED FORM");
+    // print("Permissions: $subAdminPermission");
+    // print(
+    //     "Data: ${_firstname.text} ${_lastname.text} ${_email.text} ${_password.text} ${_phoneNumber.text}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +269,7 @@ class CompanyAdminsActive extends StatelessWidget {
               width: double.infinity, // Take full available width
               child: DataTable(
                 columnSpacing: 20,
-                columns: [
+                columns: const [
                   DataColumn(label: Text("Firstname")),
                   DataColumn(label: Text("Lastname")),
                   DataColumn(label: Text("Role")),
@@ -49,7 +291,8 @@ class CompanyAdminsActive extends StatelessWidget {
                     cells: [
                       DataCell(Text("${userData["hiringManagerFirstName"]}")),
                       DataCell(Text("${userData["hiringManagerLastName"]}")),
-                      DataCell(Text(userData['role'] ?? '')),
+                      DataCell(Text(
+                          userData['role'] == "recruiter" ? "Admin" : 'None')),
                       DataCell(Text("${userData["email"]}")),
                       DataCell(Text("${userData["phone"] ?? 'N/A'}")),
                       DataCell(
@@ -76,7 +319,7 @@ class CompanyAdminsActive extends StatelessWidget {
                                 overlay.size.height - position.dy,
                               ),
                               items: [
-                                PopupMenuItem(
+                                const PopupMenuItem(
                                   value: 'archived',
                                   child: Row(
                                     children: [
@@ -138,14 +381,14 @@ class CompanyAdminsActive extends StatelessWidget {
                         child: Center(
                           child: Column(
                             children: [
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Image.asset(
                                 'assets/images/gif/huzzl_loading.gif',
                                 height: 100,
                                 width: 100,
                               ),
-                              SizedBox(height: 10),
-                              Text(
+                              const SizedBox(height: 10),
+                              const Text(
                                 "Almost there...",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -169,9 +412,12 @@ class CompanyAdminsActive extends StatelessWidget {
 
                 if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                   // Convert snapshot data to a list of maps
-                  final subAdminsData = snapshot.data!.docs
-                      .map((doc) => doc.data() as Map<String, dynamic>)
-                      .toList();
+                  // final subAdminsData = snapshot.data!.docs
+                  //     .map((doc) => doc.data() as Map<String, dynamic>)
+                  //     .toList();
+
+                  final subAdminsData = snapshot.data!.docs;
+                  print('Number of documents: ${subAdminsData.length}');
 
                   return Container(
                     width: double.infinity, // Take full available width
@@ -185,68 +431,123 @@ class CompanyAdminsActive extends StatelessWidget {
                         DataColumn(label: Text("Phone")),
                         DataColumn(label: Text("Action")),
                       ],
-                      rows: subAdminsData.map((subAdminData) {
-                        return DataRow(
-                          cells: [
-                            DataCell(
-                                Text(subAdminData['subAdminFirstName'] ?? '')),
-                            DataCell(
-                                Text(subAdminData['subAdminLastName'] ?? '')),
-                            DataCell(Text((subAdminData['permissions'] as List)
-                                    .join(", ") ??
-                                '')),
-                            DataCell(Text(subAdminData['subAdminEmail'] ?? '')),
-                            DataCell(Text(
-                                subAdminData['subAdminPhoneNumber'] ?? '')),
-                            DataCell(
-                              IconButton(
-                                onPressed: () async {
-                                  // Your existing logic for the icon button
-                                  final RenderBox button =
-                                      context.findRenderObject() as RenderBox;
-                                  final RenderBox overlay = Overlay.of(context)
-                                      .context
-                                      .findRenderObject() as RenderBox;
+                      rows: subAdminsData
+                          .map((data) {
+                            final documentId = data.id;
+                            final subAdminData =
+                                data.data() as Map<String, dynamic>;
 
-                                  final position = button.localToGlobal(
-                                      Offset.zero,
-                                      ancestor: overlay);
+                            if (subAdminData['status'] != "active") {
+                              return null; // Return null if not active to skip this row
+                            }
 
-                                  await showMenu(
-                                    context: context,
-                                    position: RelativeRect.fromLTRB(
-                                      position.dx,
-                                      position.dy,
-                                      overlay.size.width -
-                                          position.dx -
-                                          button.size.width,
-                                      overlay.size.height - position.dy,
-                                    ),
-                                    items: [
-                                      PopupMenuItem(
-                                        value: 'archived',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.feedback_outlined,
-                                                color: Colors.grey),
-                                            SizedBox(width: 8),
-                                            Text('Archived'),
-                                          ],
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(data['subAdminFirstName'] ?? '')),
+                                DataCell(Text(
+                                    subAdminData['subAdminLastName'] ?? '')),
+                                const DataCell(Text("Sub-admin")),
+                                DataCell(
+                                    Text(subAdminData['subAdminEmail'] ?? '')),
+                                DataCell(Text(
+                                    subAdminData['subAdminPhoneNumber'] ?? '')),
+                                DataCell(
+                                  Builder(
+                                    builder: (BuildContext context) {
+                                      return IconButton(
+                                        onPressed: () async {
+                                          final RenderBox button = context
+                                              .findRenderObject() as RenderBox;
+                                          final RenderBox overlay =
+                                              Overlay.of(context)
+                                                      .context
+                                                      .findRenderObject()
+                                                  as RenderBox;
+
+                                          final Offset position =
+                                              button.localToGlobal(Offset.zero,
+                                                  ancestor: overlay);
+
+                                          await showMenu(
+                                            context: context,
+                                            position: RelativeRect.fromLTRB(
+                                              position.dx,
+                                              position.dy,
+                                              overlay.size.width -
+                                                  position.dx -
+                                                  button.size.width,
+                                              overlay.size.height - position.dy,
+                                            ),
+                                            items: const [
+                                              PopupMenuItem(
+                                                value: 'edit',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.edit,
+                                                        color: Colors.grey),
+                                                    SizedBox(width: 8),
+                                                    Text('Edit'),
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 'archived',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                        Icons.feedback_outlined,
+                                                        color: Colors.grey),
+                                                    SizedBox(width: 8),
+                                                    Text('Archived'),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ).then((value) {
+                                            // Handle menu actions if needed
+                                            if (value == "edit") {
+                                              String fname = subAdminData[
+                                                  'subAdminFirstName'];
+                                              String lname = subAdminData[
+                                                  'subAdminLastName'];
+                                              String email =
+                                                  subAdminData['subAdminEmail'];
+                                              String password = subAdminData[
+                                                  'subAdminPassword'];
+                                              String phoneNumber = subAdminData[
+                                                  'subAdminPhoneNumber'];
+                                              List permissions =
+                                                  subAdminData['permissions'];
+
+                                              editSubAdmin(
+                                                context,
+                                                fname,
+                                                lname,
+                                                email,
+                                                phoneNumber,
+                                                password,
+                                                permissions,
+                                                documentId,
+                                              );
+                                            } else if (value == "archived") {
+                                              archivedSubAdmin(
+                                                  context, documentId);
+                                            }
+                                          });
+                                        },
+                                        icon: Image.asset(
+                                          'assets/images/three-dot-icon-data-table.png',
                                         ),
-                                      ),
-                                    ],
-                                  ).then((value) {
-                                    // Handle menu actions if needed
-                                  });
-                                },
-                                icon: Image.asset(
-                                  'assets/images/three-dot-icon-data-table.png',
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
+                                      );
+                                    },
+                                  ),
+                                )
+                              ],
+                            );
+                          })
+                          .where((row) => row != null) // Filter out null rows
+                          .cast<DataRow>() // Cast to List<DataRow>
+                          .toList(), // Convert to List<DataRow>,
                     ),
                   );
                 } else {
