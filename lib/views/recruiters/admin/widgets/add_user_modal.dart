@@ -125,6 +125,7 @@ class _MyFormModalState extends State<MyFormModal> {
           "subAdminPhoneNumber": _phoneNumber.text,
           "permissions": subAdminPermission,
           "assigned_by": widget.user.uid,
+          'status' : 'active',
           "created_at": DateTime.now(),
         });
         // Check if the user creation was successful
