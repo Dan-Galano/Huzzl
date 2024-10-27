@@ -411,16 +411,28 @@ class CompanyAdminsActive extends StatelessWidget {
                 }
 
                 if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                  // Convert snapshot data to a list of maps
-                  // final subAdminsData = snapshot.data!.docs
-                  //     .map((doc) => doc.data() as Map<String, dynamic>)
-                  //     .toList();
+                  // Filter active sub-admins
+                  final activeSubAdminsData = snapshot.data!.docs
+                      .where((data) =>
+                          (data.data() as Map<String, dynamic>)['status'] ==
+                          "active")
+                      .toList();
 
-                  final subAdminsData = snapshot.data!.docs;
-                  print('Number of documents: ${subAdminsData.length}');
+                  if (activeSubAdminsData.isEmpty) {
+                    // No active sub-admins, display message
+                    return const Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "You have not added any sub-admins yet.",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
+                    );
+                  }
 
                   return Container(
-                    width: double.infinity, // Take full available width
+                    width: double.infinity,
                     child: DataTable(
                       columnSpacing: 20,
                       columns: const [
@@ -431,132 +443,117 @@ class CompanyAdminsActive extends StatelessWidget {
                         DataColumn(label: Text("Phone")),
                         DataColumn(label: Text("Action")),
                       ],
-                      rows: subAdminsData
-                          .map((data) {
-                            final documentId = data.id;
-                            final subAdminData =
-                                data.data() as Map<String, dynamic>;
+                      rows: activeSubAdminsData.map((data) {
+                        final documentId = data.id;
+                        final subAdminData =
+                            data.data() as Map<String, dynamic>;
 
-                            if (subAdminData['status'] != "active") {
-                              return null; // Return null if not active to skip this row
-                            }
-
-                            return DataRow(
-                              cells: [
-                                DataCell(Text(data['subAdminFirstName'] ?? '')),
-                                DataCell(Text(
-                                    subAdminData['subAdminLastName'] ?? '')),
-                                const DataCell(Text("Sub-admin")),
-                                DataCell(
-                                    Text(subAdminData['subAdminEmail'] ?? '')),
-                                DataCell(Text(
-                                    subAdminData['subAdminPhoneNumber'] ?? '')),
-                                DataCell(
-                                  Builder(
-                                    builder: (BuildContext context) {
-                                      return IconButton(
-                                        onPressed: () async {
-                                          final RenderBox button = context
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                                Text(subAdminData['subAdminFirstName'] ?? '')),
+                            DataCell(
+                                Text(subAdminData['subAdminLastName'] ?? '')),
+                            const DataCell(Text("Sub-admin")),
+                            DataCell(Text(subAdminData['subAdminEmail'] ?? '')),
+                            DataCell(Text(
+                                subAdminData['subAdminPhoneNumber'] ?? '')),
+                            DataCell(
+                              Builder(
+                                builder: (BuildContext context) {
+                                  return IconButton(
+                                    onPressed: () async {
+                                      final RenderBox button = context
+                                          .findRenderObject() as RenderBox;
+                                      final RenderBox overlay =
+                                          Overlay.of(context)
+                                              .context
                                               .findRenderObject() as RenderBox;
-                                          final RenderBox overlay =
-                                              Overlay.of(context)
-                                                      .context
-                                                      .findRenderObject()
-                                                  as RenderBox;
 
-                                          final Offset position =
-                                              button.localToGlobal(Offset.zero,
-                                                  ancestor: overlay);
+                                      final Offset position =
+                                          button.localToGlobal(Offset.zero,
+                                              ancestor: overlay);
 
-                                          await showMenu(
-                                            context: context,
-                                            position: RelativeRect.fromLTRB(
-                                              position.dx,
-                                              position.dy,
-                                              overlay.size.width -
-                                                  position.dx -
-                                                  button.size.width,
-                                              overlay.size.height - position.dy,
-                                            ),
-                                            items: const [
-                                              PopupMenuItem(
-                                                value: 'edit',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.edit,
-                                                        color: Colors.grey),
-                                                    SizedBox(width: 8),
-                                                    Text('Edit'),
-                                                  ],
-                                                ),
-                                              ),
-                                              PopupMenuItem(
-                                                value: 'archived',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                        Icons.feedback_outlined,
-                                                        color: Colors.grey),
-                                                    SizedBox(width: 8),
-                                                    Text('Archived'),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ).then((value) {
-                                            // Handle menu actions if needed
-                                            if (value == "edit") {
-                                              String fname = subAdminData[
-                                                  'subAdminFirstName'];
-                                              String lname = subAdminData[
-                                                  'subAdminLastName'];
-                                              String email =
-                                                  subAdminData['subAdminEmail'];
-                                              String password = subAdminData[
-                                                  'subAdminPassword'];
-                                              String phoneNumber = subAdminData[
-                                                  'subAdminPhoneNumber'];
-                                              List permissions =
-                                                  subAdminData['permissions'];
-
-                                              editSubAdmin(
-                                                context,
-                                                fname,
-                                                lname,
-                                                email,
-                                                phoneNumber,
-                                                password,
-                                                permissions,
-                                                documentId,
-                                              );
-                                            } else if (value == "archived") {
-                                              archivedSubAdmin(
-                                                  context, documentId);
-                                            }
-                                          });
-                                        },
-                                        icon: Image.asset(
-                                          'assets/images/three-dot-icon-data-table.png',
+                                      await showMenu(
+                                        context: context,
+                                        position: RelativeRect.fromLTRB(
+                                          position.dx,
+                                          position.dy,
+                                          overlay.size.width -
+                                              position.dx -
+                                              button.size.width,
+                                          overlay.size.height - position.dy,
                                         ),
-                                      );
+                                        items: const [
+                                          PopupMenuItem(
+                                            value: 'edit',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.edit,
+                                                    color: Colors.grey),
+                                                SizedBox(width: 8),
+                                                Text('Edit'),
+                                              ],
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            value: 'archived',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.feedback_outlined,
+                                                    color: Colors.grey),
+                                                SizedBox(width: 8),
+                                                Text('Archived'),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ).then((value) {
+                                        if (value == "edit") {
+                                          String fname =
+                                              subAdminData['subAdminFirstName'];
+                                          String lname =
+                                              subAdminData['subAdminLastName'];
+                                          String email =
+                                              subAdminData['subAdminEmail'];
+                                          String password =
+                                              subAdminData['subAdminPassword'];
+                                          String phoneNumber = subAdminData[
+                                              'subAdminPhoneNumber'];
+                                          List permissions =
+                                              subAdminData['permissions'];
+
+                                          editSubAdmin(
+                                            context,
+                                            fname,
+                                            lname,
+                                            email,
+                                            phoneNumber,
+                                            password,
+                                            permissions,
+                                            documentId,
+                                          );
+                                        } else if (value == "archived") {
+                                          archivedSubAdmin(context, documentId);
+                                        }
+                                      });
                                     },
-                                  ),
-                                )
-                              ],
-                            );
-                          })
-                          .where((row) => row != null) // Filter out null rows
-                          .cast<DataRow>() // Cast to List<DataRow>
-                          .toList(), // Convert to List<DataRow>,
+                                    icon: Image.asset(
+                                      'assets/images/three-dot-icon-data-table.png',
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        );
+                      }).toList(),
                     ),
                   );
                 } else {
-                  // If no sub-admins, display a message
                   return const Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Image.asset("assets/images/empty_box.png", width: 140),
-                      // const SizedBox(height: 20),
                       const Text(
                         "You have not added any sub-admins yet.",
                         style: TextStyle(fontSize: 16, color: Colors.grey),

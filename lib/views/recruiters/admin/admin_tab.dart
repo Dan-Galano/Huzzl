@@ -65,110 +65,114 @@ Widget buildAdminContent(BuildContext context, userData, User user) {
                   double textFieldWidth = screenWidth * 0.7;
                   double spacing = screenWidth > 600 ? 20 : 10;
 
-                return Row(
-                  children: [
-                    const Row(
-                      children: [
-                        Gap(20),
-                        Text(
-                          "Admin",
-                          style: TextStyle(
-                            decoration: TextDecoration.none,
-                            fontSize: 32,
-                            color: Color(0xff373030),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: TextField(
-                        decoration: searchTextFieldDecoration('Search'),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    ...[
-                      Icon(Icons.filter_alt),
-                      SizedBox(width: 10),
-                      Text("Filters"),
-                    ],
-                    Spacer(),
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: addNewSubAdmin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0038FF),
-                            padding: const EdgeInsets.all(20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                  return Row(
+                    children: [
+                      const Row(
+                        children: [
+                          Gap(20),
+                          Text(
+                            "Admin",
+                            style: TextStyle(
+                              decoration: TextDecoration.none,
+                              fontSize: 32,
+                              color: Color(0xff373030),
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/images/add-icon.png",
-                                width: 20,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              const Text(
-                                "Add sub-admin",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  color: Colors.white,
-                                  fontFamily: 'Galano',
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: TextField(
+                          decoration: searchTextFieldDecoration('Search'),
                         ),
+                      ),
+                      const SizedBox(width: 20),
+                      ...[
+                        Icon(Icons.filter_alt),
+                        SizedBox(width: 10),
+                        Text("Filters"),
                       ],
-                    ),
-                    const SizedBox(width: 30),
-                  ],
-                );
-              },
-            ),
-            TabBar(
-              tabAlignment: TabAlignment.start,
-              isScrollable: true,
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.orange,
-              labelStyle: const TextStyle(
-                fontSize: 14, // Font size of the selected tab
-                fontWeight: FontWeight.bold, // Font weight of the selected tab
-                fontFamily: 'Galano', // Use your custom font
+                      Spacer(),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: addNewSubAdmin,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0038FF),
+                              padding: const EdgeInsets.all(20),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  "assets/images/add-icon.png",
+                                  width: 20,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Text(
+                                  "Add sub-admin",
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.white,
+                                    fontFamily: 'Galano',
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 30),
+                    ],
+                  );
+                },
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 12, // Font size of the unselected tabs
-                fontWeight:
-                    FontWeight.normal, // Font weight of the unselected tabs
-                fontFamily: 'Galano', // Use your custom font
-              ),
-              tabs: const [
-                Tab(text: '2 Active'),
-                Tab(text: '0 Archive'),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
+              TabBar(
+                tabAlignment: TabAlignment.start,
+                isScrollable: true,
                 controller: _tabController,
-                children: [
-                  // Active Tab Content
-                  CompanyAdminsActive(
-                    userData: userData,
-                    user: user,
-                  ),
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: Colors.orange,
+                labelStyle: const TextStyle(
+                  fontSize: 14, // Font size of the selected tab
+                  fontWeight:
+                      FontWeight.bold, // Font weight of the selected tab
+                  fontFamily: 'Galano', // Use your custom font
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 12, // Font size of the unselected tabs
+                  fontWeight:
+                      FontWeight.normal, // Font weight of the unselected tabs
+                  fontFamily: 'Galano', // Use your custom font
+                ),
+                tabs: const [
+                  Tab(text: '2 Active'),
+                  Tab(text: '0 Archive'),
+                ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    // Active Tab Content
+                    CompanyAdminsActive(
+                      userData: userData,
+                      user: user,
+                    ),
 
                     // Archive Tab Content
-                    CompanyAdminsArchive(userData: userData),
+                    CompanyAdminsArchive(
+                      userData: userData,
+                      user: user,
+                    ),
                   ],
                 ),
               ),
