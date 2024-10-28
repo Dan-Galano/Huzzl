@@ -95,35 +95,58 @@ class _ArchiveBranchesCategoryState extends State<ArchiveBranchesCategory> {
         else
           SizedBox.shrink(),
         Gap(10),
-        branchProvider.branches.isNotEmpty
-            ? Expanded(
-                child: ListView.builder(
-                  itemCount: branchProvider.branches.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final branch = branchProvider.branches[index];
-                    return GestureDetector(
-                      onTap: () {
-                        widget.onCardTap(branch);
-                        print("Selected Branch ID: ${branch.id}");
-                      },
-                      child: ArchiveBranchCard(branch: branch),
-                    );
-                  },
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.only(top: 70),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        'assets/images/huzzl_notfound.png',
-                        height: 150,
-                      ),
-                    ],
+        if (branchProvider.archiveBranchCount > 0)
+          branchProvider.branches.isNotEmpty
+              ? Expanded(
+                  child: ListView.builder(
+                    itemCount: branchProvider.branches.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final branch = branchProvider.branches[index];
+                      return GestureDetector(
+                        onTap: () {
+                          widget.onCardTap(branch);
+                          print("Selected Branch ID: ${branch.id}");
+                        },
+                        child: ArchiveBranchCard(branch: branch),
+                      );
+                    },
                   ),
-                ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.only(top: 70),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/images/huzzl_notfound.png',
+                          height: 150,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+        else
+          Padding(
+            padding: const EdgeInsets.only(top: 70),
+            child: Center(
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/images/empty_box.png',
+                    width: 140,
+                  ),
+                  Gap(20),
+                  Text(
+                    "Archived branches will appear here.",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
+            ),
+          )
       ],
     );
   }

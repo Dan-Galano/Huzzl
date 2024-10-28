@@ -66,6 +66,7 @@ class HiringManagerProvider extends ChangeNotifier {
       _hiringManagers.clear();
       _hiringManagers.addAll(querySnapshot.docs.map((doc) {
         return HiringManager(
+          uid: doc.id,
           fname: doc['firstName'] ?? '',
           lname: doc['lastName'] ?? '',
           email: doc['email'] ?? '',

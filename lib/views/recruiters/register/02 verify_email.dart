@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
 import 'package:huzzl_web/views/recruiters/register/phone_number_verification.dart';
+import 'package:huzzl_web/views/recruiters/register/signup_recruiter.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -69,49 +70,49 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
     });
 
     if (isEmailVerified) {
-          showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: Colors.transparent,
+            content: Container(
+              width: 105,
+              height: 160,
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
               ),
-              backgroundColor: Colors.transparent,
-              content: Container(
-                width: 105,
-                height: 160,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Gap(10),
-                      Image.asset(
-                        'assets/images/gif/huzzl_loading.gif',
-                        height: 100,
-                        width: 100,
+              child: Center(
+                child: Column(
+                  children: [
+                    Gap(10),
+                    Image.asset(
+                      'assets/images/gif/huzzl_loading.gif',
+                      height: 100,
+                      width: 100,
+                    ),
+                    Gap(10),
+                    Text(
+                      "Verifying...",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFFfd7206),
                       ),
-                      Gap(10),
-                      Text(
-                        "Verifying...",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Color(0xFFfd7206),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-        );
+            ),
+          );
+        },
+      );
 
       timer?.cancel();
 
@@ -128,13 +129,13 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'password': widget.password,
       });
 
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => CompanyProfileRecruiter(
-            userCredential: widget.userCredential,
-          ),
-        ),
-      );
+      // Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (_) => CompanyProfileRecruiter(
+      //       userCredential: widget.userCredential,
+      //     ),
+      //   ),
+      // );
 
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -157,12 +158,20 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
     }
   }
 
+  void editEmail() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SignUpRecruiter(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-           NavBarLoginRegister(),
+          NavBarLoginRegister(),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -244,47 +253,58 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
                                 fontFamily: 'Galano',
                               ),
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 10),
                             canResendEmail
-                                ? Center(
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        sendVerificationEmail();
-                                        setState(() {
-                                          canResendEmail = false;
-                                        });
-                                        resendEmail();
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            const Color(0xFF0038FF),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        elevation: 5,
-                                      ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons
-                                                .email, // Replace with the desired icon
-                                            color: Colors.white,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            'Resent Email',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontFamily: 'Galano',
+                                ? Column(
+                                    children: [
+                                      Center(
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            sendVerificationEmail();
+                                            setState(() {
+                                              canResendEmail = false;
+                                            });
+                                            resendEmail();
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0xFF0038FF),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                             ),
+                                            elevation: 5,
                                           ),
-                                        ],
+                                          child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons
+                                                    .email, // Replace with the desired icon
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(width: 10),
+                                              Text(
+                                                'Resent Email',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'Galano',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(height: 20),
+                                    ],
                                   )
-                                : SizedBox(height: 10),
+                                : const SizedBox(height: 10),
+                            TextButton(
+                              onPressed: () {
+                                editEmail();
+                              },
+                              child: const Text("Click here to change email."),
+                            ),
                           ],
                         ),
                       ),

@@ -1,26 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/admin/widgets/textField.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 
-class MyFormModal extends StatefulWidget {
+class EditSubadminModal extends StatefulWidget {
   final User user;
-  final String recruiterEmail;
-  final String recruiterPassword;
-  const MyFormModal({
+  String firstName;
+  String lastName;
+  String password;
+  String email;
+  String phoneNumber;
+  List permissions;
+  String documentId;
+  EditSubadminModal({
     required this.user,
-    required this.recruiterEmail,
-    required this.recruiterPassword,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.password,
+    required this.phoneNumber,
+    required this.permissions,
+    required this.documentId,
     super.key,
   });
+
   @override
-  _MyFormModalState createState() => _MyFormModalState();
+  State<EditSubadminModal> createState() => _EditSubadminModalState();
 }
 
-class _MyFormModalState extends State<MyFormModal> {
+class _EditSubadminModalState extends State<EditSubadminModal> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstname = TextEditingController();
   final TextEditingController _lastname = TextEditingController();
@@ -28,34 +39,49 @@ class _MyFormModalState extends State<MyFormModal> {
   final TextEditingController _password = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
 
-  // String _email = '';
-  // String _password = '';
-
-  //Adding user
-  String? selectedUserTitle;
-
-  //New Code
-  bool _allowUsertoManageAmin = false;
-  bool _allowUsertoManageBranch = false;
-  bool _allowUsertoManageJob = false;
-  bool _allowUsertoManageInterview = false;
-
-  //List of permission
-  List<String> subAdminPermission = [];
-
-  //Error handler
-  String errorMessage = "";
-
   //Password toggle
   bool isPasswordVisible = false;
+
+  List permissionToHandle = [];
+
   togglePasswordVisibility() {
     setState(() {
       isPasswordVisible = !isPasswordVisible;
     });
   }
 
-  void submit() async {
-    if (_formKey.currentState!.validate() && subAdminPermission.isNotEmpty) {
+  //Error handler
+  String errorMessage = "";
+
+  bool _allowUsertoManageAmin = false;
+  bool _allowUsertoManageBranch = false;
+  bool _allowUsertoManageJob = false;
+  bool _allowUsertoManageInterview = false;
+
+  void assigningPermissionValue() {
+    for (var e in widget.permissions) {
+      if (e == "manage_subadmin") {
+        setState(() {
+          _allowUsertoManageAmin = true;
+        });
+      } else if (e == "manage_branch") {
+        setState(() {
+          _allowUsertoManageBranch = true;
+        });
+      } else if (e == "manage_job") {
+        setState(() {
+          _allowUsertoManageJob = true;
+        });
+      } else if (e == "manage_interview") {
+        setState(() {
+          _allowUsertoManageInterview = true;
+        });
+      }
+    }
+  }
+
+  void submitEditForm() async {
+    if (_formKey.currentState!.validate() && permissionToHandle.isNotEmpty) {
       //Loading
       showDialog(
         context: context,
@@ -76,15 +102,15 @@ class _MyFormModalState extends State<MyFormModal> {
               child: Center(
                 child: Column(
                   children: [
-                    Gap(10),
+                    const Gap(10),
                     Image.asset(
                       'assets/images/gif/huzzl_loading.gif',
                       height: 100,
                       width: 100,
                     ),
-                    Gap(10),
-                    Text(
-                      "Creating sub-admin...",
+                    const Gap(10),
+                    const Text(
+                      "Editing information...",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
@@ -101,71 +127,25 @@ class _MyFormModalState extends State<MyFormModal> {
         },
       );
       //Create sub-admin account
+      // print("Edit form is goods: ${widget.documentId}");
+
       try {
-        UserCredential usercredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-                email: _email.text, password: _password.text);
-        //Signout the sub-admin account (Kasi after mag create user auto log in siay so need ilogout)
-        await FirebaseAuth.instance.signOut(); // Sign out the sub-admin
-        // Sign the recruiter back in with stored credentials
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: widget.recruiterEmail,
-          password: widget.recruiterPassword,
-        );
-        //Store in database (sub-admin) sub collection
-        FirebaseFirestore.instance
+        //Edit Here
+        DocumentReference userDoc = FirebaseFirestore.instance
             .collection("users")
             .doc(widget.user.uid)
             .collection("sub_admins")
-            .add({
+            .doc(widget.documentId);
+
+        await userDoc.update({
           "subAdminFirstName": _firstname.text,
           "subAdminLastName": _lastname.text,
           "subAdminEmail": _email.text,
           "subAdminPassword": _password.text,
           "subAdminPhoneNumber": _phoneNumber.text,
-          "permissions": subAdminPermission,
-          "assigned_by": widget.user.uid,
-          'status' : 'active',
-          "created_at": DateTime.now(),
+          "permissions": permissionToHandle,
+          "edited_at": DateTime.now(),
         });
-        // Check if the user creation was successful
-        if (usercredential.user != null) {
-          //Get the company information document id
-          String? companyId;
-          QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(widget.user.uid)
-              .collection('company_information')
-              .get();
-
-          // Assuming there's only one document in 'company_information'
-          if (querySnapshot.docs.isNotEmpty) {
-            companyId = querySnapshot.docs.first.id; // Get the first doc ID
-            print('Company ID: $companyId');
-          } else {
-            print('No company information found!');
-            // Handle this case if needed
-          }
-
-          // Store sub-admin details in Firestore
-          FirebaseFirestore.instance
-              .collection("users")
-              .doc(usercredential.user!.uid)
-              .set({
-            "subAdminFirstName": _firstname.text,
-            "subAdminLastName": _lastname.text,
-            "subAdminEmail": _email.text,
-            "subAdminPassword": _password.text,
-            "subAdminPhoneNumber": _phoneNumber.text,
-            "role": "sub-admin",
-            "permissions": subAdminPermission,
-            "assigned_by": widget.user.uid,
-            "assigned_company": companyId ?? 'No Company ID',
-            "created_at": DateTime.now(),
-          });
-        } else {
-          print('User creation failed!');
-        }
 
         Navigator.of(context).pop();
         Navigator.of(context).pop();
@@ -205,6 +185,20 @@ class _MyFormModalState extends State<MyFormModal> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _firstname.text = widget.firstName;
+    _lastname.text = widget.lastName;
+    _email.text = widget.email;
+    _phoneNumber.text = widget.phoneNumber;
+    _password.text = widget.password;
+
+    assigningPermissionValue();
+
+    permissionToHandle = widget.permissions;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
@@ -216,126 +210,25 @@ class _MyFormModalState extends State<MyFormModal> {
             children: [
               // Wrap the TextFormField with Expanded to make it responsive
               Expanded(
-                child: TextFormField(
+                child: TextFieldConstant(
                   controller: _firstname,
-                  decoration: InputDecoration(
-                    hintText: "First name",
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFD1E1FF),
-                        width: 1.5,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFD1E1FF),
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFD1E1FF),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Required field.';
-                    }
-                    return null;
-                  },
-                  // onSaved: (value) => _email = value ?? '',
+                  hintText: "First Name",
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: TextFormField(
+                child: TextFieldConstant(
                   controller: _lastname,
-                  decoration: InputDecoration(
-                    hintText: "Last name",
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFD1E1FF),
-                        width: 1.5,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFD1E1FF),
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFD1E1FF),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Required field.';
-                    }
-                    return null;
-                  },
-                  // onSaved: (value) => _password = value ?? '',
+                  hintText: "Last Name",
                 ),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          TextFormField(
+          TextFieldConstant(
             controller: _email,
-            decoration: InputDecoration(
-              hintText: "Email",
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              isDense: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: Color(0xFFD1E1FF),
-                  width: 1.5,
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: Color(0xFFD1E1FF),
-                  width: 1.5,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: Color(0xFFD1E1FF),
-                  width: 1.5,
-                ),
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Required field.';
-              }
-              if (!EmailValidator.validate(value)) {
-                return "Provide a valid email address";
-              }
-              return null;
-            },
-            // onSaved: (value) => _password = value ?? '',
+            hintText: "Email",
+            isEmail: true,
           ),
           const SizedBox(height: 10),
           TextFormField(
@@ -432,7 +325,7 @@ class _MyFormModalState extends State<MyFormModal> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (subAdminPermission.isEmpty)
+          if (permissionToHandle.isEmpty)
             Text(
               errorMessage,
               style: const TextStyle(
@@ -440,7 +333,7 @@ class _MyFormModalState extends State<MyFormModal> {
                 color: Colors.red,
               ),
             ),
-          // const SizedBox(height: 10),
+          const SizedBox(height: 10),
           Column(
             children: [
               CheckboxListTile(
@@ -454,11 +347,11 @@ class _MyFormModalState extends State<MyFormModal> {
                   });
                   if (_allowUsertoManageAmin) {
                     setState(() {
-                      subAdminPermission.add("manage_subadmin");
+                      permissionToHandle.add("manage_subadmin");
                     });
                   } else {
                     setState(() {
-                      subAdminPermission.remove("manage_subadmin");
+                      permissionToHandle.remove("manage_subadmin");
                     });
                   }
                 },
@@ -475,11 +368,11 @@ class _MyFormModalState extends State<MyFormModal> {
                   });
                   if (_allowUsertoManageBranch) {
                     setState(() {
-                      subAdminPermission.add("manage_branch");
+                      permissionToHandle.add("manage_branch");
                     });
                   } else {
                     setState(() {
-                      subAdminPermission.remove("manage_branch");
+                      permissionToHandle.remove("manage_branch");
                     });
                   }
                 },
@@ -496,11 +389,11 @@ class _MyFormModalState extends State<MyFormModal> {
                   });
                   if (_allowUsertoManageJob) {
                     setState(() {
-                      subAdminPermission.add("manage_job");
+                      permissionToHandle.add("manage_job");
                     });
                   } else {
                     setState(() {
-                      subAdminPermission.remove("manage_job");
+                      permissionToHandle.remove("manage_job");
                     });
                   }
                 },
@@ -517,11 +410,11 @@ class _MyFormModalState extends State<MyFormModal> {
                   });
                   if (_allowUsertoManageInterview) {
                     setState(() {
-                      subAdminPermission.add("manage_interview");
+                      permissionToHandle.add("manage_interview");
                     });
                   } else {
                     setState(() {
-                      subAdminPermission.remove("manage_interview");
+                      permissionToHandle.remove("manage_interview");
                     });
                   }
                 },
@@ -543,8 +436,10 @@ class _MyFormModalState extends State<MyFormModal> {
           //   ),
           // ),
           BlueFilledBoxButton(
-            onPressed: submit,
-            text: "Add sub-admin",
+            onPressed: () {
+              submitEditForm();
+            },
+            text: "Edit sub-admin",
             width: double.infinity,
           ),
         ],

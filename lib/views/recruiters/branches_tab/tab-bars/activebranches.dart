@@ -95,6 +95,8 @@ class _ActiveBranchesCategoryState extends State<ActiveBranchesCategory> {
         else
           const SizedBox.shrink(),
         const Gap(10),
+        if (branchProvider.activeBranchCount > 0)
+        
         branchProvider.branches.isNotEmpty
             ? Expanded(
                 child: ListView.builder(
@@ -123,7 +125,29 @@ class _ActiveBranchesCategoryState extends State<ActiveBranchesCategory> {
                     ],
                   ),
                 ),
-              ),
+              )
+        else
+Padding(
+                padding: const EdgeInsets.only(top: 70),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        'assets/images/empty_box.png',
+            width: 140,
+                      ),
+                      Gap(20),
+                      Text(
+                        "Active branches will appear here.",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
       ],
     );
   }

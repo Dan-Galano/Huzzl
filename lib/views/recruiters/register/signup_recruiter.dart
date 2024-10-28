@@ -9,7 +9,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/register/02%20verify_email.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
+import 'package:huzzl_web/widgets/buttons/gray/grayfilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -52,125 +54,213 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   //Submit Signup Form
   void submitRegistrationRecruiter() async {
     print("Almost there, ${_firstName.text.trim().toCapitalCase()}...");
-    if (_formKey.currentState!.validate()) {
-      try {
-        //  creating user
-        UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _email.text,
-          password: _password.text,
-        );
 
-        // showDialog(
-        //   context: context,
-        //   barrierDismissible: false,
-        //   builder: (context) {
-        //     return const AlertDialog(
-        //       content: Row(
-        //         children: [
-        //           CircularProgressIndicator(),
-        //           SizedBox(width: 20),
-        //           Text("Registering..."),
-        //         ],
-        //       ),
-        //     );
-        //   },
-        // );
+    try {
+      //  creating user
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _email.text,
+        password: _password.text,
+      );
 
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
+      // showDialog(
+      //   context: context,
+      //   barrierDismissible: false,
+      //   builder: (context) {
+      //     return const AlertDialog(
+      //       content: Row(
+      //         children: [
+      //           CircularProgressIndicator(),
+      //           SizedBox(width: 20),
+      //           Text("Registering..."),
+      //         ],
+      //       ),
+      //     );
+      //   },
+      // );
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: Colors.transparent,
+            content: Container(
+              width: 105,
+              height: 160,
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
               ),
-              backgroundColor: Colors.transparent,
-              content: Container(
-                width: 105,
-                height: 160,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.white,
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Gap(10),
-                      Image.asset(
-                        'assets/images/gif/huzzl_loading.gif',
-                        height: 100,
-                        width: 100,
+              child: Center(
+                child: Column(
+                  children: [
+                    Gap(10),
+                    Image.asset(
+                      'assets/images/gif/huzzl_loading.gif',
+                      height: 100,
+                      width: 100,
+                    ),
+                    Gap(10),
+                    Text(
+                      "Creating...",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFFfd7206),
                       ),
-                      Gap(10),
-                      Text(
-                        "Creating...",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          color: Color(0xFFfd7206),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      setState(() {
+        isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+      });
+
+      if (!isEmailVerified) {
+        try {
+          final user = FirebaseAuth.instance.currentUser!;
+          await user.sendEmailVerification();
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString())),
+          );
+        }
+      }
+
+      //Go to verify email
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return VerifyEmailRecruiter(
+              userCredential: userCredential,
+              email: _email.text,
+              fname: _firstName.text,
+              lname: _lastName.text,
+              password: _password.text,
+              phoneNumber: phoneNumberInputted,
+            );
+          },
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text("Error: ${e.message}")),
+      // );
+      EasyLoading.showToast(
+        "⚠️ ${e.message}",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+        // maskType: EasyLoadingMaskType.black,
+      );
+    } catch (e) {
+      EasyLoading.showToast(
+        "An unexpected error occurred.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+        // maskType: EasyLoadingMaskType.black,
+      );
+    }
+  }
+
+  void submitForm() {
+    if (_formKey.currentState!.validate()) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Container(
+              width: 600, // Set a specific width
+              height: 250, // Set a specific height
+              child: Card(
+                color: Colors.white, // Set the card color to white
+                elevation: 4, // Optional elevation for shadow effect
+                margin: EdgeInsets.zero, // Remove default margin
+                child: Padding(
+                  padding:
+                      const EdgeInsets.all(20), // Add padding inside the card
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Top right close button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10), // Spacing
+                      // Centered content
+                      const Center(
+                        child: Column(
+                          children: const [
+                            Text(
+                              "Are you sure?",
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Galano',
+                              ),
+                            ),
+                            Text(
+                              "Are you sure all entered information is correct?",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: 'Galano',
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                      const SizedBox(height: 30), // Spacing
+                      // Button centered below text
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          BlueFilledBoxButton(
+                            onPressed: () {
+                              submitRegistrationRecruiter();
+                            },
+                            text: "Yes",
+                            width: 180,
+                          ),
+                          GrayFilledBoxButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            text: "No",
+                            width: 180,
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ),
-            );
-          },
-        );
-
-        setState(() {
-          isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-        });
-
-        if (!isEmailVerified) {
-          try {
-            final user = FirebaseAuth.instance.currentUser!;
-            await user.sendEmailVerification();
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(e.toString())),
-            );
-          }
-        }
-
-        //Go to verify email
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return VerifyEmailRecruiter(
-                userCredential: userCredential,
-                email: _email.text,
-                fname: _firstName.text,
-                lname: _lastName.text,
-                password: _password.text,
-                phoneNumber: phoneNumberInputted,
-              );
-            },
-          ),
-        );
-      } on FirebaseAuthException catch (e) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text("Error: ${e.message}")),
-        // );
-        EasyLoading.showToast(
-          "⚠️ ${e.message}",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-          // maskType: EasyLoadingMaskType.black,
-        );
-      } catch (e) {
-        EasyLoading.showToast(
-          "An unexpected error occurred.",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-          // maskType: EasyLoadingMaskType.black,
-        );
-      }
+            ),
+          );
+        },
+      );
     }
   }
 
@@ -419,57 +509,57 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                               ],
                             ),
                             const SizedBox(height: 20),
-                          const Text(
-                            "Phone number",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff373030),
-                              fontFamily: 'Galano',
-                            ),
-                          ),
-                          TextFormField(
-                            controller: _phoneNumber,
-                            maxLength: 10,
-                            decoration: InputDecoration(
-                              prefixText: "+63",
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 8.0, horizontal: 16.0),
-                              isDense: true,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFD1E1FF),
-                                  width: 1.5,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFD1E1FF),
-                                  width: 1.5,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFD1E1FF),
-                                  width: 1.5,
-                                ),
+                            const Text(
+                              "Phone number",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff373030),
+                                fontFamily: 'Galano',
                               ),
                             ),
-                            validator: (value) {
-                              phoneNumberInputted = "+63${value!}";
-                              if (value!.isEmpty || value == null) {
-                                return "Phone number is required.";
-                              }
-                              final RegExp phoneRegex =
-                                  RegExp(r'^(09|\+639)\d{9}$');
-                              if (!phoneRegex.hasMatch(phoneNumberInputted)) {
-                                return "Provide a valid Phone number.";
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _phoneNumber,
+                              maxLength: 10,
+                              decoration: InputDecoration(
+                                prefixText: "+63",
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                              validator: (value) {
+                                phoneNumberInputted = "+63${value!}";
+                                if (value!.isEmpty || value == null) {
+                                  return "Phone number is required.";
+                                }
+                                final RegExp phoneRegex =
+                                    RegExp(r'^(09|\+639)\d{9}$');
+                                if (!phoneRegex.hasMatch(phoneNumberInputted)) {
+                                  return "Provide a valid Phone number.";
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 20),
                             const Text(
                               'Password',
                               style: TextStyle(
@@ -624,7 +714,7 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                                 ),
                                 BlueFilledCircleButton(
                                   onPressed: () {
-                                    submitRegistrationRecruiter();
+                                    submitForm();
                                   },
                                   text: "Create account",
                                   width: 200,

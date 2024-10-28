@@ -594,9 +594,12 @@ class _ArchiveBranchCardState extends State<ArchiveBranchCard> {
                         value: 'delete_branch',
                         child: Row(
                           children: [
-                            const Icon(Icons.archive_rounded, color: Color.fromARGB(255, 165, 78, 78)),
+                            const Icon(Icons.archive_rounded,
+                                color: Color.fromARGB(255, 165, 78, 78)),
                             SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Color.fromARGB(255, 165, 78, 78))),
+                            Text('Delete',
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 165, 78, 78))),
                           ],
                         ),
                       ),
@@ -2182,164 +2185,273 @@ class _ArchiveBranchCardState extends State<ArchiveBranchCard> {
                         },
                       );
                     } else if (value == 'delete_branch') {
+                      String typedBranchName = ''; // To store user input
+                      bool isMatched =
+                          false; // To track if the input matches the branch name
+
                       showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (context) {
-                          return AlertDialog(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15.0)),
-                            ),
-                            content: Container(
-                              width: MediaQuery.of(context).size.width * 0.4,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Confirm Deletion",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    "Are you sure to delete ${widget.branch.branchName}?",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    "Deleting this branch will completely remove it from the company and any operations in this branch will be permanently removed. This action cannot be undone.",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontStyle: FontStyle.italic,
-                                      color: Color.fromARGB(255, 165, 78, 78)
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                backgroundColor: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                ),
+                                content: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(
-                                            context), // Close the dialog
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 8),
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 180, 180, 180),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'Cancel',
-                                          style: TextStyle(color: Colors.white),
+                                      Text(
+                                        "Confirm Deletion",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
-                                      TextButton(
-                                        onPressed: () async {
-                                          //delete ditooooooo
-                                          // try {
-                                          //   await FirebaseFirestore.instance
-                                          //       .collection('users')
-                                          //       .doc(loggedInUserId)
-                                          //       .collection('branches')
-                                          //       .doc(widget.branch.id)
-                                          //       .update({
-                                          //     'isActive': true,
-                                          //     'last_reactivated_at':
-                                          //         Timestamp.now(),
-                                          //   });
-
-                                          //   print(
-                                          //       "Branch reactivated: ${widget.branch.id}");
-                                          //   Provider.of<BranchProvider>(context,
-                                          //           listen: false)
-                                          //       .toggleTabIndex();
-                                          //   ControllerManager()
-                                          //           .searchManagerController
-                                          //           .text =
-                                          //       widget.branch.branchName;
-
-                                          //   await Future.delayed(
-                                          //       Duration(seconds: 1));
-
-                                          //   Provider.of<BranchProvider>(context,
-                                          //           listen: false)
-                                          //       .searchActiveBranch(
-                                          //           widget.branch.branchName,
-                                          //           loggedInUserId)
-                                          //       .then((_) {
-                                          //     print(
-                                          //         "Branches fetched successfully.");
-                                          //   }).catchError((e) {
-                                          //     print(
-                                          //         "Error fetching branches: $e");
-                                          //   });
-
-                                          //   EasyLoading.instance
-                                          //     ..displayDuration =
-                                          //         const Duration(
-                                          //             milliseconds: 1500)
-                                          //     ..indicatorType =
-                                          //         EasyLoadingIndicatorType
-                                          //             .fadingCircle
-                                          //     ..loadingStyle =
-                                          //         EasyLoadingStyle.custom
-                                          //     ..backgroundColor =
-                                          //         Color.fromARGB(
-                                          //             255, 31, 150, 61)
-                                          //     ..textColor = Colors.white
-                                          //     ..fontSize = 16.0
-                                          //     ..indicatorColor = Colors.white
-                                          //     ..maskColor =
-                                          //         Colors.black.withOpacity(0.5)
-                                          //     ..userInteractions = false
-                                          //     ..dismissOnTap = true;
-
-                                          //   EasyLoading.showToast(
-                                          //     "${widget.branch.branchName} is successfully reactivated!",
-                                          //     dismissOnTap: true,
-                                          //     toastPosition:
-                                          //         EasyLoadingToastPosition.top,
-                                          //     duration: Duration(seconds: 3),
-                                          //   );
-
-                                          //   Navigator.pop(context);
-                                          // } catch (e) {
-                                          //   print(
-                                          //       "Error reactivating branch: $e");
-                                          // }
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        "Are you sure to delete ${widget.branch.branchName}?",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "Deleting this branch will completely remove it from the company and any operations in this branch will be permanently removed. This action cannot be undone.",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontStyle: FontStyle.italic,
+                                          color: Color(0xFF970f0f),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Text(
+                                        "Please retype the branch name to confirm:",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      TextField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            typedBranchName = value;
+                                            isMatched = typedBranchName ==
+                                                widget.branch.branchName;
+                                          });
                                         },
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 8),
-                                          backgroundColor:
-                                              const Color.fromARGB(255, 165, 78, 78),
-                                          shape: RoundedRectangleBorder(
+                                        decoration: InputDecoration(
+                                          hintText: "Enter branch name",
+                                          border: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(8),
+                                            borderSide: BorderSide(
+                                              width: 1.5,
+                                              color: isMatched
+                                                  ? Colors.grey
+                                                  : Color.fromARGB(255, 235, 15,
+                                                      15), // Red border if not matched
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: BorderSide(
+                                              width: 1.5,
+                                              color: isMatched
+                                                  ? Colors.green
+                                                  : Color.fromARGB(255, 235, 15,
+                                                      15), // Red border if not matched
+                                            ),
                                           ),
                                         ),
-                                        child: Text(
-                                          'Yes, delete ${widget.branch.branchName}',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(
+                                                context), // Close the dialog
+                                            style: TextButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 30,
+                                                      vertical: 8),
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                  color: Colors.grey[700]),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          TextButton(
+                                            onPressed: isMatched
+                                                ? () async {
+                                                    try {
+                                                      String branchId =
+                                                          widget.branch.id;
+
+                                                           CollectionReference staffsRef = FirebaseFirestore.instance
+              .collection('users')
+              .doc(loggedInUserId)
+              .collection('branches')
+              .doc(branchId)
+              .collection('staffs');
+
+          QuerySnapshot staffsSnapshot = await staffsRef.get();
+          for (QueryDocumentSnapshot staffDoc in staffsSnapshot.docs) {
+            await staffsRef.doc(staffDoc.id).delete(); // Delete each staff document
+            print("Deleted staff with ID: ${staffDoc.id}");
+          }
+                                                      await FirebaseFirestore
+                                                          .instance
+                                                          .collection('users')
+                                                          .doc(loggedInUserId)
+                                                          .collection(
+                                                              'branches')
+                                                          .doc(branchId)
+                                                          .delete();
+
+                                                      print(
+                                                          "Branch deleted: $branchId");
+
+                                                      QuerySnapshot
+                                                          usersSnapshot =
+                                                          await FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  'users')
+                                                              .where('branchId',
+                                                                  isEqualTo:
+                                                                      branchId)
+                                                              .get();
+
+                                                      for (QueryDocumentSnapshot userDoc
+                                                          in usersSnapshot
+                                                              .docs) {
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection('users')
+                                                            .doc(userDoc.id)
+                                                            .delete();
+                                                        print(
+                                                            "Deleted user with ID: ${userDoc.id}");
+                                                      }
+
+                                                      Provider.of<BranchProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .fetchArchiveBranches(
+                                                              loggedInUserId!)
+                                                          .then((_) {
+                                                        print(
+                                                            "Branches refreshed successfully.");
+                                                      }).catchError((e) {
+                                                        print(
+                                                            "Error fetching branches: $e");
+                                                      });
+
+                                                      // Step 4: Show success message
+                                                      EasyLoading.instance
+                                                        ..displayDuration =
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    1500)
+                                                        ..indicatorType =
+                                                            EasyLoadingIndicatorType
+                                                                .fadingCircle
+                                                        ..loadingStyle =
+                                                            EasyLoadingStyle
+                                                                .custom
+                                                        ..backgroundColor =
+                                                            Color.fromARGB(255,
+                                                                31, 150, 61)
+                                                        ..textColor =
+                                                            Colors.white
+                                                        ..fontSize = 16.0
+                                                        ..indicatorColor =
+                                                            Colors.white
+                                                        ..maskColor = Colors
+                                                            .black
+                                                            .withOpacity(0.5)
+                                                        ..userInteractions =
+                                                            false
+                                                        ..dismissOnTap = true;
+
+                                                      EasyLoading.showToast(
+                                                        "${widget.branch.branchName} and associated hiring manager have been successfully deleted!",
+                                                        dismissOnTap: true,
+                                                        toastPosition:
+                                                            EasyLoadingToastPosition
+                                                                .top,
+                                                        duration: Duration(
+                                                            seconds: 3),
+                                                      );
+
+                                                      Navigator.pop(
+                                                          context); // Close the dialog
+                                                    } catch (e) {
+                                                      // Step 5: Handle any errors
+                                                      print(
+                                                          "Error deleting branch or associated users: $e");
+
+                                                      EasyLoading.showError(
+                                                        "Failed to delete ${widget.branch.branchName}. Please try again.",
+                                                        duration: Duration(
+                                                            seconds: 3),
+                                                      );
+                                                    }
+                                                  }
+                                                : null, // Disabled if not matched
+                                            style: TextButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 30,
+                                                      vertical: 8),
+                                              backgroundColor: isMatched
+                                                  ? Color(0xFF970f0f)
+                                                  : const Color.fromARGB(
+                                                      255,
+                                                      202,
+                                                      202,
+                                                      202), // Gray if not matched
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              'Yes, delete ${widget.branch.branchName}',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                            ),
+                                ),
+                              );
+                            },
                           );
                         },
                       );
-                    } 
+                    }
                   });
                 },
               ),
