@@ -101,7 +101,9 @@ class _LoginScreenState extends State<LoginScreen> {
           if (role != null) {
             if (role == 'jobseeker') {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => JobseekerMainScreen()));
+                  builder: (context) => JobseekerMainScreen(
+                        uid: user.uid,
+                      )));
             } else if (role == 'recruiter') {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => RecruiterHomeScreen()));
@@ -171,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (role != null) {
               if (role == 'jobseeker') {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => JobseekerMainScreen()));
+                    builder: (context) => JobseekerMainScreen(uid: user.uid)));
               } else if (role == 'recruiter') {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => RecruiterHomeScreen()));

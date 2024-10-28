@@ -79,8 +79,10 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
         'phoneNumber': widget.phoneNumber,
       });
 
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => const PreferenceViewPage()));
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => PreferenceViewPage(
+                uid: widget.userCredential.user!.uid,
+              )));
     }
   }
 
@@ -138,7 +140,7 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       home: Scaffold(
         body: Column(
           children: [
-             NavBarLoginRegister(),
+            NavBarLoginRegister(),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),

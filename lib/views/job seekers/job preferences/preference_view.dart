@@ -6,7 +6,8 @@ import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
 class PreferenceViewPage extends StatefulWidget {
-  const PreferenceViewPage({super.key});
+  final String uid;
+  PreferenceViewPage({super.key, required this.uid});
 
   @override
   State<PreferenceViewPage> createState() => _PreferenceViewPageState();
@@ -16,7 +17,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   PageController _pageController = PageController();
   int _currentPage = 0;
 
-    void _nextPage() {
+  void _nextPage() {
     if (_currentPage < 4) {
       _pageController.animateToPage(
         _currentPage + 1,
@@ -40,7 +41,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
     _pageController.jumpToPage(1);
   }
 
-   @override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -63,7 +64,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
     return Scaffold(
       body: Column(
         children: [
-           NavBarLoginRegister(),
+          NavBarLoginRegister(),
           Expanded(
               child: PageView(
             controller: _pageController,

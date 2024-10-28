@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/jobseeker_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
@@ -27,7 +28,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => JobProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
-
         ChangeNotifierProvider(create: (context) => BranchProvider()),
         ChangeNotifierProvider(
           create: (context) {
@@ -45,6 +45,7 @@ void main() async {
             return staffProvider;
           },
         ),
+        ChangeNotifierProvider(create: (context) => JobseekerProvider()),
       ],
       child: const HuzzlWeb(),
     ),
@@ -221,9 +222,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 print('Data: ${snapshot.data}');
                 var userData = snapshot.data!.data() as Map<String, dynamic>;
                 String userType = userData['role'];
+                String uid = snapshot.data!.id;
 
                 if (userType == 'jobseeker') {
-                  return JobseekerMainScreen();
+                  return JobseekerMainScreen(uid: uid);
                 } else if (userType == 'recruiter') {
                   return RecruiterHomeScreen();
                 } else {
