@@ -36,6 +36,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:html' as html;
 
+import 'package:url_launcher/url_launcher.dart';
+
 class BuildManagersTabContent extends StatefulWidget {
   const BuildManagersTabContent({super.key});
 
@@ -47,7 +49,10 @@ class BuildManagersTabContent extends StatefulWidget {
 class BuildManagersTabContentState extends State<BuildManagersTabContent>
     with TickerProviderStateMixin {
   late TabController _tabController;
-
+  bool _ishrEmailHovered = false;
+  bool _ishrPhoneHovered = false;
+  List<bool> _isstaffEmailHovered = [];
+  List<bool> _isstaffPhoneHovered = [];
   Branch? selectedBranch;
   final rightpanelController = SidePanelController();
   bool _isRightPanelVisible = false;
@@ -92,6 +97,8 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
 
   final GlobalKey<FormState> addOneBranchFieldKey = GlobalKey<FormState>();
   final GlobalKey<FormState> addOneStaffFieldKey = GlobalKey<FormState>();
+
+  final GlobalKey<FormState> edithrFieldKey = GlobalKey<FormState>();
 
   bool isRegionValid = true;
   bool isProvinceValid = true;
@@ -3206,6 +3213,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                       manager.branchId == selectedBranch?.id,
                                   orElse: () => HiringManager(
                                     // Provide a default instance here
+                                    uid:'',
                                     fname: '',
                                     lname: '',
                                     email: '',
@@ -3223,6 +3231,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                       child: Text(
                                           "No hiring manager found for this branch"));
                                 }
+
                                 return Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
@@ -3278,60 +3287,143 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                     ],
                                                   ),
                                                   Gap(5),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.email_rounded,
-                                                        color: Colors.grey,
-                                                        size: ResponsiveSizes
-                                                            .noteTextSize(
-                                                                sizeInfo),
-                                                      ),
-                                                      Expanded(
-                                                        child: Text(
-                                                          " ${matchingHiringManager.email}",
-                                                          style: TextStyle(
-                                                            color: Colors.grey,
-                                                            fontSize:
-                                                                ResponsiveSizes
+                                                  MouseRegion(
+                                                    onEnter: (_) {
+                                                      setState(() {
+                                                        _ishrEmailHovered =
+                                                            true;
+                                                      });
+                                                    },
+                                                    onExit: (_) {
+                                                      setState(() {
+                                                        _ishrEmailHovered =
+                                                            false;
+                                                      });
+                                                    },
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        final email =
+                                                            matchingHiringManager
+                                                                .email;
+                                                        final emailUri = Uri(
+                                                          scheme: 'mailto',
+                                                          path: email,
+                                                        );
+                                                        if (await canLaunchUrl(
+                                                            emailUri)) {
+                                                          await launchUrl(
+                                                              emailUri);
+                                                        } else {
+                                                          // Handle the case where the email app can't be opened
+                                                          print(
+                                                              'Could not launch email app');
+                                                        }
+                                                      },
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons.email_rounded,
+                                                            color: _ishrEmailHovered
+                                                                ? Color(
+                                                                    0xFF0639f1)
+                                                                : Colors.grey,
+                                                            size: ResponsiveSizes
+                                                                .noteTextSize(
+                                                                    sizeInfo),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              " ${matchingHiringManager.email}",
+                                                              style: TextStyle(
+                                                                color: _ishrEmailHovered
+                                                                    ? Color(
+                                                                        0xFF0639f1)
+                                                                    : Colors
+                                                                        .grey,
+                                                                fontSize: ResponsiveSizes
                                                                     .noteTextSize(
                                                                         sizeInfo),
-                                                          ),
-                                                          softWrap: true,
-                                                          overflow: TextOverflow
-                                                              .visible, // Ensures proper text wrap
-                                                        ),
+                                                              ),
+                                                              softWrap: true,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .visible,
+                                                            ),
+                                                          )
+                                                        ],
                                                       ),
-                                                    ],
+                                                    ),
                                                   ),
                                                   if (matchingHiringManager
                                                           .phoneNum![0] !=
                                                       null)
-                                                    Row(
-                                                      children: [
-                                                        Icon(
-                                                          Icons.phone,
-                                                          color: Colors.grey,
-                                                          size: ResponsiveSizes
-                                                              .noteTextSize(
-                                                                  sizeInfo),
-                                                        ),
-                                                        Expanded(
-                                                          child: Text(
-                                                            " ${matchingHiringManager.phoneNum!}",
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.grey,
-                                                              fontSize: ResponsiveSizes
+                                                    MouseRegion(
+                                                      onEnter: (_) {
+                                                        setState(() {
+                                                          _ishrPhoneHovered =
+                                                              true;
+                                                        });
+                                                      },
+                                                      onExit: (_) {
+                                                        setState(() {
+                                                          _ishrPhoneHovered =
+                                                              false;
+                                                        });
+                                                      },
+                                                      child: InkWell(
+                                                        onTap: () async {
+                                                          final hrphone =
+                                                              matchingHiringManager
+                                                                  .phoneNum;
+                                                          final phoneUri = Uri(
+                                                            scheme: 'tel',
+                                                            path: hrphone,
+                                                          );
+                                                          if (await canLaunchUrl(
+                                                              phoneUri)) {
+                                                            await launchUrl(
+                                                                phoneUri);
+                                                          } else {
+                                                            print(
+                                                                'Could not launch phone dialer');
+                                                          }
+                                                        },
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons.phone,
+                                                              color: _ishrPhoneHovered
+                                                                  ? Color(
+                                                                      0xFF0639f1)
+                                                                  : Colors.grey,
+                                                              size: ResponsiveSizes
                                                                   .noteTextSize(
                                                                       sizeInfo),
                                                             ),
-                                                            softWrap: true,
-                                                            overflow: TextOverflow
-                                                                .visible, // Ensures proper text wrap
-                                                          ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                " ${matchingHiringManager.phoneNum!}",
+
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: _ishrPhoneHovered
+                                                                      ? Color(
+                                                                          0xFF0639f1)
+                                                                      : Colors
+                                                                          .grey,
+                                                                  fontSize: ResponsiveSizes
+                                                                      .noteTextSize(
+                                                                          sizeInfo),
+                                                                ),
+                                                                softWrap: true,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .visible, // Ensures proper text wrap
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ],
+                                                      ),
                                                     ),
                                                 ],
                                               ),
@@ -3355,17 +3447,635 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                               child: Row(
                                                 children: [
                                                   Icon(Icons.edit,
-                                                      color: Colors.grey),
+                                                      color: Colors.grey,size: 18),
                                                   SizedBox(width: 8),
-                                                  Text('Edit'),
+                                                  Text('Edit account'),
                                                 ],
                                               ),
                                             ),
                                           ],
                                           onSelected: (value) {
                                             if (value == 'edit_hr') {
-                                              // Handle edit action here
-                                              print('Edit option selected');
+                                             var edithrfnamecontroller = TextEditingController();
+                                             var edithrlnamecontroller = TextEditingController();
+                                             var edithremailcontroller = TextEditingController();
+                                             var edithroldpasscontroller = TextEditingController();
+                                             var edithrnewpasscontroller = TextEditingController();
+                                             var edithrphonecontroller = TextEditingController();
+
+                                            
+setState((){
+  edithrfnamecontroller.text = matchingHiringManager.fname ?? '';
+  edithrlnamecontroller.text = matchingHiringManager.lname ?? '';
+  edithremailcontroller.text = matchingHiringManager.email ?? '';
+  edithrphonecontroller.text = matchingHiringManager.phoneNum ?? '';
+  edithroldpasscontroller.text = matchingHiringManager.password ?? '';
+});
+                                             
+
+
+                                                    showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                backgroundColor: Colors.white,
+                                content: SizedBox(
+                                  width: 400,
+                                  height: 400,
+                                  child: SingleChildScrollView(
+                                    child: StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return Form(
+                                        key: edithrFieldKey,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Editing ${matchingHiringManager.fname} ${matchingHiringManager.lname} Account",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            Gap(15),
+                                            Text(
+                                              "First Name",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+                                            TextFormField(
+                                              controller: edithrfnamecontroller,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                              ),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'First name is required.'; // Retained validator
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            Gap(15),
+                                            Text(
+                                              "Last Name",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+                                             TextFormField(
+                                              controller: edithrlnamecontroller,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                              ),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'Last name is required.'; // Retained validator
+                                                }
+                                                return null;
+                                              },
+                                            ),  Gap(15),
+                                            Text(
+                                              "Phone Number",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+                                              TextFormField(
+              controller: edithrphonecontroller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Phone number is required.'; // Show error message
+                }
+                return null; // No error if valid
+              },
+            ),
+          
+                                         Gap(15),
+
+                                            Text(
+                                              "Work Email Address",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+
+                                           TextFormField(
+              controller: edithremailcontroller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Email Address is required."; // Show error message
+                }
+                if (!EmailValidator.validate(value)) {
+                  return "Please provide a valid email address."; // Show error message for invalid email
+                }
+                return null; // No error if valid
+              },
+            ),
+             Gap(15),
+                                            Text(
+                                              "Old Password",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+            TextFormField(
+              controller: edithroldpasscontroller,
+              style: const TextStyle(
+                fontFamily: 'Galano',
+              ),
+              obscureText: isPasswordVisible ? false : true,
+              readOnly: true,
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isPasswordVisible =
+                          !isPasswordVisible; // Retain the visibility toggle
+                    });
+                  },
+                  icon: isPasswordVisible
+                      ? const Icon(Icons.visibility)
+                      : const Icon(Icons.visibility_off),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+             Gap(15),
+                                            Text(
+                                              "New Password",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+            TextFormField(
+              controller: edithrnewpasscontroller,
+              style: const TextStyle(
+                fontFamily: 'Galano',
+              ),
+              obscureText: isConfirmPasswordVisible ? false : true,
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isConfirmPasswordVisible =
+                          !isConfirmPasswordVisible; // Retain the visibility toggle
+                    });
+                  },
+                  icon: isConfirmPasswordVisible
+                      ? const Icon(Icons.visibility)
+                      : const Icon(Icons.visibility_off),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              validator: (value) {
+                
+                if (value!.isNotEmpty && value.length < 8) {
+                  return 'Password must be at least 8 characters long.';
+                }
+               
+                return null; // No error if valid
+              },
+            ),
+         
+
+                                          
+                                            ],
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {
+                                          bool _areFieldsFilled() {
+                                            return edithrfnamecontroller
+                                                    .text.isNotEmpty ||
+                                                edithrlnamecontroller
+                                                    .text.isNotEmpty ||
+                                                edithremailcontroller
+                                                    .text.isNotEmpty ||
+                                                edithrnewpasscontroller
+                                                    .text.isNotEmpty ||
+                                                    edithrphonecontroller.text.isNotEmpty;
+                                          }
+
+                                          // if (_areFieldsFilled()) {
+                                          //   cancelAddingDialog(
+                                          //       context, 'hiring manager', 'updating');
+                                          // } else {
+                                            Navigator.pop(context);
+                                          // }
+                                        },
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 30, vertical: 8),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 180, 180, 180),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      Gap(10),
+                                      TextButton(
+                                        onPressed: ()  {
+                                          
+    bool isValid = edithrFieldKey.currentState!.validate() ?? false;
+    
+
+    if (!isValid) {
+      print("Validation failed: One or more fields are invalid.");
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          ),
+          content: Container(
+            width: MediaQuery.of(context).size.width * 0.4,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Confirm Update",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Are you sure to update ${matchingHiringManager.fname} ${matchingHiringManager.lname} Account?",
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "This will overwrite the current information.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(context), // Close the dialog
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 8),
+                        backgroundColor:
+                            const Color.fromARGB(255, 180, 180, 180),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    TextButton(
+                      onPressed: () async {
+                      
+
+                        try {
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(loggedInUserId)
+                              .collection('branches')
+                              .doc(matchingHiringManager.branchId)
+                              .update({
+                            'firstName': edithrfnamecontroller.text.trim().isNotEmpty ? edithrfnamecontroller.text.trim() : matchingHiringManager.fname,
+                            'lastName': edithrlnamecontroller.text.trim().isNotEmpty ? edithrlnamecontroller.text.trim() : matchingHiringManager.lname,
+                            'email': edithremailcontroller.text.trim().isNotEmpty ? edithremailcontroller.text.trim() : matchingHiringManager.email,
+                            if(matchingHiringManager.phoneNum!.isNotEmpty)
+                            'phone': edithrphonecontroller.text.trim().isNotEmpty ? edithrphonecontroller.text.trim() : matchingHiringManager.phoneNum ?? '',
+
+                            'password': edithrnewpasscontroller.text.trim().isNotEmpty ? edithrnewpasscontroller.text.trim() : matchingHiringManager.password,
+                            'last_updated_at': Timestamp.now(),
+                            'last_updated_by': loggedInUserId,
+                          });
+
+                          print("Branch hiring manager updated in branch id: ${matchingHiringManager.branchId}");
+
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(matchingHiringManager.uid)
+                              .update({
+                            'firstName': edithrfnamecontroller.text.trim().isNotEmpty ? edithrfnamecontroller.text.trim() : matchingHiringManager.fname,
+                            'lastName': edithrlnamecontroller.text.trim().isNotEmpty ? edithrlnamecontroller.text.trim() : matchingHiringManager.lname,
+                            'email': edithremailcontroller.text.trim().isNotEmpty ? edithremailcontroller.text.trim() : matchingHiringManager.email,
+                            if(matchingHiringManager.phoneNum!.isNotEmpty)
+                            'phone': edithrphonecontroller.text.trim().isNotEmpty ? edithrphonecontroller.text.trim() : matchingHiringManager.phoneNum ?? '',
+
+                            'password': edithrnewpasscontroller.text.trim().isNotEmpty ? edithrnewpasscontroller.text.trim() : matchingHiringManager.password,
+                            'last_updated_at': Timestamp.now(),
+                            'last_updated_by': loggedInUserId,
+                          });
+
+                           print("user hiring manager updated with id: ${matchingHiringManager.uid}");
+
+                          EasyLoading.instance
+                            ..displayDuration =
+                                const Duration(milliseconds: 1500)
+                            ..indicatorType =
+                                EasyLoadingIndicatorType.fadingCircle
+                            ..loadingStyle = EasyLoadingStyle.custom
+                            ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+                            ..textColor = Colors.white
+                            ..fontSize = 16.0
+                            ..indicatorColor = Colors.white
+                            ..maskColor = Colors.black.withOpacity(0.5)
+                            ..userInteractions = false
+                            ..dismissOnTap = true;
+                          EasyLoading.showToast(
+                            "${matchingHiringManager.fname} ${matchingHiringManager.lname} is successfully updated!",
+                            dismissOnTap: true,
+                            toastPosition: EasyLoadingToastPosition.top,
+                            duration: Duration(seconds: 3),
+                          );
+if(Provider.of<BranchProvider>(context, listen: false).currentTabIndex == 0)
+                          Provider.of<BranchProvider>(context, listen: false)
+                              .fetchActiveBranches(loggedInUserId!)
+                              .then((_) {
+                            print("Branches fetched successfully.");
+                          }).catchError((e) {
+                            print("Error fetching branches: $e");
+                          });
+                          else
+                          Provider.of<BranchProvider>(context, listen: false)
+                              .fetchArchiveBranches(loggedInUserId!)
+                              .then((_) {
+                            print("Branches fetched successfully.");
+                          }).catchError((e) {
+                            print("Error fetching branches: $e");
+                          });
+
+
+                           Provider.of<HiringManagerProvider>(context, listen: false)
+          .fetchAllHiringManagers()
+          .then((_) {
+        print("Hiring managers fetched successfully.");
+      }).catchError((e) {
+        print("Error fetching hiring managers: $e");
+      });
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+
+                          ControllerManager().searchManagerController.text =
+                              branchNameController.text.trim();
+                        } catch (e) {
+                          print("Error update hiring manager: $e");
+                        }
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 8),
+                        backgroundColor: const Color(0xFF3b7dff),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Yes, save changes',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  
+                                        },
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 30, vertical: 8),
+                                          backgroundColor:
+                                              const Color(0xFF083af8),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Save Changes',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
+                
                                             }
                                           },
                                         ),
@@ -3398,12 +4108,25 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                               Gap(5),
                               Expanded(
                                 child: Consumer<StaffProvider>(
-                                    builder: (context, staffProvider, child) {
-                                  if (staffProvider.isLoading) {
-                                    return Expanded(
-                                      child: ListView.builder(
+                                  builder: (context, staffProvider, child) {
+                                    // Ensure hover lists are initialized correctly
+                                    if (_isstaffEmailHovered.length !=
+                                        staffProvider.staffMembers.length) {
+                                      _isstaffEmailHovered = List<bool>.filled(
+                                          staffProvider.staffMembers.length,
+                                          false);
+                                    }
+                                    if (_isstaffPhoneHovered.length !=
+                                        staffProvider.staffMembers.length) {
+                                      _isstaffPhoneHovered = List<bool>.filled(
+                                          staffProvider.staffMembers.length,
+                                          false);
+                                    }
+
+                                    if (staffProvider.isLoading) {
+                                      return ListView.builder(
                                         itemCount:
-                                            4, // Show 5 shimmer loading items
+                                            4, // Show 4 shimmer loading items
                                         itemBuilder:
                                             (BuildContext context, int index) {
                                           return Shimmer.fromColors(
@@ -3426,185 +4149,937 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                             ),
                                           );
                                         },
-                                      ),
-                                    );
-                                  }
+                                      );
+                                    }
 
-                                  if (staffProvider.staffMembers.isEmpty) {
-                                    return Center(
-                                        child: Text("No staff added yet",
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12)));
-                                  }
-                                  return ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount:
-                                        staffProvider.staffMembers.length,
-                                    itemBuilder: (context, index) {
-                                      final staff = staffProvider.staffMembers[
-                                          index]; // Access each staff member
-                                      return Container(
-                                        margin: EdgeInsets.only(bottom: 5),
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          border: Border.all(
-                                              color: Colors.grey.shade300),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                    if (staffProvider.staffMembers.isEmpty) {
+                                      return Center(
+                                        child: Text(
+                                          "No staff added yet",
+                                          style: TextStyle(
+                                              color: Colors.grey, fontSize: 12),
                                         ),
-                                        child: Stack(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  CircleAvatar(
-                                                    backgroundColor:
-                                                        Color(0xFFff9800)
-                                                            .withOpacity(0.3),
-                                                    foregroundColor:
-                                                        Color(0xFFfd7206),
-                                                    child: Text(
-                                                      "${staff.fname[0]}${staff.lname[0]}",
+                                      );
+                                    }
+
+                                    return ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount:
+                                          staffProvider.staffMembers.length,
+                                      itemBuilder: (context, index) {
+                                        final staff = staffProvider
+                                                .staffMembers[
+                                            index]; // Access each staff member
+                                        return Container(
+                                          margin: EdgeInsets.only(bottom: 5),
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            border: Border.all(
+                                                color: Colors.grey.shade300),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10.0),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    CircleAvatar(
+                                                      backgroundColor:
+                                                          Color(0xFFff9800)
+                                                              .withOpacity(0.3),
+                                                      foregroundColor:
+                                                          Color(0xFFfd7206),
+                                                      child: Text(
+                                                          "${staff.fname[0]}${staff.lname[0]}"),
                                                     ),
-                                                  ),
-                                                  Gap(10),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          "${staff.fname} ${staff.lname}",
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                ResponsiveSizes
-                                                                    .bodyTextSize(
-                                                                        sizeInfo),
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                          softWrap: true,
-                                                          overflow: TextOverflow
-                                                              .visible, // Allow text wrapping
-                                                        ),
-                                                        Gap(5),
-                                                        Row(
-                                                          children: [
-                                                            Icon(
-                                                              Icons
-                                                                  .email_rounded,
-                                                              color:
-                                                                  Colors.grey,
-                                                              size: ResponsiveSizes
-                                                                  .noteTextSize(
+                                                    Gap(10),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            "${staff.fname} ${staff.lname}",
+                                                            style: TextStyle(
+                                                              fontSize: ResponsiveSizes
+                                                                  .bodyTextSize(
                                                                       sizeInfo),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
-                                                            Expanded(
-                                                              child: Text(
-                                                                " ${staff.email}",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .grey,
-                                                                  fontSize: ResponsiveSizes
-                                                                      .noteTextSize(
-                                                                          sizeInfo),
-                                                                ),
-                                                                softWrap: true,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .visible, // Allow text wrapping
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        if (staff.phoneNum !=
-                                                            null)
-                                                          Row(
-                                                            children: [
-                                                              Icon(
-                                                                Icons.phone,
-                                                                color:
-                                                                    Colors.grey,
-                                                                size: ResponsiveSizes
-                                                                    .noteTextSize(
-                                                                        sizeInfo),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  " ${staff.phoneNum}",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    fontSize: ResponsiveSizes
+                                                            softWrap: true,
+                                                            overflow: TextOverflow
+                                                                .visible, // Allow text wrapping
+                                                          ),
+                                                          Gap(5),
+                                                          // Email section with hover effect
+                                                          MouseRegion(
+                                                            onEnter: (_) {
+                                                              setState(() {
+                                                                _isstaffEmailHovered[
+                                                                        index] =
+                                                                    true;
+                                                              });
+                                                            },
+                                                            onExit: (_) {
+                                                              setState(() {
+                                                                _isstaffEmailHovered[
+                                                                        index] =
+                                                                    false;
+                                                              });
+                                                            },
+                                                            child: InkWell(
+                                                              onTap: () async {
+                                                                final email =
+                                                                    staff.email;
+                                                                final emailUri =
+                                                                    Uri(
+                                                                  scheme:
+                                                                      'mailto',
+                                                                  path: email,
+                                                                );
+                                                                if (await canLaunchUrl(
+                                                                    emailUri)) {
+                                                                  await launchUrl(
+                                                                      emailUri);
+                                                                } else {
+                                                                  print(
+                                                                      'Could not launch email app');
+                                                                }
+                                                              },
+                                                              child: Row(
+                                                                children: [
+                                                                  Icon(
+                                                                    Icons
+                                                                        .email_rounded,
+                                                                    color: _isstaffEmailHovered[
+                                                                            index]
+                                                                        ? Color(
+                                                                            0xFFfd7911)
+                                                                        : Colors
+                                                                            .grey,
+                                                                    size: ResponsiveSizes
                                                                         .noteTextSize(
                                                                             sizeInfo),
                                                                   ),
-                                                                  softWrap:
-                                                                      true,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .visible, // Allow text wrapping
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      " ${staff.email}",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: _isstaffEmailHovered[index]
+                                                                            ? Color(0xFFfd7911)
+                                                                            : Colors.grey,
+                                                                        fontSize:
+                                                                            ResponsiveSizes.noteTextSize(sizeInfo),
+                                                                      ),
+                                                                      softWrap:
+                                                                          true,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .visible, // Allow text wrapping
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          if (staff.phoneNum !=
+                                                              null)
+                                                            // Phone section with hover effect
+                                                            MouseRegion(
+                                                              onEnter: (_) {
+                                                                setState(() {
+                                                                  _isstaffPhoneHovered[
+                                                                          index] =
+                                                                      true;
+                                                                });
+                                                              },
+                                                              onExit: (_) {
+                                                                setState(() {
+                                                                  _isstaffPhoneHovered[
+                                                                          index] =
+                                                                      false;
+                                                                });
+                                                              },
+                                                              child: InkWell(
+                                                                onTap:
+                                                                    () async {
+                                                                  final phoneUri =
+                                                                      Uri(
+                                                                    scheme:
+                                                                        'tel',
+                                                                    path: staff
+                                                                        .phoneNum,
+                                                                  );
+                                                                  if (await canLaunchUrl(
+                                                                      phoneUri)) {
+                                                                    await launchUrl(
+                                                                        phoneUri);
+                                                                  } else {
+                                                                    print(
+                                                                        'Could not launch phone dialer');
+                                                                  }
+                                                                },
+                                                                child: Row(
+                                                                  children: [
+                                                                    Icon(
+                                                                      Icons
+                                                                          .phone,
+                                                                      color: _isstaffPhoneHovered[
+                                                                              index]
+                                                                          ? Color(
+                                                                              0xFFfd7911)
+                                                                          : Colors
+                                                                              .grey,
+                                                                      size: ResponsiveSizes
+                                                                          .noteTextSize(
+                                                                              sizeInfo),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child:
+                                                                          Text(
+                                                                        " ${staff.phoneNum}",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color: _isstaffPhoneHovered[index]
+                                                                              ? Color(0xFFfd7911)
+                                                                              : Colors.grey,
+                                                                          fontSize:
+                                                                              ResponsiveSizes.noteTextSize(sizeInfo),
+                                                                        ),
+                                                                        softWrap:
+                                                                            true,
+                                                                        overflow:
+                                                                            TextOverflow.visible, // Allow text wrapping
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ),
-                                                            ],
-                                                          ),
-                                                      ],
+                                                            ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Positioned(
-                                              top: 2,
-                                              right: 2,
-                                              child: PopupMenuButton(
-                                                icon: Icon(
-                                                  Icons.more_vert,
-                                                  color: Colors.grey,
-                                                  size: 14,
+                                                  ],
                                                 ),
-                                                itemBuilder:
-                                                    (BuildContext context) =>
-                                                        <PopupMenuEntry>[
-                                                  PopupMenuItem(
-                                                    value: 'edit_staff',
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(Icons.edit,
-                                                            color: Colors.grey),
-                                                        SizedBox(width: 8),
-                                                        Text('Edit'),
-                                                      ],
-                                                    ),
+                                              ),
+                                              Positioned(
+                                                top: 2,
+                                                right: 2,
+                                                child: PopupMenuButton(
+                                                  icon: Icon(
+                                                    Icons.more_vert,
+                                                    color: Colors.grey,
+                                                    size: 14,
                                                   ),
-                                                ],
-                                                onSelected: (value) {
-                                                  if (value == 'edit_staff') {
-                                                    // Handle edit action here
-                                                    print(
-                                                        'Edit option selected');
-                                                  }
-                                                },
+                                                  itemBuilder:
+                                                      (BuildContext context) =>
+                                                          <PopupMenuEntry>[
+                                                    PopupMenuItem(
+                                                      value: 'edit_staff',
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(Icons.edit,
+                                                              color:
+                                                                  Colors.grey,size: 18),
+                                                          SizedBox(width: 8),
+                                                          Text('Edit account'),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  onSelected: (value) {
+                                                    if (value == 'edit_staff') {
+                                             var editstafffnamecontroller = TextEditingController();
+                                             var edithstafflnamecontroller = TextEditingController();
+                                             var editstaffemailcontroller = TextEditingController();
+                                             var editstaffoldpasscontroller = TextEditingController();
+                                             var editstaffnewpasscontroller = TextEditingController();
+                                             var editstaffphonecontroller = TextEditingController();
+
+                                            
+setState((){
+  editstafffnamecontroller.text = staff.fname ?? '';
+  edithstafflnamecontroller.text = staff.lname ?? '';
+  editstaffemailcontroller.text = staff.email ?? '';
+  editstaffphonecontroller.text = staff.phoneNum ?? '';
+  editstaffoldpasscontroller.text = staff.password ?? '';
+});
+                                             
+
+
+                                                    showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                backgroundColor: Colors.white,
+                                content: SizedBox(
+                                  width: 400,
+                                  height: 400,
+                                  child: SingleChildScrollView(
+                                    child: StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return Form(
+                                        key: edithrFieldKey,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Editing ${staff.fname} ${staff.lname} Account",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w700,
                                               ),
                                             ),
-                                          ],
+                                            Gap(15),
+                                            Text(
+                                              "First Name",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+                                            TextFormField(
+                                              controller: editstafffnamecontroller,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                              ),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'First name is required.'; // Retained validator
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            Gap(15),
+                                            Text(
+                                              "Last Name",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+                                             TextFormField(
+                                              controller: edithstafflnamecontroller,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide(
+                                                    color: Color(
+                                                        0xFFD1E1FF), // Retained color
+                                                    width: 1.5,
+                                                  ),
+                                                ),
+                                              ),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'Last name is required.'; // Retained validator
+                                                }
+                                                return null;
+                                              },
+                                            ),  Gap(15),
+                                            Text(
+                                              "Phone Number",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+                                              TextFormField(
+              controller: editstaffphonecontroller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Phone number is required.'; // Show error message
+                }
+                return null; // No error if valid
+              },
+            ),
+          
+                                         Gap(15),
+
+                                            Text(
+                                              "Work Email Address",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+
+                                           TextFormField(
+              controller: editstaffemailcontroller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Email Address is required."; // Show error message
+                }
+                if (!EmailValidator.validate(value)) {
+                  return "Please provide a valid email address."; // Show error message for invalid email
+                }
+                return null; // No error if valid
+              },
+            ),
+             Gap(15),
+                                            Text(
+                                              "Old Password",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+            TextFormField(
+              controller: editstaffoldpasscontroller,
+              style: const TextStyle(
+                fontFamily: 'Galano',
+              ),
+              obscureText: isPasswordVisible ? false : true,
+              readOnly: true,
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isPasswordVisible =
+                          !isPasswordVisible; // Retain the visibility toggle
+                    });
+                  },
+                  icon: isPasswordVisible
+                      ? const Icon(Icons.visibility)
+                      : const Icon(Icons.visibility_off),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+             Gap(15),
+                                            Text(
+                                              "New Password",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            Gap(10),
+            TextFormField(
+              controller: editstaffnewpasscontroller,
+              style: const TextStyle(
+                fontFamily: 'Galano',
+              ),
+              obscureText: isConfirmPasswordVisible ? false : true,
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isConfirmPasswordVisible =
+                          !isConfirmPasswordVisible; // Retain the visibility toggle
+                    });
+                  },
+                  icon: isConfirmPasswordVisible
+                      ? const Icon(Icons.visibility)
+                      : const Icon(Icons.visibility_off),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: Color(0xFFD1E1FF), // Retained color
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              validator: (value) {
+                
+                if (value!.isNotEmpty && value.length < 8) {
+                  return 'Password must be at least 8 characters long.';
+                }
+               
+                return null; // No error if valid
+              },
+            ),
+         
+
+                                          
+                                            ],
                                         ),
                                       );
-                                    },
-                                  );
-                                }),
+                                    }),
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {
+                                          bool _areFieldsFilled() {
+                                            return editstafffnamecontroller
+                                                    .text.isNotEmpty ||
+                                                edithstafflnamecontroller
+                                                    .text.isNotEmpty ||
+                                                editstaffemailcontroller
+                                                    .text.isNotEmpty ||
+                                                editstaffnewpasscontroller
+                                                    .text.isNotEmpty ||
+                                                    editstaffphonecontroller.text.isNotEmpty;
+                                          }
+
+                                          // if (_areFieldsFilled()) {
+                                          //   cancelAddingDialog(
+                                          //       context, 'hiring manager', 'updating');
+                                          // } else {
+                                            Navigator.pop(context);
+                                          // }
+                                        },
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 30, vertical: 8),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 180, 180, 180),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      Gap(10),
+                                      TextButton(
+                                        onPressed: ()  {
+                                          
+    bool isValid = edithrFieldKey.currentState!.validate() ?? false;
+    
+
+    if (!isValid) {
+      print("Validation failed: One or more fields are invalid.");
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          ),
+          content: Container(
+            width: MediaQuery.of(context).size.width * 0.4,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Confirm Update",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Are you sure to update ${staff.fname} ${staff.lname} Account?",
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "This will overwrite the current information.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(context), // Close the dialog
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 8),
+                        backgroundColor:
+                            const Color.fromARGB(255, 180, 180, 180),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    TextButton(
+               onPressed: () async {
+  try {
+    // Primary user document update in 'users' collection
+    // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .where('email', isEqualTo: staff.email)
+    //     .limit(1)
+    //     .get();
+
+    // if (querySnapshot.docs.isNotEmpty) {
+    //   String documentId = querySnapshot.docs.first.id;
+    //   await FirebaseFirestore.instance.collection('users').doc(documentId).update({
+    //     'firstName': editstafffnamecontroller.text.trim().isNotEmpty
+    //         ? editstafffnamecontroller.text.trim()
+    //         : staff.fname,
+    //     'lastName': edithstafflnamecontroller.text.trim().isNotEmpty
+    //         ? edithstafflnamecontroller.text.trim()
+    //         : staff.lname,
+    //     'email': editstaffemailcontroller.text.trim().isNotEmpty
+    //         ? editstaffemailcontroller.text.trim()
+    //         : staff.email,
+    //     if (staff.phoneNum != null && staff.phoneNum!.isNotEmpty)
+    //       'phone': editstaffphonecontroller.text.trim().isNotEmpty
+    //           ? editstaffphonecontroller.text.trim()
+    //           : staff.phoneNum ?? '',
+    //     'password': editstaffnewpasscontroller.text.trim().isNotEmpty
+    //         ? editstaffnewpasscontroller.text.trim()
+    //         : staff.password,
+    //     'last_updated_at': Timestamp.now(),
+    //     'last_updated_by': loggedInUserId,
+    //   });
+    //   print("User updated based on email: ${staff.email}");
+    // } else {
+    //   print("No user found with email: ${staff.email}");
+    // }
+
+    // Staff document update in 'branches' collection under specific user
+    // QuerySnapshot staffquerySnapshot = await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(loggedInUserId!)
+    //     .collection('branches')
+    //     .doc(selectedBranch!.id)
+    //     .collection('staffs')
+    //     .where('email', isEqualTo: staff.email)
+    //     .limit(1)
+    //     .get();
+    // if (staffquerySnapshot.docs.isNotEmpty) {
+    //   String documentId = staffquerySnapshot.docs.first.id;
+    //   print(documentId);
+    //   final docRef = FirebaseFirestore.instance
+    //       .collection('users')
+    //       .doc(loggedInUserId)
+    //       .collection('branches')
+    //       .doc(selectedBranch!.id)
+    //       .collection('staff')
+    //       .doc(documentId);
+
+    //   final docSnapshot = await docRef.get();
+    //   if (docSnapshot.exists) {
+    //     await docRef.update({
+    //       'firstName': editstafffnamecontroller.text.trim().isNotEmpty
+    //           ? editstafffnamecontroller.text.trim()
+    //           : staff.fname,
+    //       'lastName': edithstafflnamecontroller.text.trim().isNotEmpty
+    //           ? edithstafflnamecontroller.text.trim()
+    //           : staff.lname,
+    //       'email': editstaffemailcontroller.text.trim().isNotEmpty
+    //           ? editstaffemailcontroller.text.trim()
+    //           : staff.email,
+    //       if (staff.phoneNum != null && staff.phoneNum!.isNotEmpty)
+    //         'phone': editstaffphonecontroller.text.trim().isNotEmpty
+    //             ? editstaffphonecontroller.text.trim()
+    //             : staff.phoneNum ?? '',
+    //       'password': editstaffnewpasscontroller.text.trim().isNotEmpty
+    //           ? editstaffnewpasscontroller.text.trim()
+    //           : staff.password,
+    //       'last_updated_at': Timestamp.now(),
+    //       'last_updated_by': loggedInUserId,
+    //     });
+    //     print("Staff document updated in branches collection based on email: ${staff.email}");
+    //   } else {
+    //     print("No document found with ID: $documentId in the specified path.");
+    //   }
+    // } else {
+    //   print("No staff document found with email: ${staff.email}");
+    // }
+
+    // Show success toast
+       EasyLoading.instance
+                            ..displayDuration =
+                                const Duration(milliseconds: 1500)
+                            ..indicatorType =
+                                EasyLoadingIndicatorType.fadingCircle
+                            ..loadingStyle = EasyLoadingStyle.custom
+                            ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+                            ..textColor = Colors.white
+                            ..fontSize = 16.0
+                            ..indicatorColor = Colors.white
+                            ..maskColor = Colors.black.withOpacity(0.5)
+                            ..userInteractions = false
+                            ..dismissOnTap = true;
+    EasyLoading.showToast(
+      "${staff.fname} ${staff.lname} is successfully updated!",
+      dismissOnTap: true,
+      toastPosition: EasyLoadingToastPosition.top,
+      duration: Duration(seconds: 3),
+    );
+
+    // Fetch related data after successful update
+    // Provider.of<BranchProvider>(context, listen: false)
+    //     .fetchActiveBranches(loggedInUserId!)
+    //     .then((_) {
+    //   print("Branches fetched successfully.");
+    // }).catchError((e) {
+    //   print("Error fetching branches: $e");
+    // });
+
+    // Provider.of<HiringManagerProvider>(context, listen: false)
+    //     .fetchAllHiringManagers()
+    //     .then((_) {
+    //   print("Hiring managers fetched successfully.");
+    // }).catchError((e) {
+    //   print("Error fetching hiring managers: $e");
+    // });
+
+    // Provider.of<StaffProvider>(context, listen: false)
+    //     .fetchStaffByBranch(loggedInUserId!, selectedBranch!.id)
+    //     .then((_) {
+    //   print("Staff fetched successfully for branch ${selectedBranch!.id}");
+    // }).catchError((e) {
+    //   print("Error fetching staff: $e");
+    // });
+
+    Navigator.pop(context);
+    Navigator.pop(context);
+
+  } catch (e) {
+    print("Error updating staff: $e");
+  }
+},
+       style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 8),
+                        backgroundColor: const Color(0xFF3b7dff),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Yes, save changes',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  
+                                        },
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 30, vertical: 8),
+                                          backgroundColor:
+                                              const Color(0xFF083af8),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Save Changes',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
+                
+                                            }
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
                             ],
                           )
@@ -4224,6 +5699,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                     selectedBranch?.id,
                                                 orElse: () => HiringManager(
                                                   // Provide a default instance here
+                                                  uid: '',
                                                   fname: '',
                                                   lname: '',
                                                   email: '',
@@ -4460,12 +5936,12 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                                         Icons
                                                                             .edit,
                                                                         color: Colors
-                                                                            .grey),
+                                                                            .grey, size: 18),
                                                                     SizedBox(
                                                                         width:
                                                                             8),
                                                                     Text(
-                                                                        'Edit'),
+                                                                        'Edit account'),
                                                                   ],
                                                                 ),
                                                               ),
@@ -4720,9 +6196,9 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                                             Row(
                                                                           children: [
                                                                             Icon(Icons.edit,
-                                                                                color: Colors.grey),
+                                                                                color: Colors.grey, size: 18),
                                                                             SizedBox(width: 8),
-                                                                            Text('Edit'),
+                                                                            Text('Edit account'),
                                                                           ],
                                                                         ),
                                                                       ),
@@ -4757,7 +6233,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                 ArchiveBranchesCategory(
                                   onCardTap: (Branch branch) {
                                     selectedBranch = branch;
-                                      staffProvider
+                                    staffProvider
                                         .fetchStaffByBranch(
                                             loggedInUserId!, selectedBranch!.id)
                                         .then((_) {
@@ -4798,6 +6274,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                     selectedBranch?.id,
                                                 orElse: () => HiringManager(
                                                   // Provide a default instance here
+                                                  uid: '',
                                                   fname: '',
                                                   lname: '',
                                                   email: '',
@@ -5035,12 +6512,12 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                                         Icons
                                                                             .edit,
                                                                         color: Colors
-                                                                            .grey),
+                                                                            .grey, size: 18),
                                                                     SizedBox(
                                                                         width:
                                                                             8),
                                                                     Text(
-                                                                        'Edit'),
+                                                                        'Edit account'),
                                                                   ],
                                                                 ),
                                                               ),
@@ -5089,7 +6566,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                     ],
                                                   ),
                                                   Gap(5),
-                                                 Expanded(
+                                                  Expanded(
                                                     child:
                                                         Consumer<StaffProvider>(
                                                             builder: (context,
@@ -5295,9 +6772,9 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                                             Row(
                                                                           children: [
                                                                             Icon(Icons.edit,
-                                                                                color: Colors.grey),
+                                                                                color: Colors.grey, size: 18),
                                                                             SizedBox(width: 8),
-                                                                            Text('Edit'),
+                                                                            Text('Edit account'),
                                                                           ],
                                                                         ),
                                                                       ),
@@ -5320,7 +6797,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                                       );
                                                     }),
                                                   ),
-                                                 ],
+                                                ],
                                               );
                                             },
                                           ),

@@ -52,6 +52,7 @@ class Staff {
 
 
 class HiringManager {
+  final String uid;
   final String fname;
   final String lname;
   final String email;
@@ -62,6 +63,7 @@ class HiringManager {
   String? created_by;
 
   HiringManager({
+    required this.uid,
     required this.fname,
     required this.lname,
     required this.email,
