@@ -481,12 +481,12 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                   ),
                   NavigationRailDestination(
                     icon: _buildNavItem(
-                        'assets/images/candidates-tab.png', 'Candidates', 3),
+                        'assets/images/candidates-tab.png', 'Interviews', 3),
                     label: const SizedBox.shrink(),
                   ),
                   NavigationRailDestination(
                     icon: _buildNavItem(
-                        'assets/images/interview-tab.png', 'Interviews', 4),
+                        'assets/images/interview-tab.png', 'Calendar', 4),
                     label: const SizedBox.shrink(),
                   ),
                 ],

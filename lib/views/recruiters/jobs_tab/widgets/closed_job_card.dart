@@ -72,7 +72,7 @@ class _ClosedJobCardState extends State<ClosedJobCard> {
                 textLists(widget.jobType!),
                 textLists(widget.jobPostedBy!),
                 blueTextList('${widget.numberOfApplicants} applied'),
-                textLists("dummy data"),
+                textLists("Nov 2, 2024"),
                 IconButton(
                   onPressed: () async {
                     final RenderBox button =
