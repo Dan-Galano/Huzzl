@@ -1,16 +1,17 @@
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class SavedView extends StatelessWidget {
   SavedView({super.key});
 
-  final List myJobs = [''];
+  final List myJobs = [];
 
   @override
   Widget build(BuildContext context) {
-    if(myJobs.isNotEmpty){
-      return Center(child: const Text('Job posts you applied to.'),);
+    if (myJobs.isNotEmpty) {
+      return Center(
+        child: const Text('Job posts you applied to.'),
+      );
     } else {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,

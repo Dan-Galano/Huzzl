@@ -24,7 +24,7 @@ List<Map<String, String>> parseJobStreetData(String htmlContent) {
 
   document
       .querySelectorAll('article[data-testid="job-card"]')
-      .take(4)
+      .take(10)
       .forEach((element) {
     String? postedDate =
         element.querySelector('span[data-automation="jobListingDate"]')?.text;
@@ -149,7 +149,7 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
   var document = html.parse(htmlContent);
   List<Map<String, String>> jobs = [];
 
-  document.querySelectorAll('.jobpost-cat-box').take(4).forEach((element) {
+  document.querySelectorAll('.jobpost-cat-box').take(10).forEach((element) {
     String? title = element.querySelector('h4.fs-16')?.text.trim();
     String? postedDate = element.querySelector('p.fs-13 em')?.text.trim();
     String? description = element.querySelector('div.desc')?.text.trim();
