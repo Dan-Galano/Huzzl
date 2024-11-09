@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/company_profile/widgets/edit_button.dart';
 
-
 class ProfileHeader extends StatefulWidget {
   @override
   State<ProfileHeader> createState() => _ProfileHeaderState();
@@ -70,11 +69,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                           '3.6',
                           style: TextStyle(
                             color: Colors.black,
-                            fontFamily: 'Galano',
                           ),
                         ),
                         SizedBox(width: 410),
-                        EditButton(),
                       ],
                     ),
                   ],
@@ -82,7 +79,11 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               ),
             ],
           ),
-          SizedBox(height: 60),
+          SizedBox(height: 20),
+          Padding(
+            padding: EdgeInsets.only(left: 600.0), // Add padding here
+            child: EditButton(),
+          )
         ],
       ),
     );
