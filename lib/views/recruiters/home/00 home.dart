@@ -317,7 +317,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     }
     switch (_selectedIndex) {
       case 0:
-        return buildAdminContent(context, userData, user!);
+        return AdminContent(userData: userData!, user: user!);
       case 1:
         return BuildManagersTabContent();
       case 2:
