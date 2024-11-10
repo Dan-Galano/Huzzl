@@ -5,12 +5,18 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/resume_v
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/shorlist_confirmation_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/rejection_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar_inside.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ApplicationScreen extends StatefulWidget {
   final VoidCallback onBack;
-
-  const ApplicationScreen({Key? key, required this.onBack}) : super(key: key);
+  final String candidateId;
+  const ApplicationScreen({
+    Key? key,
+    required this.onBack,
+    required this.candidateId,
+  }) : super(key: key);
 
   @override
   State<ApplicationScreen> createState() => _ApplicationScreenState();
@@ -50,6 +56,12 @@ class _ApplicationScreenState extends State<ApplicationScreen>
 
   @override
   Widget build(BuildContext context) {
+    var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
+    DateTime applicationDate = jobCandidateProvider
+        .findDataOfCandidate(widget.candidateId)!
+        .applicationDate;
+    String formattedDate =
+        jobCandidateProvider.formatApplicationDate(applicationDate);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -93,20 +105,23 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    children: const [
-                                      Text('Application Date: '),
+                                    children: [
+                                      const Text('Application Date: '),
                                       Text(
-                                        '05 July 2024, 8:42pm',
-                                        style: TextStyle(
+                                        formattedDate,
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
                                   const Gap(10),
-                                  const Text(
-                                    'Eleanor Pena',
-                                    style: TextStyle(
+                                  Text(
+                                    jobCandidateProvider
+                                        .findDataOfCandidate(
+                                            widget.candidateId)!
+                                        .name,
+                                    style: const TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -125,8 +140,11 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                       ),
                                     ),
                                   ),
-                                  const Text(
-                                    'Vocalist',
+                                  Text(
+                                    jobCandidateProvider
+                                        .findDataOfCandidate(
+                                            widget.candidateId)!
+                                        .profession,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -146,10 +164,13 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                     child: Align(
                                       alignment: Alignment.center,
                                       child: Row(
-                                        children: const [
-                                          Text("Status: "),
+                                        children: [
+                                          const Text("Status: "),
                                           Text(
-                                            'For Review',
+                                            jobCandidateProvider
+                                                .findDataOfCandidate(
+                                                    widget.candidateId)!
+                                                .status,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                             ),
@@ -183,7 +204,7 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                   TextButton(
                                     onPressed: () =>
                                         showShortlistConfirmationDialog(
-                                            context),
+                                            context, widget.candidateId),
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 30, vertical: 8),
@@ -203,7 +224,13 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                   const Gap(10),
                                   TextButton(
                                     onPressed: () {
-                                      showRejectDialog(context);
+                                      showRejectDialog(
+                                          context, widget.candidateId);
+                                      if (jobCandidateProvider.rejectMessage !=
+                                          "") {
+                                        jobCandidateProvider
+                                            .clearRejectMessage();
+                                      }
                                     },
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(

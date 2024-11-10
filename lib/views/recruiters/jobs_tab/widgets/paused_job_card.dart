@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/home/details_page.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 
 class PausedJobCard extends StatefulWidget {
   final String? jobTitle;
@@ -7,15 +11,20 @@ class PausedJobCard extends StatefulWidget {
   final String? jobPostedAt;
   final String? jobPostedBy;
   final String? jobType;
+  final String? jobPostID;
   final int numberOfApplicants;
-  const PausedJobCard(
-      {super.key,
-      this.jobTitle,
-      this.jobPostedAt,
-      this.jobPostedBy,
-      this.jobType,
-      required this.numberOfApplicants,
-      this.jobDeadline});
+  final User user;
+  const PausedJobCard({
+    super.key,
+    this.jobTitle,
+    this.jobPostedAt,
+    this.jobPostedBy,
+    this.jobType,
+    required this.jobPostID,
+    required this.numberOfApplicants,
+    this.jobDeadline,
+    required this.user,
+  });
 
   @override
   State<PausedJobCard> createState() => _PausedJobCardState();
@@ -26,6 +35,7 @@ class _PausedJobCardState extends State<PausedJobCard> {
 
   @override
   Widget build(BuildContext context) {
+    final jobProvider = Provider.of<JobProviderCandidate>(context);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onHover: (_) {
@@ -151,6 +161,14 @@ class _PausedJobCardState extends State<PausedJobCard> {
                         // if (value == 'move_back_for_review') {
                         //   moveBackToReviewDialog(context);
                         // }
+
+                        if (value == "Re-open") {
+                          jobProvider.reOpenJobPost(
+                              widget.user.uid, widget.jobPostID!);
+                        } else if (value == 'close') {
+                          jobProvider.closeJobPost(
+                              widget.user.uid, widget.jobPostID!);
+                        }
                       });
                     },
                     icon: Image.asset(

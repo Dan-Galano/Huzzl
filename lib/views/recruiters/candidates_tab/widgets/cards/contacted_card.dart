@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/views/feedback_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/hiring_dialog.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/rejection_dialog.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/feedback_view_dialog.dart';
 import 'package:intl/intl.dart';
 
 class ContactedCard extends StatefulWidget {
@@ -21,7 +20,7 @@ class _ContactedCardState extends State<ContactedCard>
   Widget build(BuildContext context) {
     String date = DateFormat('d MMM yyyy, h:mma')
         .format(widget.candidate.dateLastInterviewed);
-  
+
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -145,7 +144,8 @@ class _ContactedCardState extends State<ContactedCard>
                       ),
                       Gap(20),
                       TextButton(
-                        onPressed: () => showRejectDialog(context),
+                        // onPressed: () => showRejectDialog(context),
+                        onPressed: () {},
                         style: TextButton.styleFrom(
                           padding:
                               EdgeInsets.symmetric(horizontal: 20, vertical: 8),

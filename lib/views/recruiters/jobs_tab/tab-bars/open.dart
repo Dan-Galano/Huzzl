@@ -49,33 +49,33 @@ class _OpenJobsState extends State<OpenJobs> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
- return Column(
-        children: [
-          const Gap(30),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 4, // Show 5 shimmer loading items
-              itemBuilder: (BuildContext context, int index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[200]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color:
-                          Colors.grey[200], // Grey background for the shimmer
-                      borderRadius: BorderRadius.circular(10.0),
+                return Column(
+                  children: [
+                    const Gap(30),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: 4, // Show 5 shimmer loading items
+                        itemBuilder: (BuildContext context, int index) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[200]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 10),
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[
+                                    200], // Grey background for the shimmer
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              height: 110, // Height of each placeholder card
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                    height: 110, // Height of each placeholder card
-                  ),
+                  ],
                 );
-              },
-            ),
-          ),
-        ],
-      );
-    }
+              }
 
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
@@ -173,7 +173,9 @@ class _OpenJobsState extends State<OpenJobs> {
                                 jobPostIndividualData['applicationDeadline'],
                             jobPostedAt: jobPostIndividualData['posted_at'],
                             jobPostedBy: jobPostIndividualData['posted_by'],
+                            jobPostID: jobPostIndividualData['jobPostID'],
                             numberOfApplicants: numberOfApplicants,
+                            user: widget.user,
                           ),
                         );
                       },
@@ -183,32 +185,32 @@ class _OpenJobsState extends State<OpenJobs> {
               } else {
                 // Show a loading spinner or a fallback UI while fetching data
                 return Column(
-        children: [
-          const Gap(30),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 4, // Show 5 shimmer loading items
-              itemBuilder: (BuildContext context, int index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[200]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color:
-                          Colors.grey[200], // Grey background for the shimmer
-                      borderRadius: BorderRadius.circular(10.0),
+                  children: [
+                    const Gap(30),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: 4, // Show 5 shimmer loading items
+                        itemBuilder: (BuildContext context, int index) {
+                          return Shimmer.fromColors(
+                            baseColor: Colors.grey[200]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 10),
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[
+                                    200], // Grey background for the shimmer
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              height: 110, // Height of each placeholder card
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                    height: 110, // Height of each placeholder card
-                  ),
+                  ],
                 );
-              },
-            ),
-          ),
-        ],
-      );
-      }
+              }
             },
           ),
         ),

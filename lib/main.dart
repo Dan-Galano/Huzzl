@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/video%20call/main.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
@@ -12,6 +13,7 @@ import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/staff-provider.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -45,6 +47,11 @@ void main() async {
             return staffProvider;
           },
         ),
+        ChangeNotifierProvider(
+          create: (context) {
+            return JobProviderCandidate();
+          },
+        )
       ],
       child: const HuzzlWeb(),
     ),

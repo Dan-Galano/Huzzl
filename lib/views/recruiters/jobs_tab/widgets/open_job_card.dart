@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class OpenJobCard extends StatefulWidget {
   final String? jobTitle;
@@ -9,7 +12,9 @@ class OpenJobCard extends StatefulWidget {
   final String? jobPostedAt;
   final String? jobPostedBy;
   final String? jobType;
+  final String? jobPostID;
   final int numberOfApplicants;
+  final User user;
   const OpenJobCard({
     super.key,
     required this.jobTitle,
@@ -17,7 +22,9 @@ class OpenJobCard extends StatefulWidget {
     required this.jobPostedAt,
     required this.jobPostedBy,
     required this.jobType,
+    required this.jobPostID,
     required this.numberOfApplicants,
+    required this.user,
   });
 
   @override
@@ -60,6 +67,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
 
   @override
   Widget build(BuildContext context) {
+    final jobProvider = Provider.of<JobProviderCandidate>(context);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onHover: (_) {
@@ -186,6 +194,14 @@ class _OpenJobCardState extends State<OpenJobCard> {
                         // if (value == 'move_back_for_review') {
                         //   moveBackToReviewDialog(context);
                         // }
+
+                        if (value == "close") {
+                          jobProvider.closeJobPost(
+                              widget.user.uid, widget.jobPostID!);
+                        } else if (value == "pause") {
+                          jobProvider.pauseJobPost(
+                              widget.user.uid, widget.jobPostID!);
+                        }
                       });
                     },
                     icon: Image.asset(

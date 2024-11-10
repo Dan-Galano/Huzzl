@@ -114,7 +114,8 @@ class _ShortListedCardState extends State<ShortListedCard> {
                         onPressed: () {
                           final homeState = context.findAncestorStateOfType<
                               RecruiterHomeScreenState>();
-                          homeState?.toggleSlApplicationScreen(true, 1);
+                          homeState?.toggleSlApplicationScreen(
+                              true, 1, widget.candidate.id);
                         },
                         style: TextButton.styleFrom(
                           padding:
@@ -181,7 +182,7 @@ class _ShortListedCardState extends State<ShortListedCard> {
                     ],
                   ).then((value) {
                     if (value == 'move_back_for_review') {
-                      moveBackToReviewDialog(context);
+                      moveBackToReviewDialog(context, widget.candidate.id);
                     }
                   });
                 },

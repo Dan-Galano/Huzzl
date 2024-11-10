@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 
-void showShortlistConfirmationDialog(BuildContext context) {
+void showShortlistConfirmationDialog(BuildContext context, String candidateId) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
           return AlertDialog(
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
@@ -64,12 +67,13 @@ void showShortlistConfirmationDialog(BuildContext context) {
                       Gap(10),
                       TextButton(
                         onPressed: () {
+                          jobCandidateProvider.shortlistCandidate(candidateId);
+                          Navigator.pop(context);
                         },
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 8),
-                          backgroundColor: const Color(
-                              0xFF4CAF50), 
+                          backgroundColor: const Color(0xFF4CAF50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
