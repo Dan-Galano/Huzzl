@@ -12,9 +12,11 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_s
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -33,129 +35,6 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   User? user;
   bool? isStandaloneCompany;
 
-  final List<Candidate> _candidates = [
-    Candidate(
-      id: '1',
-      name: 'Allen James Alvaro',
-      profession: "Drummer/Guitarist",
-      jobPostId: "FXZd9yEXNPFpKfwXQ401",
-      companyAppliedTo: "Cong's Unbilibabol Basketbol",
-      applicationDate: DateTime.now(),
-      status: "For Review",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '2',
-      name: 'Patrick John Tomas',
-      jobPostId: "FXZd9yEXNPFpKfwXQ401",
-      profession: "Drummer/Back-up Vocalist",
-      companyAppliedTo: "December Avenue",
-      applicationDate: DateTime.now(),
-      status: "For Review",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '3',
-      name: 'Monica Ave',
-      profession: "Drummer/Back-up Vocalist",
-      jobPostId: "FXZd9yEXNPFpKfwXQ401",
-      companyAppliedTo: "Rouge",
-      applicationDate: DateTime.now(),
-      status: "Shortlisted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '4',
-      name: 'John Doe',
-      jobPostId: "INPFHCDYGbCNBfu6fePe",
-      profession: "Drummer/Back-up Vocalist",
-      companyAppliedTo: "Sugarry Sweet",
-      applicationDate: DateTime.now(),
-      status: "Contacted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '5',
-      name: 'John Wick',
-      profession: "Metal Drummer",
-      jobPostId: "INPFHCDYGbCNBfu6fePe",
-      companyAppliedTo: "Sugarry Sweet",
-      applicationDate: DateTime.now(),
-      status: "Contacted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 2,
-    ),
-    Candidate(
-      id: '6',
-      name: 'Spongebob Squarepants',
-      profession: "Reggae Drummer",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "Halo",
-      applicationDate: DateTime.now(),
-      status: "Shortlisted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '7',
-      name: 'Jake Gyllenhaal',
-      profession: "Pop Drummer",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "Halo",
-      applicationDate: DateTime.now(),
-      status: "For Review",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '8',
-      name: 'John Mayer',
-      profession: "Blues Drummer",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "Gravity",
-      applicationDate: DateTime.now(),
-      status: "Contacted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '9',
-      name: 'Mike Portnoy',
-      profession: "Progressive Metal Drummer",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "Dream Theater",
-      applicationDate: DateTime.now(),
-      status: "Hired",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '10',
-      name: 'Jame Belmoro',
-      profession: "Simpleng Drummer",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "The Smokers",
-      applicationDate: DateTime.now(),
-      status: "Rejected",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-  ];
-
   int? _selectedIndex = 0;
   bool _isCandidatesScreen = false;
   bool _isApplicationScreen = false;
@@ -163,6 +42,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   // bool _isCalendarScreen = false;
   String _jobPostId = '';
   String _jobTitle = '';
+  String _candidateId = '';
   int _initialIndex = 0;
   int _jobTabInitialIndex = 0;
 
@@ -259,20 +139,24 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     });
   }
 
-  void toggleApplicationScreen(bool showApplicationScreen) {
+  void toggleApplicationScreen(bool showApplicationScreen, String candidateId) {
     setState(() {
       _isApplicationScreen = showApplicationScreen;
+      _candidateId = candidateId;
     });
   }
 
-  void toggleSlApplicationScreen(bool showApplicationScreen, int initialIndex) {
+  void toggleSlApplicationScreen(bool showApplicationScreen, int initialIndex, String candidateId) {
     setState(() {
       _isSlApplicationScreen = showApplicationScreen;
       _initialIndex = initialIndex;
+      _candidateId = candidateId;
     });
   }
 
   Widget buildContent() {
+    //provider
+    final jobProvider = Provider.of<JobProviderCandidate>(context);
     if (companyData == null || isStandaloneCompany == null) {
       return Center(
         child: AlertDialog(
@@ -323,11 +207,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
       case 2:
         if (_isApplicationScreen) {
           return ApplicationScreen(
-            onBack: () => toggleApplicationScreen(false),
+            onBack: () => toggleApplicationScreen(false, ""),
+            candidateId: _candidateId,
           );
         } else if (_isSlApplicationScreen) {
           return SlApplicationScreen(
-            onBack: () => toggleSlApplicationScreen(false, _initialIndex),
+            onBack: () => toggleSlApplicationScreen(false, _initialIndex, ""),
+            candidateId: _candidateId,
           );
         } else if (_isCandidatesScreen) {
           return buildCandidatesContent(
@@ -335,12 +221,12 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             () => toggleCandidatesScreen(false, '', '', 0, _jobTabInitialIndex),
             _jobPostId,
             _jobTitle,
-            _candidates,
+            jobProvider.candidates,
             _initialIndex,
           );
         }
         return JobScreens(
-          candidates: _candidates,
+          candidates: jobProvider.candidates,
           jobPostsData: jobPostsData,
           user: user!,
           userData: userData!,

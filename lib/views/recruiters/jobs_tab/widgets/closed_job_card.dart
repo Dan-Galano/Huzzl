@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 
 class ClosedJobCard extends StatefulWidget {
   final String? jobTitle;
@@ -7,15 +10,20 @@ class ClosedJobCard extends StatefulWidget {
   final String? jobPostedAt;
   final String? jobPostedBy;
   final String? jobType;
+  final String? jobPostID;
   final int numberOfApplicants;
-  const ClosedJobCard(
-      {super.key,
-      this.jobTitle,
-      this.jobDeadline,
-      this.jobPostedAt,
-      this.jobPostedBy,
-      this.jobType,
-      required this.numberOfApplicants});
+  final User user;
+  const ClosedJobCard({
+    super.key,
+    this.jobTitle,
+    this.jobDeadline,
+    this.jobPostedAt,
+    this.jobPostedBy,
+    this.jobType,
+    this.jobPostID,
+    required this.numberOfApplicants,
+    required this.user,
+  });
 
   @override
   State<ClosedJobCard> createState() => _ClosedJobCardState();
@@ -24,6 +32,7 @@ class ClosedJobCard extends StatefulWidget {
 class _ClosedJobCardState extends State<ClosedJobCard> {
   @override
   Widget build(BuildContext context) {
+    var jobPost = Provider.of<JobProviderCandidate>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(

@@ -2,7 +2,7 @@ name: huzzl_web
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  agora_rtc_engine: ^6.3.2
   change_case: ^2.1.0
   cloud_firestore: ^5.1.0
   cupertino_icons: ^1.0.6
@@ -42,12 +43,15 @@ dependencies:
   firebase_storage: ^12.1.1
   flutter:
     sdk: flutter
+  flutter_dotenv: ^5.2.1
   flutter_easyloading: ^3.0.5
   flutter_svg: ^2.0.10+1
   flutter_typeahead: ^5.2.0
   flutter_web_plugins:
     sdk: flutter
+  flutter_webrtc: ^0.11.6+hotfix.1
   gap: ^3.0.1
+  google_generative_ai: ^0.4.6
   google_sign_in: ^6.2.1
   google_sign_in_web: ^0.12.4+2
   html: ^0.15.4
@@ -56,6 +60,7 @@ dependencies:
   intl: ^0.19.0
   modal_bottom_sheet: ^3.0.0
   path_provider: ^2.1.4
+  permission_handler: ^11.3.1
   provider: ^6.1.2
   responsive_builder: ^0.7.1
   shimmer: ^3.0.0
@@ -89,6 +94,7 @@ flutter:
     - assets/pdf/
     - assets/templates/
     - assets/templates/huzzl_bulk-upload-branches.xlsx
+    - .env
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

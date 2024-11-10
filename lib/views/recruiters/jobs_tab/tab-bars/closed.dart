@@ -169,8 +169,10 @@ class _ClosedJobsState extends State<ClosedJobs> {
                             jobDeadline:
                                 jobPostIndividualData['applicationDeadline'],
                             jobPostedAt: jobPostIndividualData['posted_at'],
+                            jobPostID: jobPostIndividualData['jobPostID'], 
                             jobPostedBy: jobPostIndividualData['posted_by'],
                             numberOfApplicants: numberOfApplicants,
+                            user : widget.user
                           ),
                         );
                       },
