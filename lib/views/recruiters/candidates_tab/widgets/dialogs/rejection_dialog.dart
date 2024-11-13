@@ -76,8 +76,8 @@ void showRejectDialog(BuildContext context, String candidateId) {
                           Expanded(
                             child: TextButton(
                               onPressed: () async {
-                                jobCandidateProvider
-                                    .generateRejectMessage(candidateId);
+                                jobCandidateProvider.generateMessage(
+                                    candidateId, "Reject");
                               },
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(

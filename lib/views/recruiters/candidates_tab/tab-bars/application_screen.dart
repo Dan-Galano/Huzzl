@@ -229,7 +229,7 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                       if (jobCandidateProvider.rejectMessage !=
                                           "") {
                                         jobCandidateProvider
-                                            .clearRejectMessage();
+                                            .clearMessage("Reject");
                                       }
                                     },
                                     style: TextButton.styleFrom(

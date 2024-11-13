@@ -168,7 +168,8 @@ class Signaling {
       roomRef.collection('callerCandidates').snapshots().listen((snapshot) {
         snapshot.docChanges.forEach((document) {
           if (document.type == DocumentChangeType.added) {
-            Map<String, dynamic> data = document.doc.data() as Map<String, dynamic>;
+            Map<String, dynamic> data =
+                document.doc.data() as Map<String, dynamic>;
             print(data);
             print('Got new remote ICE candidate: $data');
             peerConnection!.addCandidate(

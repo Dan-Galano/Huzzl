@@ -53,7 +53,8 @@ void main() async {
           },
         )
       ],
-      child: const HuzzlWeb(),
+      // child: const HuzzlWeb(),
+      child: MyApp(),
     ),
   );
 }

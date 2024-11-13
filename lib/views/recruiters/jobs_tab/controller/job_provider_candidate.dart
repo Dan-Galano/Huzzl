@@ -131,10 +131,12 @@ class JobProviderCandidate extends ChangeNotifier {
   List<Candidate> get candidates => _candidates;
 
   String _rejectMessage = "";
+  String _hireMessage = "";
 
   String get rejectMessage => _rejectMessage;
+  String get hireMessage => _hireMessage;
 
-  Future<String> generateRejectMessage(String candidateId) async {
+  Future<void> generateMessage(String candidateId, String typeOfMessage) async {
     Candidate candidate = findDataOfCandidate(candidateId)!;
 
     await dotenv.load();
@@ -146,18 +148,34 @@ class JobProviderCandidate extends ChangeNotifier {
       apiKey: geminiAPIKey,
     );
 
-    var prompt =
-        "Can you create a rejection message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We regret to inform you that we have selected other candidates whose qualifications more closely align with the position requirements. Do not include anything like this [position], [company] like that.";
+    var prompt = "";
+
+    if (typeOfMessage == "Reject") {
+      prompt =
+          "Can you create a rejection message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We regret to inform you that we have selected other candidates whose qualifications more closely align with the position requirements. Do not include anything like this [position], [company] like that.";
+    } else if (typeOfMessage == "Hire") {
+      prompt =
+          "Can you create a acception/hired message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We're excited to welcome you to [Company Name] as our new [Job Title]! Your skills and enthusiasm truly impressed us, and we're confident you'll bring great value to our team. Starting on [Proposed Start Date], we look forward to your contributions. Congratulations, and welcome aboard!";
+    }
     final response = await model.generateContent([prefix.Content.text(prompt)]);
     print(response.text);
-    _rejectMessage = response.text!;
+    if (typeOfMessage == "Reject") {
+      _rejectMessage = response.text!;
+    } else if (typeOfMessage == "Hire") {
+      _hireMessage = response.text!;
+    }
+
     notifyListeners();
 
-    return response.text!;
+    // return response.text!;
   }
 
-  void clearRejectMessage() {
-    _rejectMessage = "";
+  void clearMessage(String typeOfMessage) {
+    if (typeOfMessage == "Reject") {
+      _rejectMessage = "";
+    } else {
+      _hireMessage = "";
+    }
     notifyListeners();
   }
 
