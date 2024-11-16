@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/Landing_Page/landing_page.dart';
 import 'package:huzzl_web/landing%20page/landing_page.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 
 void main() {
-  runApp(const HuzzlWeb());
+  runApp(HuzzlWeb());
 }
 
 class HuzzlWeb extends StatelessWidget {
@@ -11,9 +12,10 @@ class HuzzlWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LandingPage(),
+      // home: LandingPage(), 
+      home: LandingPageNew(),
     );
   }
 }
