@@ -34,13 +34,29 @@ class Header extends StatelessWidget {
   }
 }
 
-class ProfileCard extends StatelessWidget {
+class ProfileCard extends StatefulWidget {
   const ProfileCard({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<ProfileCard> {
+  late MenuAppController _adminProvider;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _adminProvider = Provider.of<MenuAppController>(context, listen: false);
+    _adminProvider.getName();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+     var adminController = Provider.of<MenuAppController>(context);
     return Container(
       margin: EdgeInsets.only(left: defaultPadding),
       padding: EdgeInsets.symmetric(
@@ -62,9 +78,49 @@ class ProfileCard extends StatelessWidget {
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
-              child: Text("Angelina Jolie"),
+              child: Text("${_adminProvider.adminName}"),
             ),
-          Icon(Icons.keyboard_arrow_down),
+          IconButton(onPressed: ()async {
+                            // Your existing logic for the icon button
+                            final RenderBox button =
+                                context.findRenderObject() as RenderBox;
+                            final RenderBox overlay = Overlay.of(context)
+                                .context
+                                .findRenderObject() as RenderBox;
+
+                            final position = button.localToGlobal(Offset.zero,
+                                ancestor: overlay);
+
+                            await showMenu(
+                              context: context,
+                              position: RelativeRect.fromLTRB(
+                                position.dx,
+                                position.dy,
+                                overlay.size.width -
+                                    position.dx -
+                                    button.size.width,
+                                overlay.size.height - position.dy,
+                              ),
+                              items: [
+                                const PopupMenuItem(
+                                  value: 'logout',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.logout,
+                                          color: Colors.grey),
+                                      SizedBox(width: 8),
+                                      Text('Logout'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ).then((value) {
+                              if(value == 'logout'){
+                                adminController.logout();
+                              }
+                            });
+                          }, 
+          icon: Icon(Icons.keyboard_arrow_down)),
         ],
       ),
     );

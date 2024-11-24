@@ -88,8 +88,8 @@ class HuzzlWeb extends StatelessWidget {
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
-      // home: const AuthWrapper(),
-      home: MainScreen(),
+      home: const AuthWrapper(),
+      // home: MainScreen(),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
     );
@@ -239,7 +239,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   return JobseekerMainScreen();
                 } else if (userType == 'recruiter') {
                   return RecruiterHomeScreen();
-                } else {
+                } else if (userType == 'admin'){
+                  return MainScreen();
+                }
+                 else {
                   return LoginRegister();
                 }
               }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
+import 'package:provider/provider.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({
@@ -8,6 +10,7 @@ class SideMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final adminController = Provider.of<MenuAppController>(context);
     return Drawer(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
@@ -21,43 +24,51 @@ class SideMenu extends StatelessWidget {
           DrawerListTile(
             title: "Dashboard",
             svgSrc: "assets/icons/menu_dashboard.svg",
-            press: () {},
+            press: () {
+              adminController.changeTabLocation(0);
+            },
           ),
           DrawerListTile(
-            title: "Transaction",
+            title: "Manage Users",
             svgSrc: "assets/icons/menu_tran.svg",
-            press: () {},
+            press: () {
+              adminController.changeTabLocation(1);
+            },
           ),
           DrawerListTile(
-            title: "Task",
+            title: "Manage Job Listings",
             svgSrc: "assets/icons/menu_task.svg",
-            press: () {},
+            press: () {
+              adminController.changeTabLocation(2);
+            },
           ),
           DrawerListTile(
-            title: "Documents",
+            title: "Usage Analytics",
             svgSrc: "assets/icons/menu_doc.svg",
-            press: () {},
+            press: () {
+              adminController.changeTabLocation(3);
+            },
           ),
-          DrawerListTile(
-            title: "Store",
-            svgSrc: "assets/icons/menu_store.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Notification",
-            svgSrc: "assets/icons/menu_notification.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Profile",
-            svgSrc: "assets/icons/menu_profile.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Settings",
-            svgSrc: "assets/icons/menu_setting.svg",
-            press: () {},
-          ),
+          // DrawerListTile(
+          //   title: "Store",
+          //   svgSrc: "assets/icons/menu_store.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Notification",
+          //   svgSrc: "assets/icons/menu_notification.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Profile",
+          //   svgSrc: "assets/icons/menu_profile.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Settings",
+          //   svgSrc: "assets/icons/menu_setting.svg",
+          //   press: () {},
+          // ),
         ],
       ),
     );

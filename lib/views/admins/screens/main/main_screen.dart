@@ -9,28 +9,50 @@ import 'components/side_menu.dart';
 class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final menuController = Provider.of<MenuAppController>(context);
+
     return Scaffold(
-      key: context.read<MenuAppController>().scaffoldKey,
+      key: menuController.scaffoldKey,
       drawer: SideMenu(),
       body: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // We want this side menu only for large screen
             if (Responsive.isDesktop(context))
-              Expanded(
-                // default flex = 1
-                // and it takes 1/6 part of the screen
+              const Expanded(
                 child: SideMenu(),
               ),
+
             Expanded(
-              // It takes 5/6 part of the screen
               flex: 5,
-              child: DashboardScreen(),
+              child: _getScreen(menuController.sideMenuIndex),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _getScreen(int index) {
+    switch (index) {
+      case 0:
+        return DashboardScreen();
+      case 1:
+        return Center(
+          child: Text("Manage users tab"),
+        );
+        case 2:
+        return Center(
+          child: Text("Manage Job Listing tab"),
+        );
+        case 3:
+        return Center(
+          child: Text("Manage Usage Analytics tab"),
+        );
+      default:
+        return Center(
+          child: Text("Screen not found!"),
+        );
+    }
   }
 }

@@ -1,15 +1,57 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
+import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 
-class Chart extends StatelessWidget {
-  const Chart({
+class Chart extends StatefulWidget {
+  Chart({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<Chart> createState() => _ChartState();
+}
+
+class _ChartState extends State<Chart> {
+  late int counterRecruiter;
+  late int counterJobseeker;
+  late int counterJobPosting;
+  late MenuAppController adminProvider;
+
+  double? recruiterCount;
+  double? jobseekerCount;
+  double? jobPostingCount;
+
+  int totalUsage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    adminProvider = Provider.of<MenuAppController>(context, listen: false);
+    getCounterFunction();
+  }
+
+  void getCounterFunction() async {
+    counterRecruiter = await adminProvider.recruitersCount();
+    counterJobPosting = await adminProvider.jobPostCount();
+    counterJobseeker = await adminProvider.jobseekersCount();
+
+    setState(() {
+      recruiterCount = counterRecruiter.toDouble();
+      jobseekerCount = counterJobseeker.toDouble();
+      jobPostingCount = counterJobPosting.toDouble();
+
+      totalUsage = counterRecruiter + counterJobPosting + counterJobseeker;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (recruiterCount == null || jobseekerCount == null || jobPostingCount == null) {
+      return const Center(child: CircularProgressIndicator(),);
+    }
     return SizedBox(
       height: 200,
       child: Stack(
@@ -19,7 +61,7 @@ class Chart extends StatelessWidget {
               sectionsSpace: 0,
               centerSpaceRadius: 70,
               startDegreeOffset: -90,
-              sections: paiChartSelectionData,
+              sections: _getChartSections(),
             ),
           ),
           Positioned.fill(
@@ -28,14 +70,14 @@ class Chart extends StatelessWidget {
               children: [
                 SizedBox(height: defaultPadding),
                 Text(
-                  "29.1",
+                  recruiterCount != null ? "$totalUsage" : "0", 
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.w600,
                         height: 0.5,
                       ),
                 ),
-                Text("of 128GB")
+                const Text("Usage")
               ],
             ),
           ),
@@ -43,37 +85,28 @@ class Chart extends StatelessWidget {
       ),
     );
   }
-}
 
-List<PieChartSectionData> paiChartSelectionData = [
-  PieChartSectionData(
-    color: primaryColor,
-    value: 25,
-    showTitle: false,
-    radius: 25,
-  ),
-  PieChartSectionData(
-    color: Color(0xFF26E5FF),
-    value: 20,
-    showTitle: false,
-    radius: 22,
-  ),
-  PieChartSectionData(
-    color: Color(0xFFFFCF26),
-    value: 10,
-    showTitle: false,
-    radius: 19,
-  ),
-  PieChartSectionData(
-    color: Color(0xFFEE2727),
-    value: 15,
-    showTitle: false,
-    radius: 16,
-  ),
-  PieChartSectionData(
-    color: primaryColor.withOpacity(0.1),
-    value: 25,
-    showTitle: false,
-    radius: 13,
-  ),
-];
+  // Dynamically generate chart sections based on fetched data
+  List<PieChartSectionData> _getChartSections() {
+    return [
+      PieChartSectionData(
+        color: primaryColor,
+        value: recruiterCount ?? 0,
+        showTitle: false,
+        radius: 25,
+      ),
+      PieChartSectionData(
+        color: Colors.red,
+        value: jobPostingCount ?? 0,
+        showTitle: false,
+        radius: 22,
+      ),
+      PieChartSectionData(
+        color: Color(0xFFFFA113),
+        value: jobseekerCount ?? 0,
+        showTitle: false,
+        radius: 19,
+      ),
+    ];
+  }
+}
