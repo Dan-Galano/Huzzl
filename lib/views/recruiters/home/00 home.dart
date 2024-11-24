@@ -11,7 +11,9 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_s
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/views/start_interview_screen.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
@@ -45,6 +47,8 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   String _candidateId = '';
   int _initialIndex = 0;
   int _jobTabInitialIndex = 0;
+
+  //Interview logics
 
   void getcompanyData() async {
     // Get the current user after they sign in
@@ -146,7 +150,8 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
     });
   }
 
-  void toggleSlApplicationScreen(bool showApplicationScreen, int initialIndex, String candidateId) {
+  void toggleSlApplicationScreen(
+      bool showApplicationScreen, int initialIndex, String candidateId) {
     setState(() {
       _isSlApplicationScreen = showApplicationScreen;
       _initialIndex = initialIndex;
@@ -157,6 +162,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   Widget buildContent() {
     //provider
     final jobProvider = Provider.of<JobProviderCandidate>(context);
+    final interviewProvider = Provider.of<InterviewProvider>(context);
     if (companyData == null || isStandaloneCompany == null) {
       return Center(
         child: AlertDialog(
@@ -233,6 +239,9 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           initialIndex: _jobTabInitialIndex,
         );
       case 3:
+        if (interviewProvider.startInterview) {
+          return StartInterviewScreen();
+        }
         return buildInterviewsContent();
       case 4:
         return InterviewCalendar();

@@ -41,6 +41,7 @@ dependencies:
   firebase_auth: ^5.1.2
   firebase_core: ^3.2.0
   firebase_storage: ^12.1.1
+  fl_chart: ^0.69.0
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.2.1
@@ -90,6 +91,7 @@ flutter:
   assets:
     - assets/images/gif/
     - assets/images/
+    - assets/icons/
     - assets/images/pfp/
     - assets/pdf/
     - assets/templates/
