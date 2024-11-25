@@ -1,5 +1,6 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,9 +9,64 @@ import 'package:huzzl_web/views/recruiters/register/sample.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
+class PhoneVerificationService {
+  final String accountSid = 'AC5f8fa163bed2a18b9476736f26fe843c';
+  final String authToken = '7c33d4dd6080d1b52013fd3c5cb223b9';
+  final String serviceSid = 'VA38c75772985bb97679fe474c41afa0a9';
+
+  Future<void> sendOTP(String phoneNumber) async {
+    final url = Uri.parse(
+        'https://verify.twilio.com/v2/Services/$serviceSid/Verifications');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization':
+            'Basic ${base64Encode(utf8.encode('$accountSid:$authToken'))}',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {'To': phoneNumber, 'Channel': 'sms'},
+    );
+    if (response.statusCode == 201) {
+      print('OTP sent successfully');
+    } else {
+      print('Failed to send OTP: ${response.body}');
+      throw Exception('Failed to send OTP');
+    }
+  }
+
+  Future<bool> verifyOTP(String phoneNumber, String code) async {
+    final url = Uri.parse(
+        'https://verify.twilio.com/v2/Services/$serviceSid/VerificationCheck');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization':
+            'Basic ${base64Encode(utf8.encode('$accountSid:$authToken'))}',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {'To': phoneNumber, 'Code': code},
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      if (responseData['status'] == 'approved') {
+        return true; 
+      } else {
+        print('Verification failed: Incorrect code');
+        return false; 
+      }
+    } else {
+      print('Verification request failed: ${response.body}');
+      return false;
+    }
+  }
+}
+
+
+
 class PhoneNumberVerification extends StatefulWidget {
-  UserCredential userCredential;
   final String phoneNumber;
+  UserCredential userCredential;
 
   PhoneNumberVerification({
     required this.phoneNumber,
@@ -23,39 +79,77 @@ class PhoneNumberVerification extends StatefulWidget {
 }
 
 class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  //Last three digits of the number
-  String lastThreeDigits = "";
-  String? _verificationId;
+  final PhoneVerificationService _service = PhoneVerificationService();
   final List<TextEditingController> _controllers =
       List.generate(6, (index) => TextEditingController());
+       List<bool> _focusNodes = List.generate(6, (index) => false);
   bool _isCodeSent = false;
   bool _isLoading = false;
-
-  int _remainingSeconds = 300; // 2 minutes timer
+  // String? _verificationId;
+  int _remainingSeconds = 300;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _sendVerificationCode(); // Automatically send OTP when the screen loads
-    lastThreeDigitFunc();
-  }
+    _sendOTP(); 
 
-  void lastThreeDigitFunc() {
-    String phoneNumberTemp = widget.phoneNumber;
-    int numberLength = phoneNumberTemp.length - 3;
-
-    for (var i = numberLength; i < phoneNumberTemp.length; i++) {
-      setState(() {
-        lastThreeDigits += phoneNumberTemp[i];
+     for (int i = 0; i < _controllers.length; i++) {
+      _controllers[i].addListener(() {
+        setState(() {
+          _focusNodes[i] = _controllers[i].text.isNotEmpty;
+        });
       });
     }
+  }
 
-    print("Phone: $lastThreeDigits");
+  String obscurePhoneNumber(String phoneNumber) {
+  if (phoneNumber.length < 6) return phoneNumber;
+  String prefix = phoneNumber.substring(0, 4);
+  String lastThreeDigits = phoneNumber.substring(phoneNumber.length - 3); 
+  String obscuredNumber = '$prefix** *** *$lastThreeDigits';
+
+  return obscuredNumber;
+}
+
+  void _sendOTP() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Send the OTP via Twilio
+    await _service.sendOTP(widget.phoneNumber).then((_) {
+      setState(() {
+        _isCodeSent = true;
+        _isLoading = false;
+        _startTimer();
+      });
+    }).catchError((error) {
+      setState(() {
+        _isLoading = false;
+      });
+      EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "Failed to send OTP. Please try again later.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+    });
   }
 
   void _startTimer() {
+    _remainingSeconds = 300; 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         setState(() {
@@ -63,142 +157,73 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
         });
       } else {
         setState(() {
-          _isCodeSent = false; // Show the "Resend a new code" button
+          _isCodeSent = false; 
         });
         timer.cancel();
       }
     });
   }
 
-  void _sendVerificationCode() async {
-    setState(() {
-      _isCodeSent = false;
-      _isLoading = true;
-    });
-
-    await _auth.verifyPhoneNumber(
-      phoneNumber: widget.phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        // Automatically sign in with the credential
-        await _linkPhoneNumberWithCredential(credential);
-        _navigateToNextScreen(); // Automatically navigate if credential is valid
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Handle error, show a message to the user
-        print('Verification failed: ${e.message}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Verification failed. Try again later.')),
-        );
-        setState(() {
-          _isLoading = false;
-        });
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        // Store the verification ID for later use
-        setState(() {
-          _verificationId = verificationId;
-          _isCodeSent = true;
-          _isLoading = false;
-          if (_isCodeSent) {
-            _startTimer();
-          }
-          _remainingSeconds = 300; // Reset timer to 2 minutes
-        });
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text('Code sent to ${widget.phoneNumber}')),
-        // );
-
-        EasyLoading.showToast(
-          'Code sent to *** **** *$lastThreeDigits',
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-          // maskType: EasyLoadingMaskType.black,
-        );
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        // Auto-retrieval timeout handling
-        setState(() {
-          _verificationId = verificationId;
-        });
-      },
-    );
-  }
-
-  void _submitCode() async {
+  Future<void> _verifyOTP() async {
     setState(() {
       _isLoading = true;
     });
 
-    // Get the entered code
-    String enteredCode =
-        _controllers.map((controller) => controller.text).join();
+    String enteredCode = _controllers.map((controller) => controller.text).join();
 
-    if (_verificationId != null) {
-      try {
-        // Create a PhoneAuthCredential using the verification ID and entered code
-        PhoneAuthCredential credential = PhoneAuthProvider.credential(
-          verificationId: _verificationId!,
-          smsCode: enteredCode,
-        );
-
-        // Link the phone number with the current user account
-        await _linkPhoneNumberWithCredential(credential);
-      } on FirebaseAuthException catch (e) {
-        // Handle error (e.g., invalid code)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid code. Please try again.')),
-        );
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _linkPhoneNumberWithCredential(
-      PhoneAuthCredential credential) async {
-    User? currentUser = _auth.currentUser;
-
-    try {
-      // If a user is already signed in, link the phone credential with the existing account
-      if (currentUser != null) {
-        await currentUser.linkWithCredential(credential);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Phone number linked successfully!')),
-        );
-        // Navigate to the next screen after successful verification
-        _navigateToNextScreen();
-      } else {
-        // If no user is signed in, sign in with the phone credential
-        await _auth.signInWithCredential(credential);
-        // Navigate to the next screen after successful sign-in
-        _navigateToNextScreen();
-      }
-    } on FirebaseAuthException catch (e) {
-      print('Error linking phone number: ${e.message}');
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('Error linking phone number: ${e.message}')),
-      // );
-
-      EasyLoading.showToast(
-        'Error linking phone number: The code you provided is incorrect.',
-        dismissOnTap: true,
-        toastPosition: EasyLoadingToastPosition.top,
-        duration: Duration(seconds: 3),
-        // maskType: EasyLoadingMaskType.black,
-      );
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _navigateToNextScreen() {
+    bool isVerified = await _service.verifyOTP(widget.phoneNumber, enteredCode);
     setState(() {
       _isLoading = false;
     });
 
+    if (isVerified) {
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "Your phone number has been verified!",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+      _navigateToNextScreen();
+    } else {
+       EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "Invalid OTP. Please try again.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+         for (var controller in _controllers) {
+    controller.clear();  
+  }
+  
+  setState(() {
+    _focusNodes = List.generate(6, (index) => false);  
+  });
+    }
+  }
+
+  void _navigateToNextScreen() {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => CompanyProfileRecruiter(
@@ -209,9 +234,19 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
   }
 
   @override
+  void dispose() {
+    _timer?.cancel(); 
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final minutes = (_remainingSeconds ~/ 60).toString().padLeft(2, '0');
     final seconds = (_remainingSeconds % 60).toString().padLeft(2, '0');
+
     return Scaffold(
       body: Column(
         children: [
@@ -248,14 +283,6 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
                               'assets/images/validation_logo.png',
                               height: 85,
                             ),
-                            // const Text(
-                            //   'Verify Your Account',
-                            //   style: TextStyle(
-                            //     fontSize: 30,
-                            //     fontWeight: FontWeight.bold,
-                            //     fontFamily: 'Galano',
-                            //   ),
-                            // ),
                             Column(
                               children: [
                                 RichText(
@@ -264,156 +291,116 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
                                     children: [
                                       TextSpan(
                                         text: 'Verify your phone number',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Galano',
                                           fontSize: 25,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      // TextSpan(
-                                      //   text: ' Email',
-                                      //   style: const TextStyle(
-                                      //     fontFamily: 'Galano',
-                                      //     fontSize: 25,
-                                      //     color: Color(0xffFD7206),
-                                      //     fontWeight: FontWeight.bold,
-                                      //   ),
-                                      // ),
-                                      // TextSpan(
-                                      //   text: '.',
-                                      //   style: const TextStyle(
-                                      //     fontFamily: 'Galano',
-                                      //     fontSize: 25,
-                                      //     fontWeight: FontWeight.bold,
-                                      //   ),
-                                      // ),
                                     ],
                                   ),
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  'Please enter the send code to *** **** *$lastThreeDigits',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontFamily: 'Galano',
-                                  ),
-                                ),
+  'Please enter the code sent to ${obscurePhoneNumber(widget.phoneNumber)}',
+  textAlign: TextAlign.center,
+  style: const TextStyle(
+    fontFamily: 'Galano',
+  ),
+),
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center, // Align start
-                              children: List.generate(6, (index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          20.0), // Adjust horizontal spacing
-                                  child: SizedBox(
-                                    width: 30,
-                                    child: TextField(
-                                      controller: _controllers[index],
-                                      style: const TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      keyboardType: TextInputType.number,
-                                      maxLength: 1,
-                                      decoration: const InputDecoration(
-                                        counterText: '',
-                                      ),
-                                      onChanged: (value) {
-                                        // Automatically focus next textfield
-                                        if (value.isNotEmpty && index < 5) {
-                                          FocusScope.of(context).nextFocus();
-                                        }
-                                        // Go back to the previous field on backspace
-                                        else if (value.isEmpty && index > 0) {
-                                          FocusScope.of(context)
-                                              .previousFocus();
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                );
-                              }),
-                            ),
-                            // Center(
-                            //   child: ElevatedButton(
-                            //     onPressed: () {
-                            //       // sendVerificationEmail();
-                            //       setState(() {
-                            //         // canResendEmail = false;
-                            //       });
-                            //       // resendEmail();
-                            //     },
-                            //     style: ElevatedButton.styleFrom(
-                            //       backgroundColor: const Color(0xFF0038FF),
-                            //       shape: RoundedRectangleBorder(
-                            //         borderRadius: BorderRadius.circular(5),
-                            //       ),
-                            //       elevation: 5,
-                            //     ),
-                            //     child: const Row(
-                            //       mainAxisSize: MainAxisSize.min,
-                            //       children: [
-                            //         Icon(
-                            //           Icons
-                            //               .email, // Replace with the desired icon
-                            //           color: Colors.white,
-                            //         ),
-                            //         SizedBox(width: 10),
-                            //         Text(
-                            //           'Resent Email',
-                            //           style: TextStyle(
-                            //             color: Colors.white,
-                            //             fontFamily: 'Galano',
-                            //           ),
-                            //         ),
-                            //       ],
-                            //     ),
-                            //   ),
-                            // )
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  children: [
-                                    const Text(
-                                        "It may take a minute to receive your code."),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text("Haven't received it? "),
-                                        _isCodeSent
-                                            ? Text(
-                                                "$minutes:$seconds",
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              )
-                                            : TextButton(
-                                                onPressed: () {
-                                                  _sendVerificationCode();
-                                                },
-                                                child: const Text(
-                                                    "Resend a new code"),
-                                              ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                BlueFilledCircleButton(
-                                  onPressed: () {
-                                    _submitCode();
-                                  },
-                                  text: "Submit",
-                                  width: 150,
-                                ),
-                              ],
-                            ),
-                          ],
+                             Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(6, (index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: SizedBox(
+                width: 50, 
+                height: 50,
+                child: TextField(
+                  controller: _controllers[index],
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
+                  maxLength: 1,
+                  decoration: InputDecoration(
+                    counterText: '',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: _focusNodes[index]
+                            ? Color(0XFFfe9703)
+                            : Colors.grey,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: Colors.grey, 
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: Color(0XFFfe9703), 
+                      ),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty && index < 5) {
+                      FocusScope.of(context).nextFocus();
+                    }
+                    else if (value.isEmpty && index > 0) {
+                      FocusScope.of(context).previousFocus();
+                    }
+                  },
+                ),
+              ),
+            );
+          })),   Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("It may take a minute to receive your code."),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Haven't received it? "),
+            if (_remainingSeconds > 0) 
+              Text(
+                "$minutes:$seconds",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            else
+              TextButton(
+                onPressed: () {
+                  _sendOTP();
+                },
+                child: const Text("Resend a new code", style: TextStyle(color: Color(0xFFfd7911))),
+              ),
+          ],
+        )
+      ],
+    ),
+    BlueFilledCircleButton(
+      onPressed: () {
+        _verifyOTP(); 
+      },
+      text: "Submit",
+      width: 150,
+    ),
+  ],
+),
+  ],
                         ),
                       ),
                     ),
@@ -427,7 +414,7 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
     );
   }
 }
-// appBar: AppBar(title: Text('Phone Verification')),
+
       // body: _isLoading
       //     ? Center(child: CircularProgressIndicator())
       //     : Padding(

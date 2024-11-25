@@ -2695,7 +2695,6 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
-                            isDense: true,
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,
@@ -2750,7 +2749,6 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
-                            isDense: true,
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                               fontSize: 12,

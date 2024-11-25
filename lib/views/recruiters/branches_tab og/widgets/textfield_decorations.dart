@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 InputDecoration searchTextFieldDecoration(String hintText) {
   return InputDecoration(
     hintText: hintText,
@@ -32,13 +30,14 @@ InputDecoration searchTextFieldDecoration(String hintText) {
   );
 }
 
-InputDecoration inputTextFieldDecoration(int option) {
+InputDecoration inputTextFieldDecoration(int option, [String? text]) {
   //option 1: no location prefix icon. just plain text field
   //option 2: with location prefix icon
   //option 3: with hintText
 
   if (option == 1) {
     return InputDecoration(
+      hintText: text,
       contentPadding:
           const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       isDense: true,
@@ -92,8 +91,8 @@ InputDecoration inputTextFieldDecoration(int option) {
         ),
       ),
     );
-  } else if (option == 3){
-     return InputDecoration(
+  } else if (option == 3) {
+    return InputDecoration(
       hintText: 'Street Name, Building, House No.',
       contentPadding:
           const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -124,69 +123,69 @@ InputDecoration inputTextFieldDecoration(int option) {
   return const InputDecoration();
 }
 
-OutlineInputBorder outlinedInputBorder(){
+OutlineInputBorder outlinedInputBorder() {
   return OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(
-          color: Color(0xFFD1E1FF),
-          width: 1.5,
-        ),
-      );
+    borderRadius: BorderRadius.circular(8),
+    borderSide: const BorderSide(
+      color: Color(0xFFD1E1FF),
+      width: 1.5,
+    ),
+  );
 }
 
 InputDecoration customHintTextInputDecoration(String hintTxt) {
   return InputDecoration(
-      hintText: hintTxt,
-      contentPadding:
-          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      isDense: true,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(
-          color: Color(0xFFD1E1FF),
-          width: 1.5,
-        ),
+    hintText: hintTxt,
+    contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+    isDense: true,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Color(0xFFD1E1FF),
+        width: 1.5,
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(
-          color: Color(0xFFD1E1FF),
-          width: 1.5,
-        ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Color(0xFFD1E1FF),
+        width: 1.5,
       ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(
-          color: Color(0xFFD1E1FF),
-          width: 1.5,
-        ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(
+        color: Color(0xFFD1E1FF),
+        width: 1.5,
       ),
-    );
+    ),
+  );
 }
 
 InputDecoration grayHintTextInputDecoration(String hintTxt) {
   return InputDecoration(
     hintText: hintTxt,
-    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0), 
+    contentPadding:
+        const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
     isDense: true,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: const BorderSide(
-        color: Color(0xFFb9b7bc), 
+        color: Color(0xFFb9b7bc),
         width: 1.5,
       ),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: const BorderSide(
-        color: Color(0xFFb9b7bc), 
+        color: Color(0xFFb9b7bc),
         width: 1.5,
       ),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: const BorderSide(
-        color: Color(0xFFb9b7bc), 
+        color: Color(0xFFb9b7bc),
         width: 1.5,
       ),
     ),

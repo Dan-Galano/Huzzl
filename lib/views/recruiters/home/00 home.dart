@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/recruiters/admin/admin_tab.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab%20og/branches.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/managers-tab.dart';
@@ -407,12 +408,22 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           actions: [
             sizingInformation.isDesktop
                 ? IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatHomePage()));
+                    },
                     icon: Image.asset('assets/images/chat-icon-recruiter.png',
                         width: 25),
                   )
                 : IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                       Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatHomePage()));
+                    },
                     icon: Icon(
                       Icons.message,
                       color: Colors.white,

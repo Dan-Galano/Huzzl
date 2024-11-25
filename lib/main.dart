@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
@@ -27,7 +28,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => JobProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
-
         ChangeNotifierProvider(create: (context) => BranchProvider()),
         ChangeNotifierProvider(
           create: (context) {
@@ -45,6 +45,7 @@ void main() async {
             return staffProvider;
           },
         ),
+          ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: const HuzzlWeb(),
     ),
@@ -97,10 +98,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     // Load initial jobs
-    final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    if (jobProvider.jobs.isEmpty) {
-      jobProvider.loadJobs();
-    }
+    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    // if (jobProvider.jobs.isEmpty) {
+    //   jobProvider.loadJobs();
+    // }
 
     // Manually check if the user is logged in
     currentUser = FirebaseAuth.instance.currentUser;
@@ -229,6 +230,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 } else {
                   return LoginRegister();
                 }
+
+                // return ChatHomePage(); //chattest
               }
 
               return LoginRegister();
@@ -306,3 +309,4 @@ class _AuthWrapperState extends State<AuthWrapper> {
 //     );
 //   }
 // }
+

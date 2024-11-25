@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
+import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/register/02%20verify_email.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
@@ -32,6 +33,9 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
 
+  
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   String phoneNumberInputted = "";
 
   //Password toggle
@@ -52,128 +56,114 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   bool isEmailVerified = false;
 
   //Submit Signup Form
-  void submitRegistrationRecruiter() async {
-    print("Almost there, ${_firstName.text.trim().toCapitalCase()}...");
+void submitRegistrationRecruiter() async {
+  print("Almost there, ${_firstName.text.trim().toCapitalCase()}...");
 
-    try {
-      //  creating user
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _email.text,
-        password: _password.text,
-      );
-
-      // showDialog(
-      //   context: context,
-      //   barrierDismissible: false,
-      //   builder: (context) {
-      //     return const AlertDialog(
-      //       content: Row(
-      //         children: [
-      //           CircularProgressIndicator(),
-      //           SizedBox(width: 20),
-      //           Text("Registering..."),
-      //         ],
-      //       ),
-      //     );
-      //   },
-      // );
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
+  try {
+    // Show loading dialog while creating user
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: Colors.transparent,
+          content: Container(
+            width: 105,
+            height: 160,
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
             ),
-            backgroundColor: Colors.transparent,
-            content: Container(
-              width: 105,
-              height: 160,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-              ),
-              child: Center(
-                child: Column(
-                  children: [
-                    Gap(10),
-                    Image.asset(
-                      'assets/images/gif/huzzl_loading.gif',
-                      height: 100,
-                      width: 100,
+            child: Center(
+              child: Column(
+                children: [
+                  Gap(10),
+                  Image.asset(
+                    'assets/images/gif/huzzl_loading.gif',
+                    height: 100,
+                    width: 100,
+                  ),
+                  Gap(10),
+                  Text(
+                    "Creating...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Color(0xFFfd7206),
                     ),
-                    Gap(10),
-                    Text(
-                      "Creating...",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                        color: Color(0xFFfd7206),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
+        );
+      },
+    );
+
+    // Create user with email and password
+    UserCredential userCredential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _email.text,
+      password: _password.text,
+    );
+     _firestore.collection('users').doc(userCredential.user!.uid).set({
+          'uid': userCredential.user!.uid,
+          'email': _email.text
+        });
+
+    // Send verification email
+    final user = FirebaseAuth.instance.currentUser!;
+    await user.sendEmailVerification();
+
+    // Close the loading dialog
+    Navigator.of(context).pop();
+
+    // Go to verify email screen
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return VerifyEmailRecruiter(
+            userCredential: userCredential,
+            email: _email.text,
+            fname: _firstName.text,
+            lname: _lastName.text,
+            password: _password.text,
+            phoneNumber: phoneNumberInputted,
           );
         },
-      );
+      ),
+    );
 
-      setState(() {
-        isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-      });
-
-      if (!isEmailVerified) {
-        try {
-          final user = FirebaseAuth.instance.currentUser!;
-          await user.sendEmailVerification();
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
-          );
-        }
-      }
-
-      //Go to verify email
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            return VerifyEmailRecruiter(
-              userCredential: userCredential,
-              email: _email.text,
-              fname: _firstName.text,
-              lname: _lastName.text,
-              password: _password.text,
-              phoneNumber: phoneNumberInputted,
-            );
-          },
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text("Error: ${e.message}")),
-      // );
-      EasyLoading.showToast(
-        "⚠️ ${e.message}",
-        dismissOnTap: true,
-        toastPosition: EasyLoadingToastPosition.top,
-        duration: Duration(seconds: 3),
-        // maskType: EasyLoadingMaskType.black,
-      );
-    } catch (e) {
-      EasyLoading.showToast(
-        "An unexpected error occurred.",
-        dismissOnTap: true,
-        toastPosition: EasyLoadingToastPosition.top,
-        duration: Duration(seconds: 3),
-        // maskType: EasyLoadingMaskType.black,
-      );
-    }
+     //chattest
+          // Navigator.of(context).pushReplacement(
+          //     MaterialPageRoute(builder: (context) => ChatHomePage()));
+  } on FirebaseAuthException catch (e) {
+    // Close the loading dialog
+    Navigator.of(context).pop();
+    
+    EasyLoading.showToast(
+      "⚠️ ${e.message}",
+      dismissOnTap: true,
+      toastPosition: EasyLoadingToastPosition.top,
+      duration: Duration(seconds: 3),
+    );
+  } catch (e) {
+    // Close the loading dialog
+    Navigator.of(context).pop();
+    
+    EasyLoading.showToast(
+      "An unexpected error occurred.",
+      dismissOnTap: true,
+      toastPosition: EasyLoadingToastPosition.top,
+      duration: Duration(seconds: 3),
+    );
   }
+}
 
   void submitForm() {
     if (_formKey.currentState!.validate()) {
