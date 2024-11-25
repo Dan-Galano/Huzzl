@@ -7,8 +7,11 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/screens/main/main_screen.dart';
+import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
+import 'package:huzzl_web/Landing_Page/landing_page.dart';
+import 'package:huzzl_web/landing%20page/landing_page.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
@@ -17,10 +20,11 @@ import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 
 void main() async {
+   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -31,7 +35,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => JobProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
-
         ChangeNotifierProvider(create: (context) => BranchProvider()),
         ChangeNotifierProvider(create: (context) => InterviewProvider()),
         ChangeNotifierProvider(
@@ -56,6 +59,7 @@ void main() async {
           },
         ),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
+          ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       // child: MainScreen(),
       child: HuzzlWeb(),
@@ -88,10 +92,11 @@ class HuzzlWeb extends StatelessWidget {
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
-      home: const AuthWrapper(),
+      // home: const AuthWrapper(),
       // home: MainScreen(),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
+      home: const LandingPageNew(),
     );
   }
 }
@@ -110,10 +115,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     // Load initial jobs
-    final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    if (jobProvider.jobs.isEmpty) {
-      jobProvider.loadJobs();
-    }
+    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    // if (jobProvider.jobs.isEmpty) {
+    //   jobProvider.loadJobs();
+    // }
 
     // Manually check if the user is logged in
     currentUser = FirebaseAuth.instance.currentUser;
@@ -245,6 +250,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
                  else {
                   return LoginRegister();
                 }
+
+                // return ChatHomePage(); //chattest
               }
 
               return LoginRegister();
@@ -322,3 +329,4 @@ class _AuthWrapperState extends State<AuthWrapper> {
 //     );
 //   }
 // }
+

@@ -2693,7 +2693,13 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                             fontFamily: "Galano",
                           ),
                           decoration: InputDecoration(
-                            hintText: "Company's Website",
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontFamily: "Galano",
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: const BorderSide(
@@ -2741,7 +2747,13 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                             fontFamily: "Galano",
                           ),
                           decoration: InputDecoration(
-                            hintText: "Company links",
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            hintStyle: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontFamily: "Galano",
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: const BorderSide(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
+import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -33,6 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isError = false;
   String errorMessage = "";
+
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
@@ -109,6 +112,10 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             print("Role is null, handling error");
           }
+
+          //chattest
+          // Navigator.of(context).pushReplacement(
+          //     MaterialPageRoute(builder: (context) => ChatHomePage()));
         }
       } catch (e) {
         print("Error fetching user document: $e");
@@ -176,6 +183,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => RecruiterHomeScreen()));
               }
+              //chattest
+              //  Navigator.of(context).pushReplacement(
+              // MaterialPageRoute(builder: (context) => ChatHomePage()));
             } else {
               print("Role is null, handling error");
             }
