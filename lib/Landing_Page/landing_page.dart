@@ -23,17 +23,20 @@ class _LandingPageNewState extends State<LandingPageNew> {
   final GlobalKey _contactKey = GlobalKey();
 
   void _scrollToSection(GlobalKey key) {
-    final RenderBox? renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        key.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
-      final offset = renderBox.localToGlobal(Offset.zero).dy;
+      final offset = renderBox
+          .localToGlobal(
+            Offset.zero,
+            ancestor: _scrollController.position.context.storageContext
+                .findRenderObject(),
+          )
+          .dy;
 
-      final sectionHeight = renderBox.size.height;
-      final screenHeight = MediaQuery.of(context).size.height;
-
-      final centerOffset = offset - (screenHeight / 2) + (sectionHeight / 2);
-
+      // Animate scrolling to the target offset
       _scrollController.animateTo(
-        centerOffset,
+        _scrollController.offset + offset,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
@@ -85,9 +88,9 @@ class _LandingPageNewState extends State<LandingPageNew> {
                       left: 900,
                       child: Container(
                         width: 600,
-                        height: 350, 
+                        height: 350,
                         child: Image.asset(
-                          'assets/images/3D_EP3.png', 
+                          'assets/images/3D_EP3.png',
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -106,19 +109,13 @@ class _LandingPageNewState extends State<LandingPageNew> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(
-                          color:
-                              Colors.white.withOpacity(0.6)),
+                      border: Border.all(color: Colors.white.withOpacity(0.6)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(
-                              1),
-                          offset: Offset(6,
-                              6), 
-                          blurRadius:
-                              12, 
-                          spreadRadius:
-                              6,
+                          color: Colors.black.withOpacity(1),
+                          offset: Offset(6, 6),
+                          blurRadius: 12,
+                          spreadRadius: 6,
                         ),
                       ],
                     ),
@@ -146,7 +143,8 @@ class _LandingPageNewState extends State<LandingPageNew> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () => _scrollToSection(_testimonialsKey),
+                              onPressed: () =>
+                                  _scrollToSection(_testimonialsKey),
                               child: const Text(
                                 'Testimonials',
                                 style: TextStyle(
