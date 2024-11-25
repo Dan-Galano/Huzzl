@@ -34,7 +34,7 @@ class _UserTileState extends State<UserTile> {
 
   @override
   Widget build(BuildContext context) {
-    var lasttime = timeago.format(widget.last_time, locale: 'en_short');
+    var lasttime = timeago.format(widget.last_time, locale: 'en');
     return MouseRegion(
       onEnter: (_) {
         setState(() {

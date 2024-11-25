@@ -11,8 +11,7 @@ import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PhoneVerificationService {
-  
-  final String accountSid =dotenv.env['TWILIO_ACCOUNT_SID'] ?? '';
+  final String accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? '';
   final String authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '';
   final String serviceSid = dotenv.env['TWILIO_SERVICE_SID'] ?? '';
 
@@ -52,10 +51,10 @@ class PhoneVerificationService {
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       if (responseData['status'] == 'approved') {
-        return true; 
+        return true;
       } else {
         print('Verification failed: Incorrect code');
-        return false; 
+        return false;
       }
     } else {
       print('Verification request failed: ${response.body}');
@@ -63,8 +62,6 @@ class PhoneVerificationService {
     }
   }
 }
-
-
 
 class PhoneNumberVerification extends StatefulWidget {
   final String phoneNumber;
@@ -81,22 +78,15 @@ class PhoneNumberVerification extends StatefulWidget {
 }
 
 class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
-  final PhoneVerificationService _service = PhoneVerificationService();
-  final List<TextEditingController> _controllers =
-      List.generate(6, (index) => TextEditingController());
-       List<bool> _focusNodes = List.generate(6, (index) => false);
-  bool _isCodeSent = false;
-  bool _isLoading = false;
-  // String? _verificationId;
-  int _remainingSeconds = 300;
-  Timer? _timer;
-
   @override
-  void initState() {
+  void initState() async {
     super.initState();
-    _sendOTP(); 
 
-     for (int i = 0; i < _controllers.length; i++) {
+    await dotenv.load();
+
+    _sendOTP();
+
+    for (int i = 0; i < _controllers.length; i++) {
       _controllers[i].addListener(() {
         setState(() {
           _focusNodes[i] = _controllers[i].text.isNotEmpty;
@@ -105,14 +95,24 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
     }
   }
 
-  String obscurePhoneNumber(String phoneNumber) {
-  if (phoneNumber.length < 6) return phoneNumber;
-  String prefix = phoneNumber.substring(0, 4);
-  String lastThreeDigits = phoneNumber.substring(phoneNumber.length - 3); 
-  String obscuredNumber = '$prefix** *** *$lastThreeDigits';
+  final PhoneVerificationService _service = PhoneVerificationService();
+  final List<TextEditingController> _controllers =
+      List.generate(6, (index) => TextEditingController());
+  List<bool> _focusNodes = List.generate(6, (index) => false);
+  bool _isCodeSent = false;
+  bool _isLoading = false;
+  // String? _verificationId;
+  int _remainingSeconds = 300;
+  Timer? _timer;
 
-  return obscuredNumber;
-}
+  String obscurePhoneNumber(String phoneNumber) {
+    if (phoneNumber.length < 6) return phoneNumber;
+    String prefix = phoneNumber.substring(0, 4);
+    String lastThreeDigits = phoneNumber.substring(phoneNumber.length - 3);
+    String obscuredNumber = '$prefix** *** *$lastThreeDigits';
+
+    return obscuredNumber;
+  }
 
   void _sendOTP() async {
     setState(() {
@@ -131,27 +131,27 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
         _isLoading = false;
       });
       EasyLoading.instance
-          ..displayDuration = const Duration(milliseconds: 1500)
-          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-          ..loadingStyle = EasyLoadingStyle.custom
-          ..backgroundColor = Color(0xFfd74a4a)
-          ..textColor = Colors.white
-          ..fontSize = 16.0
-          ..indicatorColor = Colors.white
-          ..maskColor = Colors.black.withOpacity(0.5)
-          ..userInteractions = false
-          ..dismissOnTap = true;
-        EasyLoading.showToast(
-          "Failed to send OTP. Please try again later.",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-        );
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color(0xFfd74a4a)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "Failed to send OTP. Please try again later.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
     });
   }
 
   void _startTimer() {
-    _remainingSeconds = 300; 
+    _remainingSeconds = 300;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         setState(() {
@@ -159,7 +159,7 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
         });
       } else {
         setState(() {
-          _isCodeSent = false; 
+          _isCodeSent = false;
         });
         timer.cancel();
       }
@@ -171,7 +171,8 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
       _isLoading = true;
     });
 
-    String enteredCode = _controllers.map((controller) => controller.text).join();
+    String enteredCode =
+        _controllers.map((controller) => controller.text).join();
 
     bool isVerified = await _service.verifyOTP(widget.phoneNumber, enteredCode);
     setState(() {
@@ -179,49 +180,49 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
     });
 
     if (isVerified) {
-        EasyLoading.instance
-          ..displayDuration = const Duration(milliseconds: 1500)
-          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-          ..loadingStyle = EasyLoadingStyle.custom
-          ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
-          ..textColor = Colors.white
-          ..fontSize = 16.0
-          ..indicatorColor = Colors.white
-          ..maskColor = Colors.black.withOpacity(0.5)
-          ..userInteractions = false
-          ..dismissOnTap = true;
-        EasyLoading.showToast(
-          "Your phone number has been verified!",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-        );
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "Your phone number has been verified!",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
       _navigateToNextScreen();
     } else {
-       EasyLoading.instance
-          ..displayDuration = const Duration(milliseconds: 1500)
-          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-          ..loadingStyle = EasyLoadingStyle.custom
-          ..backgroundColor = Color(0xFfd74a4a)
-          ..textColor = Colors.white
-          ..fontSize = 16.0
-          ..indicatorColor = Colors.white
-          ..maskColor = Colors.black.withOpacity(0.5)
-          ..userInteractions = false
-          ..dismissOnTap = true;
-        EasyLoading.showToast(
-          "Invalid OTP. Please try again.",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-        );
-         for (var controller in _controllers) {
-    controller.clear();  
-  }
-  
-  setState(() {
-    _focusNodes = List.generate(6, (index) => false);  
-  });
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color(0xFfd74a4a)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "Invalid OTP. Please try again.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+      for (var controller in _controllers) {
+        controller.clear();
+      }
+
+      setState(() {
+        _focusNodes = List.generate(6, (index) => false);
+      });
     }
   }
 
@@ -237,7 +238,7 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
 
   @override
   void dispose() {
-    _timer?.cancel(); 
+    _timer?.cancel();
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -304,105 +305,116 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-  'Please enter the code sent to ${obscurePhoneNumber(widget.phoneNumber)}',
-  textAlign: TextAlign.center,
-  style: const TextStyle(
-    fontFamily: 'Galano',
-  ),
-),
+                                  'Please enter the code sent to ${obscurePhoneNumber(widget.phoneNumber)}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
                               ],
                             ),
-                             Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(6, (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: SizedBox(
-                width: 50, 
-                height: 50,
-                child: TextField(
-                  controller: _controllers[index],
-                  style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  maxLength: 1,
-                  decoration: InputDecoration(
-                    counterText: '',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: _focusNodes[index]
-                            ? Color(0XFFfe9703)
-                            : Colors.grey,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Colors.grey, 
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Color(0XFFfe9703), 
-                      ),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    if (value.isNotEmpty && index < 5) {
-                      FocusScope.of(context).nextFocus();
-                    }
-                    else if (value.isEmpty && index > 0) {
-                      FocusScope.of(context).previousFocus();
-                    }
-                  },
-                ),
-              ),
-            );
-          })),   Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("It may take a minute to receive your code."),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("Haven't received it? "),
-            if (_remainingSeconds > 0) 
-              Text(
-                "$minutes:$seconds",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            else
-              TextButton(
-                onPressed: () {
-                  _sendOTP();
-                },
-                child: const Text("Resend a new code", style: TextStyle(color: Color(0xFFfd7911))),
-              ),
-          ],
-        )
-      ],
-    ),
-    BlueFilledCircleButton(
-      onPressed: () {
-        _verifyOTP(); 
-      },
-      text: "Submit",
-      width: 150,
-    ),
-  ],
-),
-  ],
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(6, (index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0),
+                                    child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: TextField(
+                                        controller: _controllers[index],
+                                        style: const TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        keyboardType: TextInputType.number,
+                                        maxLength: 1,
+                                        decoration: InputDecoration(
+                                          counterText: '',
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: BorderSide(
+                                              color: _focusNodes[index]
+                                                  ? Color(0XFFfe9703)
+                                                  : Colors.grey,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: BorderSide(
+                                              color: Color(0XFFfe9703),
+                                            ),
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          if (value.isNotEmpty && index < 5) {
+                                            FocusScope.of(context).nextFocus();
+                                          } else if (value.isEmpty &&
+                                              index > 0) {
+                                            FocusScope.of(context)
+                                                .previousFocus();
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                })),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                        "It may take a minute to receive your code."),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text("Haven't received it? "),
+                                        if (_remainingSeconds > 0)
+                                          Text(
+                                            "$minutes:$seconds",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )
+                                        else
+                                          TextButton(
+                                            onPressed: () {
+                                              _sendOTP();
+                                            },
+                                            child: const Text(
+                                                "Resend a new code",
+                                                style: TextStyle(
+                                                    color: Color(0xFFfd7911))),
+                                          ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                BlueFilledCircleButton(
+                                  onPressed: () {
+                                    _verifyOTP();
+                                  },
+                                  text: "Submit",
+                                  width: 150,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
