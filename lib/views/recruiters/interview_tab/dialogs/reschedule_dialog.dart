@@ -95,6 +95,7 @@ class _RescheduleInterviewDialogState extends State<RescheduleInterviewDialog> {
       content: SingleChildScrollView(
         child: Container(
           color: Colors.white,
+          width: MediaQuery.of(context).size.width * 0.6,
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,

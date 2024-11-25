@@ -52,154 +52,158 @@ class _PendingTileCardState extends State<PendingTileCard>
       child: GestureDetector(
         onTap: () {},
         child: Card(
-          // elevation: _isHovered ? 8 : 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: _isHovered ? Colors.grey[200] : Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Interview info
-                Row(
+                Column(
                   children: [
-                    Column(
-                      children: [
-                        //====================== Circle Avatar ======================
-                        CircleAvatar(
-                          backgroundColor: const Color(0xffd1e1ff),
-                          foregroundColor: const Color(0xff373030),
-                          child: Text(widget.intervieweeName[0]),
-                        ),
-                      ],
-                    ),
-                    const Gap(15),
-                    //====================== Interviewee Details ======================
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        //Interviewee name
-                        Text(
-                          widget.intervieweeName,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff373030),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        //====================== Profession ======================
-                        Row(
-                          children: [
-                            const Icon(Icons.person_outline,
-                                size: 20, color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              widget.profession,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        //====================== Branch applied ======================
-                        Row(
-                          children: [
-                            const Icon(Icons.business_center_outlined,
-                                size: 20, color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              widget.branch,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    //====================== Circle Avatar ======================
+                    CircleAvatar(
+                      backgroundColor: const Color(0xffd1e1ff),
+                      foregroundColor: const Color(0xff373030),
+                      child: Text(widget.intervieweeName[0]),
                     ),
                   ],
                 ),
-                //====================== Shortlist date ======================
-                Row(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      formattedDate,
-                      style: const TextStyle(
-                        decoration: TextDecoration.none,
-                        decorationColor: Colors.orange,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff373030),
-                      ),
-                    ),
-                    const Gap(50),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.chat),
-                          color: const Color(0xff3B7DFF),
+                const Gap(15),
+                //====================== Interviewee Details ======================
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //Interviewee name
+                      Text(
+                        widget.intervieweeName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff373030),
                         ),
-                        const Gap(50),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ScheduleInterviewButton(
-                              onPressed: () {},
+                      ),
+                      const SizedBox(height: 4),
+                      //====================== Profession ======================
+                      Row(
+                        children: [
+                          const Icon(Icons.person_outline,
+                              size: 18, color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Text(
+                            widget.profession,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      //====================== Branch applied ======================
+                      Row(
+                        children: [
+                          const Icon(Icons.business_center_outlined,
+                              size: 18, color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Text(
+                            widget.branch,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                //====================== Shortlist date ======================
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        formattedDate,
+                        style: const TextStyle(
+                          decoration: TextDecoration.none,
+                          decorationColor: Colors.orange,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff373030),
+                        ),
+                      ),
+                      const Text(
+                        "Shortlist Date",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Galano',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.chat),
+                        color: const Color(0xff3B7DFF),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ScheduleInterviewButton(
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    final RenderBox button =
+                        context.findRenderObject() as RenderBox;
+                    final RenderBox overlay = Overlay.of(context)
+                        .context
+                        .findRenderObject() as RenderBox;
+
+                    final position =
+                        button.localToGlobal(Offset.zero, ancestor: overlay);
+
+                    await showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        position.dx,
+                        position.dy,
+                        overlay.size.width - position.dx - button.size.width,
+                        overlay.size.height - position.dy,
+                      ),
+                      items: [
+                        const PopupMenuItem(
+                          value: 'move_back_for_review',
+                          child: Row(
+                            children: [
+                              Icon(Icons.reply, color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text('Move back for review'),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                    const Gap(10),
-                    IconButton(
-                      onPressed: () async {
-                        final RenderBox button =
-                            context.findRenderObject() as RenderBox;
-                        final RenderBox overlay = Overlay.of(context)
-                            .context
-                            .findRenderObject() as RenderBox;
-
-                        final position = button.localToGlobal(Offset.zero,
-                            ancestor: overlay);
-
-                        await showMenu(
-                          context: context,
-                          position: RelativeRect.fromLTRB(
-                            position.dx,
-                            position.dy,
-                            overlay.size.width -
-                                position.dx -
-                                button.size.width,
-                            overlay.size.height - position.dy,
-                          ),
-                          items: [
-                            const PopupMenuItem(
-                              value: 'move_back_for_review',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.reply, color: Colors.grey),
-                                  SizedBox(width: 8),
-                                  Text('Move back for review'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ).then((value) {
-                          if (value == 'move_back_for_review') {
-                            showMoveBackforReviewDialog(context);
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.more_vert),
-                    ),
-                  ],
+                    ).then((value) {
+                      if (value == 'move_back_for_review') {
+                        showMoveBackforReviewDialog(context);
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.more_vert),
                 ),
               ],
             ),
