@@ -18,10 +18,11 @@ import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 
 void main() async {
+   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

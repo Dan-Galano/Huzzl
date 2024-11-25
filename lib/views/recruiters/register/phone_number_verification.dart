@@ -8,11 +8,13 @@ import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
 import 'package:huzzl_web/views/recruiters/register/sample.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PhoneVerificationService {
-  final String accountSid = 'AC5f8fa163bed2a18b9476736f26fe843c';
-  final String authToken = '7c33d4dd6080d1b52013fd3c5cb223b9';
-  final String serviceSid = 'VA38c75772985bb97679fe474c41afa0a9';
+  
+  final String accountSid =dotenv.env['TWILIO_ACCOUNT_SID'] ?? '';
+  final String authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '';
+  final String serviceSid = dotenv.env['TWILIO_SERVICE_SID'] ?? '';
 
   Future<void> sendOTP(String phoneNumber) async {
     final url = Uri.parse(
