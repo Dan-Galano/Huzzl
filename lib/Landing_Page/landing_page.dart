@@ -177,7 +177,7 @@ class _LandingPageNewState extends State<LandingPageNew> {
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const AuthWrapper(),
+                                  builder: (context) => const LoginRegister(),
                                 ));
                               },
                               style: ElevatedButton.styleFrom(
