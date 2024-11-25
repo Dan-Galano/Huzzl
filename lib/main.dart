@@ -10,6 +10,8 @@ import 'package:huzzl_web/views/admins/screens/main/main_screen.dart';
 import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
+import 'package:huzzl_web/Landing_Page/landing_page.dart';
+import 'package:huzzl_web/landing%20page/landing_page.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
@@ -90,10 +92,11 @@ class HuzzlWeb extends StatelessWidget {
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
-      home: const AuthWrapper(),
+      // home: const AuthWrapper(),
       // home: MainScreen(),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
+      home: const LandingPageNew(),
     );
   }
 }
