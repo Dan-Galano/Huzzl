@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/views/feedback_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/hiring_dialog.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/rejection_dialog.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/feedback_view_dialog.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ContactedCard extends StatefulWidget {
   Candidate candidate;
@@ -19,9 +20,10 @@ class _ContactedCardState extends State<ContactedCard>
   bool _isHovered = false;
   @override
   Widget build(BuildContext context) {
+    var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
     String date = DateFormat('d MMM yyyy, h:mma')
         .format(widget.candidate.dateLastInterviewed);
-  
+
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -126,7 +128,10 @@ class _ContactedCardState extends State<ContactedCard>
                       ),
                       Gap(40),
                       TextButton(
-                        onPressed: () => showHiringDialog(context),
+                        onPressed: () {
+                          showHiringDialog(context, widget.candidate.id);
+                          jobCandidateProvider.clearMessage("Hire");
+                        },
                         style: TextButton.styleFrom(
                           padding:
                               EdgeInsets.symmetric(horizontal: 30, vertical: 8),
@@ -145,7 +150,8 @@ class _ContactedCardState extends State<ContactedCard>
                       ),
                       Gap(20),
                       TextButton(
-                        onPressed: () => showRejectDialog(context),
+                        // onPressed: () => showRejectDialog(context),
+                        onPressed: () {},
                         style: TextButton.styleFrom(
                           padding:
                               EdgeInsets.symmetric(horizontal: 20, vertical: 8),

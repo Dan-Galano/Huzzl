@@ -109,7 +109,9 @@ class _ForReviewCardState extends State<ForReviewCard> {
                     onPressed: () {
                       final homeState = context
                           .findAncestorStateOfType<RecruiterHomeScreenState>();
-                      homeState?.toggleApplicationScreen(true);
+                      homeState?.toggleApplicationScreen(
+                          true, widget.candidate.id);
+                      print("Candidate id: ${widget.candidate.id}");
                     },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(

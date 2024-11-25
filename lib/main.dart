@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
+import 'package:huzzl_web/views/admins/screens/main/main_screen.dart';
 import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
@@ -13,6 +15,8 @@ import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/staff-provider.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -29,6 +33,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => JobProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => BranchProvider()),
+        ChangeNotifierProvider(create: (context) => InterviewProvider()),
         ChangeNotifierProvider(
           create: (context) {
             final hiringManagerProvider = HiringManagerProvider();
@@ -45,9 +50,16 @@ void main() async {
             return staffProvider;
           },
         ),
+        ChangeNotifierProvider(
+          create: (context) {
+            return JobProviderCandidate();
+          },
+        ),
+        ChangeNotifierProvider(create: (context) => MenuAppController()),
           ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
-      child: const HuzzlWeb(),
+      // child: MainScreen(),
+      child: HuzzlWeb(),
     ),
   );
 }
@@ -78,6 +90,7 @@ class HuzzlWeb extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
       home: const AuthWrapper(),
+      // home: MainScreen(),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
     );
@@ -227,7 +240,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   return JobseekerMainScreen();
                 } else if (userType == 'recruiter') {
                   return RecruiterHomeScreen();
-                } else {
+                } else if (userType == 'admin'){
+                  return MainScreen();
+                }
+                 else {
                   return LoginRegister();
                 }
 

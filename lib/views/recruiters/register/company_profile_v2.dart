@@ -2675,11 +2675,11 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                           },
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           "Company's website (optional)",
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xff373030),
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                            color: const Color(0xff373030),
                             fontFamily: 'Galano',
                             fontWeight: FontWeight.w100,
                           ),
@@ -2689,7 +2689,7 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                           key: websiteKey,
                           controller: _companyWebsite,
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             fontFamily: "Galano",
                           ),
                           decoration: InputDecoration(
@@ -2729,10 +2729,10 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                           // },
                         ),
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           "Company's Social Media Links (optional)",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
                             color: Color(0xff373030),
                             fontFamily: 'Galano',
                             fontWeight: FontWeight.w100,
@@ -2743,7 +2743,7 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                           key: socialMediaKey,
                           controller: _socialMediaLinks,
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             fontFamily: "Galano",
                           ),
                           decoration: InputDecoration(
@@ -2774,7 +2774,7 @@ DITOOOOOOOOOOOOOOOOOOOOOOOOO ALLEN
                                 color: Color(0xFFD1E1FF),
                                 width: 1.5,
                               ),
-                            ),
+                            ), // Display error message if invalid
                           ),
                           // validator: (value) {
                           //   if (value!.isEmpty || value == null) {

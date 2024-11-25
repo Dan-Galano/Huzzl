@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 
-void showRejectConfirmationDialog(BuildContext context) {
+void showRejectConfirmationDialog(BuildContext context, String candidateId) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) {
+      var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
       return AlertDialog(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(15.0)),
@@ -60,7 +63,11 @@ void showRejectConfirmationDialog(BuildContext context) {
                   ),
                   Gap(10),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      jobCandidateProvider.rejectCandidate(candidateId);
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30, vertical: 8),
