@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/main.dart';
+import 'package:huzzl_web/views/user%20option/user_option_screen.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ExpertProfessionalsWidget extends StatefulWidget {
@@ -17,7 +18,10 @@ class _ExpertProfessionalsWidgetState extends State<ExpertProfessionalsWidget>
   late Animation<Offset> _offsetAnimation;
   late Animation<double> _fadeAnimation;
   bool _isVisible = false;
-
+ void _toggleScreen() {
+    Navigator.of(context).pop();
+  }
+  final bool _showSignUpScreen = true;
   @override
   void initState() {
     super.initState();
@@ -115,8 +119,14 @@ class _ExpertProfessionalsWidgetState extends State<ExpertProfessionalsWidget>
                       ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const AuthWrapper(),
-                          ));
+                                  builder: (context) => _showSignUpScreen
+                                      ? Scaffold(
+                                        body: UserOptionScreen(
+                                            onToggle: _toggleScreen,
+                                          ),
+                                      )
+                                      : const AuthWrapper(),
+                                ));
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
