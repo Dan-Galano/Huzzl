@@ -94,98 +94,195 @@ class _ChatHomePageState extends State<ChatHomePage>
   }
 
   Widget _buildUserList(SizingInformation sizeInfo) {
-    if (_cachedUsersData != null) {
-      return _buildUserListView(_cachedUsersData!, sizeInfo);
-    }
-    return StreamBuilder(
-      stream: _chatService.getUserStream(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print("Error in user stream: ${snapshot.error}");
-          return const Text("Error loading users.");
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return ListView.builder(
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[200]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  height: 50,
-                ),
-              );
-            },
-          );
-        }
-
-        if (!snapshot.hasData || snapshot.data == null) {
-          return const Text("No users available.");
-        }
-
-        _cachedUsersData = List<Map<String, dynamic>>.from(snapshot.data!);
-
-        return _buildUserListView(_cachedUsersData!, sizeInfo);
-      },
-    );
+  if (_cachedUsersData != null) {
+    return _buildUserListView(_cachedUsersData!, sizeInfo);
   }
+
+  return StreamBuilder<List<Map<String, dynamic>>>(
+    stream: _chatService.getUserStream(),
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        print("Error in user stream: ${snapshot.error}");
+        return const Text("Error loading users.");
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return ListView.builder(
+          itemCount: 10,
+          itemBuilder: (BuildContext context, int index) {
+            return Shimmer.fromColors(
+              baseColor: Colors.grey[200]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                height: 50,
+              ),
+            );
+          },
+        );
+      }
+
+      if (!snapshot.hasData || snapshot.data == null) {
+        return const Text("No users available.");
+      }
+
+      _cachedUsersData = snapshot.data!;
+
+      return _buildUserListView(_cachedUsersData!, sizeInfo);
+    },
+  );
+}
+
+
+  // Widget _buildUserList(SizingInformation sizeInfo) {
+  //   if (_cachedUsersData != null) {
+  //     return _buildUserListView(_cachedUsersData!, sizeInfo);
+  //   }
+  //   return StreamBuilder(
+  //     stream: _chatService.getUserStream(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.hasError) {
+  //         print("Error in user stream: ${snapshot.error}");
+  //         return const Text("Error loading users.");
+  //       }
+
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return ListView.builder(
+  //           itemCount: 10,
+  //           itemBuilder: (BuildContext context, int index) {
+  //             return Shimmer.fromColors(
+  //               baseColor: Colors.grey[200]!,
+  //               highlightColor: Colors.grey[100]!,
+  //               child: Container(
+  //                 margin: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
+  //                 padding: EdgeInsets.all(10),
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.grey[200],
+  //                   borderRadius: BorderRadius.circular(12),
+  //                 ),
+  //                 height: 50,
+  //               ),
+  //             );
+  //           },
+  //         );
+  //       }
+
+  //       if (!snapshot.hasData || snapshot.data == null) {
+  //         return const Text("No users available.");
+  //       }
+
+  //       _cachedUsersData = List<Map<String, dynamic>>.from(snapshot.data!);
+
+  //       return _buildUserListView(_cachedUsersData!, sizeInfo);
+  //     },
+  //   );
+  // }
 
   Widget _buildUserListView(
-      List<Map<String, dynamic>> usersData, SizingInformation sizeInfo) {
-    final currentUserEmail = getCurrentUser()?.email;
+    List<Map<String, dynamic>> usersData, SizingInformation sizeInfo) {
+  final currentUserEmail = getCurrentUser()?.email;
 
-    List<Map<String, dynamic>> _filterUsers(
-        String query, List<Map<String, dynamic>> users) {
-      return users.where((userData) {
-        final email = userData["email"];
-        final firstName = userData["hiringManagerFirstName"] ?? '';
-        final lastName = userData["hiringManagerLastName"] ?? '';
-        final fullName = '$firstName $lastName'.toLowerCase();
-        return email != null &&
-            email != currentUserEmail &&
-            (email.toLowerCase().contains(query.toLowerCase()) ||
-                firstName.toLowerCase().contains(query.toLowerCase()) ||
-                lastName.toLowerCase().contains(query.toLowerCase()) ||
-                fullName.contains(query.toLowerCase()));
-      }).toList();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: SearchableList<Map<String, dynamic>>(
-        cursorColor: Color(0xFFfe9703),
-        listViewPadding: EdgeInsets.all(0),
-        initialList: usersData,
-        filter: (query) => _filterUsers(query, usersData),
-        errorWidget: Icon(Icons.error),
-        itemBuilder: (userData) => _buildUserListItem(userData, sizeInfo),
-        emptyWidget: Center(child: Text('Not found')),
-        style: TextStyle(fontSize: 16),
-        inputDecoration: InputDecoration(
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Color(0xFFfe9703), width: 1),
-          ),
-          hintText: 'Search...',
-          hintStyle: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          prefixIcon: Icon(Icons.search),
-        ),
-        displaySearchIcon: false,
-        displayClearIcon: true,
-        scrollDirection: Axis.vertical,
-        spaceBetweenSearchAndList: 20,
-      ),
-    );
+  List<Map<String, dynamic>> _filterUsers(
+      String query, List<Map<String, dynamic>> users) {
+    return users.where((userData) {
+      final email = userData["email"];
+      final firstName = userData["firstName"];
+      final lastName = userData["lastName"];
+      final fullName = '$firstName $lastName'.toLowerCase();
+      return email != null &&
+          email != currentUserEmail &&
+          (email.toLowerCase().contains(query.toLowerCase()) ||
+              firstName.toLowerCase().contains(query.toLowerCase()) ||
+              lastName.toLowerCase().contains(query.toLowerCase()) ||
+              fullName.contains(query.toLowerCase()));
+    }).toList();
   }
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    child: SearchableList<Map<String, dynamic>>(
+      cursorColor: Color(0xFFfe9703),
+      listViewPadding: EdgeInsets.all(0),
+      initialList: usersData,
+      filter: (query) => _filterUsers(query, usersData),
+      errorWidget: Icon(Icons.error),
+      itemBuilder: (userData) => _buildUserListItem(userData, sizeInfo),
+      emptyWidget: Center(child: Text('No users found')),
+      style: TextStyle(fontSize: 16),
+      inputDecoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Color(0xFFfe9703), width: 1),
+        ),
+        hintText: 'Search...',
+        hintStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        prefixIcon: Icon(Icons.search),
+      ),
+      displaySearchIcon: false,
+      displayClearIcon: true,
+      scrollDirection: Axis.vertical,
+      spaceBetweenSearchAndList: 20,
+    ),
+  );
+}
+
+
+  // Widget _buildUserListView(
+  //     List<Map<String, dynamic>> usersData, SizingInformation sizeInfo) {
+  //   final currentUserEmail = getCurrentUser()?.email;
+
+  //   List<Map<String, dynamic>> _filterUsers(
+  //       String query, List<Map<String, dynamic>> users) {
+  //     return users.where((userData) {
+  //       final email = userData["email"];
+  //       final firstName = userData["hiringManagerFirstName"] ?? '';
+  //       final lastName = userData["hiringManagerLastName"] ?? '';
+  //       final fullName = '$firstName $lastName'.toLowerCase();
+  //       return email != null &&
+  //           email != currentUserEmail &&
+  //           (email.toLowerCase().contains(query.toLowerCase()) ||
+  //               firstName.toLowerCase().contains(query.toLowerCase()) ||
+  //               lastName.toLowerCase().contains(query.toLowerCase()) ||
+  //               fullName.contains(query.toLowerCase()));
+  //     }).toList();
+  //   }
+
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 10),
+  //     child: SearchableList<Map<String, dynamic>>(
+  //       cursorColor: Color(0xFFfe9703),
+  //       listViewPadding: EdgeInsets.all(0),
+  //       initialList: usersData,
+  //       filter: (query) => _filterUsers(query, usersData),
+  //       errorWidget: Icon(Icons.error),
+  //       itemBuilder: (userData) => _buildUserListItem(userData, sizeInfo),
+  //       emptyWidget: Center(child: Text('Not found')),
+  //       style: TextStyle(fontSize: 16),
+  //       inputDecoration: InputDecoration(
+  //         focusedBorder: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(10),
+  //           borderSide: BorderSide(color: Color(0xFFfe9703), width: 1),
+  //         ),
+  //         hintText: 'Search...',
+  //         hintStyle: TextStyle(
+  //             fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey),
+  //         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+  //         prefixIcon: Icon(Icons.search),
+  //       ),
+  //       displaySearchIcon: false,
+  //       displayClearIcon: true,
+  //       scrollDirection: Axis.vertical,
+  //       spaceBetweenSearchAndList: 20,
+  //     ),
+  //   );
+  // }
 
   Widget _buildUserListItem(
       Map<String, dynamic> userData, SizingInformation sizeInfo) {
