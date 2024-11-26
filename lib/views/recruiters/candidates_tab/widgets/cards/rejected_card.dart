@@ -19,10 +19,10 @@ class _RejectedCardState extends State<RejectedCard>
   @override
   Widget build(BuildContext context) {
     String date = DateFormat('d MMM yyyy, h:mma')
-        .format(widget.candidate.dateRejected)
+        .format(widget.candidate.dateRejected!)
         .toLowerCase();
     String formattedDate =
-        DateFormat('MMMM d, yyyy').format(widget.candidate.dateRejected);
+        DateFormat('MMMM d, yyyy').format(widget.candidate.dateRejected!);
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -72,7 +72,8 @@ class _RejectedCardState extends State<RejectedCard>
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(Icons.badge, size: 16, color: Colors.grey),
+                              const Icon(Icons.badge,
+                                  size: 16, color: Colors.grey),
                               const SizedBox(width: 4),
                               Text(
                                 widget.candidate.profession,
@@ -87,7 +88,8 @@ class _RejectedCardState extends State<RejectedCard>
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(Icons.home, size: 16, color: Colors.grey),
+                              const Icon(Icons.home,
+                                  size: 16, color: Colors.grey),
                               const SizedBox(width: 4),
                               Text(
                                 widget.candidate.companyAppliedTo,

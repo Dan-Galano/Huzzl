@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart' as prefix;
@@ -7,128 +8,171 @@ import 'package:intl/intl.dart';
 
 class JobProviderCandidate extends ChangeNotifier {
   final List<Candidate> _candidates = [
-    Candidate(
-      id: '1',
-      name: 'Allen James Alvaro',
-      profession: "Architect",
-      jobPostId: "FXZd9yEXNPFpKfwXQ401",
-      companyAppliedTo: "Alvaro Co.",
-      applicationDate: DateTime.now(),
-      status: "For Review",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '2',
-      name: 'Patrick John Tomas',
-      jobPostId: "FXZd9yEXNPFpKfwXQ401",
-      profession: "Mechanical Engineer",
-      companyAppliedTo: "EcoShpere Enterprises",
-      applicationDate: DateTime.now(),
-      status: "For Review",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '3',
-      name: 'Monica Ave',
-      profession: "Data Scientist",
-      jobPostId: "FXZd9yEXNPFpKfwXQ401",
-      companyAppliedTo: "Pinnacle Dynamics",
-      applicationDate: DateTime.now(),
-      status: "Shortlisted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '4',
-      name: 'John Luna',
-      jobPostId: "INPFHCDYGbCNBfu6fePe",
-      profession: "Digital Marketing Specialist",
-      companyAppliedTo: "CoreVision Analytics",
-      applicationDate: DateTime.now(),
-      status: "Contacted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 0,
-    ),
-    Candidate(
-      id: '5',
-      name: 'Liora Artanez',
-      profession: "Journalist",
-      jobPostId: "INPFHCDYGbCNBfu6fePe",
-      companyAppliedTo: "NovaVista Consulting",
-      applicationDate: DateTime.now(),
-      status: "Contacted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 2,
-    ),
-    Candidate(
-      id: '6',
-      name: 'Selara Nyverne',
-      profession: "Graphic Designer",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "BrightTrail Ventures",
-      applicationDate: DateTime.now(),
-      status: "Shortlisted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '7',
-      name: 'Jake Gyllenhaal',
-      profession: "Electrician",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "Halo",
-      applicationDate: DateTime.now(),
-      status: "For Review",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '8',
-      name: 'John Mayer',
-      profession: "Guitarist",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "Gravity",
-      applicationDate: DateTime.now(),
-      status: "Contacted",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '9',
-      name: 'Mike Portnoy',
-      profession: "Psychologist",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "EcoFusion Technologies",
-      applicationDate: DateTime.now(),
-      status: "Hired",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
-    Candidate(
-      id: '10',
-      name: 'Jame Belmoro',
-      profession: "Producer",
-      jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-      companyAppliedTo: "Zenith Entertainment Studios",
-      applicationDate: DateTime.now(),
-      status: "For Review",
-      dateLastInterviewed: DateTime.now(),
-      dateRejected: DateTime.now(),
-      interviewCount: 1,
-    ),
+    // Candidate(
+    //   id: '1',
+    //   name: 'Allen James Alvaro',
+    //   profession: "Architect",
+    //   jobPostId: "FXZd9yEXNPFpKfwXQ401",
+    //   companyAppliedTo: "Alvaro Co.",
+    //   applicationDate: DateTime.now(),
+    //   status: "For Review",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 0,
+    // ),
+    // Candidate(
+    //   id: '2',
+    //   name: 'Patrick John Tomas',
+    //   jobPostId: "FXZd9yEXNPFpKfwXQ401",
+    //   profession: "Mechanical Engineer",
+    //   companyAppliedTo: "EcoShpere Enterprises",
+    //   applicationDate: DateTime.now(),
+    //   status: "For Review",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 0,
+    // ),
+    // Candidate(
+    //   id: '3',
+    //   name: 'Monica Ave',
+    //   profession: "Data Scientist",
+    //   jobPostId: "FXZd9yEXNPFpKfwXQ401",
+    //   companyAppliedTo: "Pinnacle Dynamics",
+    //   applicationDate: DateTime.now(),
+    //   status: "Shortlisted",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 0,
+    // ),
+    // Candidate(
+    //   id: '4',
+    //   name: 'John Luna',
+    //   jobPostId: "INPFHCDYGbCNBfu6fePe",
+    //   profession: "Digital Marketing Specialist",
+    //   companyAppliedTo: "CoreVision Analytics",
+    //   applicationDate: DateTime.now(),
+    //   status: "Contacted",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 0,
+    // ),
+    // Candidate(
+    //   id: '5',
+    //   name: 'Liora Artanez',
+    //   profession: "Journalist",
+    //   jobPostId: "INPFHCDYGbCNBfu6fePe",
+    //   companyAppliedTo: "NovaVista Consulting",
+    //   applicationDate: DateTime.now(),
+    //   status: "Contacted",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 2,
+    // ),
+    // Candidate(
+    //   id: '6',
+    //   name: 'Selara Nyverne',
+    //   profession: "Graphic Designer",
+    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+    //   companyAppliedTo: "BrightTrail Ventures",
+    //   applicationDate: DateTime.now(),
+    //   status: "Shortlisted",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 1,
+    // ),
+    // Candidate(
+    //   id: '7',
+    //   name: 'Jake Gyllenhaal',
+    //   profession: "Electrician",
+    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+    //   companyAppliedTo: "Halo",
+    //   applicationDate: DateTime.now(),
+    //   status: "For Review",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 1,
+    // ),
+    // Candidate(
+    //   id: '8',
+    //   name: 'John Mayer',
+    //   profession: "Guitarist",
+    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+    //   companyAppliedTo: "Gravity",
+    //   applicationDate: DateTime.now(),
+    //   status: "Contacted",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 1,
+    // ),
+    // Candidate(
+    //   id: '9',
+    //   name: 'Mike Portnoy',
+    //   profession: "Psychologist",
+    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+    //   companyAppliedTo: "EcoFusion Technologies",
+    //   applicationDate: DateTime.now(),
+    //   status: "Hired",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 1,
+    // ),
+    // Candidate(
+    //   id: '10',
+    //   name: 'Jame Belmoro',
+    //   profession: "Producer",
+    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
+    //   companyAppliedTo: "Zenith Entertainment Studios",
+    //   applicationDate: DateTime.now(),
+    //   status: "For Review",
+    //   dateLastInterviewed: DateTime.now(),
+    //   dateRejected: DateTime.now(),
+    //   interviewCount: 1,
+    // ),
   ];
   List<Candidate> get candidates => _candidates;
+
+// Fetch candidates from Firebase Firestore
+  Future<void> fetchCandidate(String jobPostId) async {
+    try {
+      // Reference to the Firestore collection where candidates are stored
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(getCurrentUserId())
+          .collection("job_posts")
+          .doc(jobPostId)
+          .collection('candidates')
+          .get();
+
+      // Clear the current list before adding new candidates
+      _candidates.clear();
+
+      // Loop through each document and map it to a Candidate object
+      for (var doc in querySnapshot.docs) {
+        _candidates.add(Candidate(
+          id: doc.id,
+          name: "${doc['firstName']} ${doc['lastName']}",
+          email: doc['email'],
+          profession: doc['jobTitle'],
+          companyAppliedTo: doc['jobTitle'],
+          jobPostId: doc['jobPostId'],
+          applicationDate: (doc['applicationDate'] as Timestamp).toDate(),
+          dateLastInterviewed: (doc['applicationDate'] as Timestamp).toDate(),
+          interviewCount: 0,
+          dateRejected: (doc['applicationDate'] as Timestamp).toDate(),
+          status: doc['status'],
+        ));
+      }
+      notifyListeners();
+      print("List post: ${_candidates}");
+      // You can call notifyListeners() here if you are using a ChangeNotifier provider
+    } catch (e) {
+      print('Error fetching candidates: $e');
+    }
+  }
+
+  String getCurrentUserId() {
+    return FirebaseAuth.instance.currentUser!.uid;
+  }
 
   String _rejectMessage = "";
   String _hireMessage = "";
@@ -230,7 +274,7 @@ class JobProviderCandidate extends ChangeNotifier {
     }
   }
 
-  void rejectCandidate(String id) {
+  void rejectCandidate(String jobPostId, String id) async {
     for (var i = 0; i < _candidates.length; i++) {
       if (_candidates[i].id == id) {
         _candidates[i] = _candidates[i].copyWith(status: "Rejected");
@@ -238,15 +282,56 @@ class JobProviderCandidate extends ChangeNotifier {
         break;
       }
     }
+
+    // Update candidate status in Firestore
+    try {
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(getCurrentUserId()) // Candidate's document ID
+          .collection("job_posts")
+          .doc(jobPostId)
+          .collection("candidates")
+          .doc(id)
+          .update({'status': 'Rejected'}); // Field to update
+      print("Candidate status Rejected");
+    } catch (e) {
+      print("Failed to update candidate status: $e");
+    }
   }
 
-  void shortlistCandidate(String id) {
+  // void shortlistCandidate(String id) {
+  //   for (var i = 0; i < _candidates.length; i++) {
+  //     if (_candidates[i].id == id) {
+  //       _candidates[i] = _candidates[i].copyWith(status: "Shortlisted");
+  //       notifyListeners();
+  //       break;
+  //     }
+  //   }
+  // }
+
+  void shortlistCandidate(String jobPostId, String id) async {
+    // Update local candidate list
     for (var i = 0; i < _candidates.length; i++) {
       if (_candidates[i].id == id) {
         _candidates[i] = _candidates[i].copyWith(status: "Shortlisted");
         notifyListeners();
         break;
       }
+    }
+
+    // Update candidate status in Firestore
+    try {
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(getCurrentUserId()) // Candidate's document ID
+          .collection("job_posts")
+          .doc(id)
+          .collection("candidates")
+          .doc(jobPostId)
+          .update({'status': 'Shortlisted'}); // Field to update
+      print("Candidate status updated to Shortlisted");
+    } catch (e) {
+      print("Failed to update candidate status: $e");
     }
   }
 

@@ -223,14 +223,22 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             candidateId: _candidateId,
           );
         } else if (_isCandidatesScreen) {
-          return buildCandidatesContent(
-            context,
-            () => toggleCandidatesScreen(false, '', '', 0, _jobTabInitialIndex),
-            _jobPostId,
-            _jobTitle,
-            jobProvider.candidates,
-            _initialIndex,
+          return BuildCandidatesContent(
+            onBack: () =>
+                toggleCandidatesScreen(false, '', '', 0, _jobTabInitialIndex),
+            jobPostId: _jobPostId,
+            jobTitle: _jobTitle,
+            candidates: jobProvider.candidates,
+            initialIndex: _initialIndex,
           );
+          // return buildCandidatesContent(
+          //   context,
+          //   () => toggleCandidatesScreen(false, '', '', 0, _jobTabInitialIndex),
+          //   _jobPostId,
+          //   _jobTitle,
+          //   jobProvider.candidates,
+          //   _initialIndex,
+          // );
         }
         return JobScreens(
           candidates: jobProvider.candidates,
@@ -314,7 +322,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                   )
                 : IconButton(
                     onPressed: () {
-                       Navigator.push(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => ChatHomePage()));

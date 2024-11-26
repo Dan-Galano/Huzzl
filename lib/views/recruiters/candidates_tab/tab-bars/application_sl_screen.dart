@@ -375,7 +375,7 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                           width: double.infinity,
                           child: TextField(
                             controller: TextEditingController(
-                              text: "Technical expertise and attention to detail highlight their ability to excel in complex tasks.",
+                              text: "Ok naman siya",
                             ),
                             maxLines: 20,
                             decoration: InputDecoration(
