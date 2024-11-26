@@ -88,12 +88,15 @@ class _ChatPageState extends State<ChatPage> {
               CircleAvatar(
                 radius: widget.sizeInfo.isDesktop ? 25 : 15,
                 backgroundColor: Color(0xFFff9800).withOpacity(0.3),
-                child: (widget.userData["hiringManagerFirstName"]?.isNotEmpty ==
+                // child: (widget.userData["hiringManagerFirstName"]?.isNotEmpty ==
+                child: (widget.userData["firstName"]?.isNotEmpty ==
                             true ||
-                        widget.userData["hiringManagerLastName"]?.isNotEmpty ==
+                        // widget.userData["hiringManagerLastName"]?.isNotEmpty ==
+                        widget.userData["lastName"]?.isNotEmpty ==
                             true)
                     ? Text(
-                        "${(widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
+                        // "${(widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
+                        "${(widget.userData["firstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? '').toUpperCase()[0]}",
                         style: TextStyle(
                             color: Color(0xFFfd7206),
                             fontSize: widget.sizeInfo.isDesktop ? 16 : 12,
@@ -107,7 +110,8 @@ class _ChatPageState extends State<ChatPage> {
               ),
               Gap(15),
               Text(
-                  "${(widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["hiringManagerLastName"] ?? '')}",
+                  // "${(widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["hiringManagerLastName"] ?? '')}",
+                  "${(widget.userData["firstName"] ?? '')} ${(widget.userData["lastName"] ?? '')}",
                   style: TextStyle(
                       fontSize: widget.sizeInfo.isDesktop ? 16 : 14,
                       fontWeight: FontWeight.bold)),

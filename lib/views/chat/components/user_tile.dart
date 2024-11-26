@@ -68,14 +68,14 @@ class _UserTileState extends State<UserTile> {
                   CircleAvatar(
                     radius: 15,
                     backgroundColor: Color(0xFFff9800).withOpacity(0.3),
-                    child: (widget.userData["hiringManagerFirstName"]
-                                    ?.isNotEmpty ==
-                                true ||
-                            widget.userData["hiringManagerLastName"]
-                                    ?.isNotEmpty ==
-                                true)
+                    // child: (widget.userData["hiringManagerFirstName"]
+
+                    child: (widget.userData["firstName"]?.isNotEmpty == true ||
+                            // widget.userData["hiringManagerLastName"]
+                            widget.userData["lastName"]?.isNotEmpty == true)
                         ? Text(
-                            "${(widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
+                            // "${(widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
+                            "${(widget.userData["firstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? '').toUpperCase()[0]}",
                             style: TextStyle(
                                 color: Color(0xFFfd7206),
                                 fontSize: 12,
@@ -95,12 +95,14 @@ class _UserTileState extends State<UserTile> {
                       widget.sizeInfo.isDesktop
                           ? widget.isSelected
                               ? Text(
-                                  "${(widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["hiringManagerLastName"] ?? '')}",
+                                  // "${(widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["hiringManagerLastName"] ?? '')}",
+                                  "${(widget.userData["firstName"] ?? '')} ${(widget.userData["lastName"] ?? '')}",
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold))
                               : Text(
-                                  "${(widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["hiringManagerLastName"] ?? '')}",
+                                  // "${(widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["hiringManagerLastName"] ?? '')}",
+                                  "${(widget.userData["firstName"] ?? '')} ${(widget.userData["lastName"] ?? '')}",
                                   style: TextStyle(fontSize: 12))
                           : SizedBox(),
                       if (widget.sizeInfo.isDesktop)
