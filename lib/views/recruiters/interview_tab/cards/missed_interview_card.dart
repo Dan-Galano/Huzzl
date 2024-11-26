@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_dialog%20copy.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/reschedule_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/date_container.dart';
 import 'package:intl/intl.dart';
@@ -66,126 +67,135 @@ class _MissedInterviewCardState extends State<MissedInterviewCard>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Interview info
-                Row(
+                Column(
                   children: [
-                    //====================== Circle Avatar ======================
-                    Column(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: const Color(0xffd1e1ff),
-                          foregroundColor: const Color(0xff373030),
-                          child: Text(widget.intervieweeName[0]),
-                        ),
-                      ],
-                    ),
-                    const Gap(15),
-                    //====================== Interviewee Details ======================
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        //Interviewee name
-                        Text(
-                          widget.intervieweeName,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff373030),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        //Interviewee job
-                        Row(
-                          children: [
-                            const Icon(Icons.person_outline,
-                                size: 20, color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              widget.profession,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        //Branch applied
-                        Row(
-                          children: [
-                            const Icon(Icons.business_center_outlined,
-                                size: 20, color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              widget.branch,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    CircleAvatar(
+                      backgroundColor: const Color(0xffd1e1ff),
+                      foregroundColor: const Color(0xff373030),
+                      child: Text(widget.intervieweeName[0]),
                     ),
                   ],
                 ),
-                //Interview title
-                Row(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          widget.interviewTitle,
-                          style: const TextStyle(
-                            decoration: TextDecoration.none,
-                            decorationColor: Colors.orange,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff373030),
+                const Gap(15),
+                //====================== Interviewee Details ======================
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      //Interviewee name
+                      Text(
+                        widget.intervieweeName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff373030),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      //Interviewee job
+                      Row(
+                        children: [
+                          const Icon(Icons.person_outline,
+                              size: 18, color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Text(
+                            widget.profession,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const Gap(50),
-                    //interviewed date
-                    Row(
-                      children: [
-                        DateContainer(
-                          date: formattedDate,
-                          backgroundColor: const Color(0xffFDE5E5),
-                          outlineBorderColor: const Color(0xffD74A4A),
-                        ),
-                      ],
-                    ),
-                    const Gap(50),
-                    //Buttons
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.chat),
-                          color: const Color(0xff3B7DFF),
-                        ),
-                        const Gap(50),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            RescheduleInterviewButton(
-                              onPressed: () {},
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      //Branch applied
+                      Row(
+                        children: [
+                          const Icon(Icons.business_center_outlined,
+                              size: 18, color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Text(
+                            widget.branch,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
-                            const Gap(10),
-                            MarkAsDoneButton(
-                              onPressed: () => showMarkAsDoneDialog(context),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                //Interview title
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        widget.interviewTitle,
+                        style: const TextStyle(
+                          decoration: TextDecoration.none,
+                          decorationColor: Colors.orange,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff373030),
                         ),
-                      ],
-                    )
-                  ],
+                      ),
+                      const Text(
+                        "Title",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Galano',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(50),
+                //interviewed date
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Text(
+                        "Interview Date",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Galano',
+                        ),
+                      ),
+                      const Gap(8),
+                      DateContainer(
+                        date: formattedDate,
+                        backgroundColor: const Color(0xffFDE5E5),
+                        outlineBorderColor: const Color(0xffD74A4A),
+                      ),
+                    ],
+                  ),
+                ),
+                //Buttons
+                Expanded(
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.chat),
+                    color: const Color(0xff3B7DFF),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      RescheduleInterviewButton(
+                        onPressed: () => showRescheduleInterviewDialog(context),
+                      ),
+                      const Gap(10),
+                      MarkAsDoneButton(
+                        onPressed: () => showMarkAsDoneDialog(context),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

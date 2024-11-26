@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/Landing_Page/footer_widget.dart';
 import 'package:huzzl_web/Landing_Page/testimonials_page.dart';
+import 'package:huzzl_web/main.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
+import 'package:huzzl_web/views/user%20option/user_option_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'feature_card.dart';
 import 'job_search_widget.dart';
 import 'expert_professionals_widget.dart';
@@ -21,6 +24,7 @@ class _LandingPageNewState extends State<LandingPageNew> {
   final GlobalKey _featuresKey = GlobalKey();
   final GlobalKey _testimonialsKey = GlobalKey();
   final GlobalKey _contactKey = GlobalKey();
+  final bool _showSignUpScreen = true;
 
   void _scrollToSection(GlobalKey key) {
     final RenderBox? renderBox =
@@ -43,6 +47,10 @@ class _LandingPageNewState extends State<LandingPageNew> {
     }
   }
 
+  void _toggleScreen() {
+    Navigator.of(context).pop();
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -61,7 +69,7 @@ class _LandingPageNewState extends State<LandingPageNew> {
                 controller: _scrollController,
                 child: Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Image.asset(
                         'assets/images/background_blur.png',
@@ -72,13 +80,13 @@ class _LandingPageNewState extends State<LandingPageNew> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Gap(30),
-                        JobSearchWidget(),
-                        Gap(30),
-                        ExpertProfessionalsWidget(),
+                        const Gap(30),
+                        const JobSearchWidget(),
+                        const Gap(30),
+                        const ExpertProfessionalsWidget(),
                         FeatureCard(key: _featuresKey),
                         TestimonialsSection(key: _testimonialsKey),
-                        TalentCategoryWidget(),
+                        const TalentCategoryWidget(),
                         ContactPage(key: _contactKey),
                         Footer(),
                       ],
@@ -86,7 +94,7 @@ class _LandingPageNewState extends State<LandingPageNew> {
                     Positioned(
                       top: 2380,
                       left: 900,
-                      child: Container(
+                      child: SizedBox(
                         width: 600,
                         height: 350,
                         child: Image.asset(
@@ -103,7 +111,7 @@ class _LandingPageNewState extends State<LandingPageNew> {
               top: 0,
               left: 0,
               right: 0,
-              child: Container(
+              child: SizedBox(
                 height: 60,
                 child: ClipRRect(
                   child: Container(
@@ -113,7 +121,7 @@ class _LandingPageNewState extends State<LandingPageNew> {
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(1),
-                          offset: Offset(6, 6),
+                          offset: const Offset(6, 6),
                           blurRadius: 12,
                           spreadRadius: 6,
                         ),
@@ -169,12 +177,12 @@ class _LandingPageNewState extends State<LandingPageNew> {
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => LoginRegister(),
+                                  builder: (context) => const LoginRegister(),
                                 ));
                               },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
-                                backgroundColor: Color(0xFF256EFF),
+                                backgroundColor: const Color(0xFF256EFF),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 30,
                                   vertical: 12,
@@ -183,7 +191,7 @@ class _LandingPageNewState extends State<LandingPageNew> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                               ),
-                              child: Text(
+                              child: const Text(
                                 'Log in',
                                 style: TextStyle(
                                   fontFamily: 'Galano',
@@ -193,8 +201,16 @@ class _LandingPageNewState extends State<LandingPageNew> {
                             ),
                             const Gap(16),
                             TextButton(
-                              onPressed: () {},
-                              child: Text(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => _showSignUpScreen
+                                      ? UserOptionScreen(
+                                          onToggle: _toggleScreen,
+                                        )
+                                      : const AuthWrapper(),
+                                ));
+                              },
+                              child: const Text(
                                 'Sign up',
                                 style: TextStyle(
                                   fontFamily: 'Galano',

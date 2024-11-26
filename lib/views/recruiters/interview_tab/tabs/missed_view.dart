@@ -35,49 +35,22 @@ class MissedView extends StatelessWidget {
     if (interviewees.isNotEmpty) {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  "Title",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Galano',
-                  ),
-                ),
-                Gap(200),
-                Text(
-                  "Interview Date",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Galano',
-                  ),
-                ),
-                Gap(465),
-              ],
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: interviewees.length,
-              itemBuilder: (context, index) {
-                return MissedInterviewCard(
-                  intervieweeName: interviewees[index]['name'],
-                  interviewTitle: interviewees[index]['interviewTitle'],
-                  interviewType: interviewees[index]['interviewType'],
-                  profession: interviewees[index]['profession'],
-                  branch: interviewees[index]['branch'],
-                  dateInterviewed: interviewees[index]['dateInterviewed'],
-                );
-              },
-            ),
-          ],
+        child: Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: interviewees.length,
+            itemBuilder: (context, index) {
+              return MissedInterviewCard(
+                intervieweeName: interviewees[index]['name'],
+                interviewTitle: interviewees[index]['interviewTitle'],
+                interviewType: interviewees[index]['interviewType'],
+                profession: interviewees[index]['profession'],
+                branch: interviewees[index]['branch'],
+                dateInterviewed: interviewees[index]['dateInterviewed'],
+              );
+            },
+          ),
         ),
       );
     } else {

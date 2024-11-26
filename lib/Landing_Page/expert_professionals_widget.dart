@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/main.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ExpertProfessionalsWidget extends StatefulWidget {
@@ -64,13 +65,13 @@ class _ExpertProfessionalsWidgetState extends State<ExpertProfessionalsWidget>
       key: Key('expert-professionals-widget'),
       onVisibilityChanged: _onVisibilityChanged,
       child: Stack(
-        clipBehavior:
-            Clip.none,
+        clipBehavior: Clip.none,
         children: [
           Container(
             width: double.infinity,
             color: Colors.white,
-            padding: const EdgeInsets.only(top: 60, left: 130, bottom: 60, right: 750),
+            padding: const EdgeInsets.only(
+                top: 60, left: 130, bottom: 60, right: 750),
             child: Row(
               children: [
                 Expanded(
@@ -112,7 +113,11 @@ class _ExpertProfessionalsWidgetState extends State<ExpertProfessionalsWidget>
                       ),
                       Gap(30),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const AuthWrapper(),
+                          ));
+                        },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: Color(0xFF256EFF),
@@ -138,10 +143,9 @@ class _ExpertProfessionalsWidgetState extends State<ExpertProfessionalsWidget>
               ],
             ),
           ),
-
           Positioned(
             right: 100,
-            top: -100, 
+            top: -100,
             child: Image.asset(
               'assets/images/3D_EP.png',
               fit: BoxFit.contain,
