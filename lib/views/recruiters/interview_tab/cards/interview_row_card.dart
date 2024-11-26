@@ -38,7 +38,7 @@ class InterviewRowCard extends StatelessWidget {
             '$startTime - $endTime',
             style: const TextStyle(
               fontWeight: FontWeight.w400,
-              fontSize: 20,
+              fontSize: 16,
             ),
           ),
         ),

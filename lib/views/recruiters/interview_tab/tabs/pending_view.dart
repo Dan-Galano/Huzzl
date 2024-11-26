@@ -155,41 +155,20 @@ class PendingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (interviewees.isNotEmpty) {
-      return Column(
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                child: Text(
-                  "Shortlist Date",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Galano',
-                  ),
-                ),
-              ),
-              Gap(470)
-            ],
-          ),
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              // physics: const NeverScrollableScrollPhysics(),
-              itemCount: interviewees.length,
-              itemBuilder: (context, index) {
-                return PendingTileCard(
-                  intervieweeName: interviewees[index]['name'],
-                  profession: interviewees[index]['profession'],
-                  branch: interviewees[index]['branch'],
-                  shortlistDate: interviewees[index]['shortlistDate'],
-                );
-              },
-            ),
-          ),
-        ],
+      return Expanded(
+        child: ListView.builder(
+          shrinkWrap: true,
+          // physics: const NeverScrollableScrollPhysics(),
+          itemCount: interviewees.length,
+          itemBuilder: (context, index) {
+            return PendingTileCard(
+              intervieweeName: interviewees[index]['name'],
+              profession: interviewees[index]['profession'],
+              branch: interviewees[index]['branch'],
+              shortlistDate: interviewees[index]['shortlistDate'],
+            );
+          },
+        ),
       );
     } else {
       return Column(

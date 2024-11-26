@@ -268,7 +268,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 // return ChatHomePage(); //chattest
               }
 
-              return LoginRegister();
+              return LandingPageNew();
             },
           );
         } else {
