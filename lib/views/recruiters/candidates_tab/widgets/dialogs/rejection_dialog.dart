@@ -161,7 +161,11 @@ void showRejectDialog(BuildContext context, String candidateId) {
                           Expanded(
                             child: TextButton(
                               onPressed: () => showRejectConfirmationDialog(
-                                  context, candidateId),
+                                  context,
+                                  candidateId,
+                                  jobCandidateProvider
+                                      .findDataOfCandidate(candidateId)!
+                                      .jobPostId),
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 30, vertical: 16),
