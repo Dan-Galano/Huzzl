@@ -78,12 +78,19 @@ class PhoneNumberVerification extends StatefulWidget {
 }
 
 class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
+  final PhoneVerificationService _service = PhoneVerificationService();
+  final List<TextEditingController> _controllers =
+      List.generate(6, (index) => TextEditingController());
+  List<bool> _focusNodes = List.generate(6, (index) => false);
+  bool _isCodeSent = false;
+  bool _isLoading = false;
+  // String? _verificationId;
+  int _remainingSeconds = 300;
+  Timer? _timer;
+
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-
-    await dotenv.load();
-
     _sendOTP();
 
     for (int i = 0; i < _controllers.length; i++) {
@@ -94,16 +101,6 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
       });
     }
   }
-
-  final PhoneVerificationService _service = PhoneVerificationService();
-  final List<TextEditingController> _controllers =
-      List.generate(6, (index) => TextEditingController());
-  List<bool> _focusNodes = List.generate(6, (index) => false);
-  bool _isCodeSent = false;
-  bool _isLoading = false;
-  // String? _verificationId;
-  int _remainingSeconds = 300;
-  Timer? _timer;
 
   String obscurePhoneNumber(String phoneNumber) {
     if (phoneNumber.length < 6) return phoneNumber;

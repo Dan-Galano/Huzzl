@@ -11,11 +11,7 @@ class EditJobDetails extends StatefulWidget {
   String industry; // one or more
   String numOfPeopleToHire; // one or more
   String numPeople; // 1 to 10+
-  final String region;
-  final String province;
-  final String city;
-  final String barangay;
-  final TextEditingController otherLocation;
+  final String branch;
   final TextEditingController jobDescriptionController;
   final String jobType;
   final String schedule;
@@ -32,6 +28,7 @@ class EditJobDetails extends StatefulWidget {
   final List<String> prescreenQuestions;
   final User user;
   final Map<String, dynamic> userData;
+
   EditJobDetails({
     super.key,
     required this.submitForm,
@@ -40,11 +37,7 @@ class EditJobDetails extends StatefulWidget {
     required this.industry,
     required this.numOfPeopleToHire,
     required this.numPeople,
-    required this.region,
-    required this.province,
-    required this.city,
-    required this.barangay,
-    required this.otherLocation,
+    required this.branch,
     required this.jobDescriptionController,
     required this.jobType,
     required this.schedule,
@@ -84,7 +77,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
           : widget.numOfPeopleToHire);
   late TextEditingController locationController = TextEditingController(
       text:
-          '${widget.region}, ${widget.province}, ${widget.city}, ${widget.barangay}, ${widget.otherLocation.text}');
+          '${widget.branch}');
   late TextEditingController jobTypeController =
       TextEditingController(text: widget.jobType);
   late TextEditingController scheduleController =

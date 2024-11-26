@@ -260,13 +260,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               Gap(20),
-              Text(
-                "or",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
-                  fontWeight: FontWeight.w100,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                    ),
+                  ),
+                  Gap(20),
+                  Text(
+                    "or",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                      fontWeight: FontWeight.w100,
+                    ),
+                  ),
+                  Gap(20),
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                    ),
+                  ),
+                ],
               ),
               Gap(20),
 

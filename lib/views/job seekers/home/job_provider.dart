@@ -43,31 +43,31 @@ class JobProvider with ChangeNotifier {
     try {
       // Fetch job data from various sources
       List<Map<String, String>> huzzlJobs = await fetchAllJobPosts();
-      String jobstreetHtmlContent = await fetchJobStreetData(searchQuery);
-      List<Map<String, String>> jobstreetJobs =
-          parseJobStreetData(jobstreetHtmlContent);
-      await fetchJobStreetJobDesc(jobstreetJobs);
-      String linkedInHtmlContent = await fetchLinkedInData(searchQuery);
-      List<Map<String, String>> linkedInJobs =
-          parseLinkedInData(linkedInHtmlContent);
-      await fetchLinkedInJobDesc(linkedInJobs);
-      String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
-      List<Map<String, String>> onlineJobsJobs =
-          parseOnlineJobsData(onlineJobsHtmlContent);
-      String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
-      List<Map<String, String>> kalibrrJobs =
-          parseKalibrrData(kalibrrHtmlContent);
-      await fetchKalibrrJobDesc(kalibrrJobs);
-      String philJobNetHtmlContent = await fetchPhilJobNetData();
-      List<Map<String, String>> philJobNetJobs =
-          parsePhilJobNetData(philJobNetHtmlContent);
+      // String jobstreetHtmlContent = await fetchJobStreetData(searchQuery);
+      // List<Map<String, String>> jobstreetJobs =
+      //     parseJobStreetData(jobstreetHtmlContent);
+      // await fetchJobStreetJobDesc(jobstreetJobs);
+      // String linkedInHtmlContent = await fetchLinkedInData(searchQuery);
+      // List<Map<String, String>> linkedInJobs =
+      //     parseLinkedInData(linkedInHtmlContent);
+      // await fetchLinkedInJobDesc(linkedInJobs);
+      // String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
+      // List<Map<String, String>> onlineJobsJobs =
+      //     parseOnlineJobsData(onlineJobsHtmlContent);
+      // String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
+      // List<Map<String, String>> kalibrrJobs =
+      //     parseKalibrrData(kalibrrHtmlContent);
+      // await fetchKalibrrJobDesc(kalibrrJobs);
+      // String philJobNetHtmlContent = await fetchPhilJobNetData();
+      // List<Map<String, String>> philJobNetJobs =
+      //     parsePhilJobNetData(philJobNetHtmlContent);
 
       // Combine all jobs from all sources
       List<Map<String, String>> allJobs = [
         ...huzzlJobs,
-        ...jobstreetJobs,
+        // ...jobstreetJobs,
         // ...linkedInJobs,
-        ...onlineJobsJobs,
+        // ...onlineJobsJobs,
         // ...kalibrrJobs,
         // ...philJobNetJobs,
       ];

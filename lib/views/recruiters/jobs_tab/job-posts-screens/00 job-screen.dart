@@ -45,7 +45,7 @@ class _JobScreensState extends State<JobScreens> {
   String _selectedIndustry = '';
   String _numOfPeopleToHire = 'One person';
   String _numPeople = '';
-  String _selectedRegion = '';
+  String _selectedBranch = '';
   String _selectedProvince = '';
   String _selectedCity = '';
   String _selectedBarangay = '';
@@ -109,7 +109,7 @@ class _JobScreensState extends State<JobScreens> {
     jobDescriptionController.clear();
     _numOfPeopleToHire = 'One person'; // Reset to default value
     _numPeople = '';
-    _selectedRegion = '';
+    _selectedBranch = '';
     _selectedProvince = '';
     _selectedCity = '';
     _selectedBarangay = '';
@@ -142,7 +142,7 @@ class _JobScreensState extends State<JobScreens> {
     _selectedIndustry = '';
     _numOfPeopleToHire = 'One person'; // Reset to default value
     _numPeople = '';
-    _selectedRegion = '';
+    _selectedBranch = '';
     _selectedProvince = '';
     _selectedCity = '';
     _selectedBarangay = '';
@@ -211,14 +211,8 @@ class _JobScreensState extends State<JobScreens> {
                   setState(() => _numOfPeopleToHire = value!),
               onNumPeopleChanged: (value) =>
                   setState(() => _numPeople = value!),
-              onRegionChanged: (value) =>
-                  setState(() => _selectedRegion = value!),
-              onProvinceChanged: (value) =>
-                  setState(() => _selectedProvince = value!),
-              onCityChanged: (value) => setState(() => _selectedCity = value!),
-              onBarangayChanged: (value) =>
-                  setState(() => _selectedBarangay = value!),
-              otherLocation: _otherLocation,
+              onBranchChanged: (value) =>
+                  setState(() => _selectedBranch = value!),
               jobDescriptionController: jobDescriptionController,
             ),
             JobDetails(
@@ -287,11 +281,7 @@ class _JobScreensState extends State<JobScreens> {
               industry: _selectedIndustry,
               numOfPeopleToHire: _numOfPeopleToHire,
               numPeople: _numPeople,
-              region: _selectedRegion,
-              province: _selectedProvince,
-              city: _selectedCity,
-              barangay: _selectedBarangay,
-              otherLocation: _otherLocation,
+              branch: _selectedBranch,
               jobDescriptionController: jobDescriptionController,
               jobType: _selectedJobType,
               schedule: _selectedHrsPerWeek,
