@@ -59,7 +59,8 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   @override
   void initState() {
     super.initState();
-
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+      jobProvider.loadJobs();
     _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
       setState(() {
         currentIndex = (currentIndex + 1) % loadingPhrases.length;

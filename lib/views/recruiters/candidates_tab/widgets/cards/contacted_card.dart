@@ -22,7 +22,7 @@ class _ContactedCardState extends State<ContactedCard>
   Widget build(BuildContext context) {
     var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
     String date = DateFormat('d MMM yyyy, h:mma')
-        .format(widget.candidate.dateLastInterviewed);
+        .format(widget.candidate.dateLastInterviewed!);
 
     return MouseRegion(
       onEnter: (_) {

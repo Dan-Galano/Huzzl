@@ -74,7 +74,7 @@ class HiringManager {
     this.created_by,
   });
 }
-
+ 
 class Branch {
   String id;
   String branchName;

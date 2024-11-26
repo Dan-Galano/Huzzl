@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 
 class Testimonial {
   final String name;
+  final String title; // Added review title
   final String feedback;
-  final String source;
+  final String jobTitle;
+  final String location;
+  final String date;
   final int rating;
 
   const Testimonial({
     required this.name,
+    required this.title, // Required title
     required this.feedback,
-    required this.source,
+    required this.jobTitle,
+    required this.location,
+    required this.date,
     required this.rating,
   });
 }
@@ -24,37 +30,47 @@ class TestimonialsSection extends StatefulWidget {
 class _TestimonialsSectionState extends State<TestimonialsSection> {
   late final ScrollController _scrollController;
   late Timer _autoScrollTimer;
-  final ValueNotifier<int> _hoveredIndex =
-      ValueNotifier<int>(-1); // To track the hovered index
+  final ValueNotifier<int> _hoveredIndex = ValueNotifier<int>(-1);
 
-// List of testimonials using the Testimonial class
   List<Testimonial> testimonials = [
     const Testimonial(
       name: 'Rasheeda O.',
+      title: 'Life-Changing Job Finder!',
       feedback:
           'Huzzl\'s advanced job matching system helped me find the perfect opportunity based on my skills. The profile creation was easy, and the resume scanner made sure I was fully prepared. The notifications kept me updated every step of the way.',
-      source: 'via twitter.com',
+      jobTitle: 'Software Engineer',
+      location: 'New York, USA',
+      date: '2020–2023',
       rating: 5,
     ),
     const Testimonial(
       name: 'John D.',
+      title: 'Streamlined Hiring Process',
       feedback:
           'As a recruiter, I love how Huzzl makes the hiring process so streamlined. The teleconferencing tools and real-time notifications allow me to communicate effectively with candidates, and the application tracking helps me stay organized.',
-      source: 'via linkedin.com',
+      jobTitle: 'HR Manager',
+      location: 'San Francisco, USA',
+      date: '2018–2023',
       rating: 5,
     ),
     const Testimonial(
       name: 'Anna W.',
+      title: 'Direct Connections with Recruiters',
       feedback:
           'The integrated chat feature on Huzzl made it so much easier to connect with recruiters directly. The company reviews also gave me great insights into potential employers, and the job aggregation provided me with numerous opportunities.',
-      source: 'via facebook.com',
+      jobTitle: 'Graphic Designer',
+      location: 'London, UK',
+      date: '2021–2023',
       rating: 5,
     ),
     const Testimonial(
       name: 'Mike J.',
+      title: 'Efficient Recruitment Tools',
       feedback:
           'Using Huzzl has been a game changer for our recruiting process. The ability to review candidates’ profiles and manage job postings has made everything more efficient. I can’t imagine working without it now.',
-      source: 'via instagram.com',
+      jobTitle: 'Recruitment Consultant',
+      location: 'Toronto, Canada',
+      date: '2019–2023',
       rating: 5,
     ),
   ];
@@ -75,12 +91,12 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
   }
 
   void _startAutoScroll() {
-    const duration = Duration(seconds: 3); 
+    const duration = Duration(seconds: 3);
     _autoScrollTimer = Timer.periodic(duration, (timer) {
       if (_scrollController.hasClients) {
         double maxScroll = _scrollController.position.maxScrollExtent;
         double currentScroll = _scrollController.position.pixels;
-        double newScroll = currentScroll + 500; 
+        double newScroll = currentScroll + 500;
 
         if (newScroll >= maxScroll) {
           _scrollController.jumpTo(0);
@@ -95,17 +111,6 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
     });
   }
 
-  void addTestimonial(String name, String feedback, String source, int rating) {
-    setState(() {
-      testimonials.add(Testimonial(
-        name: name,
-        feedback: feedback,
-        source: source,
-        rating: rating,
-      ));
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -114,31 +119,26 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Hear from Our Happy Clients',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontFamily: 'Galano',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                'Take a look at the glowing reviews and success stories from some of our happy customers to see how Huzzl can help your business achieve its goals.',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'Galano',
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
+          const Text(
+            'Hear from Our Happy Clients',
+            style: TextStyle(
+              fontSize: 30,
+              fontFamily: 'Galano',
+              fontWeight: FontWeight.bold,
+            ),
           ),
+          const SizedBox(height: 5),
+          Text(
+            'Take a look at the glowing reviews and success stories from some of our happy customers to see how Huzzl can help your business achieve its goals.',
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: 'Galano',
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 20),
           SizedBox(
-            height: 270,
+            height: 350, // Adjusted height to fit the title
             child: ListView.builder(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
@@ -153,9 +153,7 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                       onEnter: (_) => _hoveredIndex.value = index,
                       onExit: (_) => _hoveredIndex.value = -1,
                       child: AnimatedScale(
-                        scale: isHovered
-                            ? 1.05
-                            : 1.0, 
+                        scale: isHovered ? 1.05 : 1.0,
                         duration: const Duration(milliseconds: 200),
                         curve: Curves.easeInOut,
                         child: Padding(
@@ -178,6 +176,16 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  testimonial.title,
+                                  style: const TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
                                 Text(
                                   testimonial.feedback,
                                   style: const TextStyle(
@@ -210,7 +218,16 @@ class _TestimonialsSectionState extends State<TestimonialsSection> {
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  testimonial.source,
+                                  '${testimonial.jobTitle} | ${testimonial.location}',
+                                  style: const TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  testimonial.date,
                                   style: const TextStyle(
                                     fontFamily: 'Galano',
                                     fontSize: 14,

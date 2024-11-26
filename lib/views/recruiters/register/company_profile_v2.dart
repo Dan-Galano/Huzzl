@@ -9,10 +9,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/logic/date-converter.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/register/mainHiringManager_provider.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:change_case/change_case.dart';
@@ -462,6 +466,48 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
           'companyLinks': _socialMediaLinks.text.isNotEmpty
               ? socialMediaLinks
               : "not specified",
+        });
+        String loggedInUserId = widget.userCredential.user!.uid;
+        String formattedDateEstablished =
+            DateFormat('MMMM d, yyyy').format(DateTime.now());
+        if (!context.mounted) return;
+        final hiringManager =
+            Provider.of<HiringManagerDetails>(context, listen: false);
+        // Save data to Firestore
+        final docRef = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(loggedInUserId)
+            .collection('branches')
+            .add({
+          'branchName': "Main Branch",
+          'firstName': hiringManager.firstName,
+          'lastName': hiringManager.lastName,
+          'phone': hiringManager.phone,
+          'email': hiringManager.email.toLowerCase(),
+          'password': hiringManager.password,
+          'region': selectedRegion ?? 'not specified',
+          'province': selectedProvince ?? 'not specified',
+          'city': selectedCity ?? 'not specified',
+          'barangay': selectedBarangay ?? 'not specified',
+          'zip': '123',
+          'house': houseController.text.trim().toCapitalCase(),
+          'estDate': formattedDateEstablished, // Use formatted date here
+          'created_at': Timestamp.now(),
+          'created_by': loggedInUserId,
+          'isMain': true,
+          'isActive': true,
+        });
+        String email = hiringManager.email.toLowerCase();
+        await FirebaseFirestore.instance.collection('users').doc(email).set({
+          'firstName': hiringManager.firstName,
+          'lastName': hiringManager.lastName,
+          'phone': hiringManager.phone,
+          'email': email,
+          'password': hiringManager.password,
+          'role': 'hiringManager',
+          'branchId': docRef.id,
+          'created_at': Timestamp.now(),
+          'created_by': loggedInUserId,
         });
 
         Navigator.of(context).push(

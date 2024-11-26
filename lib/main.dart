@@ -21,6 +21,7 @@ import 'package:huzzl_web/views/recruiters/branches_tab/staff-provider.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:huzzl_web/views/recruiters/register/mainHiringManager_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
@@ -32,6 +33,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   // runApp(const HuzzlWeb());
+  await dotenv.load(fileName: ".env");
   runApp(
     MultiProvider(
       providers: [
@@ -39,6 +41,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => BranchProvider()),
         ChangeNotifierProvider(create: (context) => InterviewProvider()),
+          ChangeNotifierProvider(create: (_) => HiringManagerDetails()),
         ChangeNotifierProvider(
           create: (context) {
             final hiringManagerProvider = HiringManagerProvider();

@@ -130,8 +130,11 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                     cursor: SystemMouseCursors.click,
                                     child: GestureDetector(
                                       onTap: _launchEmail,
-                                      child: const Text(
-                                        'eleanorpena@gmail.com',
+                                      child: Text(
+                                        jobCandidateProvider
+                                            .findDataOfCandidate(
+                                                widget.candidateId)!
+                                            .email,
                                         style: TextStyle(
                                           decoration: TextDecoration.underline,
                                           decorationColor: Color(0xFFff9800),
@@ -204,7 +207,13 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                   TextButton(
                                     onPressed: () =>
                                         showShortlistConfirmationDialog(
-                                            context, widget.candidateId),
+                                      context,
+                                      widget.candidateId,
+                                      jobCandidateProvider
+                                          .findDataOfCandidate(
+                                              widget.candidateId)!
+                                          .jobPostId,
+                                    ),
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 30, vertical: 8),
@@ -338,10 +347,11 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                           width: double.infinity,
                           child: TextField(
                             controller: TextEditingController(
-                              text: "Ok naman siya",
+                              text:
+                                  "Strong communication and problem-solving skills stand out.",
                             ),
                             maxLines: 20,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 
 class NavBarHome extends StatefulWidget {
@@ -348,7 +349,7 @@ void logOut(BuildContext context) async {
   try {
     await FirebaseAuth.instance.signOut();
     print("User logged out successfully.");
-    Navigator.of(context).pop();
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginRegister(),));
   } catch (e) {
     print("Error signing out: $e");
   }

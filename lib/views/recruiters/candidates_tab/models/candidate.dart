@@ -1,31 +1,34 @@
 class Candidate {
   String id;
   String jobPostId;
+  String email;
   String companyAppliedTo;
   String name;
   String profession;
   DateTime applicationDate;
-  DateTime dateLastInterviewed;
-  int interviewCount;
-  DateTime dateRejected;
+  DateTime? dateLastInterviewed;
+  int? interviewCount;
+  DateTime? dateRejected;
   String status;
 
   Candidate({
     required this.id,
+    required this.email,
     required this.name,
     required this.profession,
     required this.companyAppliedTo,
     required this.jobPostId,
     required this.applicationDate,
-    required this.dateLastInterviewed,
-    required this.interviewCount,
-    required this.dateRejected,
+    this.dateLastInterviewed,
+    this.interviewCount,
+    this.dateRejected,
     required this.status,
   });
 
   Candidate copyWith({
     String? id,
     String? name,
+    String? email,
     String? profession,
     String? jobPostId,
     String? companyAppliedTo,
@@ -38,6 +41,7 @@ class Candidate {
     return Candidate(
       id: id ?? this.id,
       name: name ?? this.name,
+      email: email ?? this.email,
       profession: profession ?? this.profession,
       jobPostId: jobPostId ?? this.jobPostId,
       companyAppliedTo: companyAppliedTo ?? this.companyAppliedTo,

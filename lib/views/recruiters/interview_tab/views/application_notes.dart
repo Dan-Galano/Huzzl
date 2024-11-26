@@ -11,7 +11,8 @@ class ApplicationNotes extends StatelessWidget {
           readOnly: true,
           style: const TextStyle(fontSize: 14),
           controller: TextEditingController(
-            text: "Application notes here blabalbla blaalalal ahahah",
+            text:
+                "Their dedication to excellence and strong work ethic distinguish them as a standout applicant. The candidate showcases a creative approach to challenges, with a proven ability to think outside the box.",
           ),
           maxLines: 10,
           decoration: const InputDecoration(

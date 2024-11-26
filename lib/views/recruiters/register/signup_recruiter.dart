@@ -7,14 +7,17 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/register/02%20verify_email.dart';
+import 'package:huzzl_web/views/recruiters/register/mainHiringManager_provider.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/buttons/gray/grayfilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class SignUpRecruiter extends StatefulWidget {
@@ -33,7 +36,6 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
 
-  
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String phoneNumberInputted = "";
@@ -56,114 +58,124 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
   bool isEmailVerified = false;
 
   //Submit Signup Form
-void submitRegistrationRecruiter() async {
-  print("Almost there, ${_firstName.text.trim().toCapitalCase()}...");
+  void submitRegistrationRecruiter() async {
 
-  try {
-    // Show loading dialog while creating user
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          backgroundColor: Colors.transparent,
-          content: Container(
-            width: 105,
-            height: 160,
-            decoration: BoxDecoration(
+    try {
+      // Show loading dialog while creating user
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
             ),
-            child: Center(
-              child: Column(
-                children: [
-                  Gap(10),
-                  Image.asset(
-                    'assets/images/gif/huzzl_loading.gif',
-                    height: 100,
-                    width: 100,
-                  ),
-                  Gap(10),
-                  Text(
-                    "Creating...",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Color(0xFFfd7206),
+            backgroundColor: Colors.transparent,
+            content: Container(
+              width: 105,
+              height: 160,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Gap(10),
+                    Image.asset(
+                      'assets/images/gif/huzzl_loading.gif',
+                      height: 100,
+                      width: 100,
                     ),
-                  ),
-                ],
+                    Gap(10),
+                    Text(
+                      "Creating...",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFFfd7206),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
-    );
-
-    // Create user with email and password
-    UserCredential userCredential =
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _email.text,
-      password: _password.text,
-    );
-     _firestore.collection('users').doc(userCredential.user!.uid).set({
-          'uid': userCredential.user!.uid,
-          'email': _email.text
-        });
-
-    // Send verification email
-    final user = FirebaseAuth.instance.currentUser!;
-    await user.sendEmailVerification();
-
-    // Close the loading dialog
-    Navigator.of(context).pop();
-
-    // Go to verify email screen
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return VerifyEmailRecruiter(
-            userCredential: userCredential,
-            email: _email.text,
-            fname: _firstName.text,
-            lname: _lastName.text,
-            password: _password.text,
-            phoneNumber: phoneNumberInputted,
           );
         },
-      ),
-    );
+      );
 
-     //chattest
-          // Navigator.of(context).pushReplacement(
-          //     MaterialPageRoute(builder: (context) => ChatHomePage()));
-  } on FirebaseAuthException catch (e) {
-    // Close the loading dialog
-    Navigator.of(context).pop();
-    
-    EasyLoading.showToast(
-      "⚠️ ${e.message}",
-      dismissOnTap: true,
-      toastPosition: EasyLoadingToastPosition.top,
-      duration: Duration(seconds: 3),
-    );
-  } catch (e) {
-    // Close the loading dialog
-    Navigator.of(context).pop();
-    
-    EasyLoading.showToast(
-      "An unexpected error occurred.",
-      dismissOnTap: true,
-      toastPosition: EasyLoadingToastPosition.top,
-      duration: Duration(seconds: 3),
-    );
+      // Create user with email and password
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _email.text,
+        password: _password.text,
+      );
+      _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({'uid': userCredential.user!.uid, 'email': _email.text});
+
+      // Send verification email
+      final user = FirebaseAuth.instance.currentUser!;
+
+
+      await user.sendEmailVerification();
+
+      if (!context.mounted) return;
+
+    // Update HiringManagerDetails
+    final hiringManager = Provider.of<HiringManagerDetails>(context, listen: false);
+    hiringManager.updateEmail(_email.text);
+    hiringManager.updateFirstName(_firstName.text);
+    hiringManager.updateLastName(_lastName.text);
+    hiringManager.updatePassword(_password.text);
+    hiringManager.updatePhone(phoneNumberInputted);
+      // Close the loading dialog
+      Navigator.of(context).pop();
+
+      // Go to verify email screen
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return VerifyEmailRecruiter(
+              userCredential: userCredential,
+              email: _email.text,
+              fname: _firstName.text,
+              lname: _lastName.text,
+              password: _password.text,
+              phoneNumber: phoneNumberInputted,
+            );
+          },
+        ),
+      );
+
+      //chattest
+      // Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(builder: (context) => ChatHomePage()));
+    } on FirebaseAuthException catch (e) {
+      // Close the loading dialog
+      Navigator.of(context).pop();
+
+      EasyLoading.showToast(
+        "⚠️ ${e.message}",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+    } catch (e) {
+      // Close the loading dialog
+      Navigator.of(context).pop();
+
+      EasyLoading.showToast(
+        "An unexpected error occurred.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+    }
   }
-}
 
   void submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -334,7 +346,33 @@ void submitRegistrationRecruiter() async {
                                 Expanded(child: _buildGoogleSignUpButton()),
                               ],
                             ),
-                            Gap(10),
+                            Gap(20),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 1,
+                                  ),
+                                ),
+                                Gap(20),
+                                Text(
+                                  "or",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize:
+                                        ResponsiveSizes.bodyTextSize(sizeInfo),
+                                    fontWeight: FontWeight.w100,
+                                  ),
+                                ),
+                                Gap(20),
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Gap(20),
                             const Text(
                               "Email",
                               style: TextStyle(
