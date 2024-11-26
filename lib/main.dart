@@ -92,11 +92,11 @@ class HuzzlWeb extends StatelessWidget {
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
-      // home: const AuthWrapper(),
+      home: const AuthWrapper(),
       // home: MainScreen(),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
-      home: const LandingPageNew(),
+      // home: const LandingPageNew(),
     );
   }
 }
@@ -254,12 +254,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 // return ChatHomePage(); //chattest
               }
 
-              return LoginRegister();
+              return LandingPageNew();
             },
           );
         } else {
           print("LOGIN!");
-          return LoginRegister();
+          return LandingPageNew();
         }
       },
     );

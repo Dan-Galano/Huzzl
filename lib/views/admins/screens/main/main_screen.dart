@@ -36,9 +36,9 @@ class MainScreen extends StatelessWidget {
   Widget _getScreen(int index) {
     switch (index) {
       case 0:
-        return DashboardScreen();
-      case 1:
         return ManageUsers();
+      case 1:
+        return DashboardScreen();
       case 2:
         return Center(
           child: Text("Manage Job Listing tab"),
