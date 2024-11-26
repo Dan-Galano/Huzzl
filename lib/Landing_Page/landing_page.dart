@@ -86,23 +86,23 @@ class _LandingPageNewState extends State<LandingPageNew> {
                         const ExpertProfessionalsWidget(),
                         FeatureCard(key: _featuresKey),
                         TestimonialsSection(key: _testimonialsKey),
-                        const TalentCategoryWidget(),
+                        // const TalentCategoryWidget(),
                         ContactPage(key: _contactKey),
                         Footer(),
                       ],
                     ),
-                    Positioned(
-                      top: 2380,
-                      left: 900,
-                      child: SizedBox(
-                        width: 600,
-                        height: 350,
-                        child: Image.asset(
-                          'assets/images/3D_EP3.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   top: 2380,
+                    //   left: 900,
+                    //   child: SizedBox(
+                    //     width: 600,
+                    //     height: 350,
+                    //     child: Image.asset(
+                    //       'assets/images/3D_EP3.png',
+                    //       fit: BoxFit.contain,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
