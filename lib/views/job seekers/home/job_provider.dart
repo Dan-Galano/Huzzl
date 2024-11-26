@@ -51,25 +51,25 @@ class JobProvider with ChangeNotifier {
       // List<Map<String, String>> linkedInJobs =
       //     parseLinkedInData(linkedInHtmlContent);
       // await fetchLinkedInJobDesc(linkedInJobs);
-      // String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
-      // List<Map<String, String>> onlineJobsJobs =
-      //     parseOnlineJobsData(onlineJobsHtmlContent);
-      // String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
-      // List<Map<String, String>> kalibrrJobs =
-      //     parseKalibrrData(kalibrrHtmlContent);
-      // await fetchKalibrrJobDesc(kalibrrJobs);
-      // String philJobNetHtmlContent = await fetchPhilJobNetData();
-      // List<Map<String, String>> philJobNetJobs =
-      //     parsePhilJobNetData(philJobNetHtmlContent);
+      String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
+      List<Map<String, String>> onlineJobsJobs =
+          parseOnlineJobsData(onlineJobsHtmlContent);
+      String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
+      List<Map<String, String>> kalibrrJobs =
+          parseKalibrrData(kalibrrHtmlContent);
+      await fetchKalibrrJobDesc(kalibrrJobs);
+      String philJobNetHtmlContent = await fetchPhilJobNetData();
+      List<Map<String, String>> philJobNetJobs =
+          parsePhilJobNetData(philJobNetHtmlContent);
 
       // Combine all jobs from all sources
       List<Map<String, String>> allJobs = [
         ...huzzlJobs,
         // ...jobstreetJobs,
         // ...linkedInJobs,
-        // ...onlineJobsJobs,
-        // ...kalibrrJobs,
-        // ...philJobNetJobs,
+        ...onlineJobsJobs,
+        ...kalibrrJobs,
+        ...philJobNetJobs,
       ];
 
       // Add jobs based on the search query
