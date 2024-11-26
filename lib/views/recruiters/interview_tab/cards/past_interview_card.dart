@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/feedback_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/application_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/back_for_review_confirm_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
@@ -128,7 +129,7 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                     ),
                   ],
                 ),
-                        //====================== Interview title ======================
+                //====================== Interview title ======================
                 Row(
                   children: [
                     Row(
@@ -189,19 +190,19 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                               ),
                               items: [
                                 const PopupMenuItem(
-                                  value: 'view_applicant_details',
+                                  value: 'view_feedback',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.reply, color: Colors.grey),
+                                      Icon(Icons.feedback_outlined, color: Colors.grey),
                                       SizedBox(width: 8),
-                                      Text('View applicant\'s details'),
+                                      Text('View feedback'),
                                     ],
                                   ),
                                 ),
                               ],
                             ).then((value) {
-                              if (value == 'view_applicant_details') {
-                                showApplicationNotesViewDialog(context, this);
+                              if (value == 'view_feedback') {
+                                showFeedbackViewDialog(context, this);
                               }
                             });
                           },

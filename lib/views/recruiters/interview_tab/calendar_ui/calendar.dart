@@ -9,9 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class InterviewCalendar extends StatefulWidget {
-  final VoidCallback onBack;
 
-  const InterviewCalendar({Key? key, required this.onBack}) : super(key: key);
+  const InterviewCalendar({Key? key}) : super(key: key);
 
   @override
   _InterviewCalendarState createState() => _InterviewCalendarState();
@@ -1058,17 +1057,17 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextButton.icon(
-            onPressed: widget.onBack,
-            label: const Text(
-              "Back",
-              style: TextStyle(color: Color(0xFFff9800), fontFamily: 'Galano'),
-            ),
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Color(0xFFff9800),
-            ),
-          ),
+          // TextButton.icon(
+          //   onPressed: widget.onBack,
+          //   label: const Text(
+          //     "Back",
+          //     style: TextStyle(color: Color(0xFFff9800), fontFamily: 'Galano'),
+          //   ),
+          //   icon: const Icon(
+          //     Icons.arrow_back_ios_new_rounded,
+          //     color: Color(0xFFff9800),
+          //   ),
+          // ),
           Expanded(
             child: Row(
               children: [

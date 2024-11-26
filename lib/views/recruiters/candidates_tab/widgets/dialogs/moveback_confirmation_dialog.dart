@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 
-void moveBackToReviewDialog(BuildContext context) {
+void moveBackToReviewDialog(BuildContext context, String candidateId) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
+          var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
           return AlertDialog(
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
@@ -64,11 +67,14 @@ void moveBackToReviewDialog(BuildContext context) {
                       Gap(10),
                       TextButton(
                         onPressed: () {
+                          jobCandidateProvider
+                              .moveBackCandidateForReview(candidateId);
+                          Navigator.pop(context);
                         },
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 8),
-                          backgroundColor: const Color(0xFF3b7dff), 
+                          backgroundColor: const Color(0xFF3b7dff),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),

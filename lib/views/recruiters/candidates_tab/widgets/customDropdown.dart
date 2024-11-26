@@ -6,10 +6,11 @@ Widget buildCustomDropdown<T>({
   required ValueChanged<T?> onChanged,
 }) {
   return Container(
+    height: 40,
     padding: const EdgeInsets.symmetric(horizontal: 12),
     decoration: BoxDecoration(
-      border: Border.all(color: Colors.grey, width: 1),
-      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: const Color(0xffD9D9D9), width: 2),
+      borderRadius: BorderRadius.circular(10), // Rounded border
     ),
     child: DropdownButton<T>(
       value: value,

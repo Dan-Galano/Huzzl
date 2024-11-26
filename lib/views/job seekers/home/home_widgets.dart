@@ -14,17 +14,19 @@ void _launchURL(String url) async {
   }
 }
 
-Widget buildJobCard({
-  required String datePosted,
-  required String title,
-  required String location,
-  required String rate,
-  required String description,
-  required String website,
-  required List<String> tags,
-  required String joblink,
-  required BuildContext context,
-}) {
+Widget buildJobCard(
+    {required String datePosted,
+    required String title,
+    required String location,
+    required String rate,
+    required String description,
+    required String website,
+    required List<String> tags,
+    required String joblink,
+    required BuildContext context,
+    required String jobPostUid, // jobpostuid
+    required String userId,
+    required String recruiterUid}) {
   bool isHuzzlPost = website == 'assets/images/huzzl_logo_ulo.png';
   return Column(
     children: [
@@ -38,16 +40,20 @@ Widget buildJobCard({
               MaterialPageRoute(
                 builder: (context) {
                   return JobPostApp(
-                    jobTitle: title,
-                    jobDescription: description,
-                    jobDate: datePosted,
-                    location: location,
-                    rate: rate,
-                    skills: tags,
-                  );
+                      jobTitle: title,
+                      jobDescription: description,
+                      jobDate: datePosted,
+                      location: location,
+                      rate: rate,
+                      skills: tags,
+                      jobPostUid: jobPostUid,
+                      userUid: userId,
+                      recUid: recruiterUid);
                 },
               ),
             );
+            print("--JOB ID--: ${userId}");
+            print("--RECRUITER ID--: ${recruiterUid}");
           }
         },
         title: Padding(

@@ -23,31 +23,32 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          buildCustomDropdown<String>(
-            value: selectedBranch,
-            items: <String>[
-              'All branches',
-              'Urdaneta Branch',
-              'Dagupan Branch',
-              'San Carlos Branch'
-            ],
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedBranch = newValue!;
-              });
-            },
-          ),
-          SizedBox(width: 10),
-          buildCustomDropdown<String>(
-            value: selectedJob,
-            items: <String>['All jobs', 'Vocalist', 'Dancerist', 'Tiktokerist'],
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedJob = newValue!;
-              });
-            },
-          ),
+          // buildCustomDropdown<String>(
+          //   value: selectedBranch,
+          //   items: <String>[
+          //     'All branches',
+          //     'Urdaneta Branch',
+          //     'Dagupan Branch',
+          //     'San Carlos Branch'
+          //   ],
+          //   onChanged: (String? newValue) {
+          //     setState(() {
+          //       selectedBranch = newValue!;
+          //     });
+          //   },
+          // ),
+          // SizedBox(width: 10),
+          // buildCustomDropdown<String>(
+          //   value: selectedJob,
+          //   items: <String>['All jobs', 'Vocalist', 'Dancerist', 'Tiktokerist'],
+          //   onChanged: (String? newValue) {
+          //     setState(() {
+          //       selectedJob = newValue!;
+          //     });
+          //   },
+          // ),
           SizedBox(width: 10),
           buildCustomDropdown<String>(
             value: selectedSort,
@@ -58,58 +59,58 @@ class _FilterRowWidgetState extends State<FilterRowWidget> {
               });
             },
           ),
-          SizedBox(width: 20),
-          Row(
-            children: [
-              buildCustomCheckbox(
-                value: isFullTime,
-                label: 'Full-time',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isFullTime = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              buildCustomCheckbox(
-                value: isPartTime,
-                label: 'Part-time',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isPartTime = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              buildCustomCheckbox(
-                value: isPermanent,
-                label: 'Permanent',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isPermanent = newValue!;
-                  });
-                },
-              ),
-              Gap(15),
-              buildCustomCheckbox(
-                value: isFixedTerm,
-                label: 'Fixed Term',
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    isFixedTerm = newValue!;
-                  });
-                },
-              ),
-            ],
-          ),
-          Gap(40),
-          Text(
-            "Clear all filter",
-            style: TextStyle(
-              fontFamily: 'Galano',
-              color: Color.fromARGB(255, 29, 116, 167),
-            ),
-          )
+          // SizedBox(width: 20),
+          // Row(
+          //   children: [
+          //     buildCustomCheckbox(
+          //       value: isFullTime,
+          //       label: 'Full-time',
+          //       onChanged: (bool? newValue) {
+          //         setState(() {
+          //           isFullTime = newValue!;
+          //         });
+          //       },
+          //     ),
+          //     Gap(15),
+          //     buildCustomCheckbox(
+          //       value: isPartTime,
+          //       label: 'Part-time',
+          //       onChanged: (bool? newValue) {
+          //         setState(() {
+          //           isPartTime = newValue!;
+          //         });
+          //       },
+          //     ),
+          //     Gap(15),
+          //     buildCustomCheckbox(
+          //       value: isPermanent,
+          //       label: 'Permanent',
+          //       onChanged: (bool? newValue) {
+          //         setState(() {
+          //           isPermanent = newValue!;
+          //         });
+          //       },
+          //     ),
+          //     Gap(15),
+          //     buildCustomCheckbox(
+          //       value: isFixedTerm,
+          //       label: 'Fixed Term',
+          //       onChanged: (bool? newValue) {
+          //         setState(() {
+          //           isFixedTerm = newValue!;
+          //         });
+          //       },
+          //     ),
+          //   ],
+          // ),
+          // Gap(40),
+          // Text(
+          //   "Clear all filter",
+          //   style: TextStyle(
+          //     fontFamily: 'Galano',
+          //     color: Color.fromARGB(255, 29, 116, 167),
+          //   ),
+          // )
         ],
       ),
     );

@@ -37,12 +37,15 @@ class _JobFilterRowWidgetState extends State<JobFilterRowWidget> {
 
           // Date Range Picker button
           Container(
+            height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey, width: 1),
-              borderRadius: BorderRadius.circular(20), // Rounded border
+              border: Border.all(color: const Color(0xffD9D9D9), width: 2),
+              borderRadius: BorderRadius.circular(10), // Rounded border
             ),
             child: TextButton(
+              style: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Color(0xff373030))),
               onPressed: () async {
                 final DateTimeRange? pickedDateRange =
                     await showDateRangePicker(
@@ -69,9 +72,14 @@ class _JobFilterRowWidgetState extends State<JobFilterRowWidget> {
                   });
                 }
               },
-              child: Text(selectedDateRange == null
-                  ? 'Select Date Range'
-                  : '${selectedDateRange!.start.toLocal()} - ${selectedDateRange!.end.toLocal()}'),
+              child: Text(
+                selectedDateRange == null
+                    ? 'Select Date Range'
+                    : '${selectedDateRange!.start.toLocal()} - ${selectedDateRange!.end.toLocal()}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
             ),
           ),
 
@@ -141,17 +149,22 @@ class _JobFilterRowWidgetState extends State<JobFilterRowWidget> {
     required ValueChanged<T?> onChanged,
   }) {
     return Container(
+      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 1),
-        borderRadius: BorderRadius.circular(20), // Rounded border
+        border: Border.all(color: const Color(0xffD9D9D9), width: 2),
+        borderRadius: BorderRadius.circular(10), // Rounded border
       ),
       child: DropdownButton<T>(
         value: value,
-        icon: Icon(Icons.arrow_drop_down),
-        underline: SizedBox(), // Remove default underline
+        icon: const Icon(Icons.arrow_drop_down),
+        underline: const SizedBox(), // Remove default underline
         isExpanded: false, // Prevent the dropdown from covering itself
-        style: TextStyle(color: Colors.black),
+        style: const TextStyle(
+          color: Color(0xff373030),
+          fontFamily: 'Galano',
+          fontSize: 14,
+        ),
         onChanged: onChanged,
         items: items.map<DropdownMenuItem<T>>((T value) {
           return DropdownMenuItem<T>(

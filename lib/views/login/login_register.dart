@@ -22,11 +22,12 @@ class _LoginRegisterState extends State<LoginRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
-            const NavBarLoginRegister(),
+            NavBarLoginRegister(),
             Expanded(
               child: _showLoginScreen
                   ? LoginScreen(

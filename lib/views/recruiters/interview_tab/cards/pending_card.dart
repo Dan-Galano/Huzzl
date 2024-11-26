@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/application_view_dialog.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/back_for_review_confirm_dialog.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/reschedule_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 import 'package:intl/intl.dart';
 

@@ -25,7 +25,7 @@ class CongratulationPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const NavBarLoginRegister(),
+           NavBarLoginRegister(),
           Padding(
             padding: const EdgeInsets.only(top: 150.0),
             child: Center(

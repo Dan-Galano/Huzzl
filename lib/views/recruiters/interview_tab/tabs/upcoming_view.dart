@@ -14,8 +14,8 @@ class UpcomingView extends StatelessWidget {
       'interviewTitle': 'Technical Interview',
       'interviewType': 'Online',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 26, 8, 0),
-        end: DateTime(2024, 9, 26, 10, 0),
+        start: DateTime(2024, 10, 10, 8, 0),
+        end: DateTime(2024, 10, 10, 10, 0),
       )
     },
     {
@@ -25,8 +25,8 @@ class UpcomingView extends StatelessWidget {
       'interviewTitle': 'Final Interview',
       'interviewType': 'Face-to-face',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 28, 10, 0),
-        end: DateTime(2024, 9, 28, 12, 0),
+        start: DateTime(2024, 10, 10, 10, 0),
+        end: DateTime(2024, 10, 10, 12, 0),
       )
     },
     {
@@ -36,8 +36,8 @@ class UpcomingView extends StatelessWidget {
       'interviewTitle': 'Technical Interview',
       'interviewType': 'Online',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 29, 8, 0),
-        end: DateTime(2024, 9, 29, 10, 0),
+        start: DateTime(2024, 10, 10, 8, 0),
+        end: DateTime(2024, 10, 10, 10, 0),
       )
     },
     {
@@ -47,8 +47,8 @@ class UpcomingView extends StatelessWidget {
       'interviewTitle': 'Final Interview',
       'interviewType': 'Face-to-face',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 28, 10, 0),
-        end: DateTime(2024, 9, 28, 12, 0),
+        start: DateTime(2024, 10, 10, 10, 0),
+        end: DateTime(2024, 10, 10, 12, 0),
       )
     },
     {
@@ -58,8 +58,8 @@ class UpcomingView extends StatelessWidget {
       'interviewTitle': 'Final Interview',
       'interviewType': 'Face-to-face',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 29, 10, 0),
-        end: DateTime(2024, 9, 29, 12, 0),
+        start: DateTime(2024, 10, 9, 10, 0),
+        end: DateTime(2024, 10, 9, 12, 0),
       )
     },
     {
@@ -69,8 +69,8 @@ class UpcomingView extends StatelessWidget {
       'interviewTitle': 'Final Interview',
       'interviewType': 'Face-to-face',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 28, 10, 0),
-        end: DateTime(2024, 9, 28, 12, 0),
+        start: DateTime(2024, 10, 10, 10, 0),
+        end: DateTime(2024, 10, 10, 12, 0),
       )
     },
     {
@@ -80,8 +80,8 @@ class UpcomingView extends StatelessWidget {
       'interviewTitle': 'Final Interview',
       'interviewType': 'Online',
       'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 28, 10, 0),
-        end: DateTime(2024, 9, 28, 12, 0),
+        start: DateTime(2024, 10, 10, 10, 0),
+        end: DateTime(2024, 10, 10, 12, 0),
       )
     }
   ];

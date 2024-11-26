@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab/widgets/textfield_decorations.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/tabs/missed_view.dart';
@@ -40,18 +40,11 @@ Widget buildInterviewsContent() {
                       ),
                     ),
                     SizedBox(width: spacing),
-                    Expanded(
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
                       child: TextField(
                         decoration: searchTextFieldDecoration('Search'),
                       ),
-                    ),
-                    SizedBox(width: spacing),
-                    InterviewCalendarButton(
-                      onPressed: () {
-                          final homeState = context
-                          .findAncestorStateOfType<RecruiterHomeScreenState>();
-                      homeState?.toggleCalendarScreen(true);
-                      },
                     ),
                   ],
                 );

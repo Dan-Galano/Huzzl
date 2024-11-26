@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/01%20job-posts.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/02%20job-details.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/03%20job-skills.dart';
@@ -15,8 +16,17 @@ import 'package:intl/intl.dart';
 
 class JobScreens extends StatefulWidget {
   final List<Map<String, dynamic>> jobPostsData;
+  final List<Candidate> candidates;
   final User user;
-  const JobScreens({required this.jobPostsData, required this.user, super.key});
+  final Map<String, dynamic> userData;
+  final int initialIndex;
+  const JobScreens({
+    required this.candidates,
+    required this.jobPostsData,
+    required this.user,
+    required this.userData,
+    super.key, required this.initialIndex,
+  });
 
   @override
   State<JobScreens> createState() => _JobScreensState();
@@ -32,6 +42,7 @@ class _JobScreensState extends State<JobScreens> {
   // first screen (Job Post)
   TextEditingController jobTitleController = TextEditingController();
   TextEditingController jobDescriptionController = TextEditingController();
+  String _selectedIndustry = '';
   String _numOfPeopleToHire = 'One person';
   String _numPeople = '';
   String _selectedRegion = '';
@@ -55,9 +66,10 @@ class _JobScreensState extends State<JobScreens> {
   String appDeadlineAns = 'Yes';
   DateTime? appDeadlineDate;
   // 6th screen (Hire Settings)
-  String selectedHiringTimeline = '';
+  // String selectedHiringTimeline = '';
   // 7th screen (Prescreen questions)
   List<String> preScreenQues = [];
+  List<String> responsibilities = [];
 
   void _nextPage() {
     if (_currentPage < 9) {
@@ -93,6 +105,7 @@ class _JobScreensState extends State<JobScreens> {
 
     // clear all values
     jobTitleController.clear();
+    _selectedIndustry = '';
     jobDescriptionController.clear();
     _numOfPeopleToHire = 'One person'; // Reset to default value
     _numPeople = '';
@@ -116,7 +129,7 @@ class _JobScreensState extends State<JobScreens> {
     appDeadlineAns = 'Yes'; // Reset to default value
     appDeadlineDate = null; // Reset the date
 
-    selectedHiringTimeline = ''; // Clear hiring timeline
+    // selectedHiringTimeline = ''; // Clear hiring timeline
     preScreenQues.clear(); // Clear pre-screen questions
     // Go back to the Job tab
     _pageController.jumpToPage(9);
@@ -126,6 +139,7 @@ class _JobScreensState extends State<JobScreens> {
     // clears everything then go to job tab
     jobTitleController.clear();
     jobDescriptionController.clear();
+    _selectedIndustry = '';
     _numOfPeopleToHire = 'One person'; // Reset to default value
     _numPeople = '';
     _selectedRegion = '';
@@ -143,7 +157,7 @@ class _JobScreensState extends State<JobScreens> {
     resumeAnswer = 'Yes'; // Reset to default value
     appDeadlineAns = 'Yes'; // Reset to default value
     appDeadlineDate = null; // Reset the date
-    selectedHiringTimeline = ''; // Clear hiring timeline
+    // selectedHiringTimeline = ''; // Clear hiring timeline
     preScreenQues.clear(); // Clear pre-screen questions
     // Go back to the Job tab
     _pageController.jumpToPage(0);
@@ -179,14 +193,19 @@ class _JobScreensState extends State<JobScreens> {
           controller: _pageController,
           children: [
             JobTab(
+              candidates: widget.candidates,
               postJob: _goToPostJob,
               jobPostsData: widget.jobPostsData,
               user: widget.user,
+              initialIndex: widget.initialIndex,
             ),
             JobPosts(
               nextPage: _nextPage,
               cancel: _cancel,
               jobTitleController: jobTitleController,
+              selectedIndustry: _selectedIndustry,
+              onselectedIndustryChanged: (value) =>
+                  setState(() => _selectedIndustry = value!),
               numOfPeopleToHire: _numOfPeopleToHire,
               onNumOfPeopleToHireChanged: (value) =>
                   setState(() => _numOfPeopleToHire = value!),
@@ -218,6 +237,7 @@ class _JobScreensState extends State<JobScreens> {
               previousPage: _previousPage,
               cancel: _cancel,
               selectedSkills: _selectedSkills,
+              responsibilities: responsibilities,
             ),
             JobPay(
               nextPage: _nextPage,
@@ -246,14 +266,14 @@ class _JobScreensState extends State<JobScreens> {
               onAppDeadlineDateChanged: (value) =>
                   setState(() => appDeadlineDate = value!),
             ),
-            JobHireSettings(
-              nextPage: _nextPage,
-              previousPage: _previousPage,
-              cancel: _cancel,
-              selectedTimeline: selectedHiringTimeline,
-              onHiringTimelineChanged: (value) =>
-                  setState(() => selectedHiringTimeline = value!),
-            ),
+            // JobHireSettings(
+            //   nextPage: _nextPage,
+            //   previousPage: _previousPage,
+            //   cancel: _cancel,
+            //   selectedTimeline: selectedHiringTimeline,
+            //   onHiringTimelineChanged: (value) =>
+            //       setState(() => selectedHiringTimeline = value!),
+            // ),
             JobPreScreenApplicants(
               nextPage: _nextPage,
               previousPage: _previousPage,
@@ -264,6 +284,7 @@ class _JobScreensState extends State<JobScreens> {
               submitForm: _submitJobPostForm,
               previousPage: _previousPage,
               jobTitleController: jobTitleController,
+              industry: _selectedIndustry,
               numOfPeopleToHire: _numOfPeopleToHire,
               numPeople: _numPeople,
               region: _selectedRegion,
@@ -275,6 +296,7 @@ class _JobScreensState extends State<JobScreens> {
               jobType: _selectedJobType,
               schedule: _selectedHrsPerWeek,
               skills: _selectedSkills,
+              responsibilities: responsibilities,
               selectedRate: selectedRate,
               minRate: minimumRate,
               maxRate: maximumRate,
@@ -282,9 +304,10 @@ class _JobScreensState extends State<JobScreens> {
               resumeRequiredAns: resumeAnswer,
               appDeadlineAns: appDeadlineAns,
               appDeadlineDate: appDeadlineDate ?? DateTime.now(),
-              hiringTimeline: selectedHiringTimeline,
+              // hiringTimeline: selectedHiringTimeline,
               prescreenQuestions: preScreenQues,
               user: widget.user,
+              userData: widget.userData,
             ),
             JobCongratulationPage(
               goBack: _cancel, // clear niya everything tas balik sa Job tab

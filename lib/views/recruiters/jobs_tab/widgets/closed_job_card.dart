@@ -1,9 +1,38 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 
-class ClosedJobCard extends StatelessWidget {
+class ClosedJobCard extends StatefulWidget {
+  final String? jobTitle;
+  final String? jobDeadline;
+  final String? jobPostedAt;
+  final String? jobPostedBy;
+  final String? jobType;
+  final String? jobPostID;
+  final int numberOfApplicants;
+  final User user;
+  const ClosedJobCard({
+    super.key,
+    this.jobTitle,
+    this.jobDeadline,
+    this.jobPostedAt,
+    this.jobPostedBy,
+    this.jobType,
+    this.jobPostID,
+    required this.numberOfApplicants,
+    required this.user,
+  });
+
+  @override
+  State<ClosedJobCard> createState() => _ClosedJobCardState();
+}
+
+class _ClosedJobCardState extends State<ClosedJobCard> {
   @override
   Widget build(BuildContext context) {
+    var jobPost = Provider.of<JobProviderCandidate>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -19,7 +48,7 @@ class ClosedJobCard extends StatelessWidget {
             Row(
               children: [
                 Image.asset('assets/images/job-bag-icon.png'),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
 
                 // Name, Job, Branch Info
                 Column(
@@ -27,19 +56,16 @@ class ClosedJobCard extends StatelessWidget {
                   children: [
                     // Name
                     Text(
-                      'Need Vocalist',
-                      style: TextStyle(
-                        fontFamily: 'Galano', // Custom font family
+                      '${widget.jobTitle}',
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     // SizedBox(height: 4),
                     Text(
-                      'January 18, 2024 at Brgy. Moreno, Binalonan, Pangasinan',
-                      style: TextStyle(
-                        fontFamily: 'Galano', // Custom font family
-                        // fontWeight: FontWeight.,
+                      '${widget.jobDeadline}',
+                      style: const TextStyle(
                         fontSize: 14,
                       ),
                     ),
@@ -52,22 +78,59 @@ class ClosedJobCard extends StatelessWidget {
             Row(
               children: [
                 // Date
-                textLists("Part-time"),
-                Gap(70),
-                textLists("Juan Cruz"),
-                Gap(115),
-                Text(
-                  '8',
-                  style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 12,
-                      color: Color(0xff3B7DFF)),
-                ),
-                Gap(130),
-                textLists("05/12/2024"),
-                Gap(60),
+                textLists(widget.jobType!),
+                textLists(widget.jobPostedBy!),
+                blueTextList('${widget.numberOfApplicants} applied'),
+                textLists("Nov 2, 2024"),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final RenderBox button =
+                        context.findRenderObject() as RenderBox;
+                    final RenderBox overlay = Overlay.of(context)
+                        .context
+                        .findRenderObject() as RenderBox;
+
+                    final position =
+                        button.localToGlobal(Offset.zero, ancestor: overlay);
+
+                    await showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        position.dx,
+                        position.dy,
+                        overlay.size.width - position.dx - button.size.width,
+                        overlay.size.height - position.dy,
+                      ),
+                      items: [
+                        const PopupMenuItem(
+                          value: 'view',
+                          child: Row(
+                            children: [
+                              Icon(Icons.view_comfy_rounded,
+                                  color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text('View'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit_note_outlined,
+                                  color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text('Edit'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ).then((value) {
+                      // if (value == 'move_back_for_review') {
+                      //   moveBackToReviewDialog(context);
+                      // }
+                    });
+                  },
                   icon: Image.asset(
                       'assets/images/three-dot-icon-data-table.png'),
                 ),
@@ -79,12 +142,32 @@ class ClosedJobCard extends StatelessWidget {
     );
   }
 
-  Text textLists(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontFamily: 'Galano',
-        fontSize: 12,
+  SizedBox textLists(String text) {
+    return SizedBox(
+      width: 160,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 12,
+          ),
+        ),
+      ),
+    );
+  }
+
+  SizedBox blueTextList(String text) {
+    return SizedBox(
+      width: 160,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12, color: Color(0xff3B7DFF)),
+        ),
       ),
     );
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/application_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_dialog%20copy.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/reschedule_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
+import 'package:provider/provider.dart';
 
 class InterviewTile extends StatefulWidget {
   final String intervieweeName;
@@ -40,6 +42,7 @@ class _InterviewTileState extends State<InterviewTile>
 
   @override
   Widget build(BuildContext context) {
+    final interviewProvider = Provider.of<InterviewProvider>(context);
     return MouseRegion(
       // cursor: SystemMouseCursors.click,
       onEnter: (_) {
@@ -177,7 +180,8 @@ class _InterviewTileState extends State<InterviewTile>
                                       widget.timeRange.start.year ==
                                           DateTime.now().year
                                   ? () {
-                                      // Your logic for starting the interview
+                                      interviewProvider
+                                          .startInterviewFunction(context);
                                     }
                                   : null,
                             ),

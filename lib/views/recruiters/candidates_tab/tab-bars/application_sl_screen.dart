@@ -6,13 +6,20 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/reject
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/resume_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/skillchip.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar_inside.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class SlApplicationScreen extends StatefulWidget {
   final VoidCallback onBack;
-
-  const SlApplicationScreen({Key? key, required this.onBack}) : super(key: key);
+  final String candidateId;
+  const SlApplicationScreen({
+    Key? key,
+    required this.onBack,
+    required this.candidateId,
+  }) : super(key: key);
 
   @override
   State<SlApplicationScreen> createState() => _SlApplicationScreenState();
@@ -52,6 +59,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
 
   @override
   Widget build(BuildContext context) {
+    var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
+    DateTime applicationDate = jobCandidateProvider
+        .findDataOfCandidate(widget.candidateId)!
+        .applicationDate;
+    String formattedDate =
+        jobCandidateProvider.formatApplicationDate(applicationDate);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -95,20 +108,23 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    children: const [
-                                      Text('Application Date: '),
+                                    children: [
+                                      const Text('Application Date: '),
                                       Text(
-                                        '05 July 2024, 8:42pm',
-                                        style: TextStyle(
+                                        formattedDate,
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
                                   const Gap(10),
-                                  const Text(
-                                    'Eleanor Pena',
-                                    style: TextStyle(
+                                  Text(
+                                    jobCandidateProvider
+                                        .findDataOfCandidate(
+                                            widget.candidateId)!
+                                        .name,
+                                    style: const TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -127,9 +143,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                       ),
                                     ),
                                   ),
-                                  const Text(
-                                    'Vocalist',
-                                    style: TextStyle(
+                                  Text(
+                                    jobCandidateProvider
+                                        .findDataOfCandidate(
+                                            widget.candidateId)!
+                                        .profession,
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -148,11 +167,14 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                     child: Align(
                                       alignment: Alignment.center,
                                       child: Row(
-                                        children: const [
-                                          Text("Status: "),
+                                        children: [
+                                          const Text("Status: "),
                                           Text(
-                                            'Shortlisted',
-                                            style: TextStyle(
+                                            jobCandidateProvider
+                                                .findDataOfCandidate(
+                                                    widget.candidateId)!
+                                                .status,
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                             ),
                                           ),
@@ -183,8 +205,8 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                   ),
                                   const Gap(20),
                                   TextButton(
-                                    onPressed: () =>
-                                        moveBackToReviewDialog(context),
+                                    onPressed: () => moveBackToReviewDialog(
+                                        context, widget.candidateId),
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 30, vertical: 8),
@@ -204,7 +226,15 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                   ),
                                   const Gap(10),
                                   TextButton(
-                                    onPressed: () => showRejectDialog(context),
+                                    onPressed: () {
+                                      showRejectDialog(
+                                          context, widget.candidateId);
+                                      if (jobCandidateProvider.rejectMessage !=
+                                          "") {
+                                        jobCandidateProvider
+                                            .clearMessage("Reject");
+                                      }
+                                    },
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 89, vertical: 8),
@@ -251,7 +281,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                   ),
                                   Gap(10),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      final homeState =
+                                          context.findAncestorStateOfType<
+                                              RecruiterHomeScreenState>();
+                                      homeState!.changeDestination(4);
+                                    },
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 29, vertical: 8),
@@ -282,7 +317,7 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                             ],
                           ),
                           const Gap(30),
-                            TabBarInside(
+                          TabBarInside(
                             tabController: _tabController,
                             tabs: const [
                               Tab(text: 'Application'),

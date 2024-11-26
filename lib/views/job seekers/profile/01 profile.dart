@@ -1,13 +1,16 @@
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:docx_to_text/docx_to_text.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final String uid;
+  ProfileScreen({super.key, required this.uid});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -16,6 +19,43 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String _extractedText = '';
   String _selectedFileType = '';
+
+  String _userFullName = "";
+  String _userPhone = "";
+  String _userEmail = "";
+  String _address = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.uid)
+          .get();
+
+      if (userDoc.exists) {
+        var userData = userDoc.data() as Map<String, dynamic>;
+        setState(() {
+          _userFullName = (userData['firstName'] ?? '') +
+              " " +
+              (userData['lastName'] ?? '').trim();
+          _userPhone = userData['phoneNumber'] ??
+              'No phone provided'; // Adjust field names as needed
+          _userEmail = userData['email'] ??
+              'No email provided'; // Adjust field names as needed
+          _address =
+              '${userData['location']['barangay']}, ${userData['location']['city']}, ${userData['location']['province']}, ${userData['location']['region']} ${userData['location']['otherLocation'] ?? ''}';
+        });
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -107,6 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       MaterialPageRoute(
         builder: (context) => JobSeekerHomeScreen(
           resumeText: _extractedText,
+          uid: widget.uid,
         ),
       ),
     );
@@ -131,53 +172,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Profile section
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 55,
-                        // backgroundImage: AssetImage('assets/pic.jpeg'),
-                      ),
-                      SizedBox(width: 20),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Eleanor Pena",
-                            style: TextStyle(
-                              fontFamily: 'Galano',
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff202855),
+                ListTile(
+                  onTap: () {
+                    // show Contact Information screen
+                    // JobseekerMainScreenState? mainScreenState = context
+                    //     .findAncestorStateOfType<JobseekerMainScreenState>();
+                    // mainScreenState?.switchScreen(5);
+                  },
+                  title: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 55,
+                          // backgroundImage: AssetImage('assets/pic.jpeg'),
+                        ),
+                        SizedBox(width: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _userFullName,
+                              style: TextStyle(
+                                fontFamily: 'Galano',
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff202855),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "+63 908 123 4567",
-                            style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey),
-                          ),
-                          Text(
-                            "eleanor.pena@gmail.com",
-                            style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey),
-                          ),
-                          Text(
-                            "Urdaneta City, 2448",
-                            style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ],
+                            SizedBox(height: 5),
+                            Text(
+                              _userPhone,
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey),
+                            ),
+                            Text(
+                              _userEmail,
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey),
+                            ),
+                            Text(
+                              _address,
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Divider(
@@ -324,6 +373,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to qualifications screen
+                            // JobseekerMainScreenState? mainScreenState =
+                            //     context.findAncestorStateOfType<
+                            //         JobseekerMainScreenState>();
+                            // mainScreenState?.switchScreen(6);
                           },
                         ),
                       ),
@@ -356,6 +409,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to job preferences screen
+                            // JobseekerMainScreenState? mainScreenState =
+                            //     context.findAncestorStateOfType<
+                            //         JobseekerMainScreenState>();
+                            // mainScreenState?.switchScreen(7);
                           },
                         ),
                       ),

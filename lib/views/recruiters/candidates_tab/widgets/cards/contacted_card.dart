@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/views/feedback_view_dialog.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/hiring_dialog.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/rejection_dialog.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/feedback_view_dialog.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ContactedCard extends StatefulWidget {
+  Candidate candidate;
+  ContactedCard({super.key, required this.candidate});
+
   @override
   State<ContactedCard> createState() => _ContactedCardState();
 }
 
-class _ContactedCardState extends State<ContactedCard> with TickerProviderStateMixin {
+class _ContactedCardState extends State<ContactedCard>
+    with TickerProviderStateMixin {
   bool _isHovered = false;
   @override
   Widget build(BuildContext context) {
+    var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
+    String date = DateFormat('d MMM yyyy, h:mma')
+        .format(widget.candidate.dateLastInterviewed);
+
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -52,9 +63,8 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Eleanor Pena',
+                            widget.candidate.name,
                             style: TextStyle(
-                              fontFamily: 'Galano',
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -65,9 +75,8 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                               Icon(Icons.badge, size: 16, color: Colors.grey),
                               SizedBox(width: 4),
                               Text(
-                                'Vocalist',
+                                widget.candidate.profession,
                                 style: TextStyle(
-                                  fontFamily: 'Galano',
                                   color: Colors.grey.shade800,
                                   fontSize: 14,
                                 ),
@@ -80,9 +89,8 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                               Icon(Icons.home, size: 16, color: Colors.grey),
                               SizedBox(width: 4),
                               Text(
-                                'Urdaneta Branch',
+                                widget.candidate.companyAppliedTo,
                                 style: TextStyle(
-                                  fontFamily: 'Galano',
                                   color: Colors.grey.shade500,
                                   fontSize: 14,
                                 ),
@@ -96,18 +104,17 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                   Row(
                     children: [
                       Text(
-                        '3',
+                        widget.candidate.interviewCount
+                            .toString(), //will change na lang to string lahat ng attributes ng model
                         style: TextStyle(
-                          fontFamily: 'Galano',
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
                       ),
                       Gap(90),
                       Text(
-                        '14 Jul 2024, 8:00am',
+                        date,
                         style: TextStyle(
-                          fontFamily: 'Galano',
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -121,7 +128,10 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                       ),
                       Gap(40),
                       TextButton(
-                        onPressed: () => showHiringDialog(context),
+                        onPressed: () {
+                          showHiringDialog(context, widget.candidate.id);
+                          jobCandidateProvider.clearMessage("Hire");
+                        },
                         style: TextButton.styleFrom(
                           padding:
                               EdgeInsets.symmetric(horizontal: 30, vertical: 8),
@@ -133,7 +143,6 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                         child: Text(
                           'Hire',
                           style: TextStyle(
-                            fontFamily: 'Galano',
                             fontSize: 14,
                             color: Color.fromARGB(255, 255, 255, 255),
                           ),
@@ -141,7 +150,8 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                       ),
                       Gap(20),
                       TextButton(
-                        onPressed: () => showRejectDialog(context),
+                        // onPressed: () => showRejectDialog(context),
+                        onPressed: () {},
                         style: TextButton.styleFrom(
                           padding:
                               EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -153,7 +163,6 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                         child: Text(
                           'Reject',
                           style: TextStyle(
-                            fontFamily: 'Galano',
                             fontSize: 14,
                             color: Color.fromARGB(255, 255, 255, 255),
                           ),
@@ -173,7 +182,7 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                       //   child: Text(
                       //     'Reserve',
                       //     style: TextStyle(
-                      //       fontFamily: 'Galano',
+                      //
                       //       fontSize: 14,
                       //       color: Color.fromARGB(255, 255, 255, 255),
                       //     ),
@@ -211,13 +220,16 @@ class _ContactedCardState extends State<ContactedCard> with TickerProviderStateM
                       overlay.size.width - position.dx - button.size.width,
                       overlay.size.height - position.dy,
                     ),
-                    items: [ PopupMenuItem(
+                    items: [
+                      PopupMenuItem(
                         value: 'view_previous_feedback',
                         child: Row(
                           children: [
-                            Icon(Icons.feedback_outlined,
-                                color: Colors.grey),
-                            SizedBox(width: 8),Text('View Feedback'),],),
+                            Icon(Icons.feedback_outlined, color: Colors.grey),
+                            SizedBox(width: 8),
+                            Text('View Feedback'),
+                          ],
+                        ),
                       ),
                     ],
                   ).then((value) {
