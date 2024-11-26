@@ -14,8 +14,6 @@ class ForReviewView extends StatefulWidget {
 class _ForReviewViewState extends State<ForReviewView> {
   @override
   Widget build(BuildContext context) {
-    widget.candidates = [];
-
     if (widget.candidates.isEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
