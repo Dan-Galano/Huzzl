@@ -20,7 +20,12 @@ class ApplicationProvider with ChangeNotifier {
   }
 
   // Method to save review details
-  Future<void> saveReviewDetails(BuildContext context) async {
+  Future<void> saveReviewDetails(
+    BuildContext context,
+    String jobId,
+    String recruiterId,
+    String jobTitle,
+  ) async {
     if (fullName == null ||
         email == null ||
         address == null ||
@@ -46,7 +51,32 @@ class ApplicationProvider with ChangeNotifier {
         'email': email,
         'address': address,
         'phoneNumber': phoneNumber,
-        'created_at': FieldValue.serverTimestamp(),
+        'applicationDate': DateTime.now(),
+        'jobPostId': jobId,
+        'recruiterId': recruiterId,
+        'status': 'For Review',
+        'dateRejected': null,
+        'jobTitle': jobTitle,
+      });
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(jobId)
+          .collection("candidates")
+          .add({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'address': address,
+        'phoneNumber': phoneNumber,
+        'applicationDate': DateTime.now(),
+        'jobPostId': jobId,
+        'recruiterId': recruiterId,
+        'status': 'For Review',
+        'dateRejected': null,
+        'jobTitle': jobTitle,
       });
 
       notifyListeners(); // Notify listeners if needed

@@ -292,6 +292,9 @@ class JobPostApp extends StatelessWidget {
                                     MaterialPageRoute(
                                         builder: (_) => ReviewDetailsScreen(
                                               uid: userUid,
+                                              jobId: jobPostUid,
+                                              recruiterId: recUid,
+                                              jobTitle: jobTitle,
                                             )));
                                 print("---UID---: ${userUid}");
                               },

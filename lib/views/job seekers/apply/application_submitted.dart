@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
+import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_boxbutton.dart';
+import 'package:provider/provider.dart';
 
 class ApplicationSubmitted extends StatefulWidget {
   const ApplicationSubmitted({super.key});
@@ -10,8 +15,11 @@ class ApplicationSubmitted extends StatefulWidget {
 }
 
 class _ApplicationSubmittedState extends State<ApplicationSubmitted> {
+  String? loggedInUserId;
   @override
   Widget build(BuildContext context) {
+    loggedInUserId =
+        Provider.of<UserProvider>(context, listen: false).loggedInUserId;
     return Scaffold(
       body: Column(
         children: [
@@ -52,7 +60,13 @@ class _ApplicationSubmittedState extends State<ApplicationSubmitted> {
                     SizedBox(
                       width: 430,
                       child: BlueOutlinedBoxButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => JobseekerMainScreen(
+                              uid: loggedInUserId!,
+                            ),
+                          ));
+                        },
                         text: 'Continue to search jobs',
                       ),
                     ),

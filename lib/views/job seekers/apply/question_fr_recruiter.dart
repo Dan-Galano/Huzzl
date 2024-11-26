@@ -7,7 +7,16 @@ import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 
 class QuestionFromRecScreen extends StatefulWidget {
   final String uid;
-  const QuestionFromRecScreen({super.key, required this.uid});
+  final String jobId;
+  final String recruiterId;
+  final String jobTitle;
+  const QuestionFromRecScreen({
+    super.key,
+    required this.uid,
+    required this.jobId,
+    required this.recruiterId,
+    required this.jobTitle,
+  });
 
   @override
   State<QuestionFromRecScreen> createState() => _QuestionFromRecScreenState();
@@ -31,6 +40,9 @@ class _QuestionFromRecScreenState extends State<QuestionFromRecScreen> {
                       CupertinoPageRoute(
                           builder: (_) => ReviewDetailsScreen(
                                 uid: widget.uid,
+                                jobId: widget.jobId,
+                                recruiterId: widget.recruiterId,
+                                jobTitle: widget.jobTitle,
                               )));
                 },
                 iconImage: const AssetImage('assets/images/backbutton.png'),

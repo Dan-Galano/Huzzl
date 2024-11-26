@@ -71,8 +71,8 @@ void main() async {
             return ApplicationProvider(
                 uid: ""); // Handle the case where no user is logged in
           },
-          child: ReviewDetailsScreen(
-              uid: FirebaseAuth.instance.currentUser?.uid ?? ""),
+          // child: ReviewDetailsScreen(
+          //     uid: FirebaseAuth.instance.currentUser?.uid ?? ""),
         ),
       ],
       // child: MainScreen(),
@@ -129,10 +129,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     // Load initial jobs
-    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    // if (jobProvider.jobs.isEmpty) {
-    //   jobProvider.loadJobs();
-    // }
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs();
+    }
 
     // Manually check if the user is logged in
     currentUser = FirebaseAuth.instance.currentUser;

@@ -11,7 +11,16 @@ import 'package:provider/provider.dart';
 
 class ReviewDetailsScreen extends StatefulWidget {
   final String uid;
-  const ReviewDetailsScreen({super.key, required this.uid});
+  final String jobId;
+  final String recruiterId;
+  final String jobTitle;
+  const ReviewDetailsScreen({
+    super.key,
+    required this.uid,
+    required this.jobId,
+    required this.recruiterId,
+    required this.jobTitle,
+  });
 
   @override
   State<ReviewDetailsScreen> createState() => _ReviewDetailsScreenState();
@@ -316,15 +325,21 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
                                 _phoneController.text;
 
                             // Now, call the save functions
-                            applicationProvider.saveReviewDetails(context);
+                            applicationProvider.saveReviewDetails(
+                                context, widget.jobId, widget.recruiterId, widget.jobTitle);
                             applicationProvider.saveReviewDetailsInRec(context);
 
                             // If saving is successful, navigate to the next screen
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) =>
-                                      QuestionFromRecScreen(uid: widget.uid)),
+                                builder: (_) => QuestionFromRecScreen(
+                                  uid: widget.uid,
+                                  jobId: widget.jobId,
+                                  recruiterId: widget.recruiterId,
+                                  jobTitle: widget.jobTitle,
+                                ),
+                              ),
                             );
                           } catch (e) {
                             // Handle error (e.g., show a Snackbar or dialog)
