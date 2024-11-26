@@ -63,7 +63,7 @@ class TodayView extends StatelessWidget {
       ),
     },
     {
-      'name': 'd Salcedo',
+      'name': 'Joreson Biag',
       'profession': 'Web Developer',
       'branch': 'Alaminos City',
       'interviewTitle': 'Final Interview',

@@ -34,7 +34,7 @@ class PastView extends StatelessWidget {
       'name': 'Dan Galano',
       'profession': 'Web Developer',
       'branch': 'AlaminosSSSS City',
-      'interviewTitle': 'Initial Interview',
+      'interviewTitle': 'Screening Interview',
       'dateInterviewed': DateTime(2024, 9, 25, 8, 30),
       'interviewType': 'Online',
       'timeRange': DateTimeRange(
@@ -69,8 +69,8 @@ class PastView extends StatelessWidget {
     {
       'name': 'Dan Galano',
       'profession': 'Web Developer',
-      'branch': 'AlaminosSSSS City',
-      'interviewTitle': 'Basta Interview',
+      'branch': 'Alaminos City',
+      'interviewTitle': 'Screening Interview',
       'dateInterviewed': DateTime(2024, 9, 25, 8, 30),
       'interviewType': 'Online',
       'timeRange': DateTimeRange(
