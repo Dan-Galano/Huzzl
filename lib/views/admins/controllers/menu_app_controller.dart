@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/models/recent_file.dart';
 
 class MenuAppController extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-   
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
@@ -22,7 +22,7 @@ class MenuAppController extends ChangeNotifier {
   int _sideMenuIndex = 0;
   int get sideMenuIndex => _sideMenuIndex;
 
-  void changeTabLocation(int index){
+  void changeTabLocation(int index) {
     _sideMenuIndex = index;
     notifyListeners();
   }
@@ -43,7 +43,7 @@ class MenuAppController extends ChangeNotifier {
   }
 
   //count job seekers
-    Future<int> jobseekersCount() async {
+  Future<int> jobseekersCount() async {
     try {
       final snapshot = await _firestore
           .collection('users')
@@ -60,33 +60,33 @@ class MenuAppController extends ChangeNotifier {
   //job Posts
 
   Future<int> jobPostCount() async {
-  int totalJobPosts = 0;
+    int totalJobPosts = 0;
 
-  try {
-    CollectionReference usersCollection =
-        FirebaseFirestore.instance.collection('users');
+    try {
+      CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection('users');
 
-    QuerySnapshot usersSnapshot = await usersCollection.get();
+      QuerySnapshot usersSnapshot = await usersCollection.get();
 
-    for (QueryDocumentSnapshot userDoc in usersSnapshot.docs) {
-      CollectionReference jobPostsCollection =
-          usersCollection.doc(userDoc.id).collection('job_posts');
+      for (QueryDocumentSnapshot userDoc in usersSnapshot.docs) {
+        CollectionReference jobPostsCollection =
+            usersCollection.doc(userDoc.id).collection('job_posts');
 
-      QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
+        QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
 
-      totalJobPosts += jobPostsSnapshot.docs.length;
+        totalJobPosts += jobPostsSnapshot.docs.length;
+      }
+    } catch (e) {
+      print("Error counting job posts: $e");
+      return 0;
     }
-  } catch (e) {
-    print("Error counting job posts: $e");
-    return 0;
+
+    return totalJobPosts;
   }
 
-  return totalJobPosts;
-}
-
   //fetch recently created account
-Future<List<RecentUser>> fetchRecentUsers() async {
-  List<RecentUser> recentUsers = [];
+  Future<List<RecentUser>> fetchRecentUsers() async {
+    List<RecentUser> recentUsers = [];
 
     try {
       // Reference to the 'users' collection
@@ -106,9 +106,15 @@ Future<List<RecentUser>> fetchRecentUsers() async {
       recentUsers = querySnapshot.docs.map((doc) {
         return RecentUser(
           email: doc['email'],
-          icon: doc['role'] == 'recruiter' ? 'assets/images/company-black.png' : 'assets/images/job-seeker-black.png',  // Or fetch dynamically if required
-          name: doc['role'] == 'recruiter' ? "${doc['hiringManagerFirstName']} ${doc['hiringManagerLastName']}" : "${doc['firstName']} ${doc['lastName']}",
-          role: doc['role'] == 'recruiter' ? 'Recruiter' :'Jobseeker',  // Set the correct role here
+          icon: doc['role'] == 'recruiter'
+              ? 'assets/images/company-black.png'
+              : 'assets/images/job-seeker-black.png', // Or fetch dynamically if required
+          name: doc['role'] == 'recruiter'
+              ? "${doc['hiringManagerFirstName']} ${doc['hiringManagerLastName']}"
+              : "${doc['firstName']} ${doc['lastName']}",
+          role: doc['role'] == 'recruiter'
+              ? 'Recruiter'
+              : 'Jobseeker', // Set the correct role here
         );
       }).toList();
     } catch (e) {
@@ -118,14 +124,14 @@ Future<List<RecentUser>> fetchRecentUsers() async {
     return recentUsers;
   }
 
-
   // admin name
   String _adminName = "";
   String get adminName => _adminName;
   void getName() async {
     final uid = getCurrentUser();
 
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
     if (userDoc.exists) {
       _adminName = "${userDoc['first_name']} ${userDoc['last_name']}";
@@ -135,13 +141,26 @@ Future<List<RecentUser>> fetchRecentUsers() async {
     notifyListeners();
   }
 
-
-  String getCurrentUser(){
+  String getCurrentUser() {
     return FirebaseAuth.instance.currentUser!.uid;
   }
 
-  void logout() async{
+  void logout() async {
     await FirebaseAuth.instance.signOut();
   }
 
+  //Business docs
+  Future<List<String>> listFiles(String directoryPath) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref(directoryPath);
+      final listResult = await storageRef.listAll();
+      final urls = await Future.wait(
+        listResult.items.map((item) => item.getDownloadURL()),
+      );
+      return urls;
+    } catch (e) {
+      print('Error listing files: $e');
+      return [];
+    }
+  }
 }

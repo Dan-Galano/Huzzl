@@ -11,7 +11,8 @@ class StartInterviewButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-          fixedSize: WidgetStateProperty.all(const Size(200, 40)),
+          fixedSize: WidgetStateProperty.all(
+              Size(MediaQuery.of(context).size.width * 0.15, 40)),
           foregroundColor: WidgetStateProperty.all(Colors.white),
           backgroundColor: onPressed == null
               ? WidgetStateProperty.all(Colors.grey)
@@ -24,7 +25,10 @@ class StartInterviewButton extends StatelessWidget {
             height: 20,
           ),
           const Gap(15),
-          Text('Start interview'),
+          Text(
+            'Start interview',
+            style: TextStyle(fontSize: 12),
+          ),
         ],
       ),
     );
@@ -39,7 +43,8 @@ class RescheduleInterviewButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-          fixedSize: WidgetStateProperty.all(const Size(200, 40)),
+          fixedSize: WidgetStateProperty.all(
+              Size(MediaQuery.of(context).size.width * 0.15, 40)),
           foregroundColor: WidgetStateProperty.all(Colors.white),
           backgroundColor: WidgetStateProperty.all(const Color(0xff3B7DFF))),
       child: const Row(
@@ -51,7 +56,10 @@ class RescheduleInterviewButton extends StatelessWidget {
             color: Colors.white,
           ),
           Gap(15),
-          Text('Reschedule'),
+          Text(
+            'Reschedule',
+            style: TextStyle(fontSize: 12),
+          ),
         ],
       ),
     );
@@ -66,21 +74,27 @@ class ScheduleInterviewButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        fixedSize: WidgetStateProperty.all(const Size.fromHeight(40)),
+        fixedSize: WidgetStateProperty.all(
+            Size(MediaQuery.of(context).size.width * 0.15, 40)),
         foregroundColor: WidgetStateProperty.all(Colors.white),
         backgroundColor: onPressed == null
             ? WidgetStateProperty.all(Colors.grey)
             : WidgetStateProperty.all(const Color(0xfffd7206)),
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.calendar_month,
             color: Colors.white,
+            size: 18,
           ),
           Gap(15),
-          Text('Schedule interview'),
+          Text(
+            'Schedule interview',
+            style: TextStyle(fontSize: 12,),
+            
+          ),
         ],
       ),
     );
@@ -95,7 +109,8 @@ class InterviewCalendarButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        fixedSize: WidgetStateProperty.all(const Size.fromHeight(40)),
+        fixedSize: WidgetStateProperty.all(
+            Size(MediaQuery.of(context).size.width * 0.15, 40)),
         foregroundColor: WidgetStateProperty.all(Colors.white),
         backgroundColor: onPressed == null
             ? WidgetStateProperty.all(Colors.grey)
@@ -107,11 +122,12 @@ class InterviewCalendarButton extends StatelessWidget {
           Icon(
             Icons.calendar_month,
             color: Color(0xff3B7DFF),
+            size: 18,
           ),
           Gap(15),
           Text(
             'Interview Calendar',
-            style: TextStyle(color: Color(0xff3B7DFF)),
+            style: TextStyle(color: Color(0xff3B7DFF), fontSize: 12),
           ),
         ],
       ),
@@ -128,7 +144,8 @@ class MarkAsDoneButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        fixedSize: WidgetStateProperty.all(const Size(200, 40)),
+        fixedSize: WidgetStateProperty.all(
+            Size(MediaQuery.of(context).size.width * 0.15, 40)),
         side:
             const WidgetStatePropertyAll(BorderSide(color: Color(0xff3B7DFF))),
         foregroundColor: const WidgetStatePropertyAll(Color(0xff3B7DFF)),
@@ -139,15 +156,15 @@ class MarkAsDoneButton extends StatelessWidget {
           const Gap(10),
           Image.asset(
             'assets/images/chitchat_icon.png',
-            height: 20,
+            height: 16,
           ),
           const Gap(15),
-          const Text('Mark as done'),
+          const Text(
+            'Mark as done',
+            style: TextStyle(fontSize: 12),
+          ),
         ],
       ),
     );
   }
 }
-
-
-

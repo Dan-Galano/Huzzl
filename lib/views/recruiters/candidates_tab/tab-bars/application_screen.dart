@@ -338,10 +338,10 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                           width: double.infinity,
                           child: TextField(
                             controller: TextEditingController(
-                              text: "Ok naman siya",
+                              text: "Strong communication and problem-solving skills stand out.",
                             ),
                             maxLines: 20,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10),

@@ -4,10 +4,15 @@ import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 
 //logout
-void logOut() async {
+void logOut(BuildContext context) async {
   try {
     await FirebaseAuth.instance.signOut();
 
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => LoginRegister(),
+      ),
+    );
     print("User logged out successfully.");
   } catch (e) {
     print("Error signing out: $e");
@@ -74,7 +79,7 @@ void showRecruiterLogoutDialog(BuildContext context) {
                   Center(
                     child: BlueFilledCircleButton(
                       onPressed: () {
-                        logOut();
+                        logOut(context);
                         Navigator.of(context).pop();
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(

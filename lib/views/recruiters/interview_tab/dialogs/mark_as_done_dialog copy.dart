@@ -5,7 +5,7 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:intl/intl.dart';
 
 class MarkAsDoneDialog extends StatefulWidget {
-  MarkAsDoneDialog({super.key});
+  const MarkAsDoneDialog({super.key});
 
   @override
   State<MarkAsDoneDialog> createState() => _MarkAsDoneDialogState();
@@ -97,6 +97,7 @@ class _MarkAsDoneDialogState extends State<MarkAsDoneDialog> {
       content: SingleChildScrollView(
         child: Container(
           color: Colors.white,
+          width: MediaQuery.of(context).size.width * 0.6,
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -200,7 +201,7 @@ class _MarkAsDoneDialogState extends State<MarkAsDoneDialog> {
                               ),
                             ],
                           ),
-                          Gap(MediaQuery.of(context).size.width * 0.1),
+                          Spacer(),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -210,7 +211,8 @@ class _MarkAsDoneDialogState extends State<MarkAsDoneDialog> {
                                   Text("Title: "),
                                   Text(
                                     "Technical Interview",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),

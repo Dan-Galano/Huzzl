@@ -58,7 +58,6 @@ class _InterviewTileState extends State<InterviewTile>
       child: GestureDetector(
         onTap: () {},
         child: Card(
-          // elevation: _isHovered ? 8 : 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: _isHovered ? Colors.grey[200] : Colors.white,
           child: Padding(
@@ -66,62 +65,58 @@ class _InterviewTileState extends State<InterviewTile>
             child: Row(
               children: [
                 // Interview info
+                Column(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: const Color(0xffd1e1ff),
+                      foregroundColor: const Color(0xff373030),
+                      child: Text(widget.intervieweeName[0]),
+                    ),
+                  ],
+                ),
+                const Gap(15),
                 Expanded(
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
+                      //Interviewee name
+                      Text(
+                        widget.intervieweeName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff373030),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      //Interviewee job
+                      Row(
                         children: [
-                          CircleAvatar(
-                            backgroundColor: const Color(0xffd1e1ff),
-                            foregroundColor: const Color(0xff373030),
-                            child: Text(widget.intervieweeName[0]),
+                          const Icon(Icons.person_outline,
+                              size: 18, color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Text(
+                            widget.profession,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ),
-                      const Gap(15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 4),
+                      //Branch applied
+                      Row(
                         children: [
-                          //Interviewee name
+                          const Icon(Icons.business_center_outlined,
+                              size: 18, color: Colors.grey),
+                          const SizedBox(width: 5),
                           Text(
-                            widget.intervieweeName,
+                            widget.branch,
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff373030),
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          //Interviewee job
-                          Row(
-                            children: [
-                              const Icon(Icons.person_outline,
-                                  size: 20, color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                widget.profession,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          //Branch applied
-                          Row(
-                            children: [
-                              const Icon(Icons.business_center_outlined,
-                                  size: 20, color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                widget.branch,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),
@@ -137,8 +132,7 @@ class _InterviewTileState extends State<InterviewTile>
                         widget.interviewTitle,
                         style: const TextStyle(
                           decoration: TextDecoration.none,
-                          decorationColor: Colors.orange,
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Color(0xff373030),
                         ),
@@ -148,111 +142,100 @@ class _InterviewTileState extends State<InterviewTile>
                         style: const TextStyle(
                           decoration: TextDecoration.none,
                           decorationColor: Colors.orange,
-                          fontSize: 14,
+                          fontSize: 12,
                           color: Colors.grey,
                         ),
                       ),
                     ],
                   ),
                 ),
-                // const Spacer(),
-                //Buttons
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.chat),
+                  color: const Color(0xff3B7DFF),
+                ),
+                const Gap(30),
                 Expanded(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.chat),
-                        color: const Color(0xff3B7DFF),
-                      ),
-                      const Gap(50),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (widget.interviewType == 'Online') ...[
-                            StartInterviewButton(
-                              onPressed: widget.timeRange.start.day ==
-                                          DateTime.now().day &&
-                                      widget.timeRange.start.month ==
-                                          DateTime.now().month &&
-                                      widget.timeRange.start.year ==
-                                          DateTime.now().year
-                                  ? () {
-                                      interviewProvider
-                                          .startInterviewFunction(context);
-                                    }
-                                  : null,
-                            ),
-                            const Gap(10),
-                          ],
-                          ...[
-                            MarkAsDoneButton(
-                              onPressed: () => showMarkAsDoneDialog(context),
-                            ),
-                          ],
-                        ],
-                      ),
+                      if (widget.interviewType == 'Online') ...[
+                        StartInterviewButton(
+                          onPressed: widget.timeRange.start.day ==
+                                      DateTime.now().day &&
+                                  widget.timeRange.start.month ==
+                                      DateTime.now().month &&
+                                  widget.timeRange.start.year ==
+                                      DateTime.now().year
+                              ? () {
+                                  interviewProvider
+                                      .startInterviewFunction(context);
+                                }
+                              : null,
+                        ),
+                        const Gap(10),
+                      ],
+                      ...[
+                        MarkAsDoneButton(
+                          onPressed: () => showMarkAsDoneDialog(context),
+                          // onPressed: (){},
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                const Gap(10),
-                Expanded(
-                  flex: 0,
-                  child: IconButton(
-                    onPressed: () async {
-                      final RenderBox button =
-                          context.findRenderObject() as RenderBox;
-                      final RenderBox overlay = Overlay.of(context)
-                          .context
-                          .findRenderObject() as RenderBox;
+                IconButton(
+                  onPressed: () async {
+                    final RenderBox button =
+                        context.findRenderObject() as RenderBox;
+                    final RenderBox overlay = Overlay.of(context)
+                        .context
+                        .findRenderObject() as RenderBox;
 
-                      final position =
-                          button.localToGlobal(Offset.zero, ancestor: overlay);
+                    final position =
+                        button.localToGlobal(Offset.zero, ancestor: overlay);
 
-                      await showMenu(
-                        context: context,
-                        position: RelativeRect.fromLTRB(
-                          position.dx,
-                          position.dy,
-                          overlay.size.width - position.dx - button.size.width,
-                          overlay.size.height - position.dy,
+                    await showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        position.dx,
+                        position.dy,
+                        overlay.size.width - position.dx - button.size.width,
+                        overlay.size.height - position.dy,
+                      ),
+                      items: [
+                        const PopupMenuItem(
+                          value: 'view_applicant_details',
+                          child: Row(
+                            children: [
+                              Icon(Icons.file_open_outlined,
+                                  color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text('View applicant\'s details'),
+                            ],
+                          ),
                         ),
-                        items: [
-                          const PopupMenuItem(
-                            value: 'view_applicant_details',
-                            child: Row(
-                              children: [
-                                Icon(Icons.file_open_outlined,
-                                    color: Colors.grey),
-                                SizedBox(width: 8),
-                                Text('View applicant\'s details'),
-                              ],
-                            ),
+                        const PopupMenuItem(
+                          value: 'reschedule_interview',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit_calendar_outlined,
+                                  color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text('Reschedule interview'),
+                            ],
                           ),
-                          const PopupMenuItem(
-                            value: 'reschedule_interview',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit_calendar_outlined,
-                                    color: Colors.grey),
-                                SizedBox(width: 8),
-                                Text('Reschedule interview'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ).then((value) {
-                        if (value == 'view_applicant_details') {
-                          showApplicationNotesViewDialog(context, this);
-                        } else if (value == 'reschedule_interview') {
-                          showRescheduleInterviewDialog(context);
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.more_vert),
-                  ),
+                        ),
+                      ],
+                    ).then((value) {
+                      if (value == 'view_applicant_details') {
+                        showApplicationNotesViewDialog(context, this);
+                      } else if (value == 'reschedule_interview') {
+                        showRescheduleInterviewDialog(context);
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.more_vert),
                 ),
               ],
             ),

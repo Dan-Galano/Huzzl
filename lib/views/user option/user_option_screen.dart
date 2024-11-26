@@ -63,6 +63,7 @@ class UserOptionScreen extends StatelessWidget {
         return Container(
           height: MediaQuery.of(context).size.height,
           alignment: Alignment.center,
+          color: Colors.white,
           child: SizedBox(
             width: 550,
             child: SingleChildScrollView(

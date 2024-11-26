@@ -10,6 +10,8 @@ import 'package:huzzl_web/views/admins/screens/main/main_screen.dart';
 import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
+import 'package:huzzl_web/Landing_Page/landing_page.dart';
+import 'package:huzzl_web/landing%20page/landing_page.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
@@ -96,6 +98,7 @@ class HuzzlWeb extends StatelessWidget {
       // home: MainScreen(),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
+      // home: const LandingPageNew(),
     );
   }
 }
@@ -253,12 +256,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 // return ChatHomePage(); //chattest
               }
 
-              return LoginRegister();
+              return LandingPageNew();
             },
           );
         } else {
           print("LOGIN!");
-          return LoginRegister();
+          return LandingPageNew();
         }
       },
     );
@@ -319,7 +322,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 //               }
 //               return LoginRegister();
 //             },
-//           );
+//            );
 //         } else {
 //           print("LOGIN!");
 //           return LoginRegister();
