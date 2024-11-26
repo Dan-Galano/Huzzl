@@ -15,17 +15,17 @@ class _ForReviewViewState extends State<ForReviewView> {
   @override
   Widget build(BuildContext context) {
     widget.candidates = [
-      Candidate(
-          id: "id",
-          name: "name",
-          profession: "profession",
-          companyAppliedTo: "companyAppliedTo",
-          jobPostId: "jobPostId",
-          applicationDate: DateTime.now(),
-          dateLastInterviewed: DateTime.now(),
-          interviewCount: 0,
-          dateRejected: DateTime.now(),
-          status: "status")
+      // Candidate(
+      //     id: "id",
+      //     name: "name",
+      //     profession: "profession",
+      //     companyAppliedTo: "companyAppliedTo",
+      //     jobPostId: "jobPostId",
+      //     applicationDate: DateTime.now(),
+      //     dateLastInterviewed: DateTime.now(),
+      //     interviewCount: 0,
+      //     dateRejected: DateTime.now(),
+      //     status: "status"),
     ];
 
     if (widget.candidates.isEmpty) {
