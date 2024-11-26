@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:huzzl_web/Landing_Page/landing_page.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
 import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
@@ -21,6 +22,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isHovered = false;
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -224,14 +226,41 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Log in to Huzzl',
-                style: TextStyle(
-                  fontSize: ResponsiveSizes.titleTextSize(sizeInfo),
-                  color: Color(0xff373030),
-                  fontFamily: 'Galano',
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Log in to ',
+                    style: TextStyle(
+                      fontSize: ResponsiveSizes.titleTextSize(sizeInfo),
+                      color: Color(0xff373030),
+                      fontFamily: 'Galano',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  InkWell(
+                    hoverColor: Colors.transparent,
+                    onTap: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => LandingPageNew()),
+                      );
+                    },
+                    child: MouseRegion(
+                      onEnter: (_) => setState(() => _isHovered = true),
+                      onExit: (_) => setState(() => _isHovered = false),
+                      child: Text(
+                        'Huzzl',
+                        style: TextStyle(
+                          fontSize: ResponsiveSizes.titleTextSize(sizeInfo),
+                          color: _isHovered ? Colors.orange : Color(0xff373030),
+                          fontFamily: 'Galano',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               //ERROR MESSAGE
               isError
@@ -260,13 +289,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               Gap(20),
-              Text(
-                "or",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
-                  fontWeight: FontWeight.w100,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                    ),
+                  ),
+                  Gap(20),
+                  Text(
+                    "or",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: ResponsiveSizes.bodyTextSize(sizeInfo),
+                      fontWeight: FontWeight.w100,
+                    ),
+                  ),
+                  Gap(20),
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                    ),
+                  ),
+                ],
               ),
               Gap(20),
 

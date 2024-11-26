@@ -1,8 +1,13 @@
 import 'dart:convert';
+import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/branch-manager-staff-model.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/custom_input.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class JobPosts extends StatefulWidget {
   final VoidCallback nextPage;
@@ -13,11 +18,7 @@ class JobPosts extends StatefulWidget {
   String numOfPeopleToHire;
   final ValueChanged<String?> onNumOfPeopleToHireChanged;
   final ValueChanged<String?> onNumPeopleChanged;
-  final ValueChanged<String?> onRegionChanged;
-  final ValueChanged<String?> onProvinceChanged;
-  final ValueChanged<String?> onCityChanged;
-  final ValueChanged<String?> onBarangayChanged;
-  final TextEditingController otherLocation;
+  final ValueChanged<String?> onBranchChanged;
   final TextEditingController jobDescriptionController;
 
   JobPosts({
@@ -29,11 +30,7 @@ class JobPosts extends StatefulWidget {
     required this.numOfPeopleToHire,
     required this.onNumOfPeopleToHireChanged,
     required this.onNumPeopleChanged,
-    required this.onRegionChanged,
-    required this.onProvinceChanged,
-    required this.onCityChanged,
-    required this.onBarangayChanged,
-    required this.otherLocation,
+    required this.onBranchChanged,
     required this.jobDescriptionController,
   });
 
@@ -56,11 +53,24 @@ class _JobPostsState extends State<JobPosts> {
   List<dynamic> cities = [];
   List<dynamic> barangays = [];
 
-  @override
-  void initState() {
-    super.initState();
-    fetchRegions();
+ @override
+void initState() {
+  super.initState();
+  _initializeData();
+}
+
+Future<void> _initializeData() async {
+  final loggedInUserId = Provider.of<UserProvider>(context, listen: false).loggedInUserId;
+  final branchProvider = Provider.of<BranchProvider>(context, listen: false);
+
+  if (loggedInUserId != null) {
+    await branchProvider.fetchActiveBranches(loggedInUserId);
+    setState(() {
+      branches = branchProvider.branches; 
+    });
   }
+}
+
 
   void _submitJobPosts() {
     if (_formKey.currentState!.validate()) {
@@ -133,40 +143,284 @@ class _JobPostsState extends State<JobPosts> {
   //   barangays = [];
   // }
 
+  final TextEditingController _dropdownSearchFieldController =
+      TextEditingController();
+
+  SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
+
+  Branch? selectedBranch;
+  List<Branch> branches = [];
+
+  List<Branch> getSuggestions(String query) {
+    List<Branch> matches = branches
+        .where((branch) =>
+            branch.branchName.toLowerCase().contains(query.toLowerCase()) ||
+            branch.region.toLowerCase().contains(query.toLowerCase()) ||
+            branch.province.toLowerCase().contains(query.toLowerCase()) ||
+            branch.city.toLowerCase().contains(query.toLowerCase()) ||
+            branch.house.toLowerCase().contains(query.toLowerCase()) ||
+            branch.barangay.toLowerCase().contains(query.toLowerCase()) |
+                branch.zip.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    return matches;
+  }
+
+  Widget buildSearchDropdown(StateSetter setState) {
+    return GestureDetector(
+      onTap: () {
+        suggestionBoxController.close();
+      },
+      child: DropDownSearchFormField<Branch>(
+        textFieldConfiguration: TextFieldConfiguration(
+          controller: _dropdownSearchFieldController,
+          decoration: InputDecoration(
+            // label: Text('Select Applicant'),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
+        suggestionsCallback: (pattern) async {
+          return await getSuggestions(pattern);
+        },
+        itemBuilder: (context, branch) {
+          return ListTile(
+            title: Text(branch.branchName),
+            subtitle: Text(
+                '${branch.house} ${branch.barangay}, ${branch.city}, ${branch.zip}, ${branch.province}, ${branch.region}'),
+          );
+        },
+        itemSeparatorBuilder: (context, index) {
+          return const Divider();
+        },
+        onSuggestionSelected: (Branch branch) {
+          _dropdownSearchFieldController.text = branch.branchName;
+          selectedBranch = branch;
+           widget.onBranchChanged(selectedBranch!.branchName);
+        },
+        suggestionsBoxController: suggestionBoxController,
+        validator: (value) => value == null ? 'Please select branch' : null,
+        displayAllSuggestionWhenTap: true,
+        suggestionsBoxDecoration: SuggestionsBoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  // Widget buildRegionDropdown() {
+  //   return SizedBox(
+  //     width: MediaQuery.of(context).size.width * 0.25,
+  //     child: DropdownButtonFormField<String>(
+  //       hint: const Text(
+  //         'Select region',
+  //         style: TextStyle(fontFamily: 'Galano'),
+  //       ),
+  //       decoration: customInputDecoration(),
+  //       value: selectedRegion,
+  //       items: regions.map<DropdownMenuItem<String>>((region) {
+  //         return DropdownMenuItem<String>(
+  //           value: region['name'],
+  //           child: Text(region['name']),
+  //         );
+  //       }).toList(),
+  //       onChanged: (String? newValue) {
+  //         setState(() {
+  //           selectedRegion = newValue;
+  //           // resetSelections();
+  //         });
+  //         widget.onRegionChanged(newValue);
+  //         if (newValue != null) {
+  //           final selectedRegionCode = regions.firstWhere(
+  //             (region) => region['name'] == newValue,
+  //             orElse: () => null,
+  //           )['code'];
+  //           if (selectedRegionCode != null) {
+  //             fetchProvinces(selectedRegionCode);
+  //           }
+  //         }
+  //       },
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'Region is required.';
+  //         }
+  //         return null;
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // Widget buildProvinceDropdown() {
+  //   return SizedBox(
+  //     width: MediaQuery.of(context).size.width * 0.25,
+  //     child: DropdownButtonFormField<String>(
+  //       hint: Text(
+  //         'Select Province',
+  //         style: TextStyle(fontFamily: 'Galano'),
+  //       ),
+  //       decoration: customInputDecoration(),
+  //       value: selectedProvince,
+  //       items: provinces.map<DropdownMenuItem<String>>((province) {
+  //         return DropdownMenuItem<String>(
+  //           value: province['name'],
+  //           child: Text(province['name']),
+  //         );
+  //       }).toList(),
+  //       onChanged: (String? newValue) {
+  //         setState(() {
+  //           selectedProvince = newValue;
+  //           // resetCityAndBarangaySelections();
+  //         });
+  //         widget.onProvinceChanged(newValue);
+  //         if (newValue != null) {
+  //           final selectedProvinceCode = provinces.firstWhere(
+  //             (province) => province['name'] == newValue,
+  //             orElse: () => null,
+  //           )['code'];
+  //           if (selectedProvinceCode != null) {
+  //             fetchCities(selectedProvinceCode);
+  //           }
+  //         }
+  //       },
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'Province is required.';
+  //         }
+  //         return null;
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // Widget buildCityDropdown() {
+  //   return SizedBox(
+  //     width: MediaQuery.of(context).size.width * 0.25,
+  //     child: DropdownButtonFormField<String>(
+  //       hint: Text(
+  //         'Select City/Municipality',
+  //         style: TextStyle(fontFamily: 'Galano'),
+  //       ),
+  //       decoration: customInputDecoration(),
+  //       value: selectedCity,
+  //       items: cities.map<DropdownMenuItem<String>>((city) {
+  //         return DropdownMenuItem<String>(
+  //           value: city['name'],
+  //           child: Text(city['name']),
+  //         );
+  //       }).toList(),
+  //       onChanged: (String? newValue) {
+  //         setState(() {
+  //           selectedCity = newValue;
+  //           // selectedBarangay = null;
+  //           // barangays = [];
+  //         });
+  //         widget.onCityChanged(newValue);
+  //         if (newValue != null) {
+  //           final selectedCitiesCode = cities.firstWhere(
+  //             (city) => city['name'] == newValue,
+  //             orElse: () => null,
+  //           )['code'];
+  //           if (selectedCitiesCode != null) {
+  //             fetchBarangays(selectedCitiesCode);
+  //           }
+  //         }
+  //       },
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'City is required.';
+  //         }
+  //         return null;
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // Widget buildBarangayDropdown() {
+  //   return SizedBox(
+  //     width: MediaQuery.of(context).size.width * 0.25,
+  //     child: DropdownButtonFormField<String>(
+  //       hint: Text(
+  //         'Select Barangay',
+  //         style: TextStyle(fontFamily: 'Galano'),
+  //       ),
+  //       decoration: customInputDecoration(),
+  //       value: selectedBarangay,
+  //       items: barangays.map<DropdownMenuItem<String>>((barangay) {
+  //         return DropdownMenuItem<String>(
+  //           value: barangay['name'],
+  //           child: Text(barangay['name']),
+  //         );
+  //       }).toList(),
+  //       onChanged: (String? newValue) {
+  //         setState(() {
+  //           selectedBarangay = newValue;
+  //         });
+  //         widget.onBarangayChanged(newValue);
+  //       },
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'Barangay is required.';
+  //         }
+  //         return null;
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // Widget buildOtherLocationField() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text('If the location is not listed above, please enter it here:'),
+  //       TextFormField(
+  //         controller: widget.otherLocation,
+  //         decoration: InputDecoration(
+  //           isDense: true,
+  //           border: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(8),
+  //           ),
+  //         ),
+  //       ),
+  //       Gap(10),
+  //     ],
+  //   );
+  // }
+
+  final List<String> _industries = [
+    '',
+    'Aerospace & Defense',
+    'Agriculture',
+    'Arts, Entertainment & Recreation',
+    'Automotive',
+    'Education',
+    'Energy, Mining & Utilities',
+    'Fashion & Beauty',
+    'Finance & Accounting',
+    'Food & Beverage',
+    'Government & Public Administration',
+    'Healthcare',
+    'Hotels & Travel Accommodation',
+    'Human Resources & Staffing',
+    'Information Technology',
+    'Insurance',
+    'Legal',
+    'Management & Consulting',
+    'Manufacturing',
+    'Media & Entertainment',
+    'Military & Defense',
+    'Mining',
+    'Real Estate',
+    'Retail & Consumer Goods',
+    'Sales & Marketing',
+    'Science & Medicine',
+    'Sports & Medicine',
+    'Supply Chain',
+    'Transportation & Warehousing',
+    'Travel & Hospitality',
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final List<String> _industries = [
-      '',
-      'Aerospace & Defense',
-      'Agriculture',
-      'Arts, Entertainment & Recreation',
-      'Automotive',
-      'Education',
-      'Energy, Mining & Utilities',
-      'Fashion & Beauty',
-      'Finance & Accounting',
-      'Food & Beverage',
-      'Government & Public Administration',
-      'Healthcare',
-      'Hotels & Travel Accommodation',
-      'Human Resources & Staffing',
-      'Information Technology',
-      'Insurance',
-      'Legal',
-      'Management & Consulting',
-      'Manufacturing',
-      'Media & Entertainment',
-      'Military & Defense',
-      'Mining',
-      'Real Estate',
-      'Retail & Consumer Goods',
-      'Sales & Marketing',
-      'Science & Medicine',
-      'Sports & Medicine',
-      'Supply Chain',
-      'Transportation & Warehousing',
-      'Travel & Hospitality',
-    ];
+
     return SingleChildScrollView(
       child: Center(
         child: Container(
@@ -399,32 +653,34 @@ class _JobPostsState extends State<JobPosts> {
                   ],
                 ),
                 const Text(
-                  'Enter your location',
+                  'Select branch',
                   style: TextStyle(
                     fontFamily: 'Galano',
                     fontSize: 12,
                   ),
                 ),
                 const SizedBox(height: 10),
+                buildSearchDropdown(setState),
+                const SizedBox(height: 20),
 
-                // Region Dropdown
-                buildRegionDropdown(),
-                const SizedBox(height: 10),
+                // // Region Dropdown
+                // buildRegionDropdown(),
+                // const SizedBox(height: 10),
 
-                // Province Dropdown
-                if (selectedRegion != null) buildProvinceDropdown(),
-                const SizedBox(height: 10),
+                // // Province Dropdown
+                // if (selectedRegion != null) buildProvinceDropdown(),
+                // const SizedBox(height: 10),
 
-                // City Dropdown
-                if (selectedProvince != null) buildCityDropdown(),
-                const SizedBox(height: 10),
+                // // City Dropdown
+                // if (selectedProvince != null) buildCityDropdown(),
+                // const SizedBox(height: 10),
 
-                // Barangay Dropdown
-                if (selectedCity != null) buildBarangayDropdown(),
-                const SizedBox(height: 10),
+                // // Barangay Dropdown
+                // if (selectedCity != null) buildBarangayDropdown(),
+                // const SizedBox(height: 10),
 
-                // Other location information field
-                if (selectedBarangay != null) buildOtherLocationField(),
+                // // Other location information field
+                // if (selectedBarangay != null) buildOtherLocationField(),
                 Row(
                   children: [
                     Text(
@@ -503,184 +759,6 @@ class _JobPostsState extends State<JobPosts> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildRegionDropdown() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.25,
-      child: DropdownButtonFormField<String>(
-        hint: const Text(
-          'Select region',
-          style: TextStyle(fontFamily: 'Galano'),
-        ),
-        decoration: customInputDecoration(),
-        value: selectedRegion,
-        items: regions.map<DropdownMenuItem<String>>((region) {
-          return DropdownMenuItem<String>(
-            value: region['name'],
-            child: Text(region['name']),
-          );
-        }).toList(),
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedRegion = newValue;
-            // resetSelections();
-          });
-          widget.onRegionChanged(newValue);
-          if (newValue != null) {
-            final selectedRegionCode = regions.firstWhere(
-              (region) => region['name'] == newValue,
-              orElse: () => null,
-            )['code'];
-            if (selectedRegionCode != null) {
-              fetchProvinces(selectedRegionCode);
-            }
-          }
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Region is required.';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  Widget buildProvinceDropdown() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.25,
-      child: DropdownButtonFormField<String>(
-        hint: Text(
-          'Select Province',
-          style: TextStyle(fontFamily: 'Galano'),
-        ),
-        decoration: customInputDecoration(),
-        value: selectedProvince,
-        items: provinces.map<DropdownMenuItem<String>>((province) {
-          return DropdownMenuItem<String>(
-            value: province['name'],
-            child: Text(province['name']),
-          );
-        }).toList(),
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedProvince = newValue;
-            // resetCityAndBarangaySelections();
-          });
-          widget.onProvinceChanged(newValue);
-          if (newValue != null) {
-            final selectedProvinceCode = provinces.firstWhere(
-              (province) => province['name'] == newValue,
-              orElse: () => null,
-            )['code'];
-            if (selectedProvinceCode != null) {
-              fetchCities(selectedProvinceCode);
-            }
-          }
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Province is required.';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  Widget buildCityDropdown() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.25,
-      child: DropdownButtonFormField<String>(
-        hint: Text(
-          'Select City/Municipality',
-          style: TextStyle(fontFamily: 'Galano'),
-        ),
-        decoration: customInputDecoration(),
-        value: selectedCity,
-        items: cities.map<DropdownMenuItem<String>>((city) {
-          return DropdownMenuItem<String>(
-            value: city['name'],
-            child: Text(city['name']),
-          );
-        }).toList(),
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedCity = newValue;
-            // selectedBarangay = null;
-            // barangays = [];
-          });
-          widget.onCityChanged(newValue);
-          if (newValue != null) {
-            final selectedCitiesCode = cities.firstWhere(
-              (city) => city['name'] == newValue,
-              orElse: () => null,
-            )['code'];
-            if (selectedCitiesCode != null) {
-              fetchBarangays(selectedCitiesCode);
-            }
-          }
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'City is required.';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  Widget buildBarangayDropdown() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.25,
-      child: DropdownButtonFormField<String>(
-        hint: Text(
-          'Select Barangay',
-          style: TextStyle(fontFamily: 'Galano'),
-        ),
-        decoration: customInputDecoration(),
-        value: selectedBarangay,
-        items: barangays.map<DropdownMenuItem<String>>((barangay) {
-          return DropdownMenuItem<String>(
-            value: barangay['name'],
-            child: Text(barangay['name']),
-          );
-        }).toList(),
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedBarangay = newValue;
-          });
-          widget.onBarangayChanged(newValue);
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Barangay is required.';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  Widget buildOtherLocationField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('If the location is not listed above, please enter it here:'),
-        TextFormField(
-          controller: widget.otherLocation,
-          decoration: InputDecoration(
-            isDense: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-        Gap(10),
-      ],
     );
   }
 }

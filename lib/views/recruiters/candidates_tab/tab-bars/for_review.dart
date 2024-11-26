@@ -14,8 +14,21 @@ class ForReviewView extends StatefulWidget {
 class _ForReviewViewState extends State<ForReviewView> {
   @override
   Widget build(BuildContext context) {
+    widget.candidates = [
+      Candidate(
+          id: "id",
+          name: "name",
+          profession: "profession",
+          companyAppliedTo: "companyAppliedTo",
+          jobPostId: "jobPostId",
+          applicationDate: DateTime.now(),
+          dateLastInterviewed: DateTime.now(),
+          interviewCount: 0,
+          dateRejected: DateTime.now(),
+          status: "status")
+    ];
 
-    if(widget.candidates.isEmpty){
+    if (widget.candidates.isEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -25,7 +38,7 @@ class _ForReviewViewState extends State<ForReviewView> {
           ),
           const Gap(20),
           const Text(
-            "You don't have any interviews today.",
+            "You don't have any pending applicants.",
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey,
@@ -35,38 +48,38 @@ class _ForReviewViewState extends State<ForReviewView> {
       );
     } else {
       return Column(
-      children: [
-        Gap(5),
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(right: 290),
-                child: Text(
-                  "Application Date",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Galano',
+        children: [
+          Gap(5),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(right: 290),
+                  child: Text(
+                    "Application Date",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Galano',
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: widget.candidates.length,
-            itemBuilder: (context, index) => ForReviewCard(
-              candidate: widget.candidates[index],
+              ],
             ),
           ),
-        ),
-      ],
-    );
-    }    
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.candidates.length,
+              itemBuilder: (context, index) => ForReviewCard(
+                candidate: widget.candidates[index],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 }

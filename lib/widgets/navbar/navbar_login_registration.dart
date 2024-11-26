@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/Landing_Page/landing_page.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -12,9 +13,16 @@ class NavBarLoginRegister extends StatelessWidget {
         padding: EdgeInsets.all(ResponsiveSizes.paddingSmall(sizeInfo)),
         child: Row(
           children: [
-            SizedBox(
-              child: Image.asset('assets/images/huzzl.png',
-                  width: ResponsiveSizes.huzzlTextLogo(sizeInfo)),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => LandingPageNew(),
+                ));
+              },
+              child: SizedBox(
+                child: Image.asset('assets/images/huzzl.png',
+                    width: ResponsiveSizes.huzzlTextLogo(sizeInfo)),
+              ),
             ),
           ],
         ),

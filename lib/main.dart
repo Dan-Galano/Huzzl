@@ -19,17 +19,18 @@ import 'package:huzzl_web/views/recruiters/branches_tab/staff-provider.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:huzzl_web/views/recruiters/register/mainHiringManager_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 
 void main() async {
-   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   // runApp(const HuzzlWeb());
+  await dotenv.load(fileName: ".env");
   runApp(
     MultiProvider(
       providers: [
@@ -37,6 +38,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => BranchProvider()),
         ChangeNotifierProvider(create: (context) => InterviewProvider()),
+          ChangeNotifierProvider(create: (_) => HiringManagerDetails()),
         ChangeNotifierProvider(
           create: (context) {
             final hiringManagerProvider = HiringManagerProvider();
@@ -59,7 +61,7 @@ void main() async {
           },
         ),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
-          ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       // child: MainScreen(),
       child: HuzzlWeb(),
@@ -115,10 +117,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     // Load initial jobs
-    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    // if (jobProvider.jobs.isEmpty) {
-    //   jobProvider.loadJobs();
-    // }
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs();
+    }
+    
 
     // Manually check if the user is logged in
     currentUser = FirebaseAuth.instance.currentUser;
@@ -244,10 +247,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   return JobseekerMainScreen();
                 } else if (userType == 'recruiter') {
                   return RecruiterHomeScreen();
-                } else if (userType == 'admin'){
+                } else if (userType == 'admin') {
                   return MainScreen();
-                }
-                 else {
+                } else {
                   return LoginRegister();
                 }
 

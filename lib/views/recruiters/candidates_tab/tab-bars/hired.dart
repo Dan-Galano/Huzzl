@@ -15,7 +15,7 @@ class HiredView extends StatefulWidget {
 class _HiredViewState extends State<HiredView> {
   @override
   Widget build(BuildContext context) {
-    if(widget.candidates.isEmpty){
+    if (widget.candidates.isEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -25,7 +25,8 @@ class _HiredViewState extends State<HiredView> {
           ),
           const Gap(20),
           const Text(
-            "You don't have any interviews today.",
+            " No hires yet. Once candidates are hired for this job, they'll appear here.\nStart reviewing and selecting top talent to build your team!",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey,
@@ -34,33 +35,32 @@ class _HiredViewState extends State<HiredView> {
         ],
       );
     } else {
-return Column(
-      children: [
-        Gap(5),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [],
+      return Column(
+        children: [
+          Gap(5),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [],
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              HiredCard(),
-              HiredCard(),
-              HiredCard(),
-              HiredCard(),
-              HiredCard(),
-              HiredCard(),
-              HiredCard(),
-              HiredCard(),
-            ],
+          Expanded(
+            child: ListView(
+              children: [
+                HiredCard(),
+                HiredCard(),
+                HiredCard(),
+                HiredCard(),
+                HiredCard(),
+                HiredCard(),
+                HiredCard(),
+                HiredCard(),
+              ],
+            ),
           ),
-        ),
-      ],
-    );
-
+        ],
+      );
     }
-      }
+  }
 }

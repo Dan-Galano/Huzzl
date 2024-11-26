@@ -117,7 +117,7 @@ class _JobApplicationPreferencesState extends State<JobApplicationPreferences> {
                   ),
                   const SizedBox(height: 18),
                   const Text(
-                    'Is resume required?',
+                    'Is portfolio required?',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

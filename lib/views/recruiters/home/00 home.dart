@@ -117,6 +117,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   @override
   void initState() {
     super.initState();
+    //  logOut();
     getcompanyData();
   }
 
