@@ -2,10 +2,9 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html;
 
 Future<String> fetchJobStreetData(String searchQuery) async {
-  String url = 'https://corsproxy.io/?https://www.jobstreet.com.ph/jobs';
+  String url = 'https://corsproxy.io/?https://ph.jobstreet.com/jobs';
   if (searchQuery.isNotEmpty) {
-    url =
-        'https://corsproxy.io/?https://www.jobstreet.com.ph/$searchQuery-jobs';
+    url = 'https://corsproxy.io/?https://ph.jobstreet.com/$searchQuery-jobs';
   }
   final response = await http.get(Uri.parse(url));
 
@@ -63,9 +62,8 @@ List<Map<String, String>> parseJobStreetData(String htmlContent) {
         'location': location,
         'tags': tags.join(', '),
         'salary': salary ?? 'Salary not provided',
-        'jobLink': 'https://www.jobstreet.com.ph${jobLink}',
-        'proxyLink':
-            'https://corsproxy.io/?https://www.jobstreet.com.ph${jobLink}',
+        'jobLink': 'https://ph.jobstreet.com${jobLink}',
+        'proxyLink': 'https://corsproxy.io/?https://ph.jobstreet.com${jobLink}',
         'website': 'assets/images/jobstreet-logo.png'
       });
     }

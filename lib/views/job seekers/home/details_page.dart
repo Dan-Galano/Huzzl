@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/apply/review_details.dart';
 import 'package:huzzl_web/widgets/buttons/blue/darkblue_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:huzzl_web/widgets/buttons/orange/orange_icon_outlined.dart';
@@ -15,15 +16,20 @@ class JobPostApp extends StatelessWidget {
   final List<String> skills;
   final String clientDetails = '2 jobs posted';
   final String companysize = '2-9 people';
+  final String jobPostUid;
+  final String recUid;
+  final String userUid;
 
-  const JobPostApp({
-    required this.jobDate,
-    required this.jobTitle,
-    required this.jobDescription,
-    required this.location,
-    required this.rate,
-    required this.skills,
-  });
+  const JobPostApp(
+      {required this.jobDate,
+      required this.jobTitle,
+      required this.jobDescription,
+      required this.location,
+      required this.rate,
+      required this.skills,
+      required this.jobPostUid,
+      required this.userUid,
+      required this.recUid});
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +286,15 @@ class JobPostApp extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             DarkblueBoxbutton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ReviewDetailsScreen(
+                                              uid: userUid,
+                                            )));
+                                print("---UID---: ${userUid}");
+                              },
                               text: "Apply Now",
                               width: 300,
                             ),

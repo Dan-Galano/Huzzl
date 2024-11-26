@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
@@ -13,8 +14,9 @@ import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 
 class JobSeekerHomeScreen extends StatefulWidget {
   final String? resumeText;
+  final String uid;
 
-  const JobSeekerHomeScreen({super.key, this.resumeText});
+  const JobSeekerHomeScreen({super.key, this.resumeText, required this.uid});
 
   @override
   State<JobSeekerHomeScreen> createState() => _JobSeekerHomeScreenState();
@@ -86,6 +88,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
     // setState(() {
     //   jobProvider.jobs.shuffle(Random());
     // });
+    print("---UID:----- ${widget.uid}");
   }
 
   void clearSearch() {
@@ -316,66 +319,6 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                       ),
                       SizedBox(height: 16),
 
-                      // Job post history checkboxes
-                      Text(
-                        'Job post history',
-                        style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      CheckboxListTile(
-                        value: false,
-                        onChanged: (val) {},
-                        title: Text(
-                          'No hires',
-                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
-                        ),
-                      ),
-                      CheckboxListTile(
-                        value: false,
-                        onChanged: (val) {},
-                        title: Text(
-                          '1 to 9 hires',
-                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
-                        ),
-                      ),
-                      CheckboxListTile(
-                        value: false,
-                        onChanged: (val) {},
-                        title: Text(
-                          '10+ hires',
-                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-
-                      // Schedule checkboxes
-                      Text(
-                        'Schedule',
-                        style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      CheckboxListTile(
-                        value: false,
-                        onChanged: (val) {},
-                        title: Text(
-                          'Less than 30 hrs/week',
-                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
-                        ),
-                      ),
-                      CheckboxListTile(
-                        value: false,
-                        onChanged: (val) {},
-                        title: Text(
-                          'More than 30 hrs/week',
-                          style: TextStyle(fontFamily: 'Galano', fontSize: 14),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-
                       // Job type dropdown
                       DropdownButtonFormField<String>(
                         // value: _selectedJobType,
@@ -548,6 +491,12 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                                 .jobs[index]; // Use all jobs
 
                                         return buildJobCard(
+                                            // uid: job['uid'] ?? '', // jobpostUid
+                                            jobPostUid: job['uid'] ?? '',
+                                            userId: FirebaseAuth.instance
+                                                    .currentUser?.uid ??
+                                                "",
+                                            recruiterUid: job['userUid'] ?? '',
                                             joblink: job['jobLink'] ?? '',
                                             datePosted: job['datePosted'] ??
                                                 'No Date Posted',

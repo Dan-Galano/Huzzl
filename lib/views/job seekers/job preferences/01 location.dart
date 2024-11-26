@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
-import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
-import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LocationSelectorPage extends StatefulWidget {
   final VoidCallback nextPage;
+  final Function(Map<String, dynamic>) onSaveLocation;
 
   const LocationSelectorPage({
-    super.key,
+    Key? key,
     required this.nextPage,
-  });
+    required this.onSaveLocation,
+  }) : super(key: key);
 
   @override
   State<LocationSelectorPage> createState() => _LocationSelectorPageState();
@@ -23,7 +21,8 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
   String? selectedProvince;
   String? selectedCity;
   String? selectedBarangay;
-  final otherLocationInformation = TextEditingController();
+  final TextEditingController otherLocationInformation =
+      TextEditingController();
 
   List regions = [];
   List provinces = [];
@@ -36,14 +35,48 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     fetchRegions(); // Fetch regions when app starts
   }
 
+  @override
+  void dispose() {
+    otherLocationInformation.dispose();
+    super.dispose();
+  }
+
+  // void _submitLocationForm() {
+  //   Map<String, dynamic> locationData = {
+  //     'region': selectedRegion,
+  //     'province': selectedProvince,
+  //     'city': selectedCity,
+  //     'barangay': selectedBarangay,
+  //     'otherLocation': otherLocationInformation.text,
+  //   };
+  //   widget.onSaveLocation(locationData);
+  //   widget.nextPage();
+  // }
   void _submitLocationForm() {
-    // if (_formKey.currentState!.validate()) {
-    //   widget.nextPage();
-    // }
+    final selectedRegionData = regions.firstWhere(
+        (region) => region['code'] == selectedRegion,
+        orElse: () => null);
+    final selectedProvinceData = provinces.firstWhere(
+        (province) => province['code'] == selectedProvince,
+        orElse: () => null);
+    final selectedCityData = cities
+        .firstWhere((city) => city['code'] == selectedCity, orElse: () => null);
+    final selectedBarangayData = barangays.firstWhere(
+        (barangay) => barangay['code'] == selectedBarangay,
+        orElse: () => null);
+
+    Map<String, dynamic> locationData = {
+      'region': selectedRegionData?['name'],
+      'province': selectedProvinceData?['name'],
+      'city': selectedCityData?['name'],
+      'barangay': selectedBarangayData?['name'],
+      'otherLocation': otherLocationInformation.text,
+    };
+
+    widget.onSaveLocation(locationData);
     widget.nextPage();
   }
 
-  // Fetch regions from the API
   Future<void> fetchRegions() async {
     final response =
         await http.get(Uri.parse('https://psgc.gitlab.io/api/regions/'));
@@ -56,48 +89,45 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     }
   }
 
-  // Fetch provinces by region code
   Future<void> fetchProvinces(String regionCode) async {
     final response = await http.get(
         Uri.parse('https://psgc.gitlab.io/api/regions/$regionCode/provinces/'));
     if (response.statusCode == 200) {
       setState(() {
         provinces = jsonDecode(response.body);
-        selectedProvince = null; // Reset province
+        selectedProvince = null;
         cities = [];
-        selectedCity = null; // Reset city
+        selectedCity = null;
         barangays = [];
-        selectedBarangay = null; // Reset barangay
+        selectedBarangay = null;
       });
     } else {
       throw Exception('Failed to load provinces');
     }
   }
 
-  // Fetch cities by province code
   Future<void> fetchCities(String provinceCode) async {
     final response = await http.get(Uri.parse(
         'https://psgc.gitlab.io/api/provinces/$provinceCode/cities-municipalities/'));
     if (response.statusCode == 200) {
       setState(() {
         cities = jsonDecode(response.body);
-        selectedCity = null; // Reset city
+        selectedCity = null;
         barangays = [];
-        selectedBarangay = null; // Reset barangay
+        selectedBarangay = null;
       });
     } else {
       throw Exception('Failed to load cities');
     }
   }
 
-  // Fetch barangays by city/municipality code
   Future<void> fetchBarangays(String cityCode) async {
     final response = await http.get(Uri.parse(
         'https://psgc.gitlab.io/api/cities-municipalities/$cityCode/barangays/'));
     if (response.statusCode == 200) {
       setState(() {
         barangays = jsonDecode(response.body);
-        selectedBarangay = null; // Reset barangay
+        selectedBarangay = null;
       });
     } else {
       throw Exception('Failed to load barangays');
@@ -108,264 +138,107 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: PreferredSize(
-      //   preferredSize: Size.fromHeight(60.0),
-      //   child: AppBar(
-      //     backgroundColor: Colors.white,
-      //     elevation: 0,
-      //     title: Image.asset(
-      //       'assets/images/huzzl.png',
-      //       width: 80,
-      //     ),
-      //     actions: [
-      //       Padding(
-      //         padding: const EdgeInsets.only(right: 16.0),
-      //         child: IconButton(
-      //           icon: Image.asset(
-      //             'assets/images/account.png',
-      //             width: 25,
-      //             height: 25,
-      //           ),
-      //           onPressed: () {
-      //             // action
-      //           },
-      //         ),
-      //       ),
-      //     ],
-      //     flexibleSpace: Container(
-      //       decoration: BoxDecoration(
-      //         border: Border(
-      //           bottom: BorderSide(
-      //             color: Color(0xffD9D9D9),
-      //             width: 3.0,
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 400.0),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 80.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 40), // Space for the icon
-                    Text(
-                      '1/3',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Color(0xff373030),
-                        fontFamily: 'Galano',
-                        fontWeight: FontWeight.w100,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Where are you located?',
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: Color(0xff373030),
-                        fontFamily: 'Galano',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      'We use this to match you with jobs nearby',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color(0xff373030),
-                        fontFamily: 'Galano',
-                        fontWeight: FontWeight.w100,
-                      ),
-                    ),
-                    SizedBox(height: 30),
-            
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: 'Select Region',
-                        labelStyle: TextStyle(
-                          color: Color(0xff373030),
-                          fontSize: 15.0,
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w400,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 10.0),
-                      ),
-                      value: selectedRegion,
-                      items: regions.map<DropdownMenuItem<String>>((region) {
-                        return DropdownMenuItem<String>(
-                          value: region['code'],
-                          child: Text(region['name']),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedRegion = value;
-                          provinces = [];
-                          selectedProvince = null;
-                          cities = [];
-                          selectedCity = null;
-                          barangays = [];
-                          selectedBarangay = null;
-                        });
-                        if (value != null) {
-                          fetchProvinces(value);
-                        }
-                      },
-                    ),
-                    SizedBox(height: 16.0),
-            
-                    // Show Province Dropdown only when a region is selected
-                    if (selectedRegion != null)
-                      DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          labelText: 'Select Province',
-                          labelStyle: TextStyle(
-                            color: Color(0xff373030),
-                            fontSize: 15.0,
-                            fontFamily: 'Galano',
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12.0, vertical: 10.0),
-                        ),
-                        value: selectedProvince,
-                        items:
-                            provinces.map<DropdownMenuItem<String>>((province) {
-                          return DropdownMenuItem<String>(
-                            value: province['code'],
-                            child: Text(province['name']),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedProvince = value;
-                            cities = [];
-                            selectedCity = null;
-                            barangays = [];
-                            selectedBarangay = null;
-                          });
-                          if (value != null) {
-                            fetchCities(value);
-                          }
-                        },
-                      ),
-                    SizedBox(height: 16.0),
-                    // Show City Dropdown only when a province is selected
-                    if (selectedProvince != null)
-                      DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          labelText: 'Select City/Municipality',
-                          labelStyle: TextStyle(
-                            color: Color(0xff373030),
-                            fontSize: 15.0,
-                            fontFamily: 'Galano',
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12.0, vertical: 10.0),
-                        ),
-                        value: selectedCity,
-                        items: cities.map<DropdownMenuItem<String>>((city) {
-                          return DropdownMenuItem<String>(
-                            value: city['code'],
-                            child: Text(city['name']),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCity = value;
-                            barangays = [];
-                            selectedBarangay = null;
-                          });
-                          if (value != null) {
-                            fetchBarangays(value);
-                          }
-                        },
-                      ),
-                    // Show Barangay Dropdown only when a city is selected
-                    SizedBox(height: 16.0),
-                    if (selectedCity != null)
-                      DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          labelText: 'Select Barangay',
-                          labelStyle: TextStyle(
-                            color: Color(0xff373030),
-                            fontSize: 15.0,
-                            fontFamily: 'Galano',
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12.0, vertical: 10.0),
-                        ),
-                        value: selectedBarangay,
-                        items:
-                            barangays.map<DropdownMenuItem<String>>((barangay) {
-                          return DropdownMenuItem<String>(
-                            value: barangay['code'],
-                            child: Text(barangay['name']),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedBarangay = value;
-                          });
-                        },
-                      ),
-            
-                    if (selectedBarangay != null)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 16.0),
-                          TextFormField(
-                            controller: otherLocationInformation,
-                            decoration: grayHintTextInputDecoration(
-                                "Street Name, Building, House No."),
-                            validator: (value) {
-                              if (value!.isEmpty || value == null) {
-                                return "This field is required.";
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 130,
-                        child: BlueFilledCircleButton(
-                          onPressed: () => _submitLocationForm(),
-                          text: 'Next',
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 400.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('1/3', style: TextStyle(fontSize: 15)),
+            const SizedBox(height: 10),
+            const Text('Where are you located?',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const Text('We use this to match you with jobs nearby',
+                style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 30),
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(labelText: 'Select Region'),
+              value: selectedRegion,
+              items: regions.map<DropdownMenuItem<String>>((region) {
+                return DropdownMenuItem<String>(
+                  value: region['code'],
+                  child: Text(region['name']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedRegion = value;
+                  provinces = [];
+                  fetchProvinces(value!);
+                });
+              },
+            ),
+            const SizedBox(height: 16.0),
+            if (selectedRegion != null)
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Select Province'),
+                value: selectedProvince,
+                items: provinces.map<DropdownMenuItem<String>>((province) {
+                  return DropdownMenuItem<String>(
+                    value: province['code'],
+                    child: Text(province['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedProvince = value;
+                    cities = [];
+                    fetchCities(value!);
+                  });
+                },
+              ),
+            const SizedBox(height: 16.0),
+            if (selectedProvince != null)
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                    labelText: 'Select City/Municipality'),
+                value: selectedCity,
+                items: cities.map<DropdownMenuItem<String>>((city) {
+                  return DropdownMenuItem<String>(
+                    value: city['code'],
+                    child: Text(city['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedCity = value;
+                    fetchBarangays(value!);
+                  });
+                },
+              ),
+            const SizedBox(height: 16.0),
+            if (selectedCity != null)
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Select Barangay'),
+                value: selectedBarangay,
+                items: barangays.map<DropdownMenuItem<String>>((barangay) {
+                  return DropdownMenuItem<String>(
+                    value: barangay['code'],
+                    child: Text(barangay['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedBarangay = value;
+                  });
+                },
+              ),
+            const SizedBox(height: 16.0),
+            if (selectedBarangay != null)
+              TextField(
+                controller: otherLocationInformation,
+                decoration: const InputDecoration(
+                    labelText: 'Street Name, Building, House No.'),
+              ),
+            const SizedBox(height: 30),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: _submitLocationForm,
+                child: const Text('Next'),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -12,10 +12,16 @@ class DropdownSection {
 
 class DropdownWithCheckboxes extends StatefulWidget {
   final List<DropdownSection> sections;
+  final int maxSelections; // Maximum items that can be selected
+  final List<String> preSelectedItems; // Pre-selected items
+  final Function(List<String>) onSelectionChanged; // Callback for changes
 
   const DropdownWithCheckboxes({
     Key? key,
     required this.sections,
+    this.maxSelections = 3, // Default to 3
+    this.preSelectedItems = const [],
+    required this.onSelectionChanged,
   }) : super(key: key);
 
   @override
@@ -23,33 +29,40 @@ class DropdownWithCheckboxes extends StatefulWidget {
 }
 
 class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
-  Map<String, Map<String, bool>> _selectedItems = {};
+  late List<String> _selectedItems; // Tracks current selections
   String? _expandedSection;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the selection maps for each section
-    for (var section in widget.sections) {
-      _selectedItems[section.title] = {
-        for (var item in section.items) item: false,
-      };
-    }
+    // Initialize selected items with pre-selected values
+    _selectedItems = List<String>.from(widget.preSelectedItems);
   }
 
-  void _onItemCheckChanged(String section, String item, bool? value) {
+  void _onItemCheckChanged(String item, bool? value) {
     setState(() {
-      _selectedItems[section]?[item] = value ?? false;
+      if (value == true) {
+        if (_selectedItems.length < widget.maxSelections) {
+          _selectedItems.add(item);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text('You can select up to ${widget.maxSelections} items.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        _selectedItems.remove(item);
+      }
     });
+    widget.onSelectionChanged(_selectedItems); // Notify parent
   }
 
   void _toggleSection(String section) {
     setState(() {
-      if (_expandedSection == section) {
-        _expandedSection = null;
-      } else {
-        _expandedSection = section;
-      }
+      _expandedSection = (_expandedSection == section) ? null : section;
     });
   }
 
@@ -62,11 +75,7 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
           children: [
             _buildSectionTitle(section.title),
             if (_expandedSection == section.title)
-              _buildDropdownItems(
-                section.title,
-                section.items,
-                _selectedItems[section.title]!,
-              ),
+              _buildDropdownItems(section.items),
             SizedBox(height: 16.0),
           ],
         );
@@ -87,21 +96,21 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Galano', 
+                  fontFamily: 'Galano',
                 ),
               ),
               Spacer(),
               Image.asset(
                 _expandedSection == title
-                    ? 'assets/images/dropdown_up.png' 
-                    : 'assets/images/dropdown.png', 
-                width: 20, 
+                    ? 'assets/images/dropdown_up.png'
+                    : 'assets/images/dropdown.png',
+                width: 20,
                 height: 20,
               ),
             ],
           ),
           Container(
-            height: 1, 
+            height: 1,
             color: Color(0xffCFCFCF),
             margin: EdgeInsets.only(top: 10.0),
           ),
@@ -110,38 +119,38 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
     );
   }
 
-  Widget _buildDropdownItems(
-      String sectionTitle, List<String> items, Map<String, bool> selectedItems) {
+  Widget _buildDropdownItems(List<String> items) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color(0xffCFCFCF)), 
+          bottom: BorderSide(color: Color(0xffCFCFCF)),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: items.map((String item) {
-          return _buildCustomCheckbox(sectionTitle, item, selectedItems[item]!);
+          return _buildCustomCheckbox(item);
         }).toList(),
       ),
     );
   }
 
-  Widget _buildCustomCheckbox(String section, String item, bool isSelected) {
+  Widget _buildCustomCheckbox(String item) {
+    final isSelected = _selectedItems.contains(item);
     return Row(
       children: [
         Checkbox(
           value: isSelected,
           activeColor: Color(0xff0038FF),
-          onChanged: (bool? value) => _onItemCheckChanged(section, item, value),
+          onChanged: (bool? value) => _onItemCheckChanged(item, value),
         ),
         Text(
           item,
           style: TextStyle(
             fontFamily: 'Galano',
             fontSize: 14,
-            fontWeight: FontWeight.w500 
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

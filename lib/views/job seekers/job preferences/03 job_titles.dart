@@ -7,67 +7,41 @@ import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 class JobTitlesPage extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
-  JobTitlesPage(
-      {super.key, required this.nextPage, required this.previousPage});
+  final Function(String)
+      onSaveJobTitles; // Pass selected job titles as a comma-separated string
+
+  JobTitlesPage({
+    super.key,
+    required this.nextPage,
+    required this.previousPage,
+    required this.onSaveJobTitles,
+  });
 
   @override
   _JobTitlesPageState createState() => _JobTitlesPageState();
 }
 
 class _JobTitlesPageState extends State<JobTitlesPage> {
-  var minimum = TextEditingController();
-  var maximum = TextEditingController();
+  List<String> selectedJobTitles = []; // Tracks selected job titles
 
   void _submitJobTitlesForm() {
-    // if (_formKey.currentState!.validate()) {
-    //   widget.nextPage();
-    // }
-    // widget.nextPage();
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => JobseekerMainScreen(),
-    ));
+    if (selectedJobTitles.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select at least one job title.')),
+      );
+      return;
+    }
+
+    // Convert selected job titles to a comma-separated string
+    String jobTitlesString = selectedJobTitles.join(', ');
+    widget.onSaveJobTitles(jobTitlesString);
+    widget.nextPage();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: PreferredSize(
-      //   preferredSize: Size.fromHeight(60.0),
-      //   child: AppBar(
-      //     backgroundColor: Colors.white,
-      //     elevation: 0,
-      //     title: Image.asset(
-      //       'assets/images/huzzl.png',
-      //       width: 80,
-      //     ),
-      //     actions: [
-      //       Padding(
-      //         padding: const EdgeInsets.only(right: 16.0),
-      //         child: IconButton(
-      //           icon: Image.asset(
-      //             'assets/images/account.png',
-      //             width: 25,
-      //             height: 25,
-      //           ),
-      //           onPressed: () {
-      //             // action
-      //           },
-      //         ),
-      //       ),
-      //     ],
-      //     flexibleSpace: Container(
-      //       decoration: BoxDecoration(
-      //         border: Border(
-      //           bottom: BorderSide(
-      //             color: Color(0xffD9D9D9),
-      //             width: 3.0,
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -157,104 +131,15 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                             'Customer Service & Tech Support',
                           ],
                         ),
-                        DropdownSection(
-                          title: 'Data Science & Analytics',
-                          items: [
-                            'Data Analysis & Testing',
-                            'Data Extraction/ETL',
-                            'Data Mining & Management',
-                            'AI & Machine Learning',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'Design & Creative',
-                          items: [
-                            'Art & Illustration',
-                            'Audio & Music Production',
-                            'Branding & Logo Design',
-                            'NFT, AR/VR & Game Art',
-                            'Graphic, Editorial & Presentation Design',
-                            'Performing Arts',
-                            'Photography',
-                            'Product Design',
-                            'Video & Animation',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'Engineering & Architecture',
-                          items: [
-                            'Building & Landscape Architecture',
-                            'Chemical Engineering',
-                            'Civil & Structural Engineering',
-                            'Contract Manufacturing',
-                            'Electrical & Electronic Engineering',
-                            'Interior & Trade Show Design',
-                            'Energy & Mechanical Engineering',
-                            'Physical Sciences',
-                            '3D Modeling & CAD',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'IT & Networking',
-                          items: [
-                            'Database Management & Administration',
-                            'ERP/CRM Software',
-                            'Information Security & Compliance',
-                            'Network & System Administration',
-                            'DevOps & Solution Architecture',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'Legal',
-                          items: [
-                            'Corporate & Contract Law',
-                            'International & Immigration Law',
-                            'Finance & Tax Law',
-                            'Public Law',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'Sales & Marketing',
-                          items: [
-                            'Digital Marketing',
-                            'Lead Generation & Telemarketing',
-                            'Marketing, PR & Brand Strategy',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'Translation',
-                          items: [
-                            'Language Tutoring & Interpretation',
-                            'Translation & Localization Services',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'Web, Mobile & Software Dev',
-                          items: [
-                            'Blockchain, NFT & Cryptocurrency',
-                            'AI Apps & Integration',
-                            'Desktop Application Development',
-                            'Ecommerce Development',
-                            'Game Design & Development',
-                            'Mobile Development',
-                            'Other - Software Development',
-                            'Product Management & Scrum',
-                            'QA Testing',
-                            'Scripts & Utilities',
-                            'Web & Mobile Design',
-                            'Web Development',
-                          ],
-                        ),
-                        DropdownSection(
-                          title: 'Writing',
-                          items: [
-                            'Sales & Marketing Copywriting',
-                            'Content Writing',
-                            'Editing & Proofreading Services',
-                            'Professional & Business Writing',
-                          ],
-                        ),
+                        // Add other categories as needed
                       ],
+                      maxSelections: 3, // Limit selections to 3
+                      preSelectedItems: selectedJobTitles, // Preselected items
+                      onSelectionChanged: (selectedItems) {
+                        setState(() {
+                          selectedJobTitles = selectedItems;
+                        });
+                      },
                     ),
                     SizedBox(height: 30),
                     Align(
@@ -262,7 +147,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                       child: SizedBox(
                         width: 130,
                         child: BlueFilledCircleButton(
-                          onPressed: () => _submitJobTitlesForm(),
+                          onPressed: _submitJobTitlesForm,
                           text: 'Continue',
                         ),
                       ),
@@ -282,12 +167,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                 width: 20,
                 height: 20,
               ),
-              onPressed: () {
-                //For debugging and UI only
-                //Use PageController
-                // Navigator.of(context).pop();
-                widget.previousPage();
-              },
+              onPressed: widget.previousPage,
             ),
           ),
         ],

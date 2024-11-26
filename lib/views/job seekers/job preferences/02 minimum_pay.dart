@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
@@ -9,21 +7,39 @@ import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 class MinimumPayPage extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
-  MinimumPayPage(
-      {super.key, required this.nextPage, required this.previousPage});
+  final Function(Map<String, dynamic>) onSavePay;
+
+  const MinimumPayPage({
+    super.key,
+    required this.nextPage,
+    required this.previousPage,
+    required this.onSavePay,
+  });
 
   @override
   _MinimumPayPageState createState() => _MinimumPayPageState();
 }
 
 class _MinimumPayPageState extends State<MinimumPayPage> {
-  var minimum = TextEditingController();
-  var maximum = TextEditingController();
+  final TextEditingController minimum = TextEditingController();
+  final TextEditingController maximum = TextEditingController();
+  String selectedRate = 'per hour'; // Default dropdown value
 
-  void _submitMimPayForm() {
-    // if (_formKey.currentState!.validate()) {
-    //   widget.nextPage();
-    // }
+  void _submitMinPayForm() {
+    // Validate and save pay data
+    if (minimum.text.isEmpty || maximum.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields.')),
+      );
+      return;
+    }
+
+    Map<String, dynamic> payData = {
+      'rate': selectedRate,
+      'minimum': minimum.text,
+      'maximum': maximum.text,
+    };
+    widget.onSavePay(payData);
     widget.nextPage();
   }
 
@@ -31,42 +47,6 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: PreferredSize(
-      //   preferredSize: Size.fromHeight(60.0),
-      //   child: AppBar(
-      //     backgroundColor: Colors.white,
-      //     elevation: 0,
-      //     title: Image.asset(
-      //       'assets/images/huzzl.png',
-      //       width: 80,
-      //     ),
-      //     actions: [
-      //       Padding(
-      //         padding: const EdgeInsets.only(right: 16.0),
-      //         child: IconButton(
-      //           icon: Image.asset(
-      //             'assets/images/account.png',
-      //             width: 25,
-      //             height: 25,
-      //           ),
-      //           onPressed: () {
-      //             // action
-      //           },
-      //         ),
-      //       ),
-      //     ],
-      //     flexibleSpace: Container(
-      //       decoration: BoxDecoration(
-      //         border: Border(
-      //           bottom: BorderSide(
-      //             color: Color(0xffD9D9D9),
-      //             width: 3.0,
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ),
       body: Stack(
         children: [
           Container(
@@ -124,20 +104,20 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                             SizedBox(height: 8),
                             LightBlueTextFieldDropdown(
                               isDropdown: true,
-                              dropdownValue: 'per hour',
+                              dropdownValue: selectedRate,
                               dropdownItems: [
                                 'per hour',
                                 'per day',
-                                'per month'
+                                'per month',
                               ],
                               onChanged: (value) {
                                 setState(() {
-                                  // Update state if necessary
+                                  selectedRate = value ?? 'per hour';
                                 });
                               },
                               controller: TextEditingController(),
                               obscureText: false,
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -162,13 +142,12 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                               obscureText: false,
                               prefixText: '₱ ',
                             ),
-                            SizedBox(width: 10),
                           ],
                         ),
                       ),
                       SizedBox(width: 10),
                       Text(
-                        "  To",
+                        "To",
                         style: TextStyle(
                           fontSize: 14,
                           color: Color(0xff8E8E8E),
@@ -208,7 +187,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                     child: SizedBox(
                       width: 130,
                       child: BlueFilledCircleButton(
-                        onPressed: () => _submitMimPayForm(),
+                        onPressed: _submitMinPayForm,
                         text: 'Next',
                       ),
                     ),
@@ -227,12 +206,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                 width: 20,
                 height: 20,
               ),
-              onPressed: () {
-                //For debugging and UI only
-                //Use PageController
-                // Navigator.of(context).pop();
-                widget.previousPage();
-              },
+              onPressed: widget.previousPage,
             ),
           ),
         ],

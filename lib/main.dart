@@ -8,6 +8,8 @@ import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/screens/main/main_screen.dart';
 import 'package:huzzl_web/views/chat/services/chat_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/apply/application_prov.dart';
+import 'package:huzzl_web/views/job%20seekers/apply/review_details.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/Landing_Page/landing_page.dart';
@@ -24,7 +26,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 
 void main() async {
-   await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -59,7 +61,19 @@ void main() async {
           },
         ),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
-          ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(
+          create: (context) {
+            final currentUser = FirebaseAuth.instance.currentUser;
+            if (currentUser != null) {
+              return ApplicationProvider(uid: currentUser.uid);
+            }
+            return ApplicationProvider(
+                uid: ""); // Handle the case where no user is logged in
+          },
+          child: ReviewDetailsScreen(
+              uid: FirebaseAuth.instance.currentUser?.uid ?? ""),
+        ),
       ],
       // child: MainScreen(),
       child: HuzzlWeb(),
@@ -239,15 +253,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 print('Data: ${snapshot.data}');
                 var userData = snapshot.data!.data() as Map<String, dynamic>;
                 String userType = userData['role'];
+                String uid = snapshot.data!.id;
 
                 if (userType == 'jobseeker') {
-                  return JobseekerMainScreen();
+                  return JobseekerMainScreen(uid: uid);
                 } else if (userType == 'recruiter') {
                   return RecruiterHomeScreen();
-                } else if (userType == 'admin'){
+                } else if (userType == 'admin') {
                   return MainScreen();
-                }
-                 else {
+                } else {
                   return LoginRegister();
                 }
 

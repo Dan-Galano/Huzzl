@@ -9,11 +9,16 @@ class JobProvider with ChangeNotifier {
   List<Map<String, String>> _searchJobs = [];
   bool _hasResults = true;
   bool _isLoading = false;
+  String? _recWhoPostTheJob;
+  String? _jobPostId;
 
   List<Map<String, String>> get jobs => _jobs;
   List<Map<String, String>> get searchJobs => _searchJobs;
   bool get hasResults => _hasResults;
   bool get isLoading => _isLoading;
+
+  String? get recruiterPosted => _recWhoPostTheJob;
+  String? get jobpostId => _jobPostId;
 
   bool isValidSearchQuery(String query) {
     // Check if the query is valid: at least 3 characters and contains only letters and numbers
@@ -47,20 +52,20 @@ class JobProvider with ChangeNotifier {
       List<Map<String, String>> jobstreetJobs =
           parseJobStreetData(jobstreetHtmlContent);
       await fetchJobStreetJobDesc(jobstreetJobs);
-      String linkedInHtmlContent = await fetchLinkedInData(searchQuery);
-      List<Map<String, String>> linkedInJobs =
-          parseLinkedInData(linkedInHtmlContent);
-      await fetchLinkedInJobDesc(linkedInJobs);
+      // String linkedInHtmlContent = await fetchLinkedInData(searchQuery);
+      // List<Map<String, String>> linkedInJobs =
+      //     parseLinkedInData(linkedInHtmlContent);
+      // await fetchLinkedInJobDesc(linkedInJobs);
       String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
       List<Map<String, String>> onlineJobsJobs =
           parseOnlineJobsData(onlineJobsHtmlContent);
-      String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
-      List<Map<String, String>> kalibrrJobs =
-          parseKalibrrData(kalibrrHtmlContent);
-      await fetchKalibrrJobDesc(kalibrrJobs);
-      String philJobNetHtmlContent = await fetchPhilJobNetData();
-      List<Map<String, String>> philJobNetJobs =
-          parsePhilJobNetData(philJobNetHtmlContent);
+      // String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
+      // List<Map<String, String>> kalibrrJobs =
+      //     parseKalibrrData(kalibrrHtmlContent);
+      // await fetchKalibrrJobDesc(kalibrrJobs);
+      // String philJobNetHtmlContent = await fetchPhilJobNetData();
+      // List<Map<String, String>> philJobNetJobs =
+      //     parsePhilJobNetData(philJobNetHtmlContent);
 
       // Combine all jobs from all sources
       List<Map<String, String>> allJobs = [
@@ -119,13 +124,14 @@ class JobProvider with ChangeNotifier {
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collectionGroup('job_posts').get();
 
-    List<Map<String, dynamic>> allJobPosts = querySnapshot.docs.map((doc) {
-      return doc.data() as Map<String, dynamic>;
-    }).toList();
-
-    // Prepare a new list to return, avoiding direct addition to _jobs
+    // Prepare a new list to return
     List<Map<String, String>> fetchedJobs = [];
-    for (var jobPost in allJobPosts) {
+
+    // Loop through each document in the snapshot
+    for (var doc in querySnapshot.docs) {
+      // Access the job post data
+      Map<String, dynamic> jobPost = doc.data() as Map<String, dynamic>;
+
       String? title = jobPost['jobTitle'] as String?;
       String? description = jobPost['jobDescription'] as String?;
       String? location = jobPost['jobPostLocation'] as String?;
@@ -134,11 +140,29 @@ class JobProvider with ChangeNotifier {
       String? skills = jobPost['skills'] as String?;
       List<String> skillsTag = skills?.split(', ') ?? [];
 
+      // Get the UID of the job post (document ID)
+      String jobPostUid =
+          doc.id; // This is the document ID of the job post itself
+      if (jobPostUid != null) {
+        _jobPostId = jobPostUid; // Store the user UID in the provider
+      }
+
+      // Retrieve the userUid from the document's parent (the user's UID)
+      String? userUid =
+          doc.reference.parent.parent?.id; // This gets the user's UID
+
+      if (userUid != null) {
+        _recWhoPostTheJob = userUid; // Store the user UID in the provider
+      }
+
       if (title != null && location != null) {
         String tags =
             skillsTag.isNotEmpty ? skillsTag.join(', ') : 'No tags available';
 
         fetchedJobs.add({
+          'uid': jobPostUid, // Job post UID
+          'userUid':
+              userUid ?? 'Unknown user', // The user UID who posted the job
           'datePosted': postedDate ?? 'Unknown date',
           'title': title,
           'description': description ?? 'No Description',
