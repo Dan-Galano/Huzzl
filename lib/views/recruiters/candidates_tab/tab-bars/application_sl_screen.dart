@@ -13,6 +13,7 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar_inside.
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -52,11 +53,13 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
   }
 
   late JobProviderCandidate _jobProvider;
+  late InterviewProvider _interviewProvider;
 
   @override
   void initState() {
     super.initState();
     _jobProvider = Provider.of<JobProviderCandidate>(context, listen: false);
+    _interviewProvider = Provider.of<InterviewProvider>(context, listen: false);
 
     _tabController = TabController(length: 2, vsync: this);
     candidateNameController.text =
@@ -66,19 +69,19 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
       setState(() {});
     });
 
-    selectedDate = today;
+    // selectedDate = today;
     selectedType = 'Online';
 
-    // getRecruiterName();
+    getRecruiterName();
   }
 
-  // void getRecruiterName() async {
-  //   lateRecruiterName = await _jobProvider.getCurrentUserName();
-  //   setState(() {
-  //     recruiterName = lateRecruiterName;
-  //     interviewerNameController.text = recruiterName;
-  //   });
-  // }
+  void getRecruiterName() async {
+    lateRecruiterName = await _jobProvider.getCurrentUserName();
+    setState(() {
+      recruiterName = lateRecruiterName;
+      interviewerNameController.text = recruiterName;
+    });
+  }
 
   @override
   void dispose() {
@@ -92,10 +95,10 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
 
   //Here
   final candidateNameController = TextEditingController();
-  // final interviewerNameController = TextEditingController();
+  final interviewerNameController = TextEditingController();
 
-  // late String lateRecruiterName;
-  // String recruiterName = "";
+  late String lateRecruiterName;
+  String recruiterName = "";
 
   final List<Applicant> applicants = [
     Applicant(
@@ -212,9 +215,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
   SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
 
   void addToList(InterviewEvent e) {
-    setState(() {
-      events.add(e);
-    });
+    //Aside from adding it to local list, add it also into the firebase
+    print("Interview event details: ${e.applicant} ${e.date} ${e.interviewers}");
+    // setState(() {
+    //   events.add(e);
+    // });
+    _interviewProvider.saveInterview(e);
     resetScheduleInterviewerForm();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -428,55 +434,80 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
     return getScheduledInterviews(date).isNotEmpty;
   }
 
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate;
+  Future<void> _selectDate(BuildContext context, StateSetter setState) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // Default to the current date
+      firstDate: DateTime.now(), // Earliest date selectable
+      lastDate: DateTime(2100), // Latest date selectable
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+
+    debugPrint("Selected dateeee: $selectedDate");
+
+    if (selectedDate != null) {
+      debugPrint("Hindi siya nulllll ${formatDate(selectedDate!)}");
+    }
+  }
+
+  String formatDate(DateTime dateTime) {
+    return DateFormat('MMMM dd, yyyy').format(dateTime); // January 20, 2024
+  }
+
   List<InterviewEvent> events = [
-    InterviewEvent(
-      applicant:
-          Applicant(name: 'Pat Tomas', job: 'Vocalist', branch: 'Rosales'),
-      title: 'First Round Interview',
-      type: 'F2F',
-      interviewers: [
-        'Dan Galano',
-        'Monica Ave',
-        'Dan Galano',
-        'Monica Ave',
-        'Dan Galano',
-        'Monica Ave'
-      ],
-      date: DateTime(2024, 09, 23),
-      startTime: TimeOfDay.now(),
-      endTime: TimeOfDay.now(),
-      notes: 'Bring your guts!!!',
-      location:
-          'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
-    ),
-    InterviewEvent(
-      applicant: Applicant(
-        name: 'Dessa Mine',
-        job: 'Graphic Designer',
-        branch: 'Urdaneta',
+      InterviewEvent(
+        applicant:
+            "PAtrick",
+        title: 'First Round Interview',
+        type: 'F2F',
+        interviewers: [
+          'Dan Galano',
+          'Monica Ave',
+          'Dan Galano',
+          'Monica Ave',
+          'Dan Galano',
+          'Monica Ave'
+        ],
+        date: DateTime.now(),
+        startTime: TimeOfDay.now(),
+        endTime: TimeOfDay.now(),
+        notes: 'Bring your guts!!!',
+        location:
+            'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
       ),
-      title: 'Second Round Interview',
-      type: 'F2F',
-      interviewers: ['Dan Galano', 'Monica Ave'],
-      date: DateTime(2024, 9, 27),
-      startTime: TimeOfDay.now(),
-      endTime: TimeOfDay.now(),
-      notes: 'Bring your guts!!!',
-      location:
-          'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
-    ),
-    InterviewEvent(
-      applicant:
-          Applicant(name: 'Hana Montana', job: 'Dancerist', branch: 'Dagupan'),
-      title: 'First Round Interview',
-      type: 'Online',
-      interviewers: ['Dan Galano', 'Monica Ave'],
-      date: DateTime.now(),
-      startTime: TimeOfDay.now(),
-      endTime: TimeOfDay.now(),
-      notes: 'Bring your guts!!!',
-    )
+    //   InterviewEvent(
+    //     applicant: Applicant(
+    //       name: 'Dessa Mine',
+    //       job: 'Graphic Designer',
+    //       branch: 'Urdaneta',
+    //     ),
+    //     title: 'Second Round Interview',
+    //     type: 'F2F',
+    //     interviewers: ['Dan Galano', 'Monica Ave'],
+    //     date: DateTime(2024, 9, 27),
+    //     startTime: TimeOfDay.now(),
+    //     endTime: TimeOfDay.now(),
+    //     notes: 'Bring your guts!!!',
+    //     location:
+    //         'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
+    //   ),
+    //   InterviewEvent(
+    //     applicant:
+    //         Applicant(name: 'Hana Montana', job: 'Dancerist', branch: 'Dagupan'),
+    //     title: 'First Round Interview',
+    //     type: 'Online',
+    //     interviewers: ['Dan Galano', 'Monica Ave'],
+    //     date: DateTime.now(),
+    //     startTime: TimeOfDay.now(),
+    //     endTime: TimeOfDay.now(),
+    //     notes: 'Bring your guts!!!',
+    //   )
   ];
 
   void resetScheduleInterviewerForm() {
@@ -540,6 +571,38 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                       ),
                     ),
                     SizedBox(height: 10),
+                    InkWell(
+                      mouseCursor: SystemMouseCursors.click,
+                      onTap: () async {
+                        await _selectDate(context, setState);
+                        debugPrint("Date selection selected!!!");
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 5.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              selectedDate != null
+                                  ? formatDate(
+                                      selectedDate!) // Format the selected date
+                                  : 'Select interview date', // Default text
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: selectedDate != null
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
                     TextField(
                       controller: titleController,
                       decoration: InputDecoration(
@@ -587,15 +650,15 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                       ),
                     ),
                     SizedBox(height: 10),
-                    buildMultiSelectDropdown(setState),
-                    // TextField(
-                    //   controller: interviewerNameController,
-                    //   enabled: false,
-                    //   decoration: InputDecoration(
-                    //     // hintText: "",
-                    //     border: OutlineInputBorder(),
-                    //   ),
-                    // ),
+                    // buildMultiSelectDropdown(setState),
+                    TextField(
+                      controller: interviewerNameController,
+                      enabled: false,
+                      decoration: InputDecoration(
+                        // hintText: "",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                     SizedBox(height: 10),
                     // TextField(
                     //   enabled: false,
@@ -799,7 +862,7 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                               // Validate fields
                               if (titleController.text.isEmpty ||
                                   selectedType == null ||
-                                  selectedInterviewers.isEmpty ||
+                                  // selectedInterviewers.isEmpty ||
                                   startTime == null ||
                                   endTime == null) {
                                 // Show message alert for missing general required fields
@@ -830,11 +893,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
 
                               // Create and add the interview event
                               InterviewEvent newEvent = InterviewEvent(
-                                applicant: selectedApplicant,
+                                applicant: candidateNameController.text,
                                 title: titleController.text,
                                 type: selectedType,
-                                interviewers:
-                                    List<String>.from(selectedInterviewers),
+                                // interviewers:
+                                //     List<String>.from(selectedInterviewers),
+                                interviewers: [interviewerNameController.text],
                                 date: selectedDate,
                                 startTime: startTime,
                                 endTime: endTime,
@@ -842,7 +906,8 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                 location: locationController.text,
                               );
 
-                              print("DETAILSSSSS: Applicant name: ${candidateNameController.text}, Title: ${titleController.text}, Interview Type: ${selectedType}, Start time: ${startTime}, End time: ${endTime}, additional notes: ${notesController.text}");
+                              print(
+                                  "DETAILSSSSS: Applicant name: ${candidateNameController.text}, interviewer: ${interviewerNameController.text} Title: ${titleController.text}, Interview Type: ${selectedType}, Start time: ${startTime}, End time: ${endTime}, additional notes: ${notesController.text} Selected date: ${selectedDate}");
 
                               // Add new event to the list and update the UI
                               showSaveInterviewConfirmationDialog(

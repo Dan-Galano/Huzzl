@@ -5,7 +5,9 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/customDropdown.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class InterviewCalendar extends StatefulWidget {
@@ -134,17 +136,19 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
       TextEditingController();
 
   SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
+  late InterviewProvider _interviewProvider;
 
   @override
   void initState() {
     super.initState();
+    _interviewProvider = Provider.of<InterviewProvider>(context, listen: false);
     selectedDate = today;
     selectedType = 'Online';
   }
 
   void addToList(InterviewEvent e) {
     setState(() {
-      events.add(e);
+      _interviewProvider.events.add(e);
     });
     resetScheduleInterviewerForm();
     Navigator.of(context).pop();
@@ -347,7 +351,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
   }
 
   List<InterviewEvent> getScheduledInterviews(DateTime date) {
-    return events
+    return _interviewProvider.events
         .where((event) =>
             event.date?.year == date.year &&
             event.date?.month == date.month &&
@@ -360,10 +364,11 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
   }
 
   DateTime selectedDate = DateTime.now();
-  List<InterviewEvent> events = [
+  // List<InterviewEvent>? events;
+  // [
     // InterviewEvent(
     //   applicant:
-    //       Applicant(name: 'Pat Tomas', job: 'Vocalist', branch: 'Rosales'),
+    //       "Patrick John Tomas",
     //   title: 'First Round Interview',
     //   type: 'F2F',
     //   interviewers: [
@@ -374,7 +379,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
     //     'Dan Galano',
     //     'Monica Ave'
     //   ],
-    //   date: DateTime(2024, 09, 23),
+    //   date: DateTime.now(),
     //   startTime: TimeOfDay.now(),
     //   endTime: TimeOfDay.now(),
     //   notes: 'Bring your guts!!!',
@@ -408,7 +413,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
     //   endTime: TimeOfDay.now(),
     //   notes: 'Bring your guts!!!',
     // )
-  ];
+  // ];
 
   void resetScheduleInterviewerForm() {
     setState(() {
@@ -746,7 +751,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
 
                               // Create and add the interview event
                               InterviewEvent newEvent = InterviewEvent(
-                                applicant: selectedApplicant,
+                                applicant: "BINAGO KO to",
                                 title: titleController.text,
                                 type: selectedType,
                                 interviewers:
@@ -1052,6 +1057,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    var interviewProvider = Provider.of<InterviewProvider>(context);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 243, 243),
       body: Column(
@@ -1552,60 +1558,60 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
                                                         10), // Replaced Gap(10)
 
                                                 // Applicant row
-                                                Row(
-                                                  children: [
-                                                    CircleAvatar(
-                                                      radius: 40,
-                                                      backgroundImage:
-                                                          AssetImage(event
-                                                                  .applicant
-                                                                  ?.pfp ??
-                                                              'assets/images/pfp.png'),
-                                                    ),
-                                                    SizedBox(width: 20),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            event.applicant
-                                                                    ?.name ??
-                                                                'Unknown Applicant',
-                                                            style: TextStyle(
-                                                              fontSize: 20,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                            softWrap: true,
-                                                          ),
-                                                          SizedBox(height: 3),
-                                                          Text(
-                                                            event.applicant
-                                                                    ?.job ??
-                                                                'Unknown Job',
-                                                            style: TextStyle(
-                                                              fontSize: 18,
-                                                            ),
-                                                            softWrap: true,
-                                                          ),
-                                                          SizedBox(height: 3),
-                                                          Text(
-                                                            event.applicant
-                                                                    ?.branch ??
-                                                                'Unknown Branch',
-                                                            style: TextStyle(
-                                                              fontSize: 18,
-                                                            ),
-                                                            softWrap: true,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                // Row(
+                                                //   children: [
+                                                //     CircleAvatar(
+                                                //       radius: 40,
+                                                //       backgroundImage:
+                                                //           AssetImage(event
+                                                //                   .applicant
+                                                //                   ?.pfp ??
+                                                //               'assets/images/pfp.png'),
+                                                //     ),
+                                                //     SizedBox(width: 20),
+                                                //     Expanded(
+                                                //       child: Column(
+                                                //         crossAxisAlignment:
+                                                //             CrossAxisAlignment
+                                                //                 .start,
+                                                //         children: [
+                                                //           Text(
+                                                //             event.applicant
+                                                //                     ?.name ??
+                                                //                 'Unknown Applicant',
+                                                //             style: TextStyle(
+                                                //               fontSize: 20,
+                                                //               fontWeight:
+                                                //                   FontWeight
+                                                //                       .bold,
+                                                //             ),
+                                                //             softWrap: true,
+                                                //           ),
+                                                //           SizedBox(height: 3),
+                                                //           Text(
+                                                //             event.applicant
+                                                //                     ?.job ??
+                                                //                 'Unknown Job',
+                                                //             style: TextStyle(
+                                                //               fontSize: 18,
+                                                //             ),
+                                                //             softWrap: true,
+                                                //           ),
+                                                //           SizedBox(height: 3),
+                                                //           Text(
+                                                //             event.applicant
+                                                //                     ?.branch ??
+                                                //                 'Unknown Branch',
+                                                //             style: TextStyle(
+                                                //               fontSize: 18,
+                                                //             ),
+                                                //             softWrap: true,
+                                                //           ),
+                                                //         ],
+                                                //       ),
+                                                //     ),
+                                                //   ],
+                                                Text("Applicant name: ${event.applicant!}"),
                                                 SizedBox(height: 20),
 
                                                 // Title row

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_model.dart';
 
 class InterviewEvent {
-  Applicant? applicant;
+  String? applicant;
   String? title;
   String? type;
   List<String>? interviewers;

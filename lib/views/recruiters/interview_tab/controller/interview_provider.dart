@@ -2,6 +2,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/gray/grayfilled_boxbutton.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -220,5 +221,14 @@ class InterviewProvider extends ChangeNotifier {
         );
       },
     );
+  }
+
+  //HERE TO SAVE THE INTERVIEW SCHEDULEEEEEE
+  List<InterviewEvent> _events = [];
+  List<InterviewEvent> get events => _events;
+
+  void saveInterview(InterviewEvent e){
+    _events.add(e);
+    notifyListeners();
   }
 }
