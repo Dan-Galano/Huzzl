@@ -115,7 +115,8 @@ class _ShortListedCardState extends State<ShortListedCard> {
                           final homeState = context.findAncestorStateOfType<
                               RecruiterHomeScreenState>();
                           homeState?.toggleSlApplicationScreen(
-                              true, 1, widget.candidate.id);
+                              true, 1, widget.candidate.id,
+                              candidate: widget.candidate);
                         },
                         style: TextButton.styleFrom(
                           padding:

@@ -169,6 +169,7 @@ void showRejectDialog(BuildContext context, String candidateId) {
                                 jobCandidateProvider
                                     .findDataOfCandidate(candidateId)!
                                     .jobApplicationDocId!,
+                                value.rejectMessage,
                               ),
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(

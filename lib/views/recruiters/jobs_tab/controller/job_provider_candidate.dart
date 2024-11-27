@@ -275,7 +275,8 @@ class JobProviderCandidate extends ChangeNotifier {
     }
   }
 
-  void rejectCandidate(String jobPostId, String id, String jobApplicationId) async {
+  void rejectCandidate(
+      String jobPostId, String id, String jobApplicationId) async {
     debugPrint("Rejecting candidate ....");
     for (var i = 0; i < _candidates.length; i++) {
       if (_candidates[i].id == id) {
@@ -306,8 +307,8 @@ class JobProviderCandidate extends ChangeNotifier {
           // .where('jobPostId', isEqualTo: jobPostId)
           .doc(jobApplicationId)
           .update({'status': 'Rejected'}); // Field to update
-      print("Candidate status Rejectedddddddddddddddddddddddddddddddddd in job application");
-
+      print(
+          "Candidate status Rejectedddddddddddddddddddddddddddddddddd in job application");
     } catch (e) {
       print("Failed to update candidate status: $e");
     }
@@ -323,7 +324,8 @@ class JobProviderCandidate extends ChangeNotifier {
   //   }
   // }
 
-  void shortlistCandidate(String jobPostId, String id, String jobApplicationId) async {
+  void shortlistCandidate(
+      String jobPostId, String id, String jobApplicationId) async {
     debugPrint("Shorlisting candidateeee ...");
     // Update local candidate list
     for (var i = 0; i < _candidates.length; i++) {
@@ -356,10 +358,55 @@ class JobProviderCandidate extends ChangeNotifier {
           // .where('jobPostId', isEqualTo: jobPostId)
           .doc(jobApplicationId)
           .update({'status': 'Shortlisted'}); // Field to update
-      print("Candidate status updated to Shortlisted in job application collection");
-
+      print(
+          "Candidate status updated to Shortlisted in job application collection");
     } catch (e) {
       print("Failed to update candidate status: $e");
+    }
+  }
+
+  void pushNotificationToJobseeker(
+    String jobPostId,
+    String jobseekerId,
+    String notifTitle,
+    String message,
+  ) async {
+    try {
+      // Fetch the job post details
+      DocumentSnapshot jobPostSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(getCurrentUserId())
+          .collection('job_posts')
+          .doc(jobPostId)
+          .get();
+
+      if (jobPostSnapshot.exists) {
+        // Extract data from the fetched job post
+        Map<String, dynamic> jobPostData =
+            jobPostSnapshot.data() as Map<String, dynamic>;
+
+        // Add necessary data to the second collection
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(jobseekerId)
+            .collection('notifications')
+            .add({
+          'recruiterId': getCurrentUserId(),
+          'jobseekerId': jobseekerId,
+          'jobpostId': jobPostId,
+          'notifDate': DateTime.now(),
+          'notifTitle': notifTitle,
+          'notifMessage': message,
+          'jobTitle': jobPostData['jobTitle'],
+          'status': 'not read',
+        });
+
+        print('Notification successfully added!');
+      } else {
+        print('Job post does not exist.');
+      }
+    } catch (e) {
+      print('Error fetching job post details or adding notification: $e');
     }
   }
 
@@ -387,5 +434,21 @@ class JobProviderCandidate extends ChangeNotifier {
     String formattedDate =
         DateFormat("dd MMMM yyyy, h:mma").format(applicationDate);
     return formattedDate.toLowerCase();
+  }
+
+  Future<String> getCurrentUserName() async {
+    final userId = getCurrentUserId();
+    // Fetch the document using the current user's ID
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+
+    // Extract the first name and last name fields
+    String firstName = doc['firstName'] ?? '';
+    String lastName = doc['lastName'] ?? '';
+
+    // Concatenate the names and return the result
+    return '$firstName $lastName';
   }
 }

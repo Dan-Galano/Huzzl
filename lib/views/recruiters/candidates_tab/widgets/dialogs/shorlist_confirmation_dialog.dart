@@ -3,8 +3,8 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
 
-void showShortlistConfirmationDialog(
-    BuildContext context, String jobPostId, String candidateId, String jobApplicationDocId) {
+void showShortlistConfirmationDialog(BuildContext context, String jobPostId,
+    String candidateId, String jobApplicationDocId) {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -70,6 +70,13 @@ void showShortlistConfirmationDialog(
                         onPressed: () {
                           jobCandidateProvider.shortlistCandidate(
                               jobPostId, candidateId, jobApplicationDocId);
+
+                          jobCandidateProvider.pushNotificationToJobseeker(
+                            jobPostId,
+                            candidateId,
+                            "You have been Shortlisted",
+                            "We are pleased to inform you that your application for the position has been shortlisted. Your qualifications and experience align well with what we are looking for, and we are excited to move forward with your application. Our team will be in touch soon with the next steps in the selection process. Thank you for your interest in joining our company, and we wish you the best of luck",
+                          );
                           Navigator.pop(context);
                         },
                         style: TextButton.styleFrom(

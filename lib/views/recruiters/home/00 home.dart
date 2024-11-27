@@ -153,7 +153,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   }
 
   void toggleSlApplicationScreen(
-      bool showApplicationScreen, int initialIndex, String candidateId) {
+      bool showApplicationScreen, int initialIndex, String candidateId, {Candidate? candidate}) {
     setState(() {
       _isSlApplicationScreen = showApplicationScreen;
       _initialIndex = initialIndex;

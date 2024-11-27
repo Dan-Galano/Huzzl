@@ -3,7 +3,8 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
 
-void showRejectConfirmationDialog(BuildContext context, String jobPostId, String candidateId, String jobApplicationDocId) {
+void showRejectConfirmationDialog(BuildContext context, String jobPostId,
+    String candidateId, String jobApplicationDocId, String message) {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -64,7 +65,16 @@ void showRejectConfirmationDialog(BuildContext context, String jobPostId, String
                   Gap(10),
                   TextButton(
                     onPressed: () {
-                      jobCandidateProvider.rejectCandidate(jobPostId, candidateId, jobApplicationDocId);
+                      //reject candidate
+                      jobCandidateProvider.rejectCandidate(
+                          jobPostId, candidateId, jobApplicationDocId);
+                      //push notif
+                      jobCandidateProvider.pushNotificationToJobseeker(
+                        jobPostId,
+                        candidateId,
+                        "You have been Rejected",
+                        message,
+                      );
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },
