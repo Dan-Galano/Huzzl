@@ -50,7 +50,7 @@ Widget buildInterviewsContent() {
                 );
               },
             ),
-            InterviewFilterRowWidget(),
+            // InterviewFilterRowWidget(),
             TabBar(
               tabAlignment: TabAlignment.start,
               isScrollable: true,

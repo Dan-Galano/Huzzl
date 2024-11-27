@@ -3,8 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20resume.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+
+void main() {
+  runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          fontFamily: 'Galano', scaffoldBackgroundColor: Colors.white),
+      home: PreferenceViewPage(
+        userUid: 'sampleUID',
+      )));
+}
 
 class PreferenceViewPage extends StatefulWidget {
   final String userUid; // Pass user's UID for saving to Firestore
@@ -23,7 +34,12 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   Map<String, dynamic>? selectedLocation;
   // String? selectedPayRate;
   Map<String, dynamic>? selectedPayRate;
-  String? selectedJobTitles;
+  List<String>? selectedJobTitles;
+  Map<String, dynamic>? currentResumeOption;
+
+//controllers
+
+//location
 
   void _nextPage() {
     if (_currentPage < 4) {
@@ -110,6 +126,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
           NavBarLoginRegister(),
           Expanded(
             child: PageView(
+              physics: const NeverScrollableScrollPhysics(),
               controller: _pageController,
               children: [
                 JobSeekerCongratulationsPage(goToJobPref: _gotoJobPref),
@@ -120,6 +137,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                       selectedLocation = location;
                     });
                   },
+                  currentLocation: selectedLocation,
                 ),
                 MinimumPayPage(
                   nextPage: _nextPage,
@@ -129,6 +147,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                       selectedPayRate = payRate;
                     });
                   },
+                  currentPayRate: selectedPayRate,
                 ),
                 JobTitlesPage(
                   nextPage:
@@ -140,6 +159,15 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                     });
                   },
                 ),
+                ResumePage(
+                    nextPage: _nextPage,
+                    previousPage: _previousPage,
+                    onSaveResumeSetup: (cresume) {
+                      setState(() {
+                        currentResumeOption = cresume;
+                      });
+                    },
+                    currentResumeOption: currentResumeOption),
               ],
             ),
           ),

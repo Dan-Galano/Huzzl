@@ -4,25 +4,25 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 
-class MinimumPayPage extends StatefulWidget {
+class ResumePage extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
-  final Function(Map<String, dynamic>) onSavePay;
-  final Map<String, dynamic>? currentPayRate;
+  final Function(Map<String, dynamic>) onSaveResumeSetup;
+  final Map<String, dynamic>? currentResumeOption;
 
-  const MinimumPayPage({
+  const ResumePage({
     super.key,
     required this.nextPage,
     required this.previousPage,
-    required this.onSavePay,
-    required this.currentPayRate,
+    required this.onSaveResumeSetup,
+    required this.currentResumeOption,
   });
 
   @override
-  _MinimumPayPageState createState() => _MinimumPayPageState();
+  _ResumePageState createState() => _ResumePageState();
 }
 
-class _MinimumPayPageState extends State<MinimumPayPage> {
+class _ResumePageState extends State<ResumePage> {
   final TextEditingController minimum = TextEditingController();
   final TextEditingController maximum = TextEditingController();
   String selectedRate = 'per hour'; // Default dropdown value
@@ -41,15 +41,15 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
       'minimum': minimum.text,
       'maximum': maximum.text,
     };
-    widget.onSavePay(payData);
+    widget.onSaveResumeSetup(payData);
     widget.nextPage();
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.currentPayRate != null) {
-      final payRate = widget.currentPayRate!;
+    if (widget.currentResumeOption != null) {
+      final payRate = widget.currentResumeOption!;
       selectedRate = payRate['rate'];
       minimum.text = payRate['minimum'];
       maximum.text = payRate['maximum'];
@@ -214,7 +214,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                             'minimum': minimum.text,
                             'maximum': maximum.text,
                           };
-                          widget.onSavePay(payData);
+                          widget.onSaveResumeSetup(payData);
                           widget.nextPage();
                         },
                       ),

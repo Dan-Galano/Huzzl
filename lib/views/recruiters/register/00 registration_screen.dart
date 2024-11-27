@@ -138,6 +138,7 @@ class _RecruiterRegistrationScreenState
            NavBarLoginRegister(),
           Expanded(
               child: PageView(
+                 physics: const NeverScrollableScrollPhysics(), 
             controller: _pageController,
             children: [
               CompanyProfileScreen(

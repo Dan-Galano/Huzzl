@@ -44,18 +44,30 @@ class JobSeekerCongratulationsPage extends StatelessWidget {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    SizedBox(height: 150),
+                    SizedBox(height: 10),
+                    Text(
+                      "It only takes 3-5 minutes and you can edit it later. We'll save as you go.",
+                      // textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xff373030),
+                        fontFamily: 'Galano',
+                      ),
+                    ),
+                    SizedBox(height: 100),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'It only takes 3-5 minutes and you can edit it later. \nWe\'ll save as you go.',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xff373030),
-                            fontFamily: 'Galano',
-                          ),
+                        // SizedBox(
+                        //   width: 20,
+                        // ),
+                        TextButton(
+                          child: Text("Skip for now",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.bold)),
+                          onPressed: () {},
                         ),
                         SizedBox(
                           width: 20,

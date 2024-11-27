@@ -190,6 +190,7 @@ class _JobScreensState extends State<JobScreens> {
       children: [
         Expanded(
             child: PageView(
+               physics: const NeverScrollableScrollPhysics(), 
           controller: _pageController,
           children: [
             JobTab(

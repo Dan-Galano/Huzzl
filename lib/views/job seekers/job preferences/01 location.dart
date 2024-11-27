@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
+
 class LocationSelectorPage extends StatefulWidget {
   final VoidCallback nextPage;
   final Function(Map<String, dynamic>) onSaveLocation;
-
+  final Map<String, dynamic>? currentLocation;
+  // final ValueChanged<String?> onselectedRegionChanged;
   const LocationSelectorPage({
     Key? key,
     required this.nextPage,
     required this.onSaveLocation,
+    required this.currentLocation,
   }) : super(key: key);
 
   @override
@@ -32,7 +36,35 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
   @override
   void initState() {
     super.initState();
-    fetchRegions(); // Fetch regions when app starts
+
+    // If currentLocation is available, pre-fill the data
+    if (widget.currentLocation != null) {
+      final location = widget.currentLocation!;
+      fetchRegions();
+      // Set the selected values from the currentLocation
+      selectedRegion = location['regionCode'];
+      selectedProvince = location['provinceCode'];
+      selectedCity = location['cityCode'];
+      selectedBarangay = location['barangayCode'];
+      otherLocationInformation.text = location['otherLocation'] ?? '';
+
+      // Fetch provinces if currentLocation has a regionCode
+      if (selectedRegion != null) {
+        fetchProvinces(selectedRegion!).then((_) {
+          // Fetch cities if a province is selected
+          if (selectedProvince != null) {
+            fetchCities(selectedProvince!).then((_) {
+              // Fetch barangays if a city is selected
+              if (selectedCity != null) {
+                fetchBarangays(selectedCity!);
+              }
+            });
+          }
+        });
+      }
+    } else {
+      fetchRegions(); // No pre-filled data, so fetch regions initially
+    }
   }
 
   @override
@@ -41,17 +73,6 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     super.dispose();
   }
 
-  // void _submitLocationForm() {
-  //   Map<String, dynamic> locationData = {
-  //     'region': selectedRegion,
-  //     'province': selectedProvince,
-  //     'city': selectedCity,
-  //     'barangay': selectedBarangay,
-  //     'otherLocation': otherLocationInformation.text,
-  //   };
-  //   widget.onSaveLocation(locationData);
-  //   widget.nextPage();
-  // }
   void _submitLocationForm() {
     final selectedRegionData = regions.firstWhere(
         (region) => region['code'] == selectedRegion,
@@ -65,11 +86,22 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
         (barangay) => barangay['code'] == selectedBarangay,
         orElse: () => null);
 
+    if (selectedRegionData == null ||
+        selectedProvinceData == null ||
+        selectedCityData == null ||
+        selectedBarangayData == null ||
+        otherLocationInformation.text.trim().isEmpty) {
+      return;
+    }
     Map<String, dynamic> locationData = {
-      'region': selectedRegionData?['name'],
-      'province': selectedProvinceData?['name'],
-      'city': selectedCityData?['name'],
-      'barangay': selectedBarangayData?['name'],
+      'region': selectedRegionData['name'],
+      'regionCode': selectedRegionData['code'],
+      'province': selectedProvinceData['name'],
+      'provinceCode': selectedProvinceData['code'],
+      'city': selectedCityData['name'],
+      'cityCode': selectedCityData['code'],
+      'barangay': selectedBarangayData['name'],
+      'barangayCode': selectedBarangayData['code'],
       'otherLocation': otherLocationInformation.text,
     };
 
@@ -79,10 +111,16 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
 
   Future<void> fetchRegions() async {
     final response =
-        await http.get(Uri.parse('https://psgc.gitlab.io/api/regions/'));
+        await http.get(Uri.parse('https://psgc.gitlab.io/api/cities/'));
     if (response.statusCode == 200) {
       setState(() {
         regions = jsonDecode(response.body);
+
+        // Check if currentLocation contains regionCode and set selectedRegion accordingly
+        if (widget.currentLocation != null &&
+            widget.currentLocation!['regionCode'] != null) {
+          selectedRegion = widget.currentLocation!['regionCode'];
+        }
       });
     } else {
       throw Exception('Failed to load regions');
@@ -95,7 +133,13 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     if (response.statusCode == 200) {
       setState(() {
         provinces = jsonDecode(response.body);
-        selectedProvince = null;
+        // If a province was previously selected, maintain that selection
+        if (widget.currentLocation != null &&
+            widget.currentLocation!['provinceCode'] != null) {
+          selectedProvince = widget.currentLocation!['provinceCode'];
+        } else {
+          selectedProvince = null;
+        }
         cities = [];
         selectedCity = null;
         barangays = [];
@@ -112,7 +156,13 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     if (response.statusCode == 200) {
       setState(() {
         cities = jsonDecode(response.body);
-        selectedCity = null;
+        // If a city was previously selected, maintain that selection
+        if (widget.currentLocation != null &&
+            widget.currentLocation!['cityCode'] != null) {
+          selectedCity = widget.currentLocation!['cityCode'];
+        } else {
+          selectedCity = null;
+        }
         barangays = [];
         selectedBarangay = null;
       });
@@ -127,7 +177,13 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     if (response.statusCode == 200) {
       setState(() {
         barangays = jsonDecode(response.body);
-        selectedBarangay = null;
+        // If a barangay was previously selected, maintain that selection
+        if (widget.currentLocation != null &&
+            widget.currentLocation!['barangayCode'] != null) {
+          selectedBarangay = widget.currentLocation!['barangayCode'];
+        } else {
+          selectedBarangay = null;
+        }
       });
     } else {
       throw Exception('Failed to load barangays');
@@ -143,7 +199,15 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('1/3', style: TextStyle(fontSize: 15)),
+            Text(
+              '1/3',
+              style: TextStyle(
+                fontSize: 20,
+                color: Color(0xff373030),
+                fontFamily: 'Galano',
+                fontWeight: FontWeight.w100,
+              ),
+            ),
             const SizedBox(height: 10),
             const Text('Where are you located?',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -151,8 +215,13 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                 style: TextStyle(fontSize: 18)),
             const SizedBox(height: 30),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: 'Select Region'),
-              value: selectedRegion,
+              decoration: const InputDecoration(
+                  labelText: 'Select Region',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+              value: regions.any((region) => region['code'] == selectedRegion)
+                  ? selectedRegion
+                  : null, // Ensure selectedRegion is valid or reset to null
               items: regions.map<DropdownMenuItem<String>>((region) {
                 return DropdownMenuItem<String>(
                   value: region['code'],
@@ -162,80 +231,165 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
               onChanged: (value) {
                 setState(() {
                   selectedRegion = value;
+
+                  // Reset dependent fields
+                  selectedProvince = null;
                   provinces = [];
-                  fetchProvinces(value!);
+                  selectedCity = null;
+                  cities = [];
+                  selectedBarangay = null;
+                  barangays = [];
+
+                  if (value != null) {
+                    fetchProvinces(
+                        value); // Fetch provinces for the selected region
+                  }
                 });
               },
             ),
+
             const SizedBox(height: 16.0),
-            if (selectedRegion != null)
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Select Province'),
-                value: selectedProvince,
-                items: provinces.map<DropdownMenuItem<String>>((province) {
-                  return DropdownMenuItem<String>(
-                    value: province['code'],
-                    child: Text(province['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedProvince = value;
-                    cities = [];
-                    fetchCities(value!);
-                  });
-                },
-              ),
+            //  if (selectedRegion != null)
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                  labelText: 'Select Province',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+              value: provinces
+                      .any((province) => province['code'] == selectedProvince)
+                  ? selectedProvince
+                  : null, // Ensure selectedProvince is valid or reset to null
+              items: provinces.map<DropdownMenuItem<String>>((province) {
+                return DropdownMenuItem<String>(
+                  value: province['code'],
+                  child: Text(province['name']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedProvince = value;
+
+                  // Reset dependent fields
+                  selectedCity = null;
+                  cities = [];
+                  selectedBarangay = null;
+                  barangays = [];
+
+                  if (value != null) {
+                    fetchCities(
+                        value); // Fetch cities for the selected province
+                  }
+                });
+              },
+            ),
+
             const SizedBox(height: 16.0),
-            if (selectedProvince != null)
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                    labelText: 'Select City/Municipality'),
-                value: selectedCity,
-                items: cities.map<DropdownMenuItem<String>>((city) {
-                  return DropdownMenuItem<String>(
-                    value: city['code'],
-                    child: Text(city['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCity = value;
-                    fetchBarangays(value!);
-                  });
-                },
-              ),
+            // if (selectedProvince != null)
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                  labelText: 'Select City/Municipality',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+              value: cities.any((city) => city['code'] == selectedCity)
+                  ? selectedCity
+                  : null, // Ensure selectedCity is valid or reset to null
+              items: cities.map<DropdownMenuItem<String>>((city) {
+                return DropdownMenuItem<String>(
+                  value: city['code'],
+                  child: Text(city['name']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCity = value;
+
+                  // Reset dependent fields
+                  selectedBarangay = null;
+                  barangays = [];
+
+                  if (value != null) {
+                    fetchBarangays(
+                        value); // Fetch barangays for the selected city
+                  }
+                });
+              },
+            ),
+
             const SizedBox(height: 16.0),
-            if (selectedCity != null)
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Select Barangay'),
-                value: selectedBarangay,
-                items: barangays.map<DropdownMenuItem<String>>((barangay) {
-                  return DropdownMenuItem<String>(
-                    value: barangay['code'],
-                    child: Text(barangay['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedBarangay = value;
-                  });
-                },
-              ),
+            // if (selectedCity != null)
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                  labelText: 'Select Barangay',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+              value: barangays
+                      .any((barangay) => barangay['code'] == selectedBarangay)
+                  ? selectedBarangay
+                  : null, // Ensure selectedBarangay is valid or reset to null
+              items: barangays.map<DropdownMenuItem<String>>((barangay) {
+                return DropdownMenuItem<String>(
+                  value: barangay['code'],
+                  child: Text(barangay['name']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedBarangay = value;
+                });
+              },
+            ),
+
             const SizedBox(height: 16.0),
-            if (selectedBarangay != null)
-              TextField(
-                controller: otherLocationInformation,
-                decoration: const InputDecoration(
-                    labelText: 'Street Name, Building, House No.'),
-              ),
+            // if (selectedBarangay != null)
+            TextField(
+              controller:
+                  otherLocationInformation, // Already initialized in initState
+              decoration: const InputDecoration(
+                  labelText: 'Street Name, Building, House No.',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)))),
+            ),
             const SizedBox(height: 30),
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: _submitLocationForm,
-                child: const Text('Next'),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  child: Text("Skip",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    selectedRegion = null;
+                    selectedProvince = null;
+                    selectedCity = null;
+                    selectedBarangay = null;
+                    otherLocationInformation.clear();
+                    regions = [];
+                    provinces = [];
+                    cities = [];
+                    barangays = [];
+
+                    Map<String, dynamic> locationData = {};
+
+                    widget.onSaveLocation(locationData);
+                    widget.nextPage();
+                  },
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    width: 130,
+                    child: BlueFilledCircleButton(
+                      onPressed: _submitLocationForm,
+                      text: 'Next',
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -9,22 +9,25 @@ class NavBarLoginRegister extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(builder: (context, sizeInfo) {
-      return Padding(
-        padding: EdgeInsets.all(ResponsiveSizes.paddingSmall(sizeInfo)),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => LandingPageNew(),
-                ));
-              },
-              child: SizedBox(
-                child: Image.asset('assets/images/huzzl.png',
-                    width: ResponsiveSizes.huzzlTextLogo(sizeInfo)),
+      return Container(
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(ResponsiveSizes.paddingSmall(sizeInfo)),
+          child: Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => LandingPageNew(),
+                  ));
+                },
+                child: SizedBox(
+                  child: Image.asset('assets/images/huzzl.png',
+                      width: ResponsiveSizes.huzzlTextLogo(sizeInfo)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     });
