@@ -6,6 +6,9 @@ import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 import 'package:huzzl_web/views/job%20seekers/my_reviews/my_reviews.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/01%20profile.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/02%20contact_information.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/03%20qualifications.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/04%20job_preferences.dart';
 // import 'package:huzzl_web/views/job%20seekers/profile/02%20contact_information.dart';
 // import 'package:huzzl_web/views/job%20seekers/profile/03%20qualifications.dart';
 // import 'package:huzzl_web/views/job%20seekers/profile/04%20job_preferences.dart';
@@ -48,9 +51,9 @@ class JobseekerMainScreenState extends State<JobseekerMainScreen> {
       MyJobsView(),
       MyReviewsView(),
       ProfileScreen(uid: widget.uid),
-      // ContactInformationScreen(),
-      // QualificationsScreen(),
-      // JobPreferencesScreen(),
+      ContactInformationScreen(),
+      QualificationsScreen(),
+      JobPreferencesScreen(),
     ];
   }
 
