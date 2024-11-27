@@ -4,7 +4,7 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_cand
 import 'package:provider/provider.dart';
 
 void showShortlistConfirmationDialog(
-    BuildContext context, String jobPostId, String candidateId) {
+    BuildContext context, String jobPostId, String candidateId, String jobApplicationDocId) {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -69,7 +69,7 @@ void showShortlistConfirmationDialog(
                       TextButton(
                         onPressed: () {
                           jobCandidateProvider.shortlistCandidate(
-                              jobPostId, candidateId);
+                              jobPostId, candidateId, jobApplicationDocId);
                           Navigator.pop(context);
                         },
                         style: TextButton.styleFrom(

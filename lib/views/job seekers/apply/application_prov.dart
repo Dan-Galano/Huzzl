@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
@@ -41,7 +42,7 @@ class ApplicationProvider with ChangeNotifier {
       String firstName = nameParts.isNotEmpty ? nameParts[0] : '';
       String lastName =
           nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-      await FirebaseFirestore.instance
+      DocumentReference jobApplicationRef = await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
           .collection('job_application')
@@ -59,13 +60,16 @@ class ApplicationProvider with ChangeNotifier {
         'jobTitle': jobTitle,
       });
 
+      String jobApplicationDocId = jobApplicationRef.id;
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(recruiterId)
           .collection('job_posts')
           .doc(jobId)
           .collection("candidates")
-          .add({
+          .doc(getCurrentUserId())
+          .set({
         'firstName': firstName,
         'lastName': lastName,
         'email': email,
@@ -77,6 +81,7 @@ class ApplicationProvider with ChangeNotifier {
         'status': 'For Review',
         'dateRejected': null,
         'jobTitle': jobTitle,
+        'jobApplicationDocId': jobApplicationDocId
       });
 
       notifyListeners(); // Notify listeners if needed
@@ -192,5 +197,9 @@ class ApplicationProvider with ChangeNotifier {
     phoneNumber = null;
     recruiterQuestionAnswer = null;
     notifyListeners();
+  }
+
+  String getCurrentUserId() {
+    return FirebaseAuth.instance.currentUser!.uid;
   }
 }

@@ -208,11 +208,15 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                     onPressed: () =>
                                         showShortlistConfirmationDialog(
                                       context,
-                                      widget.candidateId,
                                       jobCandidateProvider
                                           .findDataOfCandidate(
                                               widget.candidateId)!
                                           .jobPostId,
+                                      widget.candidateId,
+                                      jobCandidateProvider
+                                          .findDataOfCandidate(
+                                              widget.candidateId)!
+                                          .jobApplicationDocId!,
                                     ),
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(

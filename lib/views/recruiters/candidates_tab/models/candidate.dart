@@ -10,6 +10,7 @@ class Candidate {
   int? interviewCount;
   DateTime? dateRejected;
   String status;
+  String? jobApplicationDocId;
 
   Candidate({
     required this.id,
@@ -23,6 +24,7 @@ class Candidate {
     this.interviewCount,
     this.dateRejected,
     required this.status,
+    this.jobApplicationDocId,
   });
 
   Candidate copyWith({
@@ -37,6 +39,7 @@ class Candidate {
     DateTime? dateLastInterviewed,
     DateTime? dateRejected,
     int? interviewCount,
+    String? jobApplicationDocId,
   }) {
     return Candidate(
       id: id ?? this.id,
@@ -50,6 +53,7 @@ class Candidate {
       dateLastInterviewed: dateLastInterviewed ?? this.dateLastInterviewed,
       dateRejected: dateRejected ?? this.dateRejected,
       interviewCount: interviewCount ?? this.interviewCount,
+      jobApplicationDocId: jobApplicationDocId  ?? this.jobApplicationDocId
     );
   }
 }

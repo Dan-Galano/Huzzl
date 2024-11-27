@@ -160,6 +160,7 @@ class JobProviderCandidate extends ChangeNotifier {
           interviewCount: 0,
           dateRejected: (doc['applicationDate'] as Timestamp).toDate(),
           status: doc['status'],
+          jobApplicationDocId: doc['jobApplicationDocId'],
         ));
       }
       notifyListeners();
@@ -274,7 +275,8 @@ class JobProviderCandidate extends ChangeNotifier {
     }
   }
 
-  void rejectCandidate(String jobPostId, String id) async {
+  void rejectCandidate(String jobPostId, String id, String jobApplicationId) async {
+    debugPrint("Rejecting candidate ....");
     for (var i = 0; i < _candidates.length; i++) {
       if (_candidates[i].id == id) {
         _candidates[i] = _candidates[i].copyWith(status: "Rejected");
@@ -282,6 +284,8 @@ class JobProviderCandidate extends ChangeNotifier {
         break;
       }
     }
+
+    debugPrint("Rejected candidate in local list");
 
     // Update candidate status in Firestore
     try {
@@ -293,7 +297,17 @@ class JobProviderCandidate extends ChangeNotifier {
           .collection("candidates")
           .doc(id)
           .update({'status': 'Rejected'}); // Field to update
-      print("Candidate status Rejected");
+      print("Candidate status Rejected in candidate collection");
+
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(id) // Candidate's document ID
+          .collection("job_application")
+          // .where('jobPostId', isEqualTo: jobPostId)
+          .doc(jobApplicationId)
+          .update({'status': 'Rejected'}); // Field to update
+      print("Candidate status Rejectedddddddddddddddddddddddddddddddddd in job application");
+
     } catch (e) {
       print("Failed to update candidate status: $e");
     }
@@ -309,7 +323,8 @@ class JobProviderCandidate extends ChangeNotifier {
   //   }
   // }
 
-  void shortlistCandidate(String jobPostId, String id) async {
+  void shortlistCandidate(String jobPostId, String id, String jobApplicationId) async {
+    debugPrint("Shorlisting candidateeee ...");
     // Update local candidate list
     for (var i = 0; i < _candidates.length; i++) {
       if (_candidates[i].id == id) {
@@ -319,17 +334,30 @@ class JobProviderCandidate extends ChangeNotifier {
       }
     }
 
+    debugPrint("Shortlisting company done in local list");
+
     // Update candidate status in Firestore
     try {
+      //Update the candidate collection
       await FirebaseFirestore.instance
           .collection('users') // Replace with the correct collection name
           .doc(getCurrentUserId()) // Candidate's document ID
           .collection("job_posts")
-          .doc(id)
-          .collection("candidates")
           .doc(jobPostId)
+          .collection("candidates")
+          .doc(id)
           .update({'status': 'Shortlisted'}); // Field to update
-      print("Candidate status updated to Shortlisted");
+      print("Candidate status updated to Shortlisted in candidate collection");
+
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(id) // Candidate's document ID
+          .collection("job_application")
+          // .where('jobPostId', isEqualTo: jobPostId)
+          .doc(jobApplicationId)
+          .update({'status': 'Shortlisted'}); // Field to update
+      print("Candidate status updated to Shortlisted in job application collection");
+
     } catch (e) {
       print("Failed to update candidate status: $e");
     }

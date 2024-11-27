@@ -10,10 +10,12 @@ import 'package:huzzl_web/views/admins/screens/main/main_screen.dart';
 import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/application_prov.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/review_details.dart';
+import 'package:huzzl_web/views/job%20seekers/controller/jobseeker_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/Landing_Page/landing_page.dart';
 import 'package:huzzl_web/landing%20page/landing_page.dart';
+import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
@@ -65,6 +67,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => JobseekerProvider()),
         ChangeNotifierProvider(
           create: (context) {
             final currentUser = FirebaseAuth.instance.currentUser;
@@ -110,6 +113,7 @@ class HuzzlWeb extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Galano'),
       home: const AuthWrapper(),
+      // home: MyJobsView(),
       // home: MainScreen(),
       // home: JobseekerMainScreen(),
       // home: PreferenceViewPage(),
