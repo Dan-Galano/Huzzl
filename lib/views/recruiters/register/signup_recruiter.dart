@@ -373,52 +373,6 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                               ],
                             ),
                             Gap(20),
-                            const Text(
-                              "Email",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xff373030),
-                                fontFamily: 'Galano',
-                              ),
-                            ),
-                            TextFormField(
-                              controller: _email,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 16.0),
-                                isDense: true,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFD1E1FF),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFD1E1FF),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Color(0xFFD1E1FF),
-                                    width: 1.5,
-                                  ),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty || value == null) {
-                                  return "Email Address is required.";
-                                }
-                                if (!EmailValidator.validate(value)) {
-                                  return "Please provide a valid email address.";
-                                }
-                              },
-                            ),
-                            const SizedBox(height: 20),
                             Row(
                               children: [
                                 Expanded(
@@ -535,6 +489,52 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                                   ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              "Email",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff373030),
+                                fontFamily: 'Galano',
+                              ),
+                            ),
+                            TextFormField(
+                              controller: _email,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.0),
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD1E1FF),
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty || value == null) {
+                                  return "Email Address is required.";
+                                }
+                                if (!EmailValidator.validate(value)) {
+                                  return "Please provide a valid email address.";
+                                }
+                              },
                             ),
                             const SizedBox(height: 20),
                             const Text(
