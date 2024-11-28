@@ -78,19 +78,19 @@ class _ForReviewCardState extends State<ForReviewCard> {
                         ],
                       ),
                       SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.home, size: 16, color: Colors.grey),
-                          SizedBox(width: 4),
-                          Text(
-                            widget.candidate.companyAppliedTo,
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     Icon(Icons.home, size: 16, color: Colors.grey),
+                      //     SizedBox(width: 4),
+                      //     Text(
+                      //       widget.candidate.companyAppliedTo,
+                      //       style: TextStyle(
+                      //         color: Colors.grey.shade500,
+                      //         fontSize: 14,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ],

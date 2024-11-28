@@ -100,7 +100,7 @@ class _NotifScreenState extends State<NotifScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: Colors.black, // Black border color
+                            color: Colors.black38, // Black border color
                             width: 1.0, // Border width
                           ),
                           borderRadius: BorderRadius.circular(

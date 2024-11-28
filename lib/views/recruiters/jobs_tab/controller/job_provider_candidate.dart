@@ -451,4 +451,78 @@ class JobProviderCandidate extends ChangeNotifier {
     print("NAMEEEEE: $firstName $lastName");
     return '$firstName $lastName';
   }
+
+  void forInterviewCandidate(String candidateId) {
+    for (var i = 0; i < _candidates.length; i++) {
+      if (_candidates[i].id == candidateId) {
+        _candidates[i] = _candidates[i].copyWith(status: "For Interview");
+        notifyListeners();
+        break;
+      }
+    }
+    debugPrint("Candidate $candidateId is for interview");
+  }
+
+  List<Candidate> _allCandidatesForCalendar = [];
+  List<Candidate> get allCandidatesForCalendar => _allCandidatesForCalendar;
+
+    Future<List<Candidate>> fetchAllCandidatesForCalendar() async {
+    final userId = getCurrentUserId();
+    List<Candidate> candidatesForCalendar = [];
+
+    // Reference to the users collection with filter for recruiters
+    final jobPostsCollection = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('job_posts');
+
+    // Fetch all job posts
+    QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
+
+    // Iterate over each job post
+    for (var jobPostDoc in jobPostsSnapshot.docs) {
+      final jobPostId = jobPostDoc.id;
+
+      // Reference to the candidates subcollection within each job post
+      final candidatesCollection =
+          jobPostsCollection.doc(jobPostId).collection('candidates').where('status', isEqualTo: 'Shortlisted');
+
+      // Fetch candidates for the current job post
+      QuerySnapshot candidatesSnapshot = await candidatesCollection.get();
+
+      // Iterate over candidates and map them to the Candidate model
+      for (var candidateDoc in candidatesSnapshot.docs) {
+        final data = candidateDoc.data() as Map<String, dynamic>;
+
+        // Create a Candidate object
+        Candidate candidate = Candidate(
+          id: candidateDoc.id,
+          jobPostId: jobPostId,
+          email: data['email'] ?? '',
+          name: "${data['firstName']} ${data['lastName']}" ?? '',
+          profession: data['jobTitle'] ?? '',
+          companyAppliedTo: data['recruiterId'] ?? '',
+          applicationDate: (data['applicationDate'] as Timestamp).toDate(),
+          dateLastInterviewed: data['dateLastInterviewed'] != null
+              ? (data['dateLastInterviewed'] as Timestamp).toDate()
+              : null,
+          interviewCount: data['interviewCount'] != null
+              ? data['interviewCount'] as int
+              : null,
+          dateRejected: data['dateRejected'] != null
+              ? (data['dateRejected'] as Timestamp).toDate()
+              : null,
+          status: data['status'] ?? '',
+          jobApplicationDocId: data['jobApplicationDocId'],
+        );
+
+        // Add to the temporary list
+        candidatesForCalendar.add(candidate);
+      }
+    }
+
+    debugPrint("Fetch all candidates in all job posts within this recruiter");
+
+    return candidatesForCalendar;
+  }
 }

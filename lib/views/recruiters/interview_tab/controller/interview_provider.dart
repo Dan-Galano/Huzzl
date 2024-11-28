@@ -381,53 +381,120 @@ class InterviewProvider extends ChangeNotifier {
       print(
           "Candidate status updated to For Interview in job application collection");
 
-      await fetchInterviews(recruiterId, jobPostId);
+      await fetchAllInterviews();
     } catch (e) {
       debugPrint("Error in saving the interview: $e");
     }
   }
 
-  Future<void> fetchInterviews(String recruiterId, String jobPostId) async {
-    try {
-      // Fetch interviews from Firestore
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(recruiterId)
-          .collection('job_posts')
-          .doc(jobPostId)
-          .collection('interviews')
-          .get();
+  // Future<void> fetchInterviews(String recruiterId, String jobPostId) async {
+  //   try {
+  //     // Fetch interviews from Firestore
+  //     final querySnapshot = await FirebaseFirestore.instance
+  //         .collection("users")
+  //         .doc(recruiterId)
+  //         .collection('job_posts')
+  //         .doc(jobPostId)
+  //         .collection('interviews')
+  //         .get();
 
-      // Clear the local list before adding new data
-      _events.clear();
+  //     // Clear the local list before adding new data
+  //     _events.clear();
 
-      // Map Firestore documents to InterviewEvent objects
-      for (var doc in querySnapshot.docs) {
-        final data = doc.data();
+  //     // Map Firestore documents to InterviewEvent objects
+  //     for (var doc in querySnapshot.docs) {
+  //       final data = doc.data();
 
-        _events.add(
-          InterviewEvent(
-            applicant: data['applicant'] as String?,
-            title: data['title'] as String?,
-            type: data['type'] as String?,
-            interviewers: (data['interviewers'] as List<dynamic>?)
-                ?.map((e) => e as String)
-                .toList(),
-            date: (data['date'] != null)
-                ? (data['date'] as Timestamp).toDate()
-                : null,
-            startTime: _convertToTimeOfDay(data['startTime']),
-            endTime: _convertToTimeOfDay(data['endTime']),
-            notes: data['notes'] as String?,
-            location: data['location'] as String?,
-          ),
-        );
+  //       _events.add(
+  //         InterviewEvent(
+  //           applicant: data['applicant'] as String?,
+  //           title: data['title'] as String?,
+  //           type: data['type'] as String?,
+  //           interviewers: (data['interviewers'] as List<dynamic>?)
+  //               ?.map((e) => e as String)
+  //               .toList(),
+  //           date: (data['date'] != null)
+  //               ? (data['date'] as Timestamp).toDate()
+  //               : null,
+  //           startTime: _convertToTimeOfDay(data['startTime']),
+  //           endTime: _convertToTimeOfDay(data['endTime']),
+  //           notes: data['notes'] as String?,
+  //           location: data['location'] as String?,
+  //         ),
+  //       );
+  //     }
+
+  //     debugPrint("Interviews fetched successfully: $_events");
+  //   } catch (error) {
+  //     debugPrint("Error fetching interviews: $error");
+  //   }
+  // }
+
+// Function to fetch all interviews for a specific recruiter
+  Future<void> fetchAllInterviews() async {
+    // Clear existing events to avoid duplicates
+    _events.clear();
+
+    // Reference to the recruiter user
+    final usersCollection =
+        FirebaseFirestore.instance.collection('users').doc(getCurrentUserId());
+
+    // Fetch the recruiter's job posts
+    final jobPostsCollection = usersCollection.collection('job_posts');
+    QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
+
+    for (var jobPostDoc in jobPostsSnapshot.docs) {
+      // Reference to the interviews sub-collection for each job post
+      final interviewsCollection =
+          jobPostsCollection.doc(jobPostDoc.id).collection('interviews');
+
+      // Fetch all interviews
+      try {
+        QuerySnapshot interviewsSnapshot = await interviewsCollection.get();
+        for (var interviewDoc in interviewsSnapshot.docs) {
+          final data = interviewDoc.data() as Map<String, dynamic>;
+
+          // Parse startTime and endTime from "HH:mm" strings
+          final startTime = data['startTime'] != null
+              ? _parseTimeOfDay(data['startTime'] as String)
+              : null;
+
+          final endTime = data['endTime'] != null
+              ? _parseTimeOfDay(data['endTime'] as String)
+              : null;
+
+          // Convert Firestore document to InterviewEvent and add to _events
+          _events.add(
+            InterviewEvent(
+              applicant: data['applicant'] as String?,
+              title: data['title'] as String?,
+              type: data['type'] as String?,
+              interviewers: (data['interviewers'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList(),
+              date: (data['date'] != null)
+                  ? (data['date'] as Timestamp).toDate()
+                  : null,
+              startTime: startTime,
+              endTime: endTime,
+              notes: data['notes'] as String?,
+              location: data['location'] as String?,
+            ),
+          );
+        }
+        print('Interviews fetched: ${interviewsSnapshot.docs.length}');
+      } catch (e) {
+        print('Error fetching interviews: $e');
       }
-
-      debugPrint("Interviews fetched successfully: $_events");
-    } catch (error) {
-      debugPrint("Error fetching interviews: $error");
     }
+  }
+
+  /// Helper function to parse "HH:mm" string to TimeOfDay
+  TimeOfDay _parseTimeOfDay(String timeString) {
+    final parts = timeString.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    return TimeOfDay(hour: hour, minute: minute);
   }
 
 // Helper function to convert a Firestore time string to TimeOfDay

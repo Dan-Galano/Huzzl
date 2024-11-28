@@ -81,20 +81,20 @@ class _ShortListedCardState extends State<ShortListedCard> {
                             ],
                           ),
                           SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(Icons.home, size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
-                              Text(
-                                widget.candidate.companyAppliedTo,
-                                style: TextStyle(
-                                  fontFamily: 'Galano',
-                                  color: Colors.grey.shade500,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     Icon(Icons.home, size: 16, color: Colors.grey),
+                          //     SizedBox(width: 4),
+                          //     Text(
+                          //       widget.candidate.status == 'For Interview' ? "Scheduled for interview" : "",
+                          //       style: TextStyle(
+                          //         fontFamily: 'Galano',
+                          //         color: Colors.red[500],
+                          //         fontSize: 14,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ],

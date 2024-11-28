@@ -224,6 +224,9 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
     // setState(() {
     //   events.add(e);
     // });
+    
+    _jobProvider.forInterviewCandidate(widget.candidateId);
+
     _interviewProvider.saveInterview(
         e,
         widget.candidateId,

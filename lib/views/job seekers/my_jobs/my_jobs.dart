@@ -71,10 +71,10 @@ class _MyJobsViewState extends State<MyJobsView> with SingleTickerProviderStateM
                 fontFamily: 'Galano', // Use your custom font
               ),
               tabs: const [
-                Tab(text: '2 Saved'),
-                Tab(text: '0 Applied'),
-                Tab(text: '0 Interviews'),
-                Tab(text: '0 Archived'),
+                Tab(text: 'Saved'),
+                Tab(text: 'Applied'),
+                Tab(text: 'Interviews'),
+                Tab(text: 'Archived'),
               ],
             ),
             Expanded(

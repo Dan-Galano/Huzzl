@@ -2,10 +2,12 @@ import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/customDropdown.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -21,87 +23,6 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
   DateTime today = DateTime.now();
   DateTime currentDate = DateTime.now();
   CalendarController _calendarController = CalendarController();
-
-  final List<Applicant> applicants = [
-    Applicant(
-      pfp: 'assets/images/pfp/sampleID1.png',
-      name: 'John Doe',
-      job: 'Software Engineer',
-      branch: 'Jollibee - Magic Mall Urdaneta',
-    ),
-    Applicant(
-      pfp: 'assets/images/pfp/fsampleID1.jpg',
-      name: 'Jane Smith',
-      job: 'Project Manager',
-      branch: 'Jollibee - SM City Manila',
-    ),
-    Applicant(
-      pfp: 'assets/images/pfp/sampleID2.png',
-      name: 'Michael Johnson',
-      job: 'UX Designer',
-      branch: 'Jollibee - SM City North EDSA',
-    ),
-    Applicant(
-      pfp: 'assets/images/pfp/fsampleID2.jpg',
-      name: 'Emily Davis',
-      job: 'Data Scientist',
-      branch: 'Jollibee - Robinsons Galleria Cebu',
-    ),
-    Applicant(
-      pfp: 'assets/images/pfp/sample1D3.png',
-      name: 'James Brown',
-      job: 'Product Owner',
-      branch: 'Jollibee - Ayala Malls Cloverleaf',
-    ),
-    Applicant(
-      pfp: 'assets/images/pfp/fsampleID3.jpg',
-      name: 'Sophia Garcia',
-      job: 'QA Tester',
-      branch: 'Jollibee - Trinoma',
-    ),
-    Applicant(
-      name: 'Olivia Wilson',
-      job: 'System Analyst',
-      branch: 'Jollibee - SM City Iloilo',
-      pfp: 'assets/images/pfp/fsampleID4.jpg',
-    ),
-    Applicant(
-      name: 'William Martinez',
-      job: 'DevOps Engineer',
-      branch: 'Jollibee - Market! Market!',
-      pfp: 'assets/images/pfp/sampleID4.png',
-    ),
-    Applicant(
-      name: 'Liam Anderson',
-      job: 'Front-end Developer',
-      branch: 'Jollibee - SM City Clark',
-      pfp: 'assets/images/pfp/sampleID5.png',
-    ),
-    Applicant(
-      name: 'Noah Thomas',
-      job: 'Back-end Developer',
-      branch: 'Jollibee - Alabang Town Center',
-      pfp: 'assets/images/pfp/sampleID6.png',
-    ),
-    Applicant(
-      name: 'Lucas Lee',
-      job: 'Mobile Developer',
-      branch: 'Jollibee - SM City Dasmariñas',
-      pfp: 'assets/images/pfp/sampleID7.png',
-    ),
-    Applicant(
-      pfp: 'assets/images/pfp/fsampleID5.jpg',
-      name: 'Mia Walker',
-      job: 'Marketing Specialist',
-      branch: 'Jollibee - Greenhills Shopping Center',
-    ),
-    Applicant(
-      pfp: 'assets/images/pfp/fsampleID6.jpg',
-      name: 'Isabella Hall',
-      job: 'HR Manager',
-      branch: 'Jollibee - Glorietta 4',
-    ),
-  ];
 
   List<String> staffs = [
     'Aiden Reed',
@@ -121,7 +42,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
 
   final List<String> interviewTypes = ['Online', 'F2F'];
   List<String> selectedInterviewers = [];
-  Applicant? selectedApplicant;
+  Candidate? selectedApplicant;
   String? selectedType;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
@@ -136,21 +57,81 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
 
   SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
   late InterviewProvider _interviewProvider;
+  late JobProviderCandidate _jobProviderCandidate;
+
+  late List<Candidate> lateApplicants;
+  List<Candidate> applicants = [];
+
+  //here
+  void fetchAllApplicant() async {
+    lateApplicants =
+        await _jobProviderCandidate.fetchAllCandidatesForCalendar();
+    setState(() {
+      applicants = lateApplicants;
+    });
+
+    debugPrint("All applicant has been fetch");
+  }
+
+  final interviewerNameController = TextEditingController();
+
+  late String lateRecruiterName;
+  String recruiterName = "";
+
+  void getRecruiterName() async {
+    lateRecruiterName = await _jobProviderCandidate.getCurrentUserName();
+    setState(() {
+      recruiterName = lateRecruiterName;
+      interviewerNameController.text = recruiterName;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _interviewProvider = Provider.of<InterviewProvider>(context, listen: false);
+    _jobProviderCandidate =
+        Provider.of<JobProviderCandidate>(context, listen: false);
     selectedDate = today;
     selectedType = 'Online';
 
-    // _interviewProvider.fetch
+    // _interviewProvider.fetchAllInterviews();
+    fetchinterview();
+    fetchAllApplicant();
+    getRecruiterName();
   }
 
-  void addToList(InterviewEvent e) {
-    setState(() {
-      _interviewProvider.events.add(e);
-    });
+  void fetchinterview() async {
+    await _interviewProvider.fetchAllInterviews();
+    debugPrint("interview fetch");
+  }
+
+  void saveInterviewToDB(InterviewEvent e) {
+    //Aside from adding it to local list, add it also into the firebase
+    print(
+        "Interview event details: ${e.applicant} ${e.date} ${e.interviewers}");
+    // setState(() {
+    //   events.add(e);
+    // });
+
+    _jobProviderCandidate.forInterviewCandidate(selectedApplicant!.id);
+
+    _interviewProvider.saveInterview(
+      e,
+      // widget.candidateId,
+      selectedApplicant!.id,
+      // widget.candidate!.jobPostId,
+      selectedApplicant!.jobPostId,
+      // widget.candidate.id,
+      selectedApplicant!.id,
+      selectedApplicant!.jobApplicationDocId!,
+    );
+    _jobProviderCandidate.pushNotificationToJobseeker(
+      selectedApplicant!.jobPostId,
+      selectedApplicant!.id,
+      'You have been scheduled for Interview: ${e.title}',
+      "${e.notes} The date of your interview is ${e.date}. Starts in ${e.startTime}, end in ${e.endTime}.",
+    );
     resetScheduleInterviewerForm();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -219,7 +200,21 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
                         Gap(10),
                         TextButton(
                           onPressed: () {
-                            addToList(e);
+                            debugPrint("TO BE SAVED TO DB:\n"
+                                // "Recruiter ID: $recruiterId\n"
+                                // "Jobseeker ID: ${widget.candidateId}\n"
+                                // "Job Post ID: ${widget.candidate.jobPostId}\n"
+                                "Interview Details:\n"
+                                "- Applicant: ${e.applicant}\n"
+                                "- Title: ${e.title}\n"
+                                "- Type: ${e.type}\n"
+                                "- Interviewers: ${e.interviewers}\n"
+                                "- Date: ${e.date}\n"
+                                "- Start Time: ${e.startTime}\n"
+                                "- End Time: ${e.endTime}\n"
+                                "- Notes: ${e.notes}\n"
+                                "- Location: ${e.location ?? 'No location'}");
+                            saveInterviewToDB(e);
                           },
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
@@ -341,13 +336,15 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
     );
   }
 
-  List<Applicant> getSuggestions(String query) {
-    List<Applicant> matches = applicants
+  List<Candidate> getSuggestions(String query) {
+    List<Candidate> matches = applicants
         .where((applicant) =>
             applicant.name.toLowerCase().contains(query.toLowerCase()) ||
-            applicant.job.toLowerCase().contains(query.toLowerCase()) ||
-            applicant.branch!.toLowerCase().contains(query.toLowerCase()))
+            applicant.profession.toLowerCase().contains(query.toLowerCase()))
         .toList();
+    for (var match in matches) {
+      debugPrint("name : ${match.name}. profession : ${match.profession}");
+    }
     return matches;
   }
 
@@ -516,7 +513,15 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    buildMultiSelectDropdown(setState),
+                    // buildMultiSelectDropdown(setState),
+                    TextField(
+                      controller: interviewerNameController,
+                      enabled: false,
+                      decoration: InputDecoration(
+                        // hintText: "",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                     SizedBox(height: 10),
                     // TextField(
                     //   enabled: false,
@@ -720,7 +725,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
                               // Validate fields
                               if (titleController.text.isEmpty ||
                                   selectedType == null ||
-                                  selectedInterviewers.isEmpty ||
+                                  // selectedInterviewers.isEmpty ||
                                   startTime == null ||
                                   endTime == null ||
                                   selectedApplicant == null) {
@@ -735,7 +740,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
 
                                 return; // Do not proceed with saving
                               }
-// Now validate location only if 'F2F' is selected
+                              // Now validate location only if 'F2F' is selected
                               if (selectedType == 'F2F' &&
                                   locationController.text.isEmpty) {
                                 // Show message alert for missing location in 'F2F'
@@ -752,17 +757,21 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
 
                               // Create and add the interview event
                               InterviewEvent newEvent = InterviewEvent(
-                                applicant: "BINAGO KO to",
+                                applicant: selectedApplicant!.name,
                                 title: titleController.text,
                                 type: selectedType,
-                                interviewers:
-                                    List<String>.from(selectedInterviewers),
+                                // interviewers:
+                                //     List<String>.from(selectedInterviewers),
+                                interviewers: [interviewerNameController.text],
                                 date: selectedDate,
                                 startTime: startTime,
                                 endTime: endTime,
                                 notes: notesController.text,
                                 location: locationController.text,
                               );
+
+                              print(
+                                  "DETAILSSSSS: Applicant name: ${selectedApplicant!.name}, interviewer: ${interviewerNameController.text} Title: ${titleController.text}, Interview Type: ${selectedType}, Start time: ${startTime}, End time: ${endTime}, additional notes: ${notesController.text} Selected date: ${selectedDate}");
 
                               // Add new event to the list and update the UI
                               showSaveInterviewConfirmationDialog(
@@ -801,7 +810,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
       onTap: () {
         suggestionBoxController.close();
       },
-      child: DropDownSearchFormField<Applicant>(
+      child: DropDownSearchFormField<Candidate>(
         // Change type to Applicant
         textFieldConfiguration: TextFieldConfiguration(
           controller: _dropdownSearchFieldController,
@@ -817,14 +826,13 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
           // Change to accept Applicant
           return ListTile(
             title: Text(applicant.name), // Show applicant's name
-            subtitle: Text(
-                '${applicant.job} - ${applicant.branch}'), // Show job and branch
+            subtitle: Text('${applicant.profession}'), // Show job and branch
           );
         },
         itemSeparatorBuilder: (context, index) {
           return const Divider();
         },
-        onSuggestionSelected: (Applicant applicant) {
+        onSuggestionSelected: (Candidate applicant) {
           _dropdownSearchFieldController.text = applicant.name; // Set name
           selectedApplicant = applicant; // Save entire applicant object
         },
