@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/controller/jobseeker_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -44,6 +45,7 @@ class _InterviewsViewState extends State<InterviewsView> {
 
   @override
   Widget build(BuildContext context) {
+    var interviewProvider = Provider.of<InterviewProvider>(context);
     if (myForInterviewJobs.isNotEmpty) {
       return ListView.builder(
         itemCount: myForInterviewJobs.length,
@@ -152,9 +154,17 @@ class _InterviewsViewState extends State<InterviewsView> {
                 ElevatedButton.icon(
                   onPressed: () {
                     // Handle join call action
+                    if(myForInterviewJobs[index].status == 'not Started'){
+                      return;
+                    }
+
+                    interviewProvider.startInterviewFunction(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade200,
+                    backgroundColor:
+                        myForInterviewJobs[index].status == "not started"
+                            ? Colors.grey.shade200
+                            : const Color(0xff3B7DFF),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

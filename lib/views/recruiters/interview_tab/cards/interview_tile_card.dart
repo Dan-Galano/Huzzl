@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/application_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
@@ -9,12 +10,15 @@ import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 import 'package:provider/provider.dart';
 
 class InterviewTile extends StatefulWidget {
-  final String intervieweeName;
-  final String profession;
-  final String branch;
-  final String interviewTitle;
-  final String interviewType;
-  final DateTimeRange timeRange;
+  // final String intervieweeName;
+  // final String profession;
+  // // final String branch;
+  // final String interviewTitle;
+  // final String interviewType;
+  // // final DateTimeRange timeRange;
+  // final TimeOfDay startTime;
+  // final TimeOfDay endTime;
+  InterviewEvent interview;
 
 // intervieweeName
 // profession
@@ -22,14 +26,17 @@ class InterviewTile extends StatefulWidget {
 // interviewTitle
 //in.terviewType
 
-  const InterviewTile({
+  InterviewTile({
     super.key,
-    required this.intervieweeName,
-    required this.profession,
-    required this.branch,
-    required this.interviewTitle,
-    required this.interviewType,
-    required this.timeRange,
+    required this.interview
+    // required this.intervieweeName,
+    // required this.profession,
+    // // required this.branch,
+    // required this.interviewTitle,
+    // required this.interviewType,
+    // // required this.timeRange,
+    // required this.startTime,
+    // required this.endTime,
   });
 
   @override
@@ -70,7 +77,7 @@ class _InterviewTileState extends State<InterviewTile>
                     CircleAvatar(
                       backgroundColor: const Color(0xffd1e1ff),
                       foregroundColor: const Color(0xff373030),
-                      child: Text(widget.intervieweeName[0]),
+                      child: Text(widget.interview.applicant![0]),
                     ),
                   ],
                 ),
@@ -81,7 +88,7 @@ class _InterviewTileState extends State<InterviewTile>
                     children: [
                       //Interviewee name
                       Text(
-                        widget.intervieweeName,
+                        widget.interview.applicant!,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -96,7 +103,7 @@ class _InterviewTileState extends State<InterviewTile>
                               size: 18, color: Colors.grey),
                           const SizedBox(width: 5),
                           Text(
-                            widget.profession,
+                            widget.interview.profession!,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -106,20 +113,20 @@ class _InterviewTileState extends State<InterviewTile>
                       ),
                       const SizedBox(height: 4),
                       //Branch applied
-                      Row(
-                        children: [
-                          const Icon(Icons.business_center_outlined,
-                              size: 18, color: Colors.grey),
-                          const SizedBox(width: 5),
-                          Text(
-                            widget.branch,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     const Icon(Icons.business_center_outlined,
+                      //         size: 18, color: Colors.grey),
+                      //     const SizedBox(width: 5),
+                      //     Text(
+                      //       widget.branch,
+                      //       style: const TextStyle(
+                      //         fontSize: 12,
+                      //         color: Colors.grey,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),
@@ -129,7 +136,7 @@ class _InterviewTileState extends State<InterviewTile>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.interviewTitle,
+                        widget.interview.title!,
                         style: const TextStyle(
                           decoration: TextDecoration.none,
                           fontSize: 16,
@@ -138,7 +145,7 @@ class _InterviewTileState extends State<InterviewTile>
                         ),
                       ),
                       Text(
-                        widget.interviewType,
+                        widget.interview.type!,
                         style: const TextStyle(
                           decoration: TextDecoration.none,
                           decorationColor: Colors.orange,
@@ -149,29 +156,27 @@ class _InterviewTileState extends State<InterviewTile>
                     ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.chat),
-                  color: const Color(0xff3B7DFF),
-                ),
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: const Icon(Icons.chat),
+                //   color: const Color(0xff3B7DFF),
+                // ),
                 const Gap(30),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if (widget.interviewType == 'Online') ...[
+                      if (widget.interview.type == 'Online') ...[
                         StartInterviewButton(
-                          onPressed: widget.timeRange.start.day ==
-                                      DateTime.now().day &&
-                                  widget.timeRange.start.month ==
-                                      DateTime.now().month &&
-                                  widget.timeRange.start.year ==
-                                      DateTime.now().year
-                              ? () {
-                                  interviewProvider
-                                      .startInterviewFunction(context);
-                                }
-                              : null,
+                          startTime:
+                              widget.interview.startTime!,
+                          endTime: widget.interview.endTime!,
+                          onPressed: () {
+                            
+                            interviewProvider.startInterviewFunction(context);
+                            interviewProvider.updateInterviewStatus(widget.interview);
+                            debugPrint("Video call started.....");
+                          },
                         ),
                         const Gap(10),
                       ],

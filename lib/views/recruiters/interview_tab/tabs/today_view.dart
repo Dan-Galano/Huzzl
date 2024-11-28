@@ -1,93 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/cards/interview_row_card.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/title_row.dart';
+import 'package:provider/provider.dart';
 
-class TodayView extends StatelessWidget {
+class TodayView extends StatefulWidget {
   TodayView({super.key});
 
-  final List interviewees = [
-    {
-      'name': 'Elijah Japheth Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Urdaneta City',
-      'interviewTitle': 'Technical Interview',
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime.now(),
-        end: DateTime.now(),
-      ),
-    },
-    {
-      'name': 'Jau Salcedo',
-      'profession': 'Web Developer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'interviewType': 'Face-to-face',
-      'timeRange': DateTimeRange(
-        start: DateTime.now(),
-        end: DateTime.now(),
-      ),
-    },
-    {
-      'name': 'Patrick Salcedo',
-      'profession': 'Web Developer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime.now(),
-        end: DateTime.now(),
-      ),
-    },
-    {
-      'name': 'Allen Tomas',
-      'profession': 'Web Developer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'interviewType': 'Face-to-face',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 10, 9, 10, 0),
-        end: DateTime(2024, 10, 9, 12, 0),
-      ),
-    },
-    {
-      'name': 'Monica Salcedo',
-      'profession': 'Web Developer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'interviewType': 'Face-to-face',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 10, 9, 10, 0),
-        end: DateTime(2024, 10, 9, 12, 0),
-      ),
-    },
-    {
-      'name': 'Joreson Biag',
-      'profession': 'Web Developer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 10, 10, 10, 0),
-        end: DateTime(2024, 10, 10, 12, 0),
-      ),
-    },
-  ];
+  @override
+  State<TodayView> createState() => _TodayViewState();
+}
+
+class _TodayViewState extends State<TodayView> {
+  late InterviewProvider _interviewProvider;
+  List<InterviewEvent> interviewees = [];
+
+  @override
+  void initState() {
+    _interviewProvider = Provider.of<InterviewProvider>(context, listen: false);
+
+    fetchTodaysInterview();
+    super.initState();
+  }
+
+  void fetchTodaysInterview() async{
+    await _interviewProvider.fetchTodaysInterview();
+    setState(() {
+      interviewees = _interviewProvider.todaysInterviewList;
+    });
+
+    debugPrint("Fetching the todays interview successfully");
+  }
 
   @override
   Widget build(BuildContext context) {
     DateTime today = DateTime.now();
 
-    // Filter only the interviews for today
-    List todayInterviews = interviewees.where((interviewee) {
-      DateTime interviewStart = interviewee['timeRange'].start;
-      return interviewStart.year == today.year &&
-          interviewStart.month == today.month &&
-          interviewStart.day == today.day;
-    }).toList();
+    // // Filter only the interviews for today
+    // List todayInterviews = interviewees.where((interviewee) {
+    //   DateTime interviewStart = interviewee['timeRange'].start;
+    //   return interviewStart.year == today.year &&
+    //       interviewStart.month == today.month &&
+    //       interviewStart.day == today.day;
+    // }).toList();
 
-    if (todayInterviews.isNotEmpty) {
+    debugPrint("Details: ${interviewees.length}");
+
+    if (interviewees.isNotEmpty) {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -102,16 +63,11 @@ class TodayView extends StatelessWidget {
               shrinkWrap: true, // Ensures ListView takes only needed space
               physics:
                   const NeverScrollableScrollPhysics(), // Disable inner scrolling
-              itemCount: todayInterviews.length,
+              itemCount: interviewees.length,
               itemBuilder: (context, index) {
-                final interviewee = todayInterviews[index];
+                final interviewee = interviewees[index];
                 return InterviewRowCard(
-                  intervieweeName: interviewee['name'],
-                  profession: interviewee['profession'],
-                  branch: interviewee['branch'],
-                  interviewTitle: interviewee['interviewTitle'],
-                  interviewType: interviewee['interviewType'],
-                  timeRange: interviewee['timeRange'],
+                  interview: interviewee,
                 );
               },
             ),

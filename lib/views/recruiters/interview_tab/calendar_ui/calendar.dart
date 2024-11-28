@@ -125,6 +125,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
       // widget.candidate.id,
       selectedApplicant!.id,
       selectedApplicant!.jobApplicationDocId!,
+      selectedApplicant!.profession,
     );
     _jobProviderCandidate.pushNotificationToJobseeker(
       selectedApplicant!.jobPostId,

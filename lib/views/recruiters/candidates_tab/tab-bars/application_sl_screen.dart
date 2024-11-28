@@ -230,9 +230,11 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
     _interviewProvider.saveInterview(
         e,
         widget.candidateId,
-        widget.candidate!.jobPostId,
+        widget.candidate.jobPostId,
         widget.candidate.id,
-        widget.candidate.jobApplicationDocId!);
+        widget.candidate.jobApplicationDocId!,
+        widget.candidate.profession,
+        );
     _jobProvider.pushNotificationToJobseeker(
       widget.candidate.jobPostId,
       widget.candidate.id,

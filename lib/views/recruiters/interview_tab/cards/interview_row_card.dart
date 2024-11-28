@@ -1,33 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/cards/interview_tile_card.dart';
 import 'package:intl/intl.dart';
 
 class InterviewRowCard extends StatelessWidget {
   const InterviewRowCard({
     super.key,
-    required this.intervieweeName,
-    required this.profession,
-    required this.branch,
-    required this.interviewTitle,
-    required this.interviewType,
-    required this.timeRange,
+    required this.interview
   });
 
-  final String intervieweeName;
-  final String profession;
-  final String branch;
-  final String interviewTitle;
-  final String interviewType;
-  final DateTimeRange timeRange;
+  final InterviewEvent interview;
+
+  // final String intervieweeName;
+  // final String profession;
+  // // final String branch;
+  // final String interviewTitle;
+  // final String interviewType;
+  // final TimeOfDay startTime;
+  // final TimeOfDay endTime;
 
   @override
   Widget build(BuildContext context) {
     // Create a DateFormat for 12-hour format with AM/PM
     final DateFormat timeFormat = DateFormat.jm();
 
+    String formatTimeOfDay(TimeOfDay time) {
+      final now = DateTime.now();
+      final dateTime =
+          DateTime(now.year, now.month, now.day, time.hour, time.minute);
+      return DateFormat.jm().format(dateTime); // Format as '9:40 AM'
+    }
+
     // Format the start and end times
-    String startTime = timeFormat.format(timeRange.start);
-    String endTime = timeFormat.format(timeRange.end);
+    // String startTime = timeFormat.format(_parseTimeOfDay.start);
+    // String endTime = timeFormat.format(_parseTimeOfDay.end);
 
     return Row(
       children: [
@@ -35,7 +41,7 @@ class InterviewRowCard extends StatelessWidget {
           width: 260,
           // color: Colors.redAccent,
           child: Text(
-            '$startTime - $endTime',
+            '${formatTimeOfDay(interview.startTime!)} - ${formatTimeOfDay(interview.endTime!)}',
             style: const TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 16,
@@ -44,12 +50,7 @@ class InterviewRowCard extends StatelessWidget {
         ),
         Expanded(
           child: InterviewTile(
-            intervieweeName: intervieweeName,
-            profession: profession,
-            branch: branch,
-            interviewTitle: interviewTitle,
-            interviewType: interviewType,
-            timeRange: timeRange,
+            interview: interview,
           ),
         ),
       ],

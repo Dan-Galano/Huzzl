@@ -11,6 +11,11 @@ class InterviewEvent {
   TimeOfDay? endTime;
   String? notes;
   String? location;
+  String? profession;
+  String? status;
+  String? jobPostId;
+  String? jobseekerId;
+  String? interviewId;
 
   InterviewEvent({
     required this.applicant,
@@ -22,5 +27,10 @@ class InterviewEvent {
     required this.endTime,
     this.notes,
     this.location,
+    this.profession,
+    this.status,
+    this.jobPostId,
+    this.jobseekerId,
+    this.interviewId,
   });
 }

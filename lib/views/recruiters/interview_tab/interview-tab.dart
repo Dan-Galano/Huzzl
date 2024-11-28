@@ -50,7 +50,7 @@ Widget buildInterviewsContent() {
                 );
               },
             ),
-            InterviewFilterRowWidget(),
+            // InterviewFilterRowWidget(),
             TabBar(
               tabAlignment: TabAlignment.start,
               isScrollable: true,
@@ -70,12 +70,12 @@ Widget buildInterviewsContent() {
                 fontFamily: 'Galano', // Use your custom font
               ),
               tabs: const [
-                Tab(text: '2 Today'),
-                Tab(text: '0 Upcoming'),
-                Tab(text: '0 Pending'),
-                Tab(text: '0 Past'),
-                Tab(text: '0 Rescheduled'),
-                Tab(text: '0 Missed'),
+                Tab(text: 'Today'),
+                Tab(text: 'Upcoming'),
+                Tab(text: 'Pending'),
+                Tab(text: 'Past'),
+                Tab(text: 'Rescheduled'),
+                Tab(text: 'Missed'),
               ],
             ),
             Expanded(

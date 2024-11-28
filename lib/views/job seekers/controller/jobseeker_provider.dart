@@ -78,6 +78,7 @@ class JobseekerProvider extends ChangeNotifier {
               ? _timeOfDayFromString(data['endTime'] as String)
               : null,
           notes: data['notes'] as String?,
+          status: data['status'] as String?,
           location: data['location'] as String?,
         );
       }).toList();

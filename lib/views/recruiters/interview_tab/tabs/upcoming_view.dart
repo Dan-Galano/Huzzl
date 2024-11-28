@@ -109,79 +109,83 @@ class UpcomingView extends StatelessWidget {
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          if (tomorrowInterviews.isNotEmpty) ...[
-            TitleRow(
-              date: tomorrow,
-              title: 'TOMORROW',
-              color: const Color(0xff3e79f8),
-            ),
-            const Gap(20),
-            ListView.builder(
-              shrinkWrap:
-                  true, // Ensures the ListView takes only as much space as needed
-              physics:
-                  const NeverScrollableScrollPhysics(), // Disable inner scrolling
-              itemCount: tomorrowInterviews.length,
-              itemBuilder: (context, index) {
-                final interviewee = tomorrowInterviews[index];
-                return InterviewRowCard(
-                  intervieweeName: interviewee['name'],
-                  profession: interviewee['profession'],
-                  branch: interviewee['branch'],
-                  interviewTitle: interviewee['interviewTitle'],
-                  interviewType: interviewee['interviewType'],
-                  timeRange: interviewee['timeRange'],
-                );
-              },
-            ),
-          ],
-          if (dayAfterTomorrowInterviews.isNotEmpty) ...[
-            const Gap(30),
-            TitleRow(
-              date: theDayAfterTomorrow,
-              title: '',
-              color: const Color(0xff8E8E8E),
-            ),
-            const Gap(20),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: dayAfterTomorrowInterviews.length,
-              itemBuilder: (context, index) {
-                final interviewee = dayAfterTomorrowInterviews[index];
-                return InterviewRowCard(
-                  intervieweeName: interviewee['name'],
-                  profession: interviewee['profession'],
-                  branch: interviewee['branch'],
-                  interviewTitle: interviewee['interviewTitle'],
-                  interviewType: interviewee['interviewType'],
-                  timeRange: interviewee['timeRange'],
-                );
-              },
-            ),
-          ],
-          if (tomorrowInterviews.isEmpty && dayAfterTomorrowInterviews.isEmpty)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "assets/images/empty_box.png",
-                  width: 140,
-                ),
-                const Gap(20),
-                const Text(
-                  "You don't have any upcoming interviews.",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
+      // child: Column(
+      //   children: [
+      //     if (tomorrowInterviews.isNotEmpty) ...[
+      //       TitleRow(
+      //         date: tomorrow,
+      //         title: 'TOMORROW',
+      //         color: const Color(0xff3e79f8),
+      //       ),
+      //       const Gap(20),
+      //       ListView.builder(
+      //         shrinkWrap:
+      //             true, // Ensures the ListView takes only as much space as needed
+      //         physics:
+      //             const NeverScrollableScrollPhysics(), // Disable inner scrolling
+      //         itemCount: tomorrowInterviews.length,
+      //         itemBuilder: (context, index) {
+      //           final interviewee = tomorrowInterviews[index];
+      //           return InterviewRowCard(
+      //             intervieweeName: interviewee['name'],
+      //             profession: interviewee['profession'],
+      //             // branch: interviewee['branch'],
+      //             interviewTitle: interviewee['interviewTitle'],
+      //             interviewType: interviewee['interviewType'],
+      //             // timeRange: interviewee['timeRange'],
+      //             startTime: TimeOfDay.now(),
+      //             endTime: TimeOfDay.now(),
+      //           );
+      //         },
+      //       ),
+      //     ],
+      //     if (dayAfterTomorrowInterviews.isNotEmpty) ...[
+      //       const Gap(30),
+      //       TitleRow(
+      //         date: theDayAfterTomorrow,
+      //         title: '',
+      //         color: const Color(0xff8E8E8E),
+      //       ),
+      //       const Gap(20),
+      //       ListView.builder(
+      //         shrinkWrap: true,
+      //         physics: const NeverScrollableScrollPhysics(),
+      //         itemCount: dayAfterTomorrowInterviews.length,
+      //         itemBuilder: (context, index) {
+      //           final interviewee = dayAfterTomorrowInterviews[index];
+      //           return InterviewRowCard(
+      //             intervieweeName: interviewee['name'],
+      //             profession: interviewee['profession'],
+      //             // branch: interviewee['branch'],
+      //             interviewTitle: interviewee['interviewTitle'],
+      //             interviewType: interviewee['interviewType'],
+      //             // timeRange: interviewee['timeRange'],
+      //             startTime: TimeOfDay.now(),
+      //             endTime: TimeOfDay.now(),
+      //           );
+      //         },
+      //       ),
+      //     ],
+      //     if (tomorrowInterviews.isEmpty && dayAfterTomorrowInterviews.isEmpty)
+      //       Column(
+      //         mainAxisAlignment: MainAxisAlignment.center,
+      //         children: [
+      //           Image.asset(
+      //             "assets/images/empty_box.png",
+      //             width: 140,
+      //           ),
+      //           const Gap(20),
+      //           const Text(
+      //             "You don't have any upcoming interviews.",
+      //             style: TextStyle(
+      //               fontSize: 16,
+      //               color: Colors.grey,
+      //             ),
+      //           ),
+      //         ],
+      //       ),
+      //   ],
+      // ),
     );
   }
 }

@@ -309,8 +309,14 @@ class InterviewProvider extends ChangeNotifier {
   //   }
   // }
 
-  void saveInterview(InterviewEvent e, String jobseekerId, String jobPostId,
-      String candidateId, String jobApplicationId) async {
+  void saveInterview(
+    InterviewEvent e,
+    String jobseekerId,
+    String jobPostId,
+    String candidateId,
+    String jobApplicationId,
+    String profession,
+  ) async {
     final recruiterId = getCurrentUserId();
 
     // Default value for location if it's null
@@ -345,6 +351,8 @@ class InterviewProvider extends ChangeNotifier {
         'recruiterId': recruiterId,
         'jobseekerId': jobseekerId,
         'jobPostId': jobPostId,
+        'profession': profession,
+        'status': 'not started',
       });
 
       debugPrint('Interview schedule has been saved.');
@@ -354,7 +362,8 @@ class InterviewProvider extends ChangeNotifier {
           .collection('users')
           .doc(jobseekerId)
           .collection('interviewSched')
-          .add({
+          .doc(jobseekerId)
+          .set({
         'applicant': e.applicant,
         'title': e.title,
         'type': e.type,
@@ -367,6 +376,8 @@ class InterviewProvider extends ChangeNotifier {
         'recruiterId': recruiterId,
         'jobseekerId': jobseekerId,
         'jobPostId': jobPostId,
+        'profession': profession,
+        'status': 'not started',
       });
 
       debugPrint('Interview schedule has been saved IN JOBSEEKER');
@@ -453,6 +464,7 @@ class InterviewProvider extends ChangeNotifier {
         QuerySnapshot interviewsSnapshot = await interviewsCollection.get();
         for (var interviewDoc in interviewsSnapshot.docs) {
           final data = interviewDoc.data() as Map<String, dynamic>;
+          final interviewId = interviewDoc.id;
 
           // Parse startTime and endTime from "HH:mm" strings
           final startTime = data['startTime'] != null
@@ -464,23 +476,26 @@ class InterviewProvider extends ChangeNotifier {
               : null;
 
           // Convert Firestore document to InterviewEvent and add to _events
-          _events.add(
-            InterviewEvent(
-              applicant: data['applicant'] as String?,
-              title: data['title'] as String?,
-              type: data['type'] as String?,
-              interviewers: (data['interviewers'] as List<dynamic>?)
-                  ?.map((e) => e.toString())
-                  .toList(),
-              date: (data['date'] != null)
-                  ? (data['date'] as Timestamp).toDate()
-                  : null,
-              startTime: startTime,
-              endTime: endTime,
-              notes: data['notes'] as String?,
-              location: data['location'] as String?,
-            ),
-          );
+          _events.add(InterviewEvent(
+            applicant: data['applicant'] as String?,
+            title: data['title'] as String?,
+            type: data['type'] as String?,
+            interviewers: (data['interviewers'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList(),
+            date: (data['date'] != null)
+                ? (data['date'] as Timestamp).toDate()
+                : null,
+            startTime: startTime,
+            endTime: endTime,
+            notes: data['notes'] as String?,
+            location: data['location'] as String?,
+            status: data['status'] as String?,
+            profession: data['profession'],
+            interviewId: interviewId,
+            jobPostId: data['jobPostId'],
+            jobseekerId: data['jobseekerId'],
+          ));
         }
         print('Interviews fetched: ${interviewsSnapshot.docs.length}');
       } catch (e) {
@@ -509,5 +524,118 @@ class InterviewProvider extends ChangeNotifier {
       }
     }
     return null;
+  }
+
+  //TODAYSSS INTERVIEWWW HEREEE
+  List<InterviewEvent> _todaysInterviewList = [];
+  List<InterviewEvent> get todaysInterviewList => _todaysInterviewList;
+
+  Future<void> fetchTodaysInterview() async {
+    // Clear existing events to avoid duplicates
+    _todaysInterviewList.clear();
+
+    // Get today's date
+    final today = DateTime.now();
+    final todayStart = DateTime(today.year, today.month, today.day);
+    final todayEnd = todayStart
+        .add(const Duration(days: 1))
+        .subtract(const Duration(seconds: 1));
+
+    // Reference to the recruiter user
+    final usersCollection =
+        FirebaseFirestore.instance.collection('users').doc(getCurrentUserId());
+
+    // Fetch the recruiter's job posts
+    final jobPostsCollection = usersCollection.collection('job_posts');
+    QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
+
+    for (var jobPostDoc in jobPostsSnapshot.docs) {
+      // Reference to the interviews sub-collection for each job post
+      final interviewsCollection =
+          jobPostsCollection.doc(jobPostDoc.id).collection('interviews');
+
+      try {
+        // Fetch interviews scheduled for today
+        QuerySnapshot interviewsSnapshot = await interviewsCollection
+            .where('date',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
+            .where('date', isLessThanOrEqualTo: Timestamp.fromDate(todayEnd))
+            .get();
+
+        for (var interviewDoc in interviewsSnapshot.docs) {
+          final data = interviewDoc.data() as Map<String, dynamic>;
+
+          // Parse startTime and endTime from "HH:mm" strings
+          final startTime = data['startTime'] != null
+              ? _parseTimeOfDay(data['startTime'] as String)
+              : null;
+
+          final endTime = data['endTime'] != null
+              ? _parseTimeOfDay(data['endTime'] as String)
+              : null;
+
+          // Convert Firestore document to InterviewEvent and add to _todaysInterviewList
+          _todaysInterviewList.add(
+            InterviewEvent(
+                applicant: data['applicant'] as String?,
+                title: data['title'] as String?,
+                type: data['type'] as String?,
+                interviewers: (data['interviewers'] as List<dynamic>?)
+                    ?.map((e) => e.toString())
+                    .toList(),
+                date: (data['date'] != null)
+                    ? (data['date'] as Timestamp).toDate()
+                    : null,
+                startTime: startTime,
+                endTime: endTime,
+                notes: data['notes'] as String?,
+                location: data['location'] ?? 'no location',
+                status: data['status'] as String?,
+                profession: data['profession']),
+          );
+        }
+        print('Today\'s interviews fetched: ${interviewsSnapshot.docs.length}');
+      } catch (e) {
+        print('Error fetching today\'s interviews: $e');
+      }
+    }
+  }
+
+  void updateInterviewStatus(InterviewEvent e) {
+    final recruiterId = getCurrentUserId();
+
+    try {
+      // Update the interview status for the recruiter
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(e.jobPostId)
+          .collection('interviews')
+          .doc(e.interviewId)
+          .update({
+        'status': 'started',
+      }).then((_) {
+        print('Recruiter interview status updated to started');
+      }).catchError((error) {
+        print('Error updating recruiter interview status: $error');
+      });
+
+      // Update the interview status for the jobseeker
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(e.jobseekerId)
+          .collection('interviewSched')
+          .doc(e.interviewId)
+          .update({
+        'status': 'started',
+      }).then((_) {
+        print('Jobseeker interview status updated to started');
+      }).catchError((error) {
+        print('Error updating jobseeker interview status: $error');
+      });
+    } catch (e) {
+      print('Error updating interview status: $e');
+    }
   }
 }
