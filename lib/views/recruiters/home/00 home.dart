@@ -49,6 +49,8 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   int _initialIndex = 0;
   int _jobTabInitialIndex = 0;
 
+  Candidate? _candidate;
+
   //Interview logics
 
   void getcompanyData() async {
@@ -153,11 +155,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
   }
 
   void toggleSlApplicationScreen(
-      bool showApplicationScreen, int initialIndex, String candidateId, {Candidate? candidate}) {
+      bool showApplicationScreen, int initialIndex, String candidateId,
+      {Candidate? candidate}) {
     setState(() {
       _isSlApplicationScreen = showApplicationScreen;
       _initialIndex = initialIndex;
       _candidateId = candidateId;
+      _candidate = candidate;
     });
   }
 
@@ -222,6 +226,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           return SlApplicationScreen(
             onBack: () => toggleSlApplicationScreen(false, _initialIndex, ""),
             candidateId: _candidateId,
+            candidate: _candidate!,
           );
         } else if (_isCandidatesScreen) {
           return BuildCandidatesContent(

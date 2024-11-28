@@ -440,16 +440,15 @@ class JobProviderCandidate extends ChangeNotifier {
     final userId = getCurrentUserId();
     // Fetch the document using the current user's ID
     // return userId;
-    DocumentSnapshot doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .get();
+    DocumentSnapshot doc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
     // Extract the first name and last name fields
     String firstName = doc['hiringManagerFirstName'] ?? '';
     String lastName = doc['hiringManagerLastName'] ?? '';
 
     // Concatenate the names and return the result
+    print("NAMEEEEE: $firstName $lastName");
     return '$firstName $lastName';
   }
 }

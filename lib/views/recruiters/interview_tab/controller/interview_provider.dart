@@ -1,4 +1,6 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
@@ -223,12 +225,222 @@ class InterviewProvider extends ChangeNotifier {
     );
   }
 
+  String getCurrentUserId() {
+    return FirebaseAuth.instance.currentUser!.uid;
+  }
+
   //HERE TO SAVE THE INTERVIEW SCHEDULEEEEEE
   List<InterviewEvent> _events = [];
   List<InterviewEvent> get events => _events;
 
-  void saveInterview(InterviewEvent e){
-    _events.add(e);
-    notifyListeners();
+  // void saveInterview(
+  //     InterviewEvent e, String jobseekerId, String jobPostId) async {
+  //   final recruiterId = getCurrentUserId();
+
+  //   // Default value for location if it's null
+  //   final location = e.location ?? 'No Location';
+
+  //   debugPrint("TO BE SAVED TO DB:\n"
+  //       "Recruiter ID: $recruiterId\n"
+  //       "Jobseeker ID: $jobseekerId\n"
+  //       "Job Post ID: $jobPostId\n"
+  //       "Interview Details:\n"
+  //       "- Applicant: ${e.applicant}\n"
+  //       "- Title: ${e.title}\n"
+  //       "- Type: ${e.type}\n"
+  //       "- Interviewers: ${e.interviewers}\n"
+  //       "- Date: ${e.date}\n"
+  //       "- Start Time: ${e.startTime}\n"
+  //       "- End Time: ${e.endTime}\n"
+  //       "- Notes: ${e.notes}\n"
+  //       "- Location: $location");
+
+  //   try {
+  //     // Save interview to recruiter's collection
+  //     await FirebaseFirestore.instance
+  //         .collection("users")
+  //         .doc(recruiterId)
+  //         .collection('job_posts')
+  //         .doc(jobPostId)
+  //         .collection('interviews')
+  //         .add({
+  //       'applicant': e.applicant,
+  //       'title': e.title,
+  //       'type': e.type,
+  //       'interviewers': e.interviewers,
+  //       'date': e.date,
+  //       'startTime': e.startTime,
+  //       'endTime': e.endTime,
+  //       'notes': e.notes,
+  //       'location': location, // Handle null or empty location
+  //       'recruiterId': recruiterId,
+  //       'jobseekerId': jobseekerId,
+  //       'jobPostId': jobPostId,
+  //     });
+
+  //     debugPrint('Interview schedule has been saved IN RECRUITER');
+
+  //     // Save interview to jobseeker's collection
+  //     await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(jobseekerId)
+  //         .collection('interviewSched')
+  //         .add({
+  //       'applicant': e.applicant,
+  //       'title': e.title,
+  //       'type': e.type,
+  //       'interviewers': e.interviewers,
+  //       'date': e.date,
+  //       'startTime': e.startTime as String,
+  //       'endTime': e.endTime,
+  //       'notes': e.notes,
+  //       'location': location, // Handle null or empty location
+  //       'recruiterId': recruiterId,
+  //       'jobseekerId': jobseekerId,
+  //       'jobPostId': jobPostId,
+  //     });
+
+  //     debugPrint('Interview schedule has been saved IN JOBSEEKER');
+
+  //     // Optionally fetch interviews for debugging purposes
+  //     await fetchInterviews(recruiterId, jobPostId);
+  //   } catch (e) {
+  //     debugPrint("Error in saving the interview: $e");
+  //   }
+  // }
+
+  void saveInterview(InterviewEvent e, String jobseekerId, String jobPostId,
+      String candidateId, String jobApplicationId) async {
+    final recruiterId = getCurrentUserId();
+
+    // Default value for location if it's null
+    final location = e.location ?? 'No Location';
+
+    // Convert TimeOfDay to string representation
+    final startTimeString = e.startTime != null
+        ? '${e.startTime!.hour.toString().padLeft(2, '0')}:${e.startTime!.minute.toString().padLeft(2, '0')}'
+        : null;
+
+    final endTimeString = e.endTime != null
+        ? '${e.endTime!.hour.toString().padLeft(2, '0')}:${e.endTime!.minute.toString().padLeft(2, '0')}'
+        : null;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(jobPostId)
+          .collection('interviews')
+          .add({
+        'applicant': e.applicant,
+        'title': e.title,
+        'type': e.type,
+        'interviewers': e.interviewers,
+        'date': e.date,
+        'startTime': startTimeString, // Storing as string
+        'endTime': endTimeString, // Storing as string
+        'notes': e.notes,
+        'location': location,
+        'recruiterId': recruiterId,
+        'jobseekerId': jobseekerId,
+        'jobPostId': jobPostId,
+      });
+
+      debugPrint('Interview schedule has been saved.');
+
+      // Save interview to jobseeker's collection
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(jobseekerId)
+          .collection('interviewSched')
+          .add({
+        'applicant': e.applicant,
+        'title': e.title,
+        'type': e.type,
+        'interviewers': e.interviewers,
+        'date': e.date,
+        'startTime': startTimeString,
+        'endTime': endTimeString,
+        'notes': e.notes,
+        'location': location, // Handle null or empty location
+        'recruiterId': recruiterId,
+        'jobseekerId': jobseekerId,
+        'jobPostId': jobPostId,
+      });
+
+      debugPrint('Interview schedule has been saved IN JOBSEEKER');
+
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(jobseekerId) // Candidate's document ID
+          .collection("job_application")
+          // .where('jobPostId', isEqualTo: jobPostId)
+          .doc(jobApplicationId)
+          .update({'status': 'For Interview'}); // Field to update
+      print(
+          "Candidate status updated to For Interview in job application collection");
+
+      await fetchInterviews(recruiterId, jobPostId);
+    } catch (e) {
+      debugPrint("Error in saving the interview: $e");
+    }
+  }
+
+  Future<void> fetchInterviews(String recruiterId, String jobPostId) async {
+    try {
+      // Fetch interviews from Firestore
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(jobPostId)
+          .collection('interviews')
+          .get();
+
+      // Clear the local list before adding new data
+      _events.clear();
+
+      // Map Firestore documents to InterviewEvent objects
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+
+        _events.add(
+          InterviewEvent(
+            applicant: data['applicant'] as String?,
+            title: data['title'] as String?,
+            type: data['type'] as String?,
+            interviewers: (data['interviewers'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList(),
+            date: (data['date'] != null)
+                ? (data['date'] as Timestamp).toDate()
+                : null,
+            startTime: _convertToTimeOfDay(data['startTime']),
+            endTime: _convertToTimeOfDay(data['endTime']),
+            notes: data['notes'] as String?,
+            location: data['location'] as String?,
+          ),
+        );
+      }
+
+      debugPrint("Interviews fetched successfully: $_events");
+    } catch (error) {
+      debugPrint("Error fetching interviews: $error");
+    }
+  }
+
+// Helper function to convert a Firestore time string to TimeOfDay
+  TimeOfDay? _convertToTimeOfDay(String? time) {
+    if (time == null) return null;
+    final parts = time.split(":");
+    if (parts.length == 2) {
+      final hour = int.tryParse(parts[0]);
+      final minute = int.tryParse(parts[1]);
+      if (hour != null && minute != null) {
+        return TimeOfDay(hour: hour, minute: minute);
+      }
+    }
+    return null;
   }
 }

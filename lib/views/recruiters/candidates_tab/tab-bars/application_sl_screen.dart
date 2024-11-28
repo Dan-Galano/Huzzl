@@ -24,12 +24,12 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 class SlApplicationScreen extends StatefulWidget {
   final VoidCallback onBack;
   final String candidateId;
-  Candidate? candidate;
+  final Candidate candidate;
   SlApplicationScreen({
     Key? key,
     required this.onBack,
     required this.candidateId,
-    this.candidate,
+    required this.candidate,
   }) : super(key: key);
 
   @override
@@ -73,6 +73,9 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
     selectedType = 'Online';
 
     getRecruiterName();
+    // _interviewProvider.fetchInterviews(widget.candidateId, widget.candidate!.jobPostId);
+
+    print("SANA MERON: ${widget.candidateId}, ${widget.candidate!.jobPostId}");
   }
 
   void getRecruiterName() async {
@@ -214,13 +217,25 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
 
   SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
 
-  void addToList(InterviewEvent e) {
+  void saveInterviewToDB(InterviewEvent e) {
     //Aside from adding it to local list, add it also into the firebase
-    print("Interview event details: ${e.applicant} ${e.date} ${e.interviewers}");
+    print(
+        "Interview event details: ${e.applicant} ${e.date} ${e.interviewers}");
     // setState(() {
     //   events.add(e);
     // });
-    _interviewProvider.saveInterview(e);
+    _interviewProvider.saveInterview(
+        e,
+        widget.candidateId,
+        widget.candidate!.jobPostId,
+        widget.candidate.id,
+        widget.candidate.jobApplicationDocId!);
+    _jobProvider.pushNotificationToJobseeker(
+      widget.candidate.jobPostId,
+      widget.candidate.id,
+      'You have been scheduled for Interview: ${e.title}',
+      "${e.notes} The date of your interview is ${e.date}. Starts in ${e.startTime}, end in ${e.endTime}.",
+    );
     resetScheduleInterviewerForm();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -289,7 +304,21 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                         Gap(10),
                         TextButton(
                           onPressed: () {
-                            addToList(e);
+                            debugPrint("TO BE SAVED TO DB:\n"
+                                // "Recruiter ID: $recruiterId\n"
+                                "Jobseeker ID: ${widget.candidateId}\n"
+                                "Job Post ID: ${widget.candidate.jobPostId}\n"
+                                "Interview Details:\n"
+                                "- Applicant: ${e.applicant}\n"
+                                "- Title: ${e.title}\n"
+                                "- Type: ${e.type}\n"
+                                "- Interviewers: ${e.interviewers}\n"
+                                "- Date: ${e.date}\n"
+                                "- Start Time: ${e.startTime}\n"
+                                "- End Time: ${e.endTime}\n"
+                                "- Notes: ${e.notes}\n"
+                                "- Location: ${e.location ?? 'No location'}");
+                            saveInterviewToDB(e);
                           },
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
@@ -461,26 +490,25 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
   }
 
   List<InterviewEvent> events = [
-      InterviewEvent(
-        applicant:
-            "PAtrick",
-        title: 'First Round Interview',
-        type: 'F2F',
-        interviewers: [
-          'Dan Galano',
-          'Monica Ave',
-          'Dan Galano',
-          'Monica Ave',
-          'Dan Galano',
-          'Monica Ave'
-        ],
-        date: DateTime.now(),
-        startTime: TimeOfDay.now(),
-        endTime: TimeOfDay.now(),
-        notes: 'Bring your guts!!!',
-        location:
-            'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
-      ),
+    InterviewEvent(
+      applicant: "PAtrick",
+      title: 'First Round Interview',
+      type: 'F2F',
+      interviewers: [
+        'Dan Galano',
+        'Monica Ave',
+        'Dan Galano',
+        'Monica Ave',
+        'Dan Galano',
+        'Monica Ave'
+      ],
+      date: DateTime.now(),
+      startTime: TimeOfDay.now(),
+      endTime: TimeOfDay.now(),
+      notes: 'Bring your guts!!!',
+      location:
+          'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
+    ),
     //   InterviewEvent(
     //     applicant: Applicant(
     //       name: 'Dessa Mine',
@@ -890,7 +918,6 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
 
                                 return; // Do not proceed with saving if F2F location is missing
                               }
-
                               // Create and add the interview event
                               InterviewEvent newEvent = InterviewEvent(
                                 applicant: candidateNameController.text,
@@ -903,7 +930,6 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                 startTime: startTime,
                                 endTime: endTime,
                                 notes: notesController.text,
-                                location: locationController.text,
                               );
 
                               print(
@@ -1277,9 +1303,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                     cursor: SystemMouseCursors.click,
                                     child: GestureDetector(
                                       onTap: _launchEmail,
-                                      child: const Text(
-                                        'eleanorpena@gmail.com',
-                                        style: TextStyle(
+                                      child: Text(
+                                        jobCandidateProvider
+                                            .findDataOfCandidate(
+                                                widget.candidateId)!
+                                            .email,
+                                        style: const TextStyle(
                                           decoration: TextDecoration.underline,
                                           decorationColor: Color(0xFFff9800),
                                           color: Color(0xFFff9800),

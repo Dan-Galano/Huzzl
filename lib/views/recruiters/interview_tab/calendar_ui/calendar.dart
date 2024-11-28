@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class InterviewCalendar extends StatefulWidget {
-
   const InterviewCalendar({Key? key}) : super(key: key);
 
   @override
@@ -144,6 +143,8 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
     _interviewProvider = Provider.of<InterviewProvider>(context, listen: false);
     selectedDate = today;
     selectedType = 'Online';
+
+    // _interviewProvider.fetch
   }
 
   void addToList(InterviewEvent e) {
@@ -366,53 +367,53 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
   DateTime selectedDate = DateTime.now();
   // List<InterviewEvent>? events;
   // [
-    // InterviewEvent(
-    //   applicant:
-    //       "Patrick John Tomas",
-    //   title: 'First Round Interview',
-    //   type: 'F2F',
-    //   interviewers: [
-    //     'Dan Galano',
-    //     'Monica Ave',
-    //     'Dan Galano',
-    //     'Monica Ave',
-    //     'Dan Galano',
-    //     'Monica Ave'
-    //   ],
-    //   date: DateTime.now(),
-    //   startTime: TimeOfDay.now(),
-    //   endTime: TimeOfDay.now(),
-    //   notes: 'Bring your guts!!!',
-    //   location:
-    //       'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
-    // ),
-    // InterviewEvent(
-    //   applicant: Applicant(
-    //     name: 'Dessa Mine',
-    //     job: 'Graphic Designer',
-    //     branch: 'Urdaneta',
-    //   ),
-    //   title: 'Second Round Interview',
-    //   type: 'F2F',
-    //   interviewers: ['Dan Galano', 'Monica Ave'],
-    //   date: DateTime(2024, 9, 27),
-    //   startTime: TimeOfDay.now(),
-    //   endTime: TimeOfDay.now(),
-    //   notes: 'Bring your guts!!!',
-    //   location:
-    //       'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
-    // ),
-    // InterviewEvent(
-    //   applicant:
-    //       Applicant(name: 'Hana Montana', job: 'Dancerist', branch: 'Dagupan'),
-    //   title: 'First Round Interview',
-    //   type: 'Online',
-    //   interviewers: ['Dan Galano', 'Monica Ave'],
-    //   date: DateTime.now(),
-    //   startTime: TimeOfDay.now(),
-    //   endTime: TimeOfDay.now(),
-    //   notes: 'Bring your guts!!!',
-    // )
+  // InterviewEvent(
+  //   applicant:
+  //       "Patrick John Tomas",
+  //   title: 'First Round Interview',
+  //   type: 'F2F',
+  //   interviewers: [
+  //     'Dan Galano',
+  //     'Monica Ave',
+  //     'Dan Galano',
+  //     'Monica Ave',
+  //     'Dan Galano',
+  //     'Monica Ave'
+  //   ],
+  //   date: DateTime.now(),
+  //   startTime: TimeOfDay.now(),
+  //   endTime: TimeOfDay.now(),
+  //   notes: 'Bring your guts!!!',
+  //   location:
+  //       'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
+  // ),
+  // InterviewEvent(
+  //   applicant: Applicant(
+  //     name: 'Dessa Mine',
+  //     job: 'Graphic Designer',
+  //     branch: 'Urdaneta',
+  //   ),
+  //   title: 'Second Round Interview',
+  //   type: 'F2F',
+  //   interviewers: ['Dan Galano', 'Monica Ave'],
+  //   date: DateTime(2024, 9, 27),
+  //   startTime: TimeOfDay.now(),
+  //   endTime: TimeOfDay.now(),
+  //   notes: 'Bring your guts!!!',
+  //   location:
+  //       'Rm 230, 2nd Floor, XYZ Bldg., ABC st., Urdaneta City, Pangasinan',
+  // ),
+  // InterviewEvent(
+  //   applicant:
+  //       Applicant(name: 'Hana Montana', job: 'Dancerist', branch: 'Dagupan'),
+  //   title: 'First Round Interview',
+  //   type: 'Online',
+  //   interviewers: ['Dan Galano', 'Monica Ave'],
+  //   date: DateTime.now(),
+  //   startTime: TimeOfDay.now(),
+  //   endTime: TimeOfDay.now(),
+  //   notes: 'Bring your guts!!!',
+  // )
   // ];
 
   void resetScheduleInterviewerForm() {
@@ -794,7 +795,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
       },
     );
   }
- 
+
   Widget buildSearchDropdown(StateSetter setState) {
     return GestureDetector(
       onTap: () {
@@ -1611,7 +1612,8 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
                                                 //       ),
                                                 //     ),
                                                 //   ],
-                                                Text("Applicant name: ${event.applicant!}"),
+                                                Text(
+                                                    "Applicant name: ${event.applicant!}"),
                                                 SizedBox(height: 20),
 
                                                 // Title row
