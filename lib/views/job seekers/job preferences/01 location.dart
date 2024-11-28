@@ -8,12 +8,14 @@ class LocationSelectorPage extends StatefulWidget {
   final VoidCallback nextPage;
   final Function(Map<String, dynamic>) onSaveLocation;
   final Map<String, dynamic>? currentLocation;
+  final int noOfPages;
   // final ValueChanged<String?> onselectedRegionChanged;
   const LocationSelectorPage({
     Key? key,
     required this.nextPage,
     required this.onSaveLocation,
     required this.currentLocation,
+    required this.noOfPages,
   }) : super(key: key);
 
   @override
@@ -111,7 +113,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
 
   Future<void> fetchRegions() async {
     final response =
-        await http.get(Uri.parse('https://psgc.gitlab.io/api/cities/'));
+        await http.get(Uri.parse('https://psgc.gitlab.io/api/regions/'));
     if (response.statusCode == 200) {
       setState(() {
         regions = jsonDecode(response.body);
@@ -199,14 +201,27 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '1/3',
-              style: TextStyle(
-                fontSize: 20,
-                color: Color(0xff373030),
-                fontFamily: 'Galano',
-                fontWeight: FontWeight.w100,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '1/${widget.noOfPages}',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color(0xff373030),
+                    fontFamily: 'Galano',
+                    fontWeight: FontWeight.w100,
+                  ),
+                ),
+                TextButton(
+                  child: Text("Skip all",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () {},
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             const Text('Where are you located?',
@@ -339,7 +354,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
               },
             ),
 
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 30),
             // if (selectedBarangay != null)
             TextField(
               controller:
@@ -357,7 +372,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                   child: Text("Skip",
                       style: TextStyle(
                           fontSize: 16,
-                          color: Colors.orange,
+                          color: Colors.grey[700],
                           fontWeight: FontWeight.bold)),
                   onPressed: () {
                     selectedRegion = null;

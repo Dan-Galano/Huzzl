@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20resume.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/04b%20resume_manual.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -28,7 +29,7 @@ class PreferenceViewPage extends StatefulWidget {
 class _PreferenceViewPageState extends State<PreferenceViewPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-
+  int noOfPages = 4;
   // Variables to hold data from each page
   // String? selectedLocation;
   Map<String, dynamic>? selectedLocation;
@@ -36,13 +37,13 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   Map<String, dynamic>? selectedPayRate;
   List<String>? selectedJobTitles;
   Map<String, dynamic>? currentResumeOption;
-
+  List? currentSelectedJobTitles;
 //controllers
 
 //location
 
   void _nextPage() {
-    if (_currentPage < 4) {
+    if (_currentPage < 5) {
       _pageController.animateToPage(
         _currentPage + 1,
         duration: const Duration(milliseconds: 300),
@@ -138,6 +139,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                     });
                   },
                   currentLocation: selectedLocation,
+                  noOfPages: noOfPages,
                 ),
                 MinimumPayPage(
                   nextPage: _nextPage,
@@ -148,26 +150,41 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                     });
                   },
                   currentPayRate: selectedPayRate,
+                  noOfPages: noOfPages,
                 ),
                 JobTitlesPage(
-                  nextPage:
-                      _savePreferencesToFirestore, // Save and go to the next page
+                  nextPage: _nextPage, // Save and go to the next page
                   previousPage: _previousPage,
                   onSaveJobTitles: (jobTitles) {
                     setState(() {
-                      selectedJobTitles = jobTitles;
+                      currentSelectedJobTitles = jobTitles; // Update the state
                     });
                   },
+                  currentSelectedJobTitles: currentSelectedJobTitles ?? [],
+                  noOfPages: noOfPages,
                 ),
                 ResumePage(
-                    nextPage: _nextPage,
-                    previousPage: _previousPage,
-                    onSaveResumeSetup: (cresume) {
-                      setState(() {
-                        currentResumeOption = cresume;
-                      });
-                    },
-                    currentResumeOption: currentResumeOption),
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                ),
+                ResumePageManual(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                ),
               ],
             ),
           ),

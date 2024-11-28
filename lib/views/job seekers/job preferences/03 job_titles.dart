@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/03b%20%20jobtitle_chip.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
@@ -9,12 +10,16 @@ class JobTitlesPage extends StatefulWidget {
   final VoidCallback previousPage;
   final Function(List<String>)
       onSaveJobTitles; // Pass selected job titles as a comma-separated string
+  List? currentSelectedJobTitles;
+final int noOfPages;
 
   JobTitlesPage({
     super.key,
     required this.nextPage,
     required this.previousPage,
     required this.onSaveJobTitles,
+    required this.currentSelectedJobTitles,
+required this.noOfPages,
   });
 
   @override
@@ -22,17 +27,25 @@ class JobTitlesPage extends StatefulWidget {
 }
 
 class _JobTitlesPageState extends State<JobTitlesPage> {
-  List<String> selectedJobTitles = []; // Tracks selected job titles
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with currentSelectedJobTitles if available
+    selectedJobTitles = widget.currentSelectedJobTitles?.cast<String>() ?? [];
+  }
+
+  List<String> selectedJobTitles = [];
+
+   void _removeJobTitle(String title) {
+    setState(() {
+      selectedJobTitles.remove(title);
+    });
+  }
 
   void _submitJobTitlesForm() {
     if (selectedJobTitles.isEmpty) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('Please select at least one job title.')),
-      // );
       return;
     }
-
-    // Convert selected job titles to a comma-separated string
 
     widget.onSaveJobTitles(selectedJobTitles);
     widget.nextPage();
@@ -53,15 +66,30 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 40),
-                    Text(
-                      '3/3',
+                    Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '3/${widget.noOfPages}',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color(0xff373030),
+                    fontFamily: 'Galano',
+                    fontWeight: FontWeight.w100,
+                  ),
+                ),
+                   TextButton(
+                  child: Text("Skip all",
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xff373030),
-                        fontFamily: 'Galano',
-                        fontWeight: FontWeight.w100,
-                      ),
-                    ),
+                          fontSize: 16,
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                  
+                  },
+                ),
+              ],
+            ),
                     SizedBox(height: 10),
                     Text(
                       'What kind of jobs are you looking for?',
@@ -101,6 +129,11 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 10),
+                     SelectedJobTitlesWrap(
+              selectedJobTitles: selectedJobTitles,
+              onRemoveJobTitle: _removeJobTitle,
+            ),
                     SizedBox(height: 10),
                     DropdownWithCheckboxes(
                       sections: [
@@ -359,24 +392,47 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                         ),
                       ],
                       maxSelections: 3,
-                      preSelectedItems: selectedJobTitles,
+                      preSelectedItems:
+                          widget.currentSelectedJobTitles?.cast<String>() ?? [],
                       onSelectionChanged: (selectedItems) {
                         setState(() {
-                          selectedJobTitles = selectedItems;
+                          selectedJobTitles =
+                              selectedItems; // Update local state
                         });
                         print('Selected items: ${selectedItems}');
                       },
                     ),
                     SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 130,
-                        child: BlueFilledCircleButton(
-                          onPressed: _submitJobTitlesForm,
-                          text: 'Continue',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          child: Text("Skip",
+                              style: TextStyle(
+                                  fontSize: 16,
+                          color: Colors.grey[700],
+                                  fontWeight: FontWeight.bold)),
+                          onPressed: () {
+                            selectedJobTitles.clear();
+
+                            widget.onSaveJobTitles(selectedJobTitles);
+                            widget.nextPage();
+                          },
                         ),
-                      ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: SizedBox(
+                            width: 130,
+                            child: BlueFilledCircleButton(
+                              onPressed: _submitJobTitlesForm,
+                              text: 'Next',
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 20),
                   ],

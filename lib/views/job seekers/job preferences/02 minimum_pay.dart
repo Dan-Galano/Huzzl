@@ -9,6 +9,7 @@ class MinimumPayPage extends StatefulWidget {
   final VoidCallback previousPage;
   final Function(Map<String, dynamic>) onSavePay;
   final Map<String, dynamic>? currentPayRate;
+  final int noOfPages;
 
   const MinimumPayPage({
     super.key,
@@ -16,6 +17,7 @@ class MinimumPayPage extends StatefulWidget {
     required this.previousPage,
     required this.onSavePay,
     required this.currentPayRate,
+    required this.noOfPages,
   });
 
   @override
@@ -70,14 +72,27 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 40),
-                  Text(
-                    '2/3',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Color(0xff373030),
-                      fontFamily: 'Galano',
-                      fontWeight: FontWeight.w100,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '2/${widget.noOfPages}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Color(0xff373030),
+                          fontFamily: 'Galano',
+                          fontWeight: FontWeight.w100,
+                        ),
+                      ),
+                      TextButton(
+                        child: Text("Skip all",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold)),
+                        onPressed: () {},
+                      ),
+                    ],
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -194,7 +209,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
+            const SizedBox(height: 100),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -202,7 +217,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                         child: Text("Skip",
                             style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.orange,
+                          color: Colors.grey[700],
                                 fontWeight: FontWeight.bold)),
                         onPressed: () {
                           minimum.clear();
