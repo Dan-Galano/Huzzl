@@ -64,7 +64,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'What kind of job are you looking for?',
+                      'What kind of jobs are you looking for?',
                       style: TextStyle(
                         fontSize: 22,
                         color: Color(0xff373030),
@@ -91,7 +91,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          'Select up to 3 specialties.',
+                          'Select up to 3 classifications.',
                           style: TextStyle(
                             fontSize: 15,
                             color: Color(0xff929292),

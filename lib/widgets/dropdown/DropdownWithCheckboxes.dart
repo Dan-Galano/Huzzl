@@ -90,6 +90,7 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Flexible(
                 child: Text(
