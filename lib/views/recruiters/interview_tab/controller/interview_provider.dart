@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/interview_screen/job_seeker_interview.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/views/evaluation_candidate_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/start_interview_screen.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
@@ -17,6 +18,9 @@ import 'package:uuid/uuid.dart';
 class InterviewProvider extends ChangeNotifier {
   final BuildContext context;
   InterviewProvider(this.context);
+
+  InterviewEvent? _interviewDetails;
+  InterviewEvent? get interviewDetails => _interviewDetails;
 
   bool _startInterview = false;
 
@@ -230,12 +234,15 @@ class InterviewProvider extends ChangeNotifier {
                                 Provider.of<JobProviderCandidate>(context,
                                     listen: false);
 
+                            debugPrint(
+                                "Detailes to be pass into contacted Function: jobpostId : ${e.jobPostId}, jobseekerid ${e.jobseekerId}, jobapplicationid : ${e.jobApplicationDocId}");
+
                             //Error
-                            // jobCandidateProvider.contactedCandidate(
-                            //   e.jobPostId!,
-                            //   e.jobseekerId!,
-                            //   e.jobApplicationDocId!,
-                            // );
+                            jobCandidateProvider.contactedCandidate(
+                              e.jobPostId!,
+                              e.jobseekerId!,
+                              e.jobApplicationDocId!,
+                            );
 
                             debugPrint("Finished updatinggggggggggggggggg");
 
@@ -243,6 +250,7 @@ class InterviewProvider extends ChangeNotifier {
 
                             debugPrint("Interview status starteeedd");
                             _startInterview = !_startInterview;
+                            _interviewDetails = e;
                             initAgora();
                             notifyListeners();
                             Navigator.of(context).pop();
@@ -637,7 +645,7 @@ class InterviewProvider extends ChangeNotifier {
             interviewId: data['interviewId'],
             jobPostId: data['jobPostId'],
             jobseekerId: data['jobseekerId'],
-            jobApplicationDocId: data['jobApplicationDocId'],
+            jobApplicationDocId: data['jobApplicationId'],
           ));
         }
         print('Interviews fetched: ${interviewsSnapshot.docs.length}');
@@ -740,7 +748,7 @@ class InterviewProvider extends ChangeNotifier {
               jobPostId: data['jobPostId'],
               interviewId: data['interviewId'],
               jobseekerId: data['jobseekerId'],
-              jobApplicationDocId: data['jobApplicationDocId'],
+              jobApplicationDocId: data['jobApplicationId'],
             ),
           );
         }
@@ -789,6 +797,107 @@ class InterviewProvider extends ChangeNotifier {
       });
     } catch (e) {
       print('Error updating interview status: $e');
+    }
+  }
+
+  Future<void> saveInterviewEvaluation(
+    InterviewEvent e,
+    String evaluation,
+    String totalPoints,
+    String topEvaluationArea,
+    String comment,
+  ) async {
+    final recruiterId = getCurrentUserId();
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(e.jobPostId)
+          .collection('interviews')
+          .doc(e.interviewId)
+          .collection('evaluation')
+          .add({
+        'jobPostId': e.jobPostId,
+        'interviewId': e.interviewId,
+        'jobApplicationId': e.jobApplicationDocId,
+        'jobseekerId': e.jobseekerId,
+        'applicant': e.applicant,
+        'evaluation': evaluation,
+        'totalPoints': totalPoints,
+        'topEvaluationArea': topEvaluationArea,
+        'comment': comment,
+        'evaluationDate': FieldValue.serverTimestamp(),
+      });
+
+      debugPrint("Saved the evaluation successfully");
+    } catch (e, stackTrace) {
+      debugPrint("Error in saving evaluation: $e");
+      debugPrint("Stack trace: $stackTrace");
+    }
+  }
+
+  Future<EvaluatedCandidateModel?> fetchEvaluationForJobseeker(
+    String jobPostId,
+    String jobApplicationId,
+  ) async {
+    try {
+      final recruiterId = getCurrentUserId();
+      // Step 1: Get all interviews under the job post
+      final interviewsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(jobPostId)
+          .collection('interviews')
+          .get();
+
+      // Step 2: Find the interview where jobApplicationId matches
+      for (final interviewDoc in interviewsSnapshot.docs) {
+        if (interviewDoc['jobApplicationId'] == jobApplicationId) {
+          final interviewId = interviewDoc.id;
+
+          // Step 3: Fetch the evaluation sub-collection for the matching interview
+          final evaluationSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(recruiterId)
+              .collection('job_posts')
+              .doc(jobPostId)
+              .collection('interviews')
+              .doc(interviewId)
+              .collection('evaluation')
+              .get();
+
+          // Step 4: If evaluation documents exist, map the first one to the model
+          if (evaluationSnapshot.docs.isNotEmpty) {
+            final evaluationDoc = evaluationSnapshot.docs.first;
+
+            return EvaluatedCandidateModel(
+              jobPostId: evaluationDoc['jobPostId'] as String?,
+              interviewId: evaluationDoc['interviewId'] as String?,
+              jobApplicationId: evaluationDoc['jobApplicationId'] as String?,
+              jobseekerId: evaluationDoc['jobseekerId'] as String?,
+              applicant: evaluationDoc['applicant'] as String,
+              evaluation: evaluationDoc['evaluation'] as String,
+              totalPoints: evaluationDoc['totalPoints'] as String,
+              topEvaluationArea: evaluationDoc['topEvaluationArea'] as String,
+              comment: evaluationDoc['comment'] as String,
+              evaluationDate:
+                  (evaluationDoc['evaluationDate'] as Timestamp?)?.toDate(),
+            );
+          }
+        }
+      }
+
+      // If no matching interview or evaluation is found
+      debugPrint("No evaluation found for jobApplicationId: $jobApplicationId");
+      return null;
+    } catch (e, stackTrace) {
+      // Handle any errors
+      debugPrint("Error fetching evaluation: $e");
+      debugPrint("Stack trace: $stackTrace");
+      return null; // Return null on failure
     }
   }
 }

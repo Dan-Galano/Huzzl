@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/evaluation_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/rangelimitingformatter.dart';
-import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
-
-
+import 'package:provider/provider.dart';
 
 class EvaluationScreen extends StatefulWidget {
+  final InterviewEvent interviewDetails;
+  EvaluationScreen({
+    super.key,
+    required this.interviewDetails,
+  });
+
   @override
   _EvaluationScreenState createState() => _EvaluationScreenState();
 }
@@ -186,6 +192,7 @@ class _EvaluationScreenState extends State<EvaluationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var interviewProvider = Provider.of<InterviewProvider>(context);
     return Scaffold(
       appBar: AppBar(
         // title: Text('Interview Feedback'),
@@ -547,7 +554,17 @@ class _EvaluationScreenState extends State<EvaluationScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 30.0),
                         child: BlueFilledCircleButton(
-                          onPressed: saveFeedback,
+                          onPressed: () {
+                            saveFeedback();
+                            debugPrint("interview details used in evaluationnnnnn: ${widget.interviewDetails.interviewId} ${widget.interviewDetails.applicant}");
+                            interviewProvider.saveInterviewEvaluation(
+                              widget.interviewDetails,
+                              evaluation,
+                              totalPoints.toString(),
+                              topEvaluationArea,
+                              commentController.text,
+                            );
+                          },
                           text: 'Save Feedback',
                         ),
                       ),

@@ -42,7 +42,7 @@ class _ContactedViewState extends State<ContactedView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  "Interview Count",
+                  "Performance",
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 14,

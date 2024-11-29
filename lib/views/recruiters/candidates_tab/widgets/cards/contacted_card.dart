@@ -3,7 +3,10 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/views/feedback_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/hiring_dialog.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/views/evaluation_candidate_model.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -18,12 +21,174 @@ class ContactedCard extends StatefulWidget {
 class _ContactedCardState extends State<ContactedCard>
     with TickerProviderStateMixin {
   bool _isHovered = false;
+  late InterviewProvider _interviewProvider;
+  late EvaluatedCandidateModel _myLateEvaluatedCandidateModel;
+
+  EvaluatedCandidateModel? _myEvaluatedCandidateModel;
+
+  @override
+  void initState() {
+    _interviewProvider = Provider.of<InterviewProvider>(context, listen: false);
+    fetchEvaluation();
+    super.initState();
+  }
+
+  void fetchEvaluation() async {
+    _myLateEvaluatedCandidateModel =
+        (await _interviewProvider.fetchEvaluationForJobseeker(
+            widget.candidate.jobPostId,
+            widget.candidate.jobApplicationDocId!))!;
+    setState(() {
+      _myEvaluatedCandidateModel = _myLateEvaluatedCandidateModel;
+    });
+
+    debugPrint("Fetch evaluated data");
+  }
+
+  void showEvaluationScores() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Column(
+            children: [
+              Text(
+                "Interview Evaluation",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Divider(),
+            ],
+          ),
+          contentPadding: const EdgeInsets.all(30),
+          actions: [
+            BlueFilledBoxButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              text: "OK",
+            ),
+          ],
+          
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Expanded(
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Total Points:',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            '${_myEvaluatedCandidateModel!.totalPoints} / 100',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Top Evaluation Area/Aspect:',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            _myEvaluatedCandidateModel!.topEvaluationArea,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Evaluation:',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            _myEvaluatedCandidateModel!.evaluation,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: int.parse(_myEvaluatedCandidateModel!
+                                          .totalPoints) >=
+                                      80
+                                  ? Colors.green
+                                  : int.parse(_myEvaluatedCandidateModel!
+                                              .totalPoints) >=
+                                          60
+                                      ? Colors.blue
+                                      : int.parse(_myEvaluatedCandidateModel!
+                                                  .totalPoints) >=
+                                              40
+                                          ? Colors.orange
+                                          : Colors
+                                              .red, // Color based on totalPoints
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Gap(15),
+                      const Text(
+                        'Comment:',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const Gap(5),
+                      Text(
+                        _myEvaluatedCandidateModel!.comment,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
     String date = DateFormat('d MMM yyyy, h:mma')
         .format(widget.candidate.dateLastInterviewed!);
 
+    if (_myEvaluatedCandidateModel == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return MouseRegion(
       onEnter: (_) {
         setState(() {
@@ -84,37 +249,41 @@ class _ContactedCardState extends State<ContactedCard>
                             ],
                           ),
                           SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(Icons.home, size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
-                              Text(
-                                widget.candidate.companyAppliedTo,
-                                style: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     Icon(Icons.home, size: 16, color: Colors.grey),
+                          //     SizedBox(width: 4),
+                          //     Text(
+                          //       widget.candidate.companyAppliedTo,
+                          //       style: TextStyle(
+                          //         color: Colors.grey.shade500,
+                          //         fontSize: 14,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      Text(
-                        widget.candidate.interviewCount
-                            .toString(), //will change na lang to string lahat ng attributes ng model
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                      TextButton(
+                        onPressed: () {
+                          showEvaluationScores();
+                        },
+                        child: Text(
+                          "${_myEvaluatedCandidateModel!.totalPoints} / 100",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                       Gap(90),
                       Text(
                         date,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),

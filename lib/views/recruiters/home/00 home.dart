@@ -259,7 +259,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           return StartInterviewScreen();
         }
         if (interviewProvider.showEvalScreen) {
-          return EvaluationScreen();
+          return EvaluationScreen(interviewDetails: interviewProvider.interviewDetails!,);
         }
         return buildInterviewsContent();
       case 4:
