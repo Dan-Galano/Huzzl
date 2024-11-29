@@ -15,6 +15,7 @@ class StatusUi extends StatelessWidget {
       'Rejected': Colors.red.shade100,
       'For Interview': Colors.blue.shade100,
       'Hired': Colors.green.shade100,
+      'Contacted': Colors.indigo.shade100,
     };
 
     final Map<String, Color> textColors = {
@@ -23,10 +24,12 @@ class StatusUi extends StatelessWidget {
       'Rejected': Colors.red.shade700,
       'For Interview': Colors.blue.shade700,
       'Hired': Colors.green.shade700,
+      'Contacted': Colors.indigo.shade700,
     };
 
     // Default colors if status is not in the map
-    final backgroundColor = statusColors[myAppliedJob.status] ?? Colors.grey.shade200;
+    final backgroundColor =
+        statusColors[myAppliedJob.status] ?? Colors.grey.shade200;
     final textColor = textColors[myAppliedJob.status] ?? Colors.grey.shade800;
 
     return Container(

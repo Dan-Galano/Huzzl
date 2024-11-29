@@ -154,12 +154,12 @@ class _InterviewsViewState extends State<InterviewsView> {
                 ElevatedButton.icon(
                   onPressed: () {
                     // Handle join call action
-                    if(myForInterviewJobs[index].status == 'not started'){
+                    if (myForInterviewJobs[index].status == 'not started') {
                       return;
                     }
 
-                    interviewProvider.startInterviewFunction(context, 'jobseeker');
-                    
+                    interviewProvider.startInterviewFunction(
+                        context, 'jobseeker');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
@@ -171,13 +171,20 @@ class _InterviewsViewState extends State<InterviewsView> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  icon: Icon(Icons.video_call,
-                      color: Colors.grey.shade700, size: 20),
+                  icon: Icon(
+                    Icons.video_call,
+                    color: myForInterviewJobs[index].status == "not started"
+                        ? Colors.grey.shade700
+                        : Colors.white70,
+                    size: 20,
+                  ),
                   label: Text(
                     "Join call",
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade700,
+                      color: myForInterviewJobs[index].status == "not started"
+                          ? Colors.grey.shade700
+                          : Colors.white70,
                     ),
                   ),
                 ),

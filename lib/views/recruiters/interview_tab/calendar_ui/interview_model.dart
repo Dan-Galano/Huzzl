@@ -16,6 +16,7 @@ class InterviewEvent {
   String? jobPostId;
   String? jobseekerId;
   String? interviewId;
+  String? jobApplicationDocId;
 
   InterviewEvent({
     required this.applicant,
@@ -32,5 +33,6 @@ class InterviewEvent {
     this.jobPostId,
     this.jobseekerId,
     this.interviewId,
+    this.jobApplicationDocId,
   });
 }

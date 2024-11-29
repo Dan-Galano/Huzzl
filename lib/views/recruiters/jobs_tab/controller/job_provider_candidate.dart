@@ -365,6 +365,47 @@ class JobProviderCandidate extends ChangeNotifier {
     }
   }
 
+  void contactedCandidate(
+      String jobPostId, String id, String jobApplicationId) async {
+    debugPrint("Moving to cantacted the candidateeee ...");
+    // Update local candidate list
+    for (var i = 0; i < _candidates.length; i++) {
+      if (_candidates[i].id == id) {
+        _candidates[i] = _candidates[i].copyWith(status: "Contacted");
+        notifyListeners();
+        break;
+      }
+    }
+
+    debugPrint("Moving to cantacted done in local list");
+
+    // Update candidate status in Firestore
+    try {
+      //Update the candidate collection
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(getCurrentUserId()) // Candidate's document ID
+          .collection("job_posts")
+          .doc(jobPostId)
+          .collection("candidates")
+          .doc(id)
+          .update({'status': 'Contacted'}); // Field to update
+      print("Candidate status updated to Contacted in candidate collection");
+
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(id) // Candidate's document ID
+          .collection("job_application")
+          // .where('jobPostId', isEqualTo: jobPostId)
+          .doc(jobApplicationId)
+          .update({'status': 'Contacted'}); // Field to update
+      print(
+          "Candidate status updated to Contacted in job application collection");
+    } catch (e) {
+      print("Failed to update candidate status: $e");
+    }
+  }
+
   void pushNotificationToJobseeker(
     String jobPostId,
     String jobseekerId,
@@ -466,7 +507,7 @@ class JobProviderCandidate extends ChangeNotifier {
   List<Candidate> _allCandidatesForCalendar = [];
   List<Candidate> get allCandidatesForCalendar => _allCandidatesForCalendar;
 
-    Future<List<Candidate>> fetchAllCandidatesForCalendar() async {
+  Future<List<Candidate>> fetchAllCandidatesForCalendar() async {
     final userId = getCurrentUserId();
     List<Candidate> candidatesForCalendar = [];
 
@@ -484,8 +525,10 @@ class JobProviderCandidate extends ChangeNotifier {
       final jobPostId = jobPostDoc.id;
 
       // Reference to the candidates subcollection within each job post
-      final candidatesCollection =
-          jobPostsCollection.doc(jobPostId).collection('candidates').where('status', isEqualTo: 'Shortlisted');
+      final candidatesCollection = jobPostsCollection
+          .doc(jobPostId)
+          .collection('candidates')
+          .where('status', isEqualTo: 'Shortlisted');
 
       // Fetch candidates for the current job post
       QuerySnapshot candidatesSnapshot = await candidatesCollection.get();

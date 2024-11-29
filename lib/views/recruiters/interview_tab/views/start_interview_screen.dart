@@ -2,6 +2,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
 
 class StartInterviewScreen extends StatelessWidget {
@@ -10,6 +11,7 @@ class StartInterviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final interviewProvider = Provider.of<InterviewProvider>(context);
+    var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
     return Consumer<InterviewProvider>(
       builder: (context, interviewProvider, child) {
         return Column(
@@ -113,6 +115,7 @@ class StartInterviewScreen extends StatelessWidget {
                         IconButton(
                           onPressed: () {
                             interviewProvider.endCall();
+                            // jobCandidateProvider.contactedCandidate(jobPostId, id, jobApplicationId)
                           },
                           icon: Icon(
                             Icons.call,

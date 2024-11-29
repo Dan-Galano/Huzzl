@@ -14,6 +14,7 @@ import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/interview-tab.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/views/evaluation_screen.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/start_interview_screen.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
@@ -256,6 +257,9 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
       case 3:
         if (interviewProvider.startInterview) {
           return StartInterviewScreen();
+        }
+        if (interviewProvider.showEvalScreen) {
+          return EvaluationScreen();
         }
         return buildInterviewsContent();
       case 4:

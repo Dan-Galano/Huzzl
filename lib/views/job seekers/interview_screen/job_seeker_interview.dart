@@ -112,7 +112,8 @@ class StartInterviewScreenJobseeker extends StatelessWidget {
                         const Gap(20),
                         IconButton(
                           onPressed: () {
-                            interviewProvider.endCall();
+                            interviewProvider.endCallForJobseeker();
+                            Navigator.of(context).pop();
                           },
                           icon: Icon(
                             Icons.call,

@@ -42,8 +42,8 @@ void main() async {
         ChangeNotifierProvider(create: (context) => JobProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => BranchProvider()),
-        ChangeNotifierProvider(create: (context) => InterviewProvider()),
-          ChangeNotifierProvider(create: (_) => HiringManagerDetails()),
+        ChangeNotifierProvider(create: (context) => InterviewProvider(context)),
+        ChangeNotifierProvider(create: (_) => HiringManagerDetails()),
         ChangeNotifierProvider(
           create: (context) {
             final hiringManagerProvider = HiringManagerProvider();
@@ -111,7 +111,8 @@ class HuzzlWeb extends StatelessWidget {
     return MaterialApp(
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'Galano'),
+      theme: ThemeData(
+          fontFamily: 'Galano', scaffoldBackgroundColor: Colors.white),
       home: const AuthWrapper(),
       // home: MyJobsView(),
       // home: MainScreen(),

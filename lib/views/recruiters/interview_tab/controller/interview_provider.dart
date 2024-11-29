@@ -7,14 +7,24 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/interview_screen/job_seeker_interview.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/start_interview_screen.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/gray/grayfilled_boxbutton.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class InterviewProvider extends ChangeNotifier {
+  final BuildContext context;
+  InterviewProvider(this.context);
+
   bool _startInterview = false;
 
   bool get startInterview => _startInterview;
+
+  //Show evaluation screen
+  bool _showEvalScreen = false;
+  bool get showEvalScreen => _showEvalScreen;
 
   //Here: important variable
   int? _remoteUid;
@@ -125,6 +135,16 @@ class InterviewProvider extends ChangeNotifier {
     await _engine?.leaveChannel();
     _remoteUid = null;
     _localUserJoined = false;
+    _startInterview = false;
+    _showEvalScreen = true;
+    notifyListeners();
+  }
+
+  Future<void> endCallForJobseeker() async {
+    await _engine?.leaveChannel();
+    _remoteUid = null;
+    _localUserJoined = false;
+    // _showEvalScreen = true;
     notifyListeners();
   }
 
@@ -206,7 +226,21 @@ class InterviewProvider extends ChangeNotifier {
                       children: [
                         BlueFilledBoxButton(
                           onPressed: () {
+                            final jobCandidateProvider =
+                                Provider.of<JobProviderCandidate>(context,
+                                    listen: false);
+
+                            //Error
+                            // jobCandidateProvider.contactedCandidate(
+                            //   e.jobPostId!,
+                            //   e.jobseekerId!,
+                            //   e.jobApplicationDocId!,
+                            // );
+
+                            debugPrint("Finished updatinggggggggggggggggg");
+
                             updateInterviewStatus(e);
+
                             debugPrint("Interview status starteeedd");
                             _startInterview = !_startInterview;
                             initAgora();
@@ -423,6 +457,9 @@ class InterviewProvider extends ChangeNotifier {
     String profession,
   ) async {
     final recruiterId = getCurrentUserId();
+    var uuid = Uuid();
+
+    var interviewId = uuid.v4();
 
     // Default value for location if it's null
     final location = e.location ?? 'No Location';
@@ -430,45 +467,23 @@ class InterviewProvider extends ChangeNotifier {
     // Convert TimeOfDay to string representation
     final startTimeString = e.startTime != null
         ? '${e.startTime!.hour.toString().padLeft(2, '0')}:${e.startTime!.minute.toString().padLeft(2, '0')}'
-        : null;
+        : '00:00';
 
     final endTimeString = e.endTime != null
         ? '${e.endTime!.hour.toString().padLeft(2, '0')}:${e.endTime!.minute.toString().padLeft(2, '0')}'
-        : null;
+        : '00:00';
 
     try {
+      // Save to recruiter's job posts
       await FirebaseFirestore.instance
           .collection("users")
           .doc(recruiterId)
           .collection('job_posts')
           .doc(jobPostId)
           .collection('interviews')
-          .add({
-        'applicant': e.applicant,
-        'title': e.title,
-        'type': e.type,
-        'interviewers': e.interviewers,
-        'date': e.date,
-        'startTime': startTimeString, // Storing as string
-        'endTime': endTimeString, // Storing as string
-        'notes': e.notes,
-        'location': location,
-        'recruiterId': recruiterId,
-        'jobseekerId': jobseekerId,
-        'jobPostId': jobPostId,
-        'profession': profession,
-        'status': 'not started',
-      });
-
-      debugPrint('Interview schedule has been saved.');
-
-      // Save interview to jobseeker's collection
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(jobseekerId)
-          .collection('interviewSched')
-          .doc(jobseekerId)
+          .doc(interviewId)
           .set({
+        'interviewId': interviewId,
         'applicant': e.applicant,
         'title': e.title,
         'type': e.type,
@@ -477,26 +492,49 @@ class InterviewProvider extends ChangeNotifier {
         'startTime': startTimeString,
         'endTime': endTimeString,
         'notes': e.notes,
-        'location': location, // Handle null or empty location
+        'location': location,
         'recruiterId': recruiterId,
         'jobseekerId': jobseekerId,
         'jobPostId': jobPostId,
         'profession': profession,
         'status': 'not started',
+        'jobApplicationId': jobApplicationId,
       });
 
-      debugPrint('Interview schedule has been saved IN JOBSEEKER');
-
+      // Save to jobseeker's interview schedule
       await FirebaseFirestore.instance
-          .collection('users') // Replace with the correct collection name
-          .doc(jobseekerId) // Candidate's document ID
-          .collection("job_application")
-          // .where('jobPostId', isEqualTo: jobPostId)
-          .doc(jobApplicationId)
-          .update({'status': 'For Interview'}); // Field to update
-      print(
-          "Candidate status updated to For Interview in job application collection");
+          .collection('users')
+          .doc(jobseekerId)
+          .collection('interviewSched')
+          .doc(interviewId)
+          .set({
+        'interviewId': interviewId,
+        'applicant': e.applicant,
+        'title': e.title,
+        'type': e.type,
+        'interviewers': e.interviewers,
+        'date': e.date,
+        'startTime': startTimeString,
+        'endTime': endTimeString,
+        'notes': e.notes,
+        'location': location,
+        'recruiterId': recruiterId,
+        'jobseekerId': jobseekerId,
+        'jobPostId': jobPostId,
+        'profession': profession,
+        'status': 'not started',
+        'jobApplicationId': jobApplicationId,
+      });
 
+      // Update job application status
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(jobseekerId)
+          .collection("job_application")
+          .doc(jobApplicationId)
+          .update({'status': 'For Interview'});
+
+      debugPrint('Interview and status updates successfully saved.');
       await fetchAllInterviews();
     } catch (e) {
       debugPrint("Error in saving the interview: $e");
@@ -569,7 +607,6 @@ class InterviewProvider extends ChangeNotifier {
         QuerySnapshot interviewsSnapshot = await interviewsCollection.get();
         for (var interviewDoc in interviewsSnapshot.docs) {
           final data = interviewDoc.data() as Map<String, dynamic>;
-          final interviewId = interviewDoc.id;
 
           // Parse startTime and endTime from "HH:mm" strings
           final startTime = data['startTime'] != null
@@ -597,9 +634,10 @@ class InterviewProvider extends ChangeNotifier {
             location: data['location'] as String?,
             status: data['status'] as String?,
             profession: data['profession'],
-            interviewId: interviewId,
+            interviewId: data['interviewId'],
             jobPostId: data['jobPostId'],
             jobseekerId: data['jobseekerId'],
+            jobApplicationDocId: data['jobApplicationDocId'],
           ));
         }
         print('Interviews fetched: ${interviewsSnapshot.docs.length}');
@@ -670,7 +708,7 @@ class InterviewProvider extends ChangeNotifier {
         for (var interviewDoc in interviewsSnapshot.docs) {
           final data = interviewDoc.data() as Map<String, dynamic>;
 
-          final interviewId = interviewDoc.id;
+          // final interviewId = interviewDoc.id;
 
           // Parse startTime and endTime from "HH:mm" strings
           final startTime = data['startTime'] != null
@@ -700,8 +738,9 @@ class InterviewProvider extends ChangeNotifier {
               status: data['status'] as String?,
               profession: data['profession'],
               jobPostId: data['jobPostId'],
-              interviewId: interviewId,
+              interviewId: data['interviewId'],
               jobseekerId: data['jobseekerId'],
+              jobApplicationDocId: data['jobApplicationDocId'],
             ),
           );
         }
@@ -740,7 +779,7 @@ class InterviewProvider extends ChangeNotifier {
           .collection('users')
           .doc(e.jobseekerId)
           .collection('interviewSched')
-          .doc(e.jobseekerId)
+          .doc(e.interviewId)
           .update({
         'status': 'started',
       }).then((_) {
