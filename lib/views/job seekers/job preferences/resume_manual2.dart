@@ -1,17 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume_option.dart';
+import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/custom_textfield.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
-class ResumePageManual extends StatefulWidget {
+class ResumePageManual2 extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(Map<String, dynamic>) onSaveResumeSetup;
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
-  const ResumePageManual({
+  const ResumePageManual2({
     super.key,
     required this.nextPage,
     required this.previousPage,
@@ -21,10 +24,14 @@ class ResumePageManual extends StatefulWidget {
   });
 
   @override
-  _ResumePageManualState createState() => _ResumePageManualState();
+  _ResumePageManual2State createState() => _ResumePageManual2State();
 }
 
-class _ResumePageManualState extends State<ResumePageManual> {
+class _ResumePageManual2State extends State<ResumePageManual2> {
+  var fnameController = TextEditingController();
+  var lnameController = TextEditingController();
+  var pnumberController = TextEditingController();
+  var emailController = TextEditingController();
   void _submitResumeOption() {
     widget.nextPage();
   }
@@ -44,39 +51,33 @@ class _ResumePageManualState extends State<ResumePageManual> {
                 children: [
                   SizedBox(height: 40),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '4/${widget.noOfPages}',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Color(0xff373030),
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w100,
+                      Expanded(
+                        child: LinearPercentIndicator(
+                          animation: true,
+                          animationDuration: 300,
+                          animateFromLastPercent: true,
+                          barRadius: Radius.circular(20),
+                          lineHeight: 10,
+                          percent: 2 / 5,
+                          backgroundColor: Colors.orange.withOpacity(0.4),
+                          progressColor: Colors.orange,
                         ),
-                      ),
-                      TextButton(
-                        child: Text("Skip all",
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.orange,
-                                fontWeight: FontWeight.bold)),
-                        onPressed: () {},
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 40),
                   Text(
-                    'What is your name?',
+                    'Objective',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 24,
                       color: Color(0xff373030),
                       fontFamily: 'Galano',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   Text(
-                    'This helps us create a personalized resume to match you with the best job opportunities.',
+                    'A brief statement highlighting your career goals and key qualifications. (50-100 words)',
                     style: TextStyle(
                       fontSize: 18,
                       color: Color(0xff373030),
@@ -84,7 +85,13 @@ class _ResumePageManualState extends State<ResumePageManual> {
                       fontWeight: FontWeight.w100,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  Gap(40),
+                  CustomTextFormField(
+                    controller: emailController,
+                    maxWords: 100,
+                    minWords: 50,
+                    maxLines: 10,
+                  ),
                   SizedBox(height: 100),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -123,13 +130,13 @@ class _ResumePageManualState extends State<ResumePageManual> {
             top: 60,
             left: 350,
             child: IconButton(
-              icon: Image.asset(
-                'assets/images/backbutton.png',
-                width: 20,
-                height: 20,
-              ),
-              onPressed: widget.previousPage,
-            ),
+                  icon: Image.asset(
+                    'assets/images/backbutton.png',
+                    width: 20,
+                    height: 20,
+                  ),
+                  onPressed: widget.previousPage,
+                ),
           ),
         ],
       ),

@@ -4,7 +4,10 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.da
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/04b%20resume_manual.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual1.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual2.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual3.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual4.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -30,6 +33,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   int noOfPages = 4;
+  int totalLength = 10;
   // Variables to hold data from each page
   // String? selectedLocation;
   Map<String, dynamic>? selectedLocation;
@@ -38,12 +42,15 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   List<String>? selectedJobTitles;
   Map<String, dynamic>? currentResumeOption;
   List? currentSelectedJobTitles;
+
+  
+   List<String>? selectedSkills;
 //controllers
 
 //location
 
   void _nextPage() {
-    if (_currentPage < 5) {
+    if (_currentPage < totalLength) {
       _pageController.animateToPage(
         _currentPage + 1,
         duration: const Duration(milliseconds: 300),
@@ -174,7 +181,40 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
                 ),
-                ResumePageManual(
+                ResumePageManual1(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                ),
+                ResumePageManual2(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                ),
+                  ResumePageManual3(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  selectedSkills: selectedSkills ?? [],
+                ),ResumePageManual4(
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {

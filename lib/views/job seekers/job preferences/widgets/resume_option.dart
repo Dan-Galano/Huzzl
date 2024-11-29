@@ -29,6 +29,7 @@ class _CustomButtonState extends State<CustomButton> {
       child: ElevatedButton(
         onPressed: () => widget.onPressed(context),
         style: ButtonStyle(
+          elevation: WidgetStatePropertyAll(0),
           padding: WidgetStateProperty.all<EdgeInsets>(
             EdgeInsets.symmetric(vertical: 25, horizontal: 25),
           ),

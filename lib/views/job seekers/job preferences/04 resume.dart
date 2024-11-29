@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume_option.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
@@ -25,8 +25,6 @@ class ResumePage extends StatefulWidget {
 }
 
 class _ResumePageState extends State<ResumePage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +65,7 @@ class _ResumePageState extends State<ResumePage> {
                   Row(
                     children: [
                       Text(
-                        'Would you like to build your ',
+                        "Let's set up your ",
                         style: TextStyle(
                           fontSize: 22,
                           color: Color(0xff373030),
@@ -85,7 +83,7 @@ class _ResumePageState extends State<ResumePage> {
                         ),
                       ),
                       Text(
-                        'resume?',
+                        'resume',
                         style: TextStyle(
                           fontSize: 22,
                           color: Color(0xff373030),
@@ -118,7 +116,7 @@ class _ResumePageState extends State<ResumePage> {
                       {
                         'icon': Icons.edit,
                         'label': 'Fill up manually',
-                        'onPressed': (BuildContext context){
+                        'onPressed': (BuildContext context) {
                           widget.nextPage();
                           print("Fill up manually");
                         },
