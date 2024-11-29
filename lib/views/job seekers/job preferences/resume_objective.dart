@@ -8,13 +8,13 @@ import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-class ResumePageManual2 extends StatefulWidget {
+class ResumePageObjective extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(Map<String, dynamic>) onSaveResumeSetup;
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
-  const ResumePageManual2({
+  const ResumePageObjective({
     super.key,
     required this.nextPage,
     required this.previousPage,
@@ -24,10 +24,10 @@ class ResumePageManual2 extends StatefulWidget {
   });
 
   @override
-  _ResumePageManual2State createState() => _ResumePageManual2State();
+  _ResumePageObjectiveState createState() => _ResumePageObjectiveState();
 }
 
-class _ResumePageManual2State extends State<ResumePageManual2> {
+class _ResumePageObjectiveState extends State<ResumePageObjective> {
   var fnameController = TextEditingController();
   var lnameController = TextEditingController();
   var pnumberController = TextEditingController();
@@ -130,13 +130,13 @@ class _ResumePageManual2State extends State<ResumePageManual2> {
             top: 60,
             left: 350,
             child: IconButton(
-                  icon: Image.asset(
-                    'assets/images/backbutton.png',
-                    width: 20,
-                    height: 20,
-                  ),
-                  onPressed: widget.previousPage,
-                ),
+              icon: Image.asset(
+                'assets/images/backbutton.png',
+                width: 20,
+                height: 20,
+              ),
+              onPressed: widget.previousPage,
+            ),
           ),
         ],
       ),

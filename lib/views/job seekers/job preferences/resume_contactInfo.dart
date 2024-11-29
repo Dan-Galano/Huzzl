@@ -8,13 +8,13 @@ import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-class ResumePageManual1 extends StatefulWidget {
+class ResumePageContactInfo extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(Map<String, dynamic>) onSaveResumeSetup;
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
-  const ResumePageManual1({
+  const ResumePageContactInfo({
     super.key,
     required this.nextPage,
     required this.previousPage,
@@ -24,10 +24,10 @@ class ResumePageManual1 extends StatefulWidget {
   });
 
   @override
-  _ResumePageManual1State createState() => _ResumePageManual1State();
+  _ResumePageContactInfoState createState() => _ResumePageContactInfoState();
 }
 
-class _ResumePageManual1State extends State<ResumePageManual1> {
+class _ResumePageContactInfoState extends State<ResumePageContactInfo> {
   var fnameController = TextEditingController();
   var lnameController = TextEditingController();
   var pnumberController = TextEditingController();
@@ -93,13 +93,25 @@ class _ResumePageManual1State extends State<ResumePageManual1> {
                           children: [
                             Align(
                               alignment: Alignment.centerLeft,
-                              child: Text(
-                                'First Name',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xff373030),
-                                  fontFamily: 'Galano',
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'First Name',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xff373030),
+                                      fontFamily: 'Galano',
+                                    ),
+                                  ),
+                                  Text(
+                                    ' *',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.red,
+                                      fontFamily: 'Galano',
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             Gap(5),
@@ -115,13 +127,25 @@ class _ResumePageManual1State extends State<ResumePageManual1> {
                           children: [
                             Align(
                               alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Last Name',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xff373030),
-                                  fontFamily: 'Galano',
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Last Name',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xff373030),
+                                      fontFamily: 'Galano',
+                                    ),
+                                  ),
+                                  Text(
+                                    ' *',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.red,
+                                      fontFamily: 'Galano',
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             Gap(5),
@@ -136,13 +160,25 @@ class _ResumePageManual1State extends State<ResumePageManual1> {
                   Gap(20),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Phone Number',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xff373030),
-                        fontFamily: 'Galano',
-                      ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Phone Number',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                        Text(
+                          ' *',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.red,
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Gap(5),
@@ -153,13 +189,25 @@ class _ResumePageManual1State extends State<ResumePageManual1> {
                   Gap(20),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Email',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xff373030),
-                        fontFamily: 'Galano',
-                      ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Email',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                        Text(
+                          ' *',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.red,
+                            fontFamily: 'Galano',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Gap(5),
@@ -204,14 +252,14 @@ class _ResumePageManual1State extends State<ResumePageManual1> {
           Positioned(
             top: 60,
             left: 350,
-            child:  IconButton(
-                  icon: Image.asset(
-                    'assets/images/backbutton.png',
-                    width: 20,
-                    height: 20,
-                  ),
-                  onPressed: widget.previousPage,
-                ),
+            child: IconButton(
+              icon: Image.asset(
+                'assets/images/backbutton.png',
+                width: 20,
+                height: 20,
+              ),
+              onPressed: widget.previousPage,
+            ),
           ),
         ],
       ),

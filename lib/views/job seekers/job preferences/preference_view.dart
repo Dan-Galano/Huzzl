@@ -4,10 +4,11 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.da
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual1.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual2.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual3.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_manual4.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_contactInfo.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_experience.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_objective.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_skills.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_education.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -43,8 +44,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   Map<String, dynamic>? currentResumeOption;
   List? currentSelectedJobTitles;
 
-  
-   List<String>? selectedSkills;
+  List<String>? selectedSkills;
 //controllers
 
 //location
@@ -181,7 +181,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
                 ),
-                ResumePageManual1(
+                ResumePageContactInfo(
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {
@@ -192,7 +192,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
                 ),
-                ResumePageManual2(
+                ResumePageObjective(
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {
@@ -203,7 +203,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
                 ),
-                  ResumePageManual3(
+                ResumePageSkills(
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {
@@ -214,7 +214,19 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
                   selectedSkills: selectedSkills ?? [],
-                ),ResumePageManual4(
+                ),
+                ResumePageEducation(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                ),
+                ResumePageExperience(
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {
