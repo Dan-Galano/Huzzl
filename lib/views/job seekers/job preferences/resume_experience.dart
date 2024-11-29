@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/education_entry_model.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/experience_entry_model.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/functions/experience_sorter.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/custom_textfield.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/timeperiod_picker.dart';
@@ -17,6 +18,7 @@ class ResumePageExperience extends StatefulWidget {
   final Function(Map<String, dynamic>) onSaveResumeSetup;
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
+  final int noOfResumePages;
   const ResumePageExperience({
     super.key,
     required this.nextPage,
@@ -24,6 +26,7 @@ class ResumePageExperience extends StatefulWidget {
     required this.onSaveResumeSetup,
     required this.currentResumeOption,
     required this.noOfPages,
+    required this.noOfResumePages,
   });
 
   @override
@@ -66,7 +69,7 @@ class _ResumePageExperienceState extends State<ResumePageExperience> {
                             animateFromLastPercent: true,
                             barRadius: Radius.circular(20),
                             lineHeight: 10,
-                            percent: 5 / 5,
+                            percent: 5 /widget.noOfResumePages,
                             backgroundColor: Colors.orange.withOpacity(0.4),
                             progressColor: Colors.orange,
                           ),
@@ -105,7 +108,7 @@ class _ResumePageExperienceState extends State<ResumePageExperience> {
                             fontFamily: 'Galano',
                           ),
                         ),
-                        onPressed: experienceEntries.length < 3
+                        onPressed: experienceEntries.length < 11
                             ? () {
                                 setState(() {
                                   experienceEntries.add(ExperienceEntry());
@@ -370,7 +373,7 @@ class _ResumePageExperienceState extends State<ResumePageExperience> {
                                     ),
                                   ),
                                 Gap(20),
-                                
+
                                 Text(
                                   'Key Responsibilities and Achievements',
                                   style: TextStyle(
@@ -386,7 +389,8 @@ class _ResumePageExperienceState extends State<ResumePageExperience> {
                                       .responsibilitiesAchievementsController, // Use controller from the model
                                   onChanged: (value) {
                                     setState(() {
-                                      entry.responsibilitiesAchievements = value;
+                                      entry.responsibilitiesAchievements =
+                                          value;
                                     });
                                   },
                                 ),
@@ -413,6 +417,8 @@ class _ResumePageExperienceState extends State<ResumePageExperience> {
                                   color: Colors.grey[700],
                                   fontWeight: FontWeight.bold)),
                           onPressed: () {
+                            ExperienceSorter.sortExperienceEntries(experienceEntries);
+                           
                             widget.nextPage();
                           },
                         ),

@@ -17,6 +17,7 @@ class ResumePageSkills extends StatefulWidget {
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
   final List<String> selectedSkills;
+  final int noOfResumePages;
   const ResumePageSkills({
     super.key,
     required this.nextPage,
@@ -25,6 +26,7 @@ class ResumePageSkills extends StatefulWidget {
     required this.currentResumeOption,
     required this.noOfPages,
     required this.selectedSkills,
+    required this.noOfResumePages,
   });
 
   @override
@@ -202,7 +204,7 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
                           animateFromLastPercent: true,
                           barRadius: Radius.circular(20),
                           lineHeight: 10,
-                          percent: 3 / 5,
+                          percent: 3 / widget.noOfResumePages,
                           backgroundColor: Colors.orange.withOpacity(0.4),
                           progressColor: Colors.orange,
                         ),

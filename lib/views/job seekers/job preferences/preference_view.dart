@@ -9,6 +9,7 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_experienc
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_objective.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_skills.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_education.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_summary.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 
@@ -31,9 +32,10 @@ class PreferenceViewPage extends StatefulWidget {
 }
 
 class _PreferenceViewPageState extends State<PreferenceViewPage> {
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(initialPage: 10);
   int _currentPage = 0;
   int noOfPages = 4;
+  int noOfResumePages = 6;
   int totalLength = 10;
   // Variables to hold data from each page
   // String? selectedLocation;
@@ -191,6 +193,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   },
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
                 ),
                 ResumePageObjective(
                   nextPage: _nextPage,
@@ -202,6 +205,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   },
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
                 ),
                 ResumePageSkills(
                   nextPage: _nextPage,
@@ -214,6 +218,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
                   selectedSkills: selectedSkills ?? [],
+                  noOfResumePages: noOfResumePages,
                 ),
                 ResumePageEducation(
                   nextPage: _nextPage,
@@ -225,6 +230,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   },
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
                 ),
                 ResumePageExperience(
                   nextPage: _nextPage,
@@ -236,6 +242,19 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   },
                   currentResumeOption: currentResumeOption,
                   noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
+                ),
+                ResumePageSummary(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
                 ),
               ],
             ),

@@ -14,6 +14,7 @@ class ResumePageObjective extends StatefulWidget {
   final Function(Map<String, dynamic>) onSaveResumeSetup;
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
+  final int noOfResumePages;
   const ResumePageObjective({
     super.key,
     required this.nextPage,
@@ -21,6 +22,7 @@ class ResumePageObjective extends StatefulWidget {
     required this.onSaveResumeSetup,
     required this.currentResumeOption,
     required this.noOfPages,
+    required this.noOfResumePages,
   });
 
   @override
@@ -59,7 +61,7 @@ class _ResumePageObjectiveState extends State<ResumePageObjective> {
                           animateFromLastPercent: true,
                           barRadius: Radius.circular(20),
                           lineHeight: 10,
-                          percent: 2 / 5,
+                          percent: 2 /widget.noOfResumePages,
                           backgroundColor: Colors.orange.withOpacity(0.4),
                           progressColor: Colors.orange,
                         ),

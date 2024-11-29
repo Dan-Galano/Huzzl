@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/education_entry_model.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/functions/education_sorter.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/custom_textfield.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/timeperiod_picker.dart';
@@ -16,6 +17,7 @@ class ResumePageEducation extends StatefulWidget {
   final Function(Map<String, dynamic>) onSaveResumeSetup;
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
+  final int noOfResumePages;
   const ResumePageEducation({
     super.key,
     required this.nextPage,
@@ -23,6 +25,7 @@ class ResumePageEducation extends StatefulWidget {
     required this.onSaveResumeSetup,
     required this.currentResumeOption,
     required this.noOfPages,
+    required this.noOfResumePages,
   });
 
   @override
@@ -65,7 +68,7 @@ class _ResumePageEducationState extends State<ResumePageEducation> {
                             animateFromLastPercent: true,
                             barRadius: Radius.circular(20),
                             lineHeight: 10,
-                            percent: 4 / 5,
+                            percent: 4 / widget.noOfResumePages,
                             backgroundColor: Colors.orange.withOpacity(0.4),
                             progressColor: Colors.orange,
                           ),
@@ -372,7 +375,7 @@ class _ResumePageEducationState extends State<ResumePageEducation> {
 
                                 // Honors or Awards
                                 Text(
-                                  'Honors or Awards',
+                                  'Honors and Awards',
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Color(0xff373030),
@@ -413,6 +416,8 @@ class _ResumePageEducationState extends State<ResumePageEducation> {
                                   color: Colors.grey[700],
                                   fontWeight: FontWeight.bold)),
                           onPressed: () {
+                            EducationSorter.sortEducationEntries(
+                                educationEntries);
                             for (var entry in educationEntries) {
                               print('Degree: ${entry.degree}');
                               print(
