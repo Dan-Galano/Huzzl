@@ -172,9 +172,9 @@ class _InterviewTileState extends State<InterviewTile>
                               widget.interview.startTime!,
                           endTime: widget.interview.endTime!,
                           onPressed: () {
-                            
-                            interviewProvider.startInterviewFunction(context);
-                            interviewProvider.updateInterviewStatus(widget.interview);
+                            // interviewProvider.updateInterviewStatus(widget.interview);
+                            // debugPrint("Interview Status Changeee to Starteeeddd");
+                            interviewProvider.startInterviewFunction(context, 'recruiter', e: widget.interview);
                             debugPrint("Video call started.....");
                           },
                         ),

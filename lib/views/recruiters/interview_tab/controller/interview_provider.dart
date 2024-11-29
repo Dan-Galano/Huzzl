@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/interview_screen/job_seeker_interview.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/views/start_interview_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/gray/grayfilled_boxbutton.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -39,9 +41,14 @@ class InterviewProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startInterviewFunction(BuildContext context) async {
+  void startInterviewFunction(BuildContext context, String userType,
+      {InterviewEvent? e}) async {
     await dotenv.load();
-    showConfirmationToStartInterview(context);
+    if (userType == 'recruiter') {
+      showConfirmationToStartInterview(context, e!);
+    } else {
+      showConfirmationToJoinInterview(context);
+    }
   }
 
   //initialized agora
@@ -135,7 +142,8 @@ class InterviewProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void showConfirmationToStartInterview(BuildContext context) {
+  void showConfirmationToStartInterview(
+      BuildContext context, InterviewEvent e) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -198,10 +206,107 @@ class InterviewProvider extends ChangeNotifier {
                       children: [
                         BlueFilledBoxButton(
                           onPressed: () {
+                            updateInterviewStatus(e);
+                            debugPrint("Interview status starteeedd");
                             _startInterview = !_startInterview;
                             initAgora();
                             notifyListeners();
                             Navigator.of(context).pop();
+                          },
+                          text: "Yes",
+                          width: 180,
+                        ),
+                        GrayFilledBoxButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          text: "No",
+                          width: 180,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showConfirmationToJoinInterview(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            width: 600, // Set a specific width
+            height: 250, // Set a specific height
+            child: Card(
+              color: Colors.white, // Set the card color to white
+              elevation: 4, // Optional elevation for shadow effect
+              margin: EdgeInsets.zero, // Remove default margin
+              child: Padding(
+                padding:
+                    const EdgeInsets.all(20), // Add padding inside the card
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Top right close button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10), // Spacing
+                    // Centered content
+                    const Center(
+                      child: Column(
+                        children: const [
+                          Text(
+                            "Join interview?",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                          Text(
+                            "Are you sure you want to join the interview?",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'Galano',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30), // Spacing
+                    // Button centered below text
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        BlueFilledBoxButton(
+                          onPressed: () {
+                            _startInterview = !_startInterview;
+                            initAgora();
+                            notifyListeners();
+                            Navigator.of(context).pop();
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) {
+                                return StartInterviewScreenJobseeker();
+                              },
+                            ));
                           },
                           text: "Yes",
                           width: 180,
@@ -565,6 +670,8 @@ class InterviewProvider extends ChangeNotifier {
         for (var interviewDoc in interviewsSnapshot.docs) {
           final data = interviewDoc.data() as Map<String, dynamic>;
 
+          final interviewId = interviewDoc.id;
+
           // Parse startTime and endTime from "HH:mm" strings
           final startTime = data['startTime'] != null
               ? _parseTimeOfDay(data['startTime'] as String)
@@ -577,21 +684,25 @@ class InterviewProvider extends ChangeNotifier {
           // Convert Firestore document to InterviewEvent and add to _todaysInterviewList
           _todaysInterviewList.add(
             InterviewEvent(
-                applicant: data['applicant'] as String?,
-                title: data['title'] as String?,
-                type: data['type'] as String?,
-                interviewers: (data['interviewers'] as List<dynamic>?)
-                    ?.map((e) => e.toString())
-                    .toList(),
-                date: (data['date'] != null)
-                    ? (data['date'] as Timestamp).toDate()
-                    : null,
-                startTime: startTime,
-                endTime: endTime,
-                notes: data['notes'] as String?,
-                location: data['location'] ?? 'no location',
-                status: data['status'] as String?,
-                profession: data['profession']),
+              applicant: data['applicant'] as String?,
+              title: data['title'] as String?,
+              type: data['type'] as String?,
+              interviewers: (data['interviewers'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList(),
+              date: (data['date'] != null)
+                  ? (data['date'] as Timestamp).toDate()
+                  : null,
+              startTime: startTime,
+              endTime: endTime,
+              notes: data['notes'] as String?,
+              location: data['location'] ?? 'no location',
+              status: data['status'] as String?,
+              profession: data['profession'],
+              jobPostId: data['jobPostId'],
+              interviewId: interviewId,
+              jobseekerId: data['jobseekerId'],
+            ),
           );
         }
         print('Today\'s interviews fetched: ${interviewsSnapshot.docs.length}');
@@ -603,6 +714,9 @@ class InterviewProvider extends ChangeNotifier {
 
   void updateInterviewStatus(InterviewEvent e) {
     final recruiterId = getCurrentUserId();
+
+    debugPrint(
+        "Interview Event status: ${e.applicant}, ${e.jobPostId} ${e.interviewId} ${e.jobseekerId}");
 
     try {
       // Update the interview status for the recruiter
@@ -626,7 +740,7 @@ class InterviewProvider extends ChangeNotifier {
           .collection('users')
           .doc(e.jobseekerId)
           .collection('interviewSched')
-          .doc(e.interviewId)
+          .doc(e.jobseekerId)
           .update({
         'status': 'started',
       }).then((_) {

@@ -154,11 +154,12 @@ class _InterviewsViewState extends State<InterviewsView> {
                 ElevatedButton.icon(
                   onPressed: () {
                     // Handle join call action
-                    if(myForInterviewJobs[index].status == 'not Started'){
+                    if(myForInterviewJobs[index].status == 'not started'){
                       return;
                     }
 
-                    interviewProvider.startInterviewFunction(context);
+                    interviewProvider.startInterviewFunction(context, 'jobseeker');
+                    
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
