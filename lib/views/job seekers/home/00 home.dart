@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
+import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -31,6 +32,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   bool isSearching = false;
 
   var locationController = TextEditingController();
+  // List<String> selectedJobTitles = []; // Tracks selected job titles
 
   List<String> datePostedOptions = [
     'Last 24 hours',
@@ -80,6 +82,25 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   void onSearch() {
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
     final searchedWord = _searchController.text.trim().toLowerCase();
+    if (searchedWord.isNotEmpty) {
+      jobProvider.loadJobs(searchedWord);
+    }
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs(searchedWord);
+    }
+    // setState(() {
+    //   jobProvider.jobs.shuffle(Random());
+    // });
+    print("---UID:----- ${widget.uid}");
+  }
+
+  void onFilterClicked() {
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    // final searchedWord = _searchController.text.trim().toLowerCase();
+    String searchedWord = "";
+    if (jobProvider.selectedJobTitles.length == 1) {
+      searchedWord = jobProvider.selectedJobTitles[0].trim().toLowerCase();
+    }
     if (searchedWord.isNotEmpty) {
       jobProvider.loadJobs(searchedWord);
     }
@@ -153,215 +174,68 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                         ),
                       ),
                       Gap(16),
-                      Text(
-                        'Date posted',
-                        style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      Gap(8),
-                      DropdownButtonFormField<String>(
-                        // value: _selectedDate,
-                        items: [
-                          DropdownMenuItem(
-                              value: 'Last 24 hours',
-                              child: Text('Last 24 hours')),
-                          DropdownMenuItem(
-                              value: 'Last 7 days', child: Text('Last 7 days')),
-                          DropdownMenuItem(
-                              value: 'Last 30 days',
-                              child: Text('Last 30 days')),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            // _selectedDate = value;
-                          });
-                        },
-                        hint: Text(
-                          'Select date posted',
-                          style: TextStyle(
-                              fontFamily: 'Galano',
-                              fontSize: 15,
-                              color: Colors.grey),
+                      DropdownWithCheckboxes(
+                      sections: [
+                        DropdownSection(
+                          title: 'Accounting & Consulting',
+                          items: [
+                            'Personal & Professional Coaching',
+                            'Accounting & Bookkeeping',
+                            'Financial Planning',
+                            'Recruiting & Human Resources',
+                            'Management Consulting & Analysis',
+                            'Other - Accounting & Consulting',
+                          ],
                         ),
-                        decoration: InputDecoration(
-                          // labelText: 'Select date posted',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
+                        DropdownSection(
+                          title: 'Admin Support',
+                          items: [
+                            'Data Entry & Transcription Services',
+                            'Virtual Assistant',
+                            'Project Management',
+                            'Market Research & Product Reviews',
+                            'Programmer'
+                          ],
                         ),
-                      ),
-                      Gap(16),
-
-                      // Salary range
-                      Text(
-                        'Salary range',
-                        style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      Gap(8),
-                      DropdownButtonFormField<String>(
-                        // value: _selectedRate,
-                        items: [
-                          DropdownMenuItem(
-                              value: 'Hourly', child: Text('Hourly')),
-                          DropdownMenuItem(
-                              value: 'Monthly', child: Text('Monthly')),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            // _selectedRate = value;
-                          });
-                        },
-                        hint: Text(
-                          'Select rate',
-                          style: TextStyle(
-                              fontFamily: 'Galano',
-                              fontSize: 15,
-                              color: Colors.grey),
+                        DropdownSection(
+                          title: 'Customer Service',
+                          items: [
+                            'Community Management & Tagging',
+                            'Customer Service & Tech Support',
+                          ],
                         ),
-                        decoration: InputDecoration(
-                          // labelText: 'Select date posted',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-
-                      // Custom salary input fields
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                // prefixIcon: Icon(Icons.money),
-                                labelText: '₱ Min',
-                                labelStyle: TextStyle(
-                                    fontFamily: 'Galano',
-                                    fontSize: 15,
-                                    color: Colors.grey),
-                                border: OutlineInputBorder(
+                        // Add other categories as needed
+                      ],
+                      maxSelections: 3, // Limit selections to 3
+                      preSelectedItems: jobProvider.selectedJobTitles, // Preselected items
+                      onSelectionChanged: (selectedItems) {
+                        print("--SELECTED ITEM-- ${selectedItems}");
+                          Provider.of<JobProvider>(context, listen: false).selectedJobTitles = selectedItems;
+                     
+                      },
+                    ),
+                    Gap(10),
+                    ElevatedButton(
+                              onPressed: () {
+                                print("--filter jobs btn clicked--");
+                                onFilterClicked();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF0038FF),
+                                padding: EdgeInsets.all(20),
+                                shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: Color(0xFFD1E1FF), width: 1.5),
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: Color(0xFFD1E1FF), width: 1.5),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: Color(0xFFD1E1FF), width: 1.5),
+                              ),
+                              child: Text(
+                                'Filter jobs',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('/hr', style: TextStyle(fontSize: 16)),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                // prefixIcon: Icon(Icons.money),
-                                labelText: '₱ Max',
-                                labelStyle: TextStyle(
-                                    fontFamily: 'Galano',
-                                    fontSize: 15,
-                                    color: Colors.grey),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: Color(0xFFD1E1FF), width: 1.5),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: Color(0xFFD1E1FF), width: 1.5),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: Color(0xFFD1E1FF), width: 1.5),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-
-                      // Job type dropdown
-                      DropdownButtonFormField<String>(
-                        // value: _selectedJobType,
-                        items: [
-                          DropdownMenuItem(
-                              value: 'Full-time', child: Text('Full-time')),
-                          DropdownMenuItem(
-                              value: 'Part-time', child: Text('Part-time')),
-                          DropdownMenuItem(
-                              value: 'Contract', child: Text('Contract')),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            // _selectedJobType = value;
-                          });
-                        },
-                        hint: Text(
-                          'Job type',
-                          style: TextStyle(
-                              fontFamily: 'Galano',
-                              fontSize: 15,
-                              color: Colors.grey),
-                        ),
-                        decoration: InputDecoration(
-                          // labelText: 'Job type',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xFFD1E1FF), width: 1.5),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
