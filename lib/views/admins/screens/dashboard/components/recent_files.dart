@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/models/recent_file.dart';
 import 'package:provider/provider.dart';
@@ -61,6 +62,9 @@ class _RecentFilesState extends State<RecentFiles> {
               columnSpacing: defaultPadding,
               columns: [
                 DataColumn(
+                  label: Text("UID"),
+                ),
+                DataColumn(
                   label: Text("Role"),
                 ),
                 DataColumn(
@@ -68,6 +72,9 @@ class _RecentFilesState extends State<RecentFiles> {
                 ),
                 DataColumn(
                   label: Text("Email"),
+                ),
+                DataColumn(
+                  label: Text("Actions"),
                 ),
               ],
               rows: List.generate(
@@ -86,11 +93,13 @@ class _RecentFilesState extends State<RecentFiles> {
 DataRow recentFileDataRow(RecentUser fileInfo) {
   return DataRow(
     cells: [
+      DataCell(Text(fileInfo.uid ?? 'No UID')), // Default text if null
       DataCell(
         Row(
           children: [
             Image.asset(
-              fileInfo.icon ?? 'assets/images/default-icon.png', // Default icon if null
+              fileInfo.icon ??
+                  'assets/images/default-icon.png', // Default icon if null
               height: 30,
               width: 30,
             ),
@@ -103,6 +112,35 @@ DataRow recentFileDataRow(RecentUser fileInfo) {
       ),
       DataCell(Text(fileInfo.name ?? 'No name')), // Default text if null
       DataCell(Text(fileInfo.email ?? 'No email')), // Default text if null
+      DataCell(
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
+                foregroundColor: WidgetStateProperty.all(Colors.white),
+                padding: WidgetStateProperty.all(
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+              child: const Text('Edit'),
+            ),
+            const Gap(5),
+            ElevatedButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Colors.redAccent),
+                foregroundColor: WidgetStateProperty.all(Colors.white),
+                padding: WidgetStateProperty.all(
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+              child: const Text('Archive'),
+            ),
+          ],
+        ),
+      ), // Default text if null
     ],
   );
 }

@@ -105,6 +105,7 @@ class MenuAppController extends ChangeNotifier {
       // Map the results to a list of User objects
       recentUsers = querySnapshot.docs.map((doc) {
         return RecentUser(
+          uid: doc['uid'],
           email: doc['email'],
           icon: doc['role'] == 'recruiter'
               ? 'assets/images/company-black.png'

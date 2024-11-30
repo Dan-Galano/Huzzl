@@ -1,7 +1,7 @@
 class RecentUser {
-  final String? icon, role, name, email;
+  final String? uid, icon, role, name, email;
 
-  RecentUser({this.icon, this.role, this.email, this.name});
+  RecentUser({this.uid, this.icon, this.role, this.email, this.name});
 }
 
 // List demoRecentFiles = [
