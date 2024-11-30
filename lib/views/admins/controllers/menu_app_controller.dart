@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/models/recent_file.dart';
+import 'package:huzzl_web/views/login/login_register.dart';
 
 class MenuAppController extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -110,9 +111,12 @@ class MenuAppController extends ChangeNotifier {
           icon: doc['role'] == 'recruiter'
               ? 'assets/images/company-black.png'
               : 'assets/images/job-seeker-black.png', // Or fetch dynamically if required
-          name: doc['role'] == 'recruiter'
-              ? "${doc['hiringManagerFirstName']} ${doc['hiringManagerLastName']}"
-              : "${doc['firstName']} ${doc['lastName']}",
+          fname: doc['role'] == 'recruiter'
+              ? "${doc['hiringManagerFirstName']}"
+              : "${doc['firstName']}",
+          lname: doc['role'] == 'recruiter'
+              ? "${doc['hiringManagerLastName']}"
+              : "${doc['lastName']}",
           role: doc['role'] == 'recruiter'
               ? 'Recruiter'
               : 'Jobseeker', // Set the correct role here
@@ -146,8 +150,19 @@ class MenuAppController extends ChangeNotifier {
     return FirebaseAuth.instance.currentUser!.uid;
   }
 
-  void logout() async {
-    await FirebaseAuth.instance.signOut();
+  void logout(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => LoginRegister(),
+        ),
+      );
+      print("User logged out successfully.");
+    } catch (e) {
+      print("Error signing out: $e");
+    }
   }
 
   //Business docs
@@ -165,3 +180,5 @@ class MenuAppController extends ChangeNotifier {
     }
   }
 }
+
+

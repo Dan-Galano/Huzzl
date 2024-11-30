@@ -112,7 +112,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ],
                 ).then((value) {
                   if (value == 'logout') {
-                    adminController.logout();
+                    adminController.logout(context);
                   }
                 });
               },

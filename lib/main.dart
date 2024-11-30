@@ -268,7 +268,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 } else if (userType == 'recruiter') {
                   return RecruiterHomeScreen();
                 } else if (userType == 'admin') {
-                  return MainScreen();
+                  return MainScreen();                  
                 } else {
                   return LoginRegister();
                 }
