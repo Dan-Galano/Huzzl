@@ -13,7 +13,6 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 class PhoneVerificationService {
   
   final String accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? 'AC5f8fa163bed2a18b9476736f26fe843c';
@@ -158,30 +157,29 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
       try {
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(widget.userCredential.user!.uid) 
+            .doc(widget.userCredential.user!.uid)
             .delete();
 
         await widget.userCredential.user!.delete();
 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>
-                LoginRegister(), 
+            builder: (context) => LoginRegister(),
           ),
         );
       } catch (e) {
         print('Error during user deletion: $e');
-         EasyLoading.instance
-        ..displayDuration = const Duration(milliseconds: 1500)
-        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-        ..loadingStyle = EasyLoadingStyle.custom
-        ..backgroundColor = Color(0xFfd74a4a)
-        ..textColor = Colors.white
-        ..fontSize = 16.0
-        ..indicatorColor = Colors.white
-        ..maskColor = Colors.black.withOpacity(0.5)
-        ..userInteractions = false
-        ..dismissOnTap = true;
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
         EasyLoading.showToast(
           "Error deleting user. Please try again later.",
           toastPosition: EasyLoadingToastPosition.top,
