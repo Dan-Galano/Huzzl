@@ -44,6 +44,32 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
   List<EducationEntry> educationEntries = [];
   List<ExperienceEntry> experienceEntries = [];
 
+  String _getEducationTimePeriod(EducationEntry entry) {
+    String fromPeriod =
+        _getFormattedDate(entry.fromSelectedMonth, entry.fromSelectedYear);
+    String toPeriod = entry.isPresent
+        ? 'Present'
+        : _getFormattedDate(entry.toSelectedMonth, entry.toSelectedYear);
+
+    if (fromPeriod == toPeriod) {
+      return fromPeriod;
+    } else {
+      if (entry.fromSelectedMonth == null || entry.fromSelectedMonth!.isEmpty) {
+        return '$fromPeriod${toPeriod != 'Present' ? ' to $toPeriod' : ''}';
+      } else {
+        return '$fromPeriod${toPeriod != 'Present' ? ' to $toPeriod' : ''}';
+      }
+    }
+  }
+
+  String _getFormattedDate(String? month, int? year) {
+    if (month == null || month.isEmpty) {
+      return year != null ? '$year' : '';
+    }
+
+    return '$month $year';
+  }
+
   void _showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -87,13 +113,17 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
 
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference usersRefJob =
+          firestore.collection('users');
 
       CollectionReference usersRef =
           firestore.collection('users').doc(userId).collection('resume');
 
       QuerySnapshot existingResumes = await usersRef.get();
 
-      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
+      await usersRefJob
+          .doc(userId)
+          .set(jobPreferences, SetOptions(merge: true));
       print('Job preferences saved successfully!');
 
       if (existingResumes.docs.isEmpty) {
@@ -224,10 +254,10 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ),
                                   Gap(50),
-                                  fname.isNotEmpty &&
-                                          lname.isNotEmpty &&
-                                          pnumber.isNotEmpty &&
-                                          email.isNotEmpty &&
+                                  fname.isNotEmpty ||
+                                          lname.isNotEmpty ||
+                                          pnumber.isNotEmpty ||
+                                          email.isNotEmpty ||
                                           locationData.isNotEmpty
                                       ? Expanded(
                                           child: Column(
@@ -285,11 +315,11 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                               Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
-                                                  '${locationData['otherLocation'] ?? ''} '
-                                                  '${locationData['barangayName'] != null ? locationData['barangayName'] + ', ' : ''}'
-                                                  '${locationData['cityName'] != null ? locationData['cityName'] + ', ' : ''}'
-                                                  '${locationData['provinceName'] != null ? locationData['provinceName'] + ', ' : ''}'
-                                                  '${locationData['regionName'] ?? ''}',
+                                                  '${(locationData['otherLocation']?.trim() ?? '').isNotEmpty ? locationData['otherLocation']!.trim() + ' ' : ''}'
+                                                  '${(locationData['barangayName']?.trim() ?? '').isNotEmpty ? locationData['barangayName']!.trim() + ', ' : ''}'
+                                                  '${(locationData['cityName']?.trim() ?? '').isNotEmpty ? locationData['cityName']!.trim() + ', ' : ''}'
+                                                  '${(locationData['provinceName']?.trim() ?? '').isNotEmpty ? locationData['provinceName']!.trim() + ', ' : ''}'
+                                                  '${(locationData['regionName']?.trim() ?? '').isNotEmpty ? locationData['regionName']!.trim() : ''}',
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     color: Color(0xff373030),
@@ -455,10 +485,8 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                         Gap(10),
                                         selectedSkills.isNotEmpty
                                             ? Wrap(
-                                                spacing:
-                                                    8.0, // Horizontal space between the cards
-                                                runSpacing:
-                                                    8.0, // Vertical space between the cards
+                                                spacing: 8.0,
+                                                runSpacing: 8.0,
                                                 children: List.generate(
                                                   selectedSkills.length,
                                                   (index) => Card(
@@ -564,10 +592,9 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                   (index) {
                                                     final entry =
                                                         educationEntries[index];
-                                                    String timePeriod = entry
-                                                            .isPresent
-                                                        ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
-                                                        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
+                                                    String timePeriod =
+                                                        _getEducationTimePeriod(
+                                                            entry);
 
                                                     return Row(
                                                       children: [
@@ -866,7 +893,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                                           fontStyle:
                                                                               FontStyle.italic,
                                                                           color:
-                                                                              Colors.black54,
+                                                                              Colors.black87,
                                                                         ),
                                                                       ),
                                                                     ],

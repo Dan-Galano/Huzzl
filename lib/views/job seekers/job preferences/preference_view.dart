@@ -89,6 +89,15 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
     _pageController.jumpToPage(1);
   }
 
+  void jumpToPage(int pageNumber) {
+  if (pageNumber >= 1 && pageNumber <= totalLength) {
+    _pageController.jumpToPage(pageNumber);
+  } else {
+    print('Invalid page number: $pageNumber');
+  }
+}
+
+
   @override
   void initState() {
     super.initState();
@@ -152,6 +161,9 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   noOfPages: noOfPages,
                 ),
                 ResumePage(
+                   jumpToPage: (pageNumber) {
+     jumpToPage(pageNumber);
+  },
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {
