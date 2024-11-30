@@ -158,7 +158,7 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
       Navigator.of(context).pop();
 
       EasyLoading.showToast(
-        "⚠️ ${e.message}",
+        "⚠︎ ${e.message}",
         dismissOnTap: true,
         toastPosition: EasyLoadingToastPosition.top,
         duration: Duration(seconds: 3),
@@ -807,7 +807,7 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
 
       if (googleUser == null) {
         EasyLoading.showToast(
-          "⚠️ Google Sign-Up canceled.",
+          "⚠︎ Google Sign-Up canceled.",
           dismissOnTap: true,
           toastPosition: EasyLoadingToastPosition.top,
           duration: Duration(seconds: 3),

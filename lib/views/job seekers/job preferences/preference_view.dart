@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/autobuild_resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/location_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_contactInfo.dart';
@@ -18,31 +20,33 @@ import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:provider/provider.dart';
 
-// void main() {
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(create: (context) => AppState()),
-//         ChangeNotifierProvider(create: (context) => UserProvider()),
-//         ChangeNotifierProvider(create: (context) => ResumeProvider()),
-//         ChangeNotifierProvider(create: (context) => LocationProvider()),
-//       ],
-//       child: MaterialApp(
-//         debugShowCheckedModeBanner: false,
-//         theme: ThemeData(
-//           fontFamily: 'Galano',
-//           scaffoldBackgroundColor: Colors.white,
-//         ),
-//         home: PreferenceViewPage(
-//           userUid: 'sampleUID',
-//         ),
-//       ),
-//     ),
-//   );
-// }
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AppState()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => ResumeProvider()),
+        ChangeNotifierProvider(create: (context) => LocationProvider()),
+        ChangeNotifierProvider(create: (context) => AutoBuildResumeProvider()),
+      ],
+      child: MaterialApp(
+        builder: EasyLoading.init(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: 'Galano',
+          scaffoldBackgroundColor: Colors.white,
+        ),
+        home: PreferenceViewPage(
+          userUid: 'sampleUID',
+        ),
+      ),
+    ),
+  );
+}
 
 class PreferenceViewPage extends StatefulWidget {
-  final String userUid; 
+  final String userUid;
   const PreferenceViewPage({super.key, required this.userUid});
 
   @override
@@ -60,7 +64,6 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   Map<String, dynamic>? currentResumeOption;
   List? currentSelectedJobTitles;
   List<String>? selectedSkills;
-
 
   void _nextPage() {
     if (_currentPage < totalLength) {
@@ -85,7 +88,6 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   void _gotoJobPref() {
     _pageController.jumpToPage(1);
   }
-
 
   @override
   void initState() {

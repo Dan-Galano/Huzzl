@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/autobuild_resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -10,6 +11,15 @@ import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/loading_dialog.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 import 'package:provider/provider.dart';
+import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:docx_to_text/docx_to_text.dart';
+import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
+import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ResumePage extends StatefulWidget {
   final VoidCallback nextPage;
@@ -31,6 +41,141 @@ class ResumePage extends StatefulWidget {
 }
 
 class _ResumePageState extends State<ResumePage> {
+  String _extractedText = '';
+  String _selectedFileType = '';
+
+  Future<void> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'docx', 'txt'],
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      final Uint8List? fileBytes = result.files.single.bytes;
+      final String? fileName = result.files.single.name;
+
+      if (fileBytes != null && fileName != null) {
+        if (fileName.endsWith('.pdf')) {
+          _selectedFileType = 'PDF';
+          _extractFromPdf(fileBytes);
+        } else if (fileName.endsWith('.docx')) {
+          _selectedFileType = 'DOCX';
+          _extractFromDocx(fileBytes);
+        } else if (fileName.endsWith('.txt')) {
+          _selectedFileType = 'TXT';
+          _extractFromTxt(fileBytes);
+        }
+      } else {
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = const Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "⚠︎ Unable to read the file. Please check the file format or try again.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+          // maskType: EasyLoadingMaskType.black,
+        );
+        return;
+      }
+    } else {
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = const Color(0xFfd74a4a)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "⚠︎ No file selected.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+        // maskType: EasyLoadingMaskType.black,
+      );
+      return;
+    }
+  }
+
+  void _extractFromTxt(Uint8List fileBytes) async {
+    try {
+      String extractedText = String.fromCharCodes(fileBytes);
+
+      setState(() {
+        _extractedText = extractedText
+            .split('\n')
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .map((line) => '$line')
+            .join('\n');
+        ;
+        print("EXTRACTED TEXT: ${_extractedText}");
+      });
+    } catch (e) {
+      setState(() {
+        _extractedText = 'Error during TXT extraction: $e';
+      });
+    }
+  }
+
+  void _extractFromPdf(Uint8List fileBytes) async {
+    try {
+      PdfDocument document = PdfDocument(inputBytes: fileBytes);
+      PdfTextExtractor extractor = PdfTextExtractor(document);
+      String extractedText = extractor.extractText();
+
+      document.dispose();
+
+      setState(() {
+        _extractedText = extractedText
+            .split('\n')
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .map((line) => '$line')
+            .join('\n');
+        print("EXTRACTED TEXT: ${_extractedText}");
+        final autoBuildResumeProvider = Provider.of<AutoBuildResumeProvider>(context, listen: false);
+        autoBuildResumeProvider.generateResumeContent(_extractedText);
+      });
+    } catch (e) {
+      setState(() {
+        _extractedText = 'Error during PDF extraction: $e';
+      });
+    }
+  }
+
+  void _extractFromDocx(Uint8List fileBytes) async {
+    try {
+      String extractedText = await docxToText(fileBytes);
+
+      setState(() {
+        _extractedText = extractedText
+            .split('\n')
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .map((line) => '$line')
+            .join('\n');
+        print("EXTRACTED TEXT: ${_extractedText}");
+      });
+    } catch (e) {
+      setState(() {
+        _extractedText = 'Error during DOCX extraction: $e';
+      });
+    }
+  }
+
   void _submitPreferences() async {
     final appState = Provider.of<AppState>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -207,14 +352,14 @@ class _ResumePageState extends State<ResumePage> {
                       {
                         'icon': Icons.upload_file,
                         'label': 'Upload your resume',
+                        'sublabel': '(pdf/docx/txt)',
                         'onPressed': (BuildContext context) {
-                          // Add your onPressed logic here
-                          print("Upload your own resume");
+                          _pickFile();
                         },
                       },
                       {
                         'icon': Icons.edit,
-                        'label': 'Fill up manually',
+                        'label': 'Fill up huzzl resume manually',
                         'onPressed': (BuildContext context) {
                           widget.nextPage();
                           print("Fill up manually");

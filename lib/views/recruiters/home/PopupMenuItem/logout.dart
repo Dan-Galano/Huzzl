@@ -19,7 +19,7 @@ void logOut(BuildContext context) async {
   }
 }
 
-void showRecruiterLogoutDialog(BuildContext context) {
+void showLogoutDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {

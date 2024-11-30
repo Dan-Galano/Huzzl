@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatefulWidget {
   final IconData icon;
   final String label;
+  final String? sublabel;
   final void Function(BuildContext context) onPressed;
 
   const CustomButton({
@@ -12,6 +13,7 @@ class CustomButton extends StatefulWidget {
     required this.icon,
     required this.label,
     required this.onPressed,
+    this.sublabel,
   }) : super(key: key);
 
   @override
@@ -55,6 +57,17 @@ class _CustomButtonState extends State<CustomButton> {
                 color: _isHovered ? Colors.white : Colors.orange,
               ),
             ),
+            widget.sublabel!.isNotEmpty
+                ? Text(
+                    " ${widget.sublabel!}",
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w100,
+                      color: _isHovered ? Colors.white : Colors.orange,
+                    ),
+                  )
+                : SizedBox(),
           ],
         ),
       ),
@@ -85,6 +98,7 @@ class ButtonList extends StatelessWidget {
           child: CustomButton(
             icon: data['icon'],
             label: data['label'],
+            sublabel: data['sublabel'] ?? '',
             onPressed: data['onPressed'],
           ),
         );

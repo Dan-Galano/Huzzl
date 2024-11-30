@@ -172,7 +172,7 @@ class JobProviderCandidate extends ChangeNotifier {
 
   String getCurrentUserId() {
     return FirebaseAuth.instance.currentUser!.uid;
-  }
+  } 
 
   String _rejectMessage = "";
   String _hireMessage = "";

@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/education_entry_model.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/experience_entry_model.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -55,6 +56,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
   }
 
   void _submitResume() async {
+    final appState = Provider.of<AppState>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     String? userId = userProvider.loggedInUserId;
 
@@ -76,6 +78,13 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
       'experience': experienceEntries.map((entry) => entry.toMap()).toList(),
     };
 
+    Map<String, dynamic> jobPreferences = {
+      'selectedLocation': appState.selectedLocation,
+      'selectedPayRate': appState.selectedPayRate,
+      'currentSelectedJobTitles': appState.currentSelectedJobTitles,
+      'uid': userId,
+    };
+
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -83,6 +92,9 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
           firestore.collection('users').doc(userId).collection('resume');
 
       QuerySnapshot existingResumes = await usersRef.get();
+
+      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
+      print('Job preferences saved successfully!');
 
       if (existingResumes.docs.isEmpty) {
         DocumentReference newResumeDoc = await usersRef.add(resumeData);
@@ -107,7 +119,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
             builder: (context) => JobseekerMainScreen(uid: userId)),
       );
     } catch (e) {
-      print('Error saving job preferences: $e');
+      print('Error saving job preferences and resume: $e');
     }
   }
 
@@ -225,7 +237,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                   Text(
                                                     '${fname}',
                                                     style: TextStyle(
-                                                      fontSize: 24,
+                                                      fontSize: 30,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       color: Color(0xff373030),
@@ -236,7 +248,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                   Text(
                                                     '${lname}',
                                                     style: TextStyle(
-                                                      fontSize: 24,
+                                                      fontSize: 30,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       color: Color(0xff373030),

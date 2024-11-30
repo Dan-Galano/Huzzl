@@ -151,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
           //   errorMessage = "User not found.";
           // });
           EasyLoading.showToast(
-            "⚠️ User not found.",
+            "⚠︎ User not found.",
             dismissOnTap: true,
             toastPosition: EasyLoadingToastPosition.top,
             duration: Duration(seconds: 3),

@@ -127,17 +127,17 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       }).catchError((error) {
         print('Error fetching user data from Firestore: $error');
       });
-      // Navigator.of(context).pushReplacement(
-      //   MaterialPageRoute(
-      //       builder: (_) => PhoneNumberVerification(
-      //             phoneNumber: widget.phoneNumber,
-      //             userCredential: widget.userCredential,
-      //           )),
-      // );
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) => PreferenceViewPage(
-                userUid: uid,
-              )));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (_) => PhoneNumberVerification(
+                  phoneNumber: widget.phoneNumber,
+                  userCredential: widget.userCredential,
+                )),
+      );
+      // Navigator.of(context).pushReplacement(MaterialPageRoute(
+      //     builder: (_) => PreferenceViewPage(
+      //           userUid: uid,
+      //         )));
     }
   }
 

@@ -13,7 +13,9 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+
 class PhoneVerificationService {
+  
   final String accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? 'AC5f8fa163bed2a18b9476736f26fe843c';
   final String authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '01ad3003ad25a3a990bf5d138f874167';
   final String serviceSid = dotenv.env['TWILIO_SERVICE_SID'] ?? 'VA38c75772985bb97679fe474c41afa0a9';

@@ -10,6 +10,7 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
+import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/closeAccount.dart';
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
@@ -350,15 +351,201 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             const SizedBox(width: 10),
             sizingInformation.isDesktop
                 ? IconButton(
-                    onPressed: () {
-                      showRecruiterLogoutDialog(context);
+                    onPressed: () async {
+                      final RenderBox button =
+                          context.findRenderObject() as RenderBox;
+                      final RenderBox overlay = Overlay.of(context)
+                          .context
+                          .findRenderObject() as RenderBox;
+                      final position =
+                          button.localToGlobal(Offset.zero, ancestor: overlay);
+                      await showMenu(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          overlay.size.width - position.dx,
+                          position.dy + 55,
+                          position.dx + 15,
+                          overlay.size.height - position.dy,
+                        ),
+                        items: [
+                          PopupMenuItem(
+                            value: 'view_profile',
+                            child: Row(
+                              children: [
+                                Icon(Icons.person, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Profile',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'close_account',
+                            child: Row(
+                              children: [
+                                Icon(Icons.cancel, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Close Account',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'logout',
+                            child: Row(
+                              children: [
+                                Icon(Icons.logout, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Logout',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ).then((value) {
+                        switch (value) {
+                          case 'view_profile':
+                            break;
+                          case 'close_account':
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CloseAccountDialog();
+                              },
+                            );
+                            break;
+                          case 'logout':
+                            showLogoutDialog(context);
+                            break;
+                        }
+                      });
                     },
                     icon: Image.asset(
-                        'assets/images/building-icon-recruiter.png',
-                        width: 25),
+                      'assets/images/building-icon-recruiter.png',
+                      width: 25,
+                    ),
                   )
+
+                // IconButton(
+                //     onPressed: () {
+                //       showLogoutDialog(context);
+                //     },
+                //     icon: Image.asset(
+                //         'assets/images/building-icon-recruiter.png',
+                //         width: 25),
+                //   )
                 : IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final RenderBox button =
+                          context.findRenderObject() as RenderBox;
+                      final RenderBox overlay = Overlay.of(context)
+                          .context
+                          .findRenderObject() as RenderBox;
+                      final position =
+                          button.localToGlobal(Offset.zero, ancestor: overlay);
+                      await showMenu(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          overlay.size.width - position.dx,
+                          position.dy + 55,
+                          position.dx + 15,
+                          overlay.size.height - position.dy,
+                        ),
+                        items: [
+                          PopupMenuItem(
+                            value: 'view_profile',
+                            child: Row(
+                              children: [
+                                Icon(Icons.person, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Profile',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'close_account',
+                            child: Row(
+                              children: [
+                                Icon(Icons.cancel, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Close Account',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'logout',
+                            child: Row(
+                              children: [
+                                Icon(Icons.logout, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Logout',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ).then((value) {
+                        switch (value) {
+                          case 'view_profile':
+                            break;
+                          case 'close_account':
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CloseAccountDialog();
+                              },
+                            );
+                            break;
+                          case 'logout':
+                            showLogoutDialog(context);
+                            break;
+                        }
+                      });
+                    },
                     icon: Icon(
                       Icons.business,
                       color: Colors.white,

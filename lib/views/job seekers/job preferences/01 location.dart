@@ -34,17 +34,19 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     final locationProvider =
         Provider.of<LocationProvider>(context, listen: false);
 
-    locationProvider.fetchRegions().then((_) {
-      if (locationProvider.selectedRegion != null) {
-        if (locationProvider.selectedRegion == '130000000') {
-          locationProvider
-              .fetchCitiesForRegion(locationProvider.selectedRegion!);
-        } else {
-          locationProvider
-              .fetchProvincesOrCities(locationProvider.selectedRegion!);
+    if (locationProvider.regions.isEmpty) {
+      locationProvider.fetchRegions().then((_) {
+        if (locationProvider.selectedRegion != null) {
+          if (locationProvider.selectedRegion == '130000000') {
+            locationProvider
+                .fetchCitiesForRegion(locationProvider.selectedRegion!);
+          } else {
+            locationProvider
+                .fetchProvincesOrCities(locationProvider.selectedRegion!);
+          }
         }
-      }
-    });
+      });
+    }
 
     if (locationProvider.selectedRegion != null) {
       locationProvider.getLocationData();
@@ -52,14 +54,12 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
   }
 
   void _submitLocationForm() {
-        final resumeProvider =
-            Provider.of<ResumeProvider>(context, listen: false);
+    final resumeProvider = Provider.of<ResumeProvider>(context, listen: false);
     final locationProvider =
         Provider.of<LocationProvider>(context, listen: false);
 
     if (_formKey.currentState!.validate()) {
       try {
-
         final locationData = locationProvider.getLocationData();
 
         resumeProvider.updateLocation(locationData);
@@ -174,10 +174,28 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Select Region',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                       value: locationProvider.selectedRegion,
@@ -219,10 +237,28 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                           }
                           return null;
                         },
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Select Province',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFD1E1FF),
+                              width: 1.5,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFD1E1FF),
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFD1E1FF),
+                              width: 1.5,
+                            ),
                           ),
                         ),
                         value: locationProvider.selectedProvince,
@@ -263,10 +299,28 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Select City/Municipality',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                       value: locationProvider.selectedCity,
@@ -309,10 +363,28 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Select Barangay',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                       value: locationProvider.selectedBarangay,
@@ -345,10 +417,28 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Building/House No., Street Name',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFD1E1FF),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),

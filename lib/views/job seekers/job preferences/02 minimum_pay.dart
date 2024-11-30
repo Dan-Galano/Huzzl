@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
@@ -35,15 +37,50 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
   final TextEditingController maximum = TextEditingController();
   String selectedRate = 'per hour'; // Default dropdown value
 
+  String? validateMinMax() {
+    double min = double.tryParse(minimum.text) ?? 0;
+    double max = double.tryParse(maximum.text) ?? 0;
+    print("$min - $max");
+    if (min > max) {
+      return 'Maximum cannot be smaller than Minimum';
+    }
+    return null;
+  }
+
   void _submitMinPayForm() {
-    if (minimum.text.isEmpty || maximum.text.isEmpty) {
+    if (minimum.text.isEmpty && maximum.text.isEmpty) {
       return;
+    }
+    if (minimum.text.isNotEmpty && maximum.text.isNotEmpty) {
+      String? error = validateMinMax();
+      print(error);
+      if (error != null) {
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = const Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "⚠︎ $error",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+          // maskType: EasyLoadingMaskType.black,
+        );
+        return;
+      }
     }
 
     Map<String, dynamic> payData = {
       'rate': selectedRate,
-      'minimum': minimum.text,
-      'maximum': maximum.text,
+      'minimum': double.tryParse(minimum.text) ?? 0,
+      'maximum': double.tryParse(maximum.text) ?? 0,
     };
     final appState = Provider.of<AppState>(context, listen: false);
     appState.setSelectedPayRate(payData);
@@ -171,6 +208,8 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                   ),
                   SizedBox(height: 20),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Column(
@@ -230,16 +269,23 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                         ),
                       ),
                       SizedBox(width: 10),
-                      Text(
-                        "To",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xff8E8E8E),
-                          fontFamily: 'Galano',
-                          fontWeight: FontWeight.w700,
-                        ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Gap(30),
+                          Text(
+                            "To",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xff8E8E8E),
+                              fontFamily: 'Galano',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 20),
+                      SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

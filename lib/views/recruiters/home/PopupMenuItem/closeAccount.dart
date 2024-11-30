@@ -204,6 +204,7 @@ class _CloseAccountDialogState extends State<CloseAccountDialog> {
                 // Button centered below text
                 Center(
                   child: BlueFilledCircleButton(
+                    color: const Color.fromARGB(255, 186, 60, 51),
                     onPressed: () {
                       String password = _passwordController.text;
                       if (password.isNotEmpty) {
@@ -230,7 +231,7 @@ class _CloseAccountDialogState extends State<CloseAccountDialog> {
                         );
                       }
                     },
-                    text: "Close", // Button text
+                    text: "Close Account", // Button text
                     width: 470, // Optional width for the button
                   ),
                 ),
