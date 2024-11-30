@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 void showHiringConfirmationDialog(BuildContext context, Candidate candidate,
@@ -75,9 +76,9 @@ void showHiringConfirmationDialog(BuildContext context, Candidate candidate,
                           jobCandidateProvider.pushNotificationToJobseeker(
                             candidate.jobPostId,
                             candidate.id,
-                            'You are Hired:',
+                            'You are Hired',
                             """
-Starting Date: $hiredDate
+Starting Date: ${DateFormat('MMMM d, y').format(hiredDate)}
 
 $generatedHiringMessage
 """,

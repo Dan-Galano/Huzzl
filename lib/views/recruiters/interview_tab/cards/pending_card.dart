@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/back_for_review_confirm_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 import 'package:intl/intl.dart';
 
 class PendingTileCard extends StatefulWidget {
-  final String intervieweeName;
-  final String profession;
-  final String branch;
-  final DateTime shortlistDate;
+  // final String intervieweeName;
+  // final String profession;
+  // // final String branch;
+  // final DateTime shortlistDate;
+  final Candidate candidate;
 
   const PendingTileCard({
     super.key,
-    required this.intervieweeName,
-    required this.profession,
-    required this.branch,
-    required this.shortlistDate,
+    required this.candidate,
   });
 
   @override
@@ -31,8 +29,8 @@ class _PendingTileCardState extends State<PendingTileCard>
   @override
   void initState() {
     super.initState();
-    formattedDate =
-        DateFormat('dd MMM yyyy, h:mm a').format(widget.shortlistDate);
+    formattedDate = DateFormat('dd MMM yyyy, h:mm a')
+        .format(widget.candidate.applicationDate);
   }
 
   @override
@@ -65,7 +63,7 @@ class _PendingTileCardState extends State<PendingTileCard>
                     CircleAvatar(
                       backgroundColor: const Color(0xffd1e1ff),
                       foregroundColor: const Color(0xff373030),
-                      child: Text(widget.intervieweeName[0]),
+                      child: Text(widget.candidate.name[0]),
                     ),
                   ],
                 ),
@@ -77,7 +75,7 @@ class _PendingTileCardState extends State<PendingTileCard>
                     children: [
                       //Interviewee name
                       Text(
-                        widget.intervieweeName,
+                        widget.candidate.name,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -92,7 +90,7 @@ class _PendingTileCardState extends State<PendingTileCard>
                               size: 18, color: Colors.grey),
                           const SizedBox(width: 5),
                           Text(
-                            widget.profession,
+                            widget.candidate.profession,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -102,20 +100,20 @@ class _PendingTileCardState extends State<PendingTileCard>
                       ),
                       const SizedBox(height: 4),
                       //====================== Branch applied ======================
-                      Row(
-                        children: [
-                          const Icon(Icons.business_center_outlined,
-                              size: 18, color: Colors.grey),
-                          const SizedBox(width: 5),
-                          Text(
-                            widget.branch,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     const Icon(Icons.business_center_outlined,
+                      //         size: 18, color: Colors.grey),
+                      //     const SizedBox(width: 5),
+                      //     Text(
+                      //       widget.branch,
+                      //       style: const TextStyle(
+                      //         fontSize: 12,
+                      //         color: Colors.grey,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ],
                   ),
                 ),
@@ -145,27 +143,27 @@ class _PendingTileCardState extends State<PendingTileCard>
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.chat),
-                        color: const Color(0xff3B7DFF),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ScheduleInterviewButton(
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                ),
+                // Expanded(
+                //   child: Column(
+                //     children: [
+                //       IconButton(
+                //         onPressed: () {},
+                //         icon: const Icon(Icons.chat),
+                //         color: const Color(0xff3B7DFF),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // Expanded(
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: [
+                //       ScheduleInterviewButton(
+                //         onPressed: () {},
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 IconButton(
                   onPressed: () async {
                     final RenderBox button =

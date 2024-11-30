@@ -4,8 +4,8 @@ import 'package:huzzl_web/views/recruiters/interview_tab/cards/interview_tile_ca
 import 'package:huzzl_web/views/recruiters/interview_tab/cards/upcoming_tile_card.dart';
 import 'package:intl/intl.dart';
 
-class InterviewRowCard extends StatelessWidget {
-  const InterviewRowCard({super.key, required this.interview});
+class UpcomingInterviewRowCard extends StatelessWidget {
+  const UpcomingInterviewRowCard({super.key, required this.interview});
 
   final InterviewEvent interview;
 
@@ -47,7 +47,7 @@ class InterviewRowCard extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: InterviewTile(
+          child: UpcomingInterviewTile(
             interview: interview,
           ),
         ),

@@ -1,171 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/cards/pending_card.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
+import 'package:provider/provider.dart';
 
-class PendingView extends StatelessWidget {
+class PendingView extends StatefulWidget {
   PendingView({super.key});
 
-  final List interviewees = [
-    {
-      'name': 'Elijah Japheth Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Urdaneta City',
-      'interviewTitle': 'Technical Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Jau Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Elijah Japheth Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Urdaneta City',
-      'interviewTitle': 'Technical Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Jau Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Elijah Japheth Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Urdaneta City',
-      'interviewTitle': 'Technical Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Jau Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Elijah Japheth Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Urdaneta City',
-      'interviewTitle': 'Technical Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Jau Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Elijah Japheth Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Urdaneta City',
-      'interviewTitle': 'Technical Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Jau Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Elijah Japheth Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Urdaneta City',
-      'interviewTitle': 'Technical Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-    {
-      'name': 'Jau Macatiag',
-      'profession': 'Photographer',
-      'branch': 'Alaminos City',
-      'interviewTitle': 'Final Interview',
-      'shortlistDate': DateTime(2024, 9, 25, 8, 30),
-      'interviewType': 'Online',
-      'timeRange': DateTimeRange(
-        start: DateTime(2024, 9, 25, 8, 0),
-        end: DateTime(2024, 9, 25, 10, 0),
-      ),
-    },
-  ];
+  @override
+  State<PendingView> createState() => _PendingViewState();
+}
+
+class _PendingViewState extends State<PendingView> {
+  late InterviewProvider _interviewProvider;
+
+  List<Candidate> candidatesShortlisted = [];
+
+  @override
+  void initState() {
+    _interviewProvider = Provider.of<InterviewProvider>(context, listen: false);
+
+    fetchShortlistedCandidate();
+    super.initState();
+  }
+
+  void fetchShortlistedCandidate() async {
+    await _interviewProvider.fetchShortlistedCandidateToDisplayInPendingTab();
+    setState(() {
+      candidatesShortlisted =
+          _interviewProvider.shortListedCandidateDisplayInPending;
+    });
+
+    debugPrint("Fetched successfully shortlisted candidate");
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (interviewees.isNotEmpty) {
+    if (candidatesShortlisted.isNotEmpty) {
       return Expanded(
         child: ListView.builder(
           shrinkWrap: true,
           // physics: const NeverScrollableScrollPhysics(),
-          itemCount: interviewees.length,
+          itemCount: candidatesShortlisted.length,
           itemBuilder: (context, index) {
             return PendingTileCard(
-              intervieweeName: interviewees[index]['name'],
-              profession: interviewees[index]['profession'],
-              branch: interviewees[index]['branch'],
-              shortlistDate: interviewees[index]['shortlistDate'],
+              candidate: candidatesShortlisted[index],
+              // intervieweeName: candidatesShortlisted[index].name,
+              // profession: candidatesShortlisted[index].profession,
+              // // branch: candidatesShortlisted[index]['branch'],
+              // shortlistDate: candidatesShortlisted[index].applicationDate,
             );
           },
         ),

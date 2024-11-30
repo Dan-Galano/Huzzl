@@ -25,7 +25,7 @@ class _TodayViewState extends State<TodayView> {
     super.initState();
   }
 
-  void fetchTodaysInterview() async{
+  void fetchTodaysInterview() async {
     await _interviewProvider.fetchTodaysInterview();
     setState(() {
       interviewees = _interviewProvider.todaysInterviewList;

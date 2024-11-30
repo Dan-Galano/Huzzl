@@ -1,33 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/feedback_view_dialog.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/widgets/date_container.dart';
-import 'package:intl/intl.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/application_view_dialog.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_confirm_dialog.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/mark_as_done_dialog%20copy.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/dialogs/reschedule_dialog.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
+import 'package:provider/provider.dart';
 
-class PastInterviewTileCard extends StatefulWidget {
-  final InterviewEvent interview;
+class UpcomingInterviewTile extends StatefulWidget {
+  // final String intervieweeName;
+  // final String profession;
+  // // final String branch;
+  // final String interviewTitle;
+  // final String interviewType;
+  // // final DateTimeRange timeRange;
+  // final TimeOfDay startTime;
+  // final TimeOfDay endTime;
+  InterviewEvent interview;
 
-  const PastInterviewTileCard({super.key, required this.interview});
+// intervieweeName
+// profession
+// branch?
+// interviewTitle
+//in.terviewType
+
+  UpcomingInterviewTile({super.key, required this.interview
+      // required this.intervieweeName,
+      // required this.profession,
+      // // required this.branch,
+      // required this.interviewTitle,
+      // required this.interviewType,
+      // // required this.timeRange,
+      // required this.startTime,
+      // required this.endTime,
+      });
 
   @override
-  State<PastInterviewTileCard> createState() => _PastInterviewTileCardState();
+  State<UpcomingInterviewTile> createState() => _UpcomingInterviewTileState();
 }
 
-class _PastInterviewTileCardState extends State<PastInterviewTileCard>
+class _UpcomingInterviewTileState extends State<UpcomingInterviewTile>
     with TickerProviderStateMixin {
   bool _isHovered = false;
-  late String formattedDate;
-
-  @override
-  void initState() {
-    super.initState();
-    formattedDate =
-        DateFormat('dd MMM yyyy, h:mma').format(widget.interview.date!);
-  }
 
   @override
   Widget build(BuildContext context) {
+    final interviewProvider = Provider.of<InterviewProvider>(context);
     return MouseRegion(
       // cursor: SystemMouseCursors.click,
       onEnter: (_) {
@@ -43,13 +63,11 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
       child: GestureDetector(
         onTap: () {},
         child: Card(
-          // elevation: _isHovered ? 8 : 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           color: _isHovered ? Colors.grey[200] : Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Interview info
                 Column(
@@ -62,7 +80,6 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                   ],
                 ),
                 const Gap(15),
-                //====================== Interviewee Details ======================
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +94,7 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                         ),
                       ),
                       const SizedBox(height: 4),
-                      //====================== Profession ======================
+                      //Interviewee job
                       Row(
                         children: [
                           const Icon(Icons.person_outline,
@@ -93,7 +110,7 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                         ],
                       ),
                       const SizedBox(height: 4),
-                      //====================== Branch applied ======================
+                      //Branch applied
                       // Row(
                       //   children: [
                       //     const Icon(Icons.business_center_outlined,
@@ -111,9 +128,10 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                     ],
                   ),
                 ),
-                //====================== Interview title ======================
+                //Interview title
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         widget.interview.title!,
@@ -124,46 +142,51 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                           color: Color(0xff373030),
                         ),
                       ),
-                      const Text(
-                        "Title",
-                        style: TextStyle(
-                          color: Colors.grey,
+                      Text(
+                        widget.interview.type!,
+                        style: const TextStyle(
+                          decoration: TextDecoration.none,
+                          decorationColor: Colors.orange,
                           fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Galano',
+                          color: Colors.grey,
                         ),
                       ),
                     ],
                   ),
                 ),
-                //Date interviewed
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Text(
-                        "Date Interviewed",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Galano',
-                        ),
-                      ),
-                      const Gap(8),
-                      DateContainer(
-                        date: formattedDate,
-                        backgroundColor: const Color(0xffFFE0C3),
-                        outlineBorderColor: const Color(0XFFFD7206),
-                      ),
-                    ],
-                  ),
-                ),
-                //Buttons
                 // IconButton(
                 //   onPressed: () {},
                 //   icon: const Icon(Icons.chat),
                 //   color: const Color(0xff3B7DFF),
                 // ),
+                const Gap(30),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // if (widget.interview.type == 'Online') ...[
+                      //   StartInterviewButton(
+                      //     startTime:
+                      //         widget.interview.startTime!,
+                      //     endTime: widget.interview.endTime!,
+                      //     onPressed: () {
+                      //       // interviewProvider.updateInterviewStatus(widget.interview);
+                      //       // debugPrint("Interview Status Changeee to Starteeeddd");
+                      //       interviewProvider.startInterviewFunction(context, 'recruiter', e: widget.interview);
+                      //       debugPrint("Video call started.....");
+                      //     },
+                      //   ),
+                      //   const Gap(10),
+                      // ],
+                      // ...[
+                      MarkAsDoneButton(
+                        onPressed: () => showMarkAsDoneDialog(context),
+                        // onPressed: (){},
+                      ),
+                      // ],
+                    ],
+                  ),
+                ),
                 IconButton(
                   onPressed: () async {
                     final RenderBox button =
@@ -185,19 +208,33 @@ class _PastInterviewTileCardState extends State<PastInterviewTileCard>
                       ),
                       items: [
                         const PopupMenuItem(
-                          value: 'view_feedback',
+                          value: 'view_applicant_details',
                           child: Row(
                             children: [
-                              Icon(Icons.feedback_outlined, color: Colors.grey),
+                              Icon(Icons.file_open_outlined,
+                                  color: Colors.grey),
                               SizedBox(width: 8),
-                              Text('View feedback'),
+                              Text('View applicant\'s details'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'reschedule_interview',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit_calendar_outlined,
+                                  color: Colors.grey),
+                              SizedBox(width: 8),
+                              Text('Reschedule interview'),
                             ],
                           ),
                         ),
                       ],
                     ).then((value) {
-                      if (value == 'view_feedback') {
-                        showFeedbackViewDialog(context, this);
+                      if (value == 'view_applicant_details') {
+                        showApplicationNotesViewDialog(context, this);
+                      } else if (value == 'reschedule_interview') {
+                        showRescheduleInterviewDialog(context);
                       }
                     });
                   },

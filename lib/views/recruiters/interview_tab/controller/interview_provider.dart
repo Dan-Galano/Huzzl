@@ -3,11 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/interview_screen/job_seeker_interview.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/evaluation_candidate_model.dart';
-import 'package:huzzl_web/views/recruiters/interview_tab/views/start_interview_screen.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
 import 'package:huzzl_web/widgets/buttons/gray/grayfilled_boxbutton.dart';
@@ -55,7 +54,7 @@ class InterviewProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-    void toggleShowEvaluation() {
+  void toggleShowEvaluation() {
     // _startInterview = !_startInterview;
     _showEvalScreen = !_showEvalScreen;
     notifyListeners();
@@ -284,7 +283,7 @@ class InterviewProvider extends ChangeNotifier {
     );
   }
 
-  void showConfirmationToJoinInterview(BuildContext context) {
+  void showConfirmationToJoinInterview(BuildContext context, ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -767,6 +766,154 @@ class InterviewProvider extends ChangeNotifier {
     }
   }
 
+  //HEREEE FETCH THE UPCOMING INTERVIEWS
+  List<InterviewEvent> _upcomingInterviewList = [];
+  List<InterviewEvent> get upcomingInterviewList => _upcomingInterviewList;
+
+  Future<void> fetchUpcomingInterviews() async {
+    // Clear existing events to avoid duplicates
+    _upcomingInterviewList.clear();
+
+    // Get today's date
+    final today = DateTime.now();
+    final todayEnd = DateTime(today.year, today.month, today.day)
+        .add(const Duration(days: 1))
+        .subtract(const Duration(seconds: 1));
+
+    // Reference to the recruiter user
+    final usersCollection =
+        FirebaseFirestore.instance.collection('users').doc(getCurrentUserId());
+
+    // Fetch the recruiter's job posts
+    final jobPostsCollection = usersCollection.collection('job_posts');
+    QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
+
+    for (var jobPostDoc in jobPostsSnapshot.docs) {
+      // Reference to the interviews sub-collection for each job post
+      final interviewsCollection =
+          jobPostsCollection.doc(jobPostDoc.id).collection('interviews');
+
+      try {
+        // Fetch interviews scheduled for upcoming days
+        QuerySnapshot interviewsSnapshot = await interviewsCollection
+            .where('status', isEqualTo: 'not started')
+            .where('date', isGreaterThan: Timestamp.fromDate(todayEnd))
+            .get();
+
+        for (var interviewDoc in interviewsSnapshot.docs) {
+          final data = interviewDoc.data() as Map<String, dynamic>;
+
+          // Parse startTime and endTime from "HH:mm" strings
+          final startTime = data['startTime'] != null
+              ? _parseTimeOfDay(data['startTime'] as String)
+              : null;
+
+          final endTime = data['endTime'] != null
+              ? _parseTimeOfDay(data['endTime'] as String)
+              : null;
+
+          // Convert Firestore document to InterviewEvent and add to _todaysInterviewList
+          _upcomingInterviewList.add(
+            InterviewEvent(
+              applicant: data['applicant'] as String?,
+              title: data['title'] as String?,
+              type: data['type'] as String?,
+              interviewers: (data['interviewers'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList(),
+              date: (data['date'] != null)
+                  ? (data['date'] as Timestamp).toDate()
+                  : null,
+              startTime: startTime,
+              endTime: endTime,
+              notes: data['notes'] as String?,
+              location: data['location'] ?? 'no location',
+              status: data['status'] as String?,
+              profession: data['profession'],
+              jobPostId: data['jobPostId'],
+              interviewId: data['interviewId'],
+              jobseekerId: data['jobseekerId'],
+              jobApplicationDocId: data['jobApplicationId'],
+            ),
+          );
+        }
+        print('Upcoming interviews fetched: ${interviewsSnapshot.docs.length}');
+      } catch (e) {
+        print('Error fetching upcoming interviews: $e');
+      }
+    }
+  }
+
+  //HERE: FETCH THE PAST IONTERVIEWS
+  List<InterviewEvent> _pastInterviews = [];
+  List<InterviewEvent> get pastInterviews => _pastInterviews;
+
+  Future<void> fetchPastInterviews() async {
+    // Clear existing past interviews to avoid duplicates
+    _pastInterviews.clear();
+
+    // Reference to the recruiter user
+    final usersCollection =
+        FirebaseFirestore.instance.collection('users').doc(getCurrentUserId());
+
+    // Fetch the recruiter's job posts
+    final jobPostsCollection = usersCollection.collection('job_posts');
+    QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
+
+    for (var jobPostDoc in jobPostsSnapshot.docs) {
+      // Reference to the interviews sub-collection for each job post
+      final interviewsCollection =
+          jobPostsCollection.doc(jobPostDoc.id).collection('interviews');
+
+      try {
+        // Fetch interviews with a status of "done"
+        QuerySnapshot interviewsSnapshot =
+            await interviewsCollection.where('status', isEqualTo: 'done').get();
+
+        for (var interviewDoc in interviewsSnapshot.docs) {
+          final data = interviewDoc.data() as Map<String, dynamic>;
+
+          // Parse startTime and endTime from "HH:mm" strings
+          final startTime = data['startTime'] != null
+              ? _parseTimeOfDay(data['startTime'] as String)
+              : null;
+
+          final endTime = data['endTime'] != null
+              ? _parseTimeOfDay(data['endTime'] as String)
+              : null;
+
+          // Convert Firestore document to InterviewEvent and add to _pastInterviews
+          _pastInterviews.add(
+            InterviewEvent(
+              applicant: data['applicant'] as String?,
+              title: data['title'] as String?,
+              type: data['type'] as String?,
+              interviewers: (data['interviewers'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList(),
+              date: (data['date'] != null)
+                  ? (data['date'] as Timestamp).toDate()
+                  : null,
+              startTime: startTime,
+              endTime: endTime,
+              notes: data['notes'] as String?,
+              location: data['location'] ?? 'no location',
+              status: data['status'] as String?,
+              profession: data['profession'],
+              jobPostId: data['jobPostId'],
+              interviewId: data['interviewId'],
+              jobseekerId: data['jobseekerId'],
+              jobApplicationDocId: data['jobApplicationId'],
+            ),
+          );
+        }
+        print('Past interviews fetched: ${interviewsSnapshot.docs.length}');
+      } catch (e) {
+        print('Error fetching past interviews: $e');
+      }
+    }
+  }
+
   void updateInterviewStatus(InterviewEvent e) {
     final recruiterId = getCurrentUserId();
 
@@ -947,6 +1094,72 @@ class InterviewProvider extends ChangeNotifier {
       debugPrint("Error fetching evaluation: $e");
       debugPrint("Stack trace: $stackTrace");
       return null; // Return null on failure
+    }
+  }
+
+  //Fetch all the shortlisted candidates and show in the pending tab in interview:\
+  List<Candidate> _shortListedCandidateDisplayInPending = [];
+  List<Candidate> get shortListedCandidateDisplayInPending =>
+      _shortListedCandidateDisplayInPending;
+
+  Future<void> fetchShortlistedCandidateToDisplayInPendingTab() async {
+    try {
+      final userId = getCurrentUserId();
+
+      // Fetch all job posts for the specific user
+      final jobPostsQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('job_posts')
+          .get();
+
+      // Clear the list before adding new data
+      _shortListedCandidateDisplayInPending.clear();
+
+      for (var jobPostDoc in jobPostsQuery.docs) {
+        String jobPostId = jobPostDoc.id;
+
+        // Fetch shortlisted candidates for each job post
+        final candidatesQuery = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('job_posts')
+            .doc(jobPostId)
+            .collection('candidates')
+            .where('status', isEqualTo: 'Shortlisted')
+            .get();
+
+        for (var candidateDoc in candidatesQuery.docs) {
+          Map<String, dynamic> candidateData = candidateDoc.data();
+          String candidateId = candidateDoc.id;
+
+          // Create a Candidate object from the Firestore data
+          Candidate candidate = Candidate(
+            id: candidateId,
+            jobPostId: jobPostId,
+            companyAppliedTo: userId,
+            email: candidateData['email'],
+            name: "${candidateData['firstName']} ${candidateData['lastName']}",
+            profession: candidateData['jobTitle'],
+            status: candidateData['status'],
+            applicationDate:
+                (candidateData['applicationDate'] as Timestamp).toDate(),
+            dateLastInterviewed:
+                (candidateData['applicationDate'] as Timestamp).toDate(),
+            dateRejected:
+                (candidateData['applicationDate'] as Timestamp).toDate(),
+            interviewCount: 0,
+            jobApplicationDocId: candidateData['jobApplicationDocId'],
+          );
+
+          // Add the candidate to the local list
+          _shortListedCandidateDisplayInPending.add(candidate);
+        }
+      }
+
+      debugPrint("Fetchingggg shortlisted candidate!");
+    } catch (e) {
+      print('Error fetching shortlisted candidates for user: $e');
     }
   }
 }
