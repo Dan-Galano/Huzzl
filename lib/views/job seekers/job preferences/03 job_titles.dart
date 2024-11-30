@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03b%20%20jobtitle_chip.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
+import 'package:huzzl_web/widgets/loading_dialog.dart';
+import 'package:provider/provider.dart';
 
 class JobTitlesPage extends StatefulWidget {
   final VoidCallback nextPage;
@@ -11,7 +16,7 @@ class JobTitlesPage extends StatefulWidget {
   final Function(List<String>)
       onSaveJobTitles; // Pass selected job titles as a comma-separated string
   List? currentSelectedJobTitles;
-final int noOfPages;
+  final int noOfPages;
 
   JobTitlesPage({
     super.key,
@@ -19,7 +24,7 @@ final int noOfPages;
     required this.previousPage,
     required this.onSaveJobTitles,
     required this.currentSelectedJobTitles,
-required this.noOfPages,
+    required this.noOfPages,
   });
 
   @override
@@ -36,7 +41,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
 
   List<String> selectedJobTitles = [];
 
-   void _removeJobTitle(String title) {
+  void _removeJobTitle(String title) {
     setState(() {
       selectedJobTitles.remove(title);
     });
@@ -46,9 +51,63 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
     if (selectedJobTitles.isEmpty) {
       return;
     }
-
+    final appState = Provider.of<AppState>(context, listen: false);
+    appState.setCurrentSelectedJobTitles(selectedJobTitles);
     widget.onSaveJobTitles(selectedJobTitles);
     widget.nextPage();
+  }
+
+  void _submitPreferences() async {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? userId = userProvider.loggedInUserId;
+
+    if (userId == null) {
+      print('User not logged in!');
+      return;
+    }
+
+     Map<String, dynamic> jobPreferences = {
+      'selectedLocation': null,
+      'selectedPayRate': null,
+      'currentSelectedJobTitles': null,
+      'uid': userId,
+    };
+
+
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      CollectionReference usersRef = firestore.collection('users');
+
+      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
+      print('Job preferences saved successfully!');
+
+      // Show loading dialog
+      _showLoadingDialog(context);
+
+      // Delay for 3 seconds to keep the dialog visible before navigating
+      await Future.delayed(Duration(seconds: 3));
+
+      // Navigate to the next screen after the delay
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => JobseekerMainScreen(uid: userId)),
+      );
+    } catch (e) {
+      print('Error saving job preferences: $e');
+    }
+  }
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const LoadingDialog(
+          message: 'Loading, please wait...',
+        );
+      },
+    );
   }
 
   @override
@@ -67,29 +126,27 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                   children: [
                     SizedBox(height: 40),
                     Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '3/${widget.noOfPages}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Color(0xff373030),
-                    fontFamily: 'Galano',
-                    fontWeight: FontWeight.w100,
-                  ),
-                ),
-                   TextButton(
-                  child: Text("Skip all",
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.orange,
-                          fontWeight: FontWeight.bold)),
-                  onPressed: () {
-                  
-                  },
-                ),
-              ],
-            ),
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '3/${widget.noOfPages}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Color(0xff373030),
+                            fontFamily: 'Galano',
+                            fontWeight: FontWeight.w100,
+                          ),
+                        ),
+                        TextButton(
+                          child: Text("Skip all",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.bold)),
+                          onPressed: _submitPreferences,
+                        ),
+                      ],
+                    ),
                     SizedBox(height: 10),
                     Text(
                       'What kind of jobs are you looking for?',
@@ -130,10 +187,10 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                       ],
                     ),
                     SizedBox(height: 10),
-                     SelectedJobTitlesWrap(
-              selectedJobTitles: selectedJobTitles,
-              onRemoveJobTitle: _removeJobTitle,
-            ),
+                    SelectedJobTitlesWrap(
+                      selectedJobTitles: selectedJobTitles,
+                      onRemoveJobTitle: _removeJobTitle,
+                    ),
                     SizedBox(height: 10),
                     DropdownWithCheckboxes(
                       sections: [
@@ -410,7 +467,7 @@ class _JobTitlesPageState extends State<JobTitlesPage> {
                           child: Text("Skip",
                               style: TextStyle(
                                   fontSize: 16,
-                          color: Colors.grey[700],
+                                  color: Colors.grey[700],
                                   fontWeight: FontWeight.bold)),
                           onPressed: () {
                             selectedJobTitles.clear();

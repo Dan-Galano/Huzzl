@@ -1,8 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
+import 'package:huzzl_web/widgets/loading_dialog.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
+import 'package:provider/provider.dart';
 
 class MinimumPayPage extends StatefulWidget {
   final VoidCallback nextPage;
@@ -30,11 +36,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
   String selectedRate = 'per hour'; // Default dropdown value
 
   void _submitMinPayForm() {
-    // Validate and save pay data
     if (minimum.text.isEmpty || maximum.text.isEmpty) {
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(content: Text('Please fill in all fields.')),
-      // );
       return;
     }
 
@@ -43,6 +45,8 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
       'minimum': minimum.text,
       'maximum': maximum.text,
     };
+    final appState = Provider.of<AppState>(context, listen: false);
+    appState.setSelectedPayRate(payData);
     widget.onSavePay(payData);
     widget.nextPage();
   }
@@ -56,6 +60,58 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
       minimum.text = payRate['minimum'];
       maximum.text = payRate['maximum'];
     }
+  }
+
+  void _submitPreferences() async {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? userId = userProvider.loggedInUserId;
+
+    if (userId == null) {
+      print('User not logged in!');
+      return;
+    }
+
+    Map<String, dynamic> jobPreferences = {
+      'selectedLocation': null,
+      'selectedPayRate': null,
+      'currentSelectedJobTitles': null,
+      'uid': userId,
+    };
+
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      CollectionReference usersRef = firestore.collection('users');
+
+      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
+      print('Job preferences saved successfully!');
+
+      // Show loading dialog
+      _showLoadingDialog(context);
+
+      // Delay for 3 seconds to keep the dialog visible before navigating
+      await Future.delayed(Duration(seconds: 3));
+
+      // Navigate to the next screen after the delay
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => JobseekerMainScreen(uid: userId)),
+      );
+    } catch (e) {
+      print('Error saving job preferences: $e');
+    }
+  }
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const LoadingDialog(
+          message: 'Loading, please wait...',
+        );
+      },
+    );
   }
 
   @override
@@ -90,7 +146,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                                 fontSize: 16,
                                 color: Colors.orange,
                                 fontWeight: FontWeight.bold)),
-                        onPressed: () {},
+                        onPressed: _submitPreferences,
                       ),
                     ],
                   ),
@@ -209,7 +265,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                       ),
                     ],
                   ),
-            const SizedBox(height: 100),
+                  const SizedBox(height: 100),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -217,7 +273,7 @@ class _MinimumPayPageState extends State<MinimumPayPage> {
                         child: Text("Skip",
                             style: TextStyle(
                                 fontSize: 16,
-                          color: Colors.grey[700],
+                                color: Colors.grey[700],
                                 fontWeight: FontWeight.bold)),
                         onPressed: () {
                           minimum.clear();

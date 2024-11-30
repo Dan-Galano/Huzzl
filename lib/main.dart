@@ -11,6 +11,9 @@ import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/application_prov.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/review_details.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/location_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/Landing_Page/landing_page.dart';
 import 'package:huzzl_web/landing%20page/landing_page.dart';
@@ -27,7 +30,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -42,6 +44,8 @@ void main() async {
         ChangeNotifierProvider(create: (context) => BranchProvider()),
         ChangeNotifierProvider(create: (context) => InterviewProvider()),
         ChangeNotifierProvider(create: (_) => HiringManagerDetails()),
+        ChangeNotifierProvider(create: (context) => ResumeProvider()),
+        ChangeNotifierProvider(create: (context) => LocationProvider()),
         ChangeNotifierProvider(
           create: (context) {
             final hiringManagerProvider = HiringManagerProvider();
@@ -63,6 +67,7 @@ void main() async {
             return JobProviderCandidate();
           },
         ),
+        ChangeNotifierProvider(create: (context) => AppState()),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(
@@ -133,10 +138,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     // Load initial jobs
-    // final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    // if (jobProvider.jobs.isEmpty) {
-    //   jobProvider.loadJobs();
-    // }
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs();
+    }
 
     // Manually check if the user is logged in
     currentUser = FirebaseAuth.instance.currentUser;
@@ -191,9 +196,32 @@ class _AuthWrapperState extends State<AuthWrapper> {
             ),
           );
         } else if (snapshot.hasData) {
-          final loggedInUserId = snapshot.data!.uid; // Get the user ID
-          Provider.of<UserProvider>(context, listen: false)
-              .setLoggedInUserId(loggedInUserId); // Update UserProvider
+          final user = snapshot.data!;
+          final loggedInUserId = user.uid;
+
+          Provider.of<UserProvider>(context, listen: false).setUser(user);
+
+          final resumeProvider =
+              Provider.of<ResumeProvider>(context, listen: false);
+
+          resumeProvider.updateEmail(user.email!);
+
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(loggedInUserId)
+              .get()
+              .then((userDoc) {
+            if (userDoc.exists) {
+              String firstName = userDoc['firstName'] ?? '';
+              String lastName = userDoc['lastName'] ?? '';
+              String pNumber = userDoc['phoneNumber'] ?? '';
+
+              resumeProvider.updateName(firstName, lastName);
+              resumeProvider.updatePhoneNumber(pNumber);
+            }
+          }).catchError((error) {
+            print('Error fetching user data from Firestore: $error');
+          });
 
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance

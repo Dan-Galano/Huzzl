@@ -1,9 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
+import 'package:huzzl_web/widgets/loading_dialog.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
+import 'package:provider/provider.dart';
 
 class ResumePage extends StatefulWidget {
   final VoidCallback nextPage;
@@ -25,6 +31,99 @@ class ResumePage extends StatefulWidget {
 }
 
 class _ResumePageState extends State<ResumePage> {
+  void _submitPreferences() async {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? userId = userProvider.loggedInUserId;
+
+    if (userId == null) {
+      print('User not logged in!');
+      return;
+    }
+
+    Map<String, dynamic> jobPreferences = {
+      'selectedLocation': appState.selectedLocation,
+      'selectedPayRate': appState.selectedPayRate,
+      'currentSelectedJobTitles': appState.currentSelectedJobTitles,
+      'uid': userId,
+    };
+
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      CollectionReference usersRef = firestore.collection('users');
+
+      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
+      print('Job preferences saved successfully!');
+
+      // Show loading dialog
+      _showLoadingDialog(context);
+
+      // Delay for 3 seconds to keep the dialog visible before navigating
+      await Future.delayed(Duration(seconds: 3));
+
+      // Navigate to the next screen after the delay
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => JobseekerMainScreen(uid: userId)),
+      );
+    } catch (e) {
+      print('Error saving job preferences: $e');
+    }
+  }
+
+  void _submitPreferencesSkipAll() async {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? userId = userProvider.loggedInUserId;
+
+    if (userId == null) {
+      print('User not logged in!');
+      return;
+    }
+
+    Map<String, dynamic> jobPreferences = {
+      'selectedLocation': null,
+      'selectedPayRate': null,
+      'currentSelectedJobTitles': null,
+      'uid': userId,
+    };
+
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      CollectionReference usersRef = firestore.collection('users');
+
+      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
+      print('Job preferences saved successfully!');
+
+      // Show loading dialog
+      _showLoadingDialog(context);
+
+      // Delay for 3 seconds to keep the dialog visible before navigating
+      await Future.delayed(Duration(seconds: 3));
+
+      // Navigate to the next screen after the delay
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => JobseekerMainScreen(uid: userId)),
+      );
+    } catch (e) {
+      print('Error saving job preferences: $e');
+    }
+  }
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const LoadingDialog(
+          message: 'Loading, please wait...',
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +156,7 @@ class _ResumePageState extends State<ResumePage> {
                                 fontSize: 16,
                                 color: Colors.orange,
                                 fontWeight: FontWeight.bold)),
-                        onPressed: () {},
+                        onPressed: _submitPreferencesSkipAll,
                       ),
                     ],
                   ),
@@ -127,15 +226,15 @@ class _ResumePageState extends State<ResumePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(
-                        child: Text("Skip, I'll do it later",
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[700],
-                                fontWeight: FontWeight.bold)),
-                        onPressed: () {
-                          // widget.nextPage();
-                        },
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          width: 230,
+                          child: BlueFilledCircleButton(
+                            onPressed: _submitPreferences,
+                            text: "Skip, I'll do it later",
+                          ),
+                        ),
                       ),
                     ],
                   ),

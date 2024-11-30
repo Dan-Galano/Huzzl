@@ -2,6 +2,7 @@ import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/custom_textfield.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
@@ -9,6 +10,7 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class ResumePageSkills extends StatefulWidget {
   final VoidCallback nextPage;
@@ -34,18 +36,8 @@ class ResumePageSkills extends StatefulWidget {
 }
 
 class _ResumePageSkillsState extends State<ResumePageSkills> {
-  var fnameController = TextEditingController();
-  var lnameController = TextEditingController();
-  var pnumberController = TextEditingController();
-  var emailController = TextEditingController();
-  void _submitResumeOption() {
-    widget.nextPage();
-  }
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
-  final TextEditingController _responsibilitiesController =
-      TextEditingController();
 
   SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
 
@@ -94,9 +86,20 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
     'Written Communication',
   ];
 
-  void _submitJobSkills() {
+  void _submitSelectedSkills() {
     if (_formKey.currentState!.validate()) {
-      widget.nextPage();
+      try {
+        final resumeProvider =
+            Provider.of<ResumeProvider>(context, listen: false);
+
+        resumeProvider.updateSkills(widget.selectedSkills);
+
+        print('selectedSkills: ${widget.selectedSkills}');
+
+        widget.nextPage();
+      } catch (e) {
+        print('Error updating resume information: $e');
+      }
     }
   }
 
@@ -106,8 +109,7 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
         _suggestions = _skills
             .where((item) =>
                 item.toLowerCase().contains(query.toLowerCase()) &&
-                !widget.selectedSkills
-                    .contains(item)) // Exclude selected skills
+                !widget.selectedSkills.contains(item))
             .toList();
       } else {
         _suggestions.clear();
@@ -125,7 +127,7 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
     List<String> matches = _skills
         .where((item) =>
             item.toLowerCase().contains(query.toLowerCase()) &&
-            !widget.selectedSkills.contains(item)) // Exclude selected skills
+            !widget.selectedSkills.contains(item))
         .toList();
     return matches;
   }
@@ -135,47 +137,47 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
       onTap: () {
         suggestionBoxController.close();
       },
-      child: DropDownSearchFormField<String>(
-        // Change type to Applicant
-        textFieldConfiguration: TextFieldConfiguration(
-          controller: _controller,
-          decoration: customHintTextInputDecoration('Type a skill...'),
-        ),
-        suggestionsCallback: (pattern) async {
-          return await getSuggestions(pattern); // Now returns List<Applicant>
-        },
-        itemBuilder: (context, applicant) {
-          // Change to accept Applicant
-          return ListTile(
-            onTap: () {
-              setState(() {
-                widget.selectedSkills.add(applicant);
-                _controller.clear();
-                _suggestions.clear();
-                suggestionBoxController.close();
-              });
-            },
-            title: Text(applicant), // Show applicant's name
-          );
-        },
-        itemSeparatorBuilder: (context, index) {
-          return const Divider();
-        },
-        onSuggestionSelected: _updateSuggestions,
-        suggestionsBoxController: suggestionBoxController,
-        validator: (value) {
-          if (widget.selectedSkills.isEmpty) {
-            return "Skill Required";
-          } else if (widget.selectedSkills.length < 2) {
-            return "Please select at least 2 skills";
-          }
-          return null; // Validation success
-        },
-
-        displayAllSuggestionWhenTap: true,
-        suggestionsBoxDecoration: SuggestionsBoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.white,
+      child: Form(
+        key: _formKey,
+        child: DropDownSearchFormField<String>(
+          textFieldConfiguration: TextFieldConfiguration(
+            controller: _controller,
+            decoration: customHintTextInputDecoration('Type a skill...'),
+          ),
+          suggestionsCallback: (pattern) async {
+            return await getSuggestions(pattern);
+          },
+          itemBuilder: (context, skill) {
+            return ListTile(
+              onTap: () {
+                setState(() {
+                  widget.selectedSkills.add(skill);
+                  _controller.clear();
+                  _suggestions.clear();
+                  suggestionBoxController.close();
+                });
+              },
+              title: Text(skill),
+            );
+          },
+          itemSeparatorBuilder: (context, index) {
+            return const Divider();
+          },
+          onSuggestionSelected: _updateSuggestions,
+          suggestionsBoxController: suggestionBoxController,
+          validator: (value) {
+            if (widget.selectedSkills.isEmpty) {
+              return "Skill Required";
+            } else if (widget.selectedSkills.length < 3) {
+              return "Please select at least 3 skills";
+            }
+            return null;
+          },
+          displayAllSuggestionWhenTap: true,
+          suggestionsBoxDecoration: SuggestionsBoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -222,7 +224,7 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
                     ),
                   ),
                   Text(
-                    'A list of your key abilities and proficiencies applicable across various roles and industries.',
+                    'A list of your key abilities and proficiencies applicable across various roles and industries. (Select at least 3 skills)',
                     style: TextStyle(
                       fontSize: 18,
                       color: Color(0xff373030),
@@ -232,7 +234,7 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
                   ),
                   Gap(40),
                   buildSearchDropdown(),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 40),
                   // Display skills
                   if (widget.selectedSkills.isNotEmpty)
                     Wrap(
@@ -241,6 +243,8 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
                       children: widget.selectedSkills
                           .map(
                             (skill) => Chip(
+                              padding: EdgeInsets.all(10),
+                              color: WidgetStatePropertyAll(Colors.white),
                               label: Text(skill),
                               onDeleted: () => _deleteClickedItem(
                                   widget.selectedSkills.indexOf(skill)),
@@ -298,7 +302,7 @@ class _ResumePageSkillsState extends State<ResumePageSkills> {
                         child: SizedBox(
                           width: 130,
                           child: BlueFilledCircleButton(
-                            onPressed: _submitResumeOption,
+                            onPressed: _submitSelectedSkills,
                             text: 'Next',
                           ),
                         ),

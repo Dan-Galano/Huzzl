@@ -59,7 +59,6 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
 
   //Submit Signup Form
   void submitRegistrationRecruiter() async {
-
     try {
       // Show loading dialog while creating user
       showDialog(
@@ -120,18 +119,18 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
       // Send verification email
       final user = FirebaseAuth.instance.currentUser!;
 
-
       await user.sendEmailVerification();
 
       if (!context.mounted) return;
 
-    // Update HiringManagerDetails
-    final hiringManager = Provider.of<HiringManagerDetails>(context, listen: false);
-    hiringManager.updateEmail(_email.text);
-    hiringManager.updateFirstName(_firstName.text);
-    hiringManager.updateLastName(_lastName.text);
-    hiringManager.updatePassword(_password.text);
-    hiringManager.updatePhone(phoneNumberInputted);
+      // Update HiringManagerDetails
+      final hiringManager =
+          Provider.of<HiringManagerDetails>(context, listen: false);
+      hiringManager.updateEmail(_email.text);
+      hiringManager.updateFirstName(_firstName.text);
+      hiringManager.updateLastName(_lastName.text);
+      hiringManager.updatePassword(_password.text);
+      hiringManager.updatePhone(phoneNumberInputted);
       // Close the loading dialog
       Navigator.of(context).pop();
 
@@ -549,6 +548,21 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
                               controller: _phoneNumber,
                               maxLength: 10,
                               decoration: InputDecoration(
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/phflag.png',
+                                        width: 30,
+                                      ),
+                                      SizedBox(width: 8),
+                                      // Text('+63', style: TextStyle(fontSize: 16)),
+                                    ],
+                                  ),
+                                ),
                                 prefixText: "+63",
                                 contentPadding: const EdgeInsets.symmetric(
                                     vertical: 8.0, horizontal: 16.0),

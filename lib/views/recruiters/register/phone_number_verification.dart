@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/preference_view.dart';
+import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/register/company_profile_v2.dart';
 import 'package:huzzl_web/views/recruiters/register/sample.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -11,10 +14,9 @@ import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PhoneVerificationService {
-  final String accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? '';
-  final String authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '';
-  final String serviceSid = dotenv.env['TWILIO_SERVICE_SID'] ?? '';
-
+  final String accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? 'AC5f8fa163bed2a18b9476736f26fe843c';
+  final String authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '01ad3003ad25a3a990bf5d138f874167';
+  final String serviceSid = dotenv.env['TWILIO_SERVICE_SID'] ?? 'VA38c75772985bb97679fe474c41afa0a9';
   Future<void> sendOTP(String phoneNumber) async {
     final url = Uri.parse(
         'https://verify.twilio.com/v2/Services/$serviceSid/Verifications');
@@ -88,6 +90,8 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
   int _remainingSeconds = 300;
   Timer? _timer;
 
+  String role = '';
+
   @override
   void initState() {
     super.initState();
@@ -116,17 +120,20 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
       _isLoading = true;
     });
 
-    // Send the OTP via Twilio
-    await _service.sendOTP(widget.phoneNumber).then((_) {
+    try {
+      await _service.sendOTP(widget.phoneNumber);
+
       setState(() {
         _isCodeSent = true;
         _isLoading = false;
         _startTimer();
       });
-    }).catchError((error) {
+    } catch (error) {
+      // Handle the error and show a toast
       setState(() {
         _isLoading = false;
       });
+
       EasyLoading.instance
         ..displayDuration = const Duration(milliseconds: 1500)
         ..indicatorType = EasyLoadingIndicatorType.fadingCircle
@@ -138,13 +145,48 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
         ..maskColor = Colors.black.withOpacity(0.5)
         ..userInteractions = false
         ..dismissOnTap = true;
+
       EasyLoading.showToast(
         "Failed to send OTP. Please try again later.",
         dismissOnTap: true,
         toastPosition: EasyLoadingToastPosition.top,
         duration: Duration(seconds: 3),
       );
-    });
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userCredential.user!.uid) 
+            .delete();
+
+        await widget.userCredential.user!.delete();
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                LoginRegister(), 
+          ),
+        );
+      } catch (e) {
+        print('Error during user deletion: $e');
+         EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color(0xFfd74a4a)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "Error deleting user. Please try again later.",
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+      }
+    }
   }
 
   void _startTimer() {
@@ -189,7 +231,7 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
         ..userInteractions = false
         ..dismissOnTap = true;
       EasyLoading.showToast(
-        "Your phone number has been verified!",
+        "✓ Your phone number has been verified!",
         dismissOnTap: true,
         toastPosition: EasyLoadingToastPosition.top,
         duration: Duration(seconds: 3),
@@ -208,7 +250,7 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
         ..userInteractions = false
         ..dismissOnTap = true;
       EasyLoading.showToast(
-        "Invalid OTP. Please try again.",
+        "⚠︎ Invalid OTP. Please try again.",
         dismissOnTap: true,
         toastPosition: EasyLoadingToastPosition.top,
         duration: Duration(seconds: 3),
@@ -223,14 +265,64 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
     }
   }
 
-  void _navigateToNextScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => CompanyProfileRecruiter(
-          userCredential: widget.userCredential,
+  void _navigateToNextScreen() async {
+    await _fetchRole();
+
+    if (role == 'jobseeker') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => PreferenceViewPage(
+            userUid: widget.userCredential.user!.uid,
+          ),
         ),
-      ),
-    );
+      );
+    } else if (role == 'recruiter') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => CompanyProfileRecruiter(
+            userCredential: widget.userCredential,
+          ),
+        ),
+      );
+    } else {
+      print('Error: Invalid role. Unable to navigate.');
+
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color.fromARGB(255, 150, 31, 31)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+
+      EasyLoading.showToast(
+        "⚠︎ Invalid role. Unable to navigate.",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> _fetchRole() async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userCredential.user!.uid)
+          .get();
+
+      if (documentSnapshot.exists) {
+        role = documentSnapshot.get('role') ?? '';
+      } else {
+        print('User document does not exist!');
+      }
+    } catch (e) {
+      print('Error fetching role: $e');
+    }
   }
 
   @override

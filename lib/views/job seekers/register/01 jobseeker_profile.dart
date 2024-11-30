@@ -29,6 +29,7 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  String phoneNumberInputted = "";
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
   void togglePasswordVisibility() {
@@ -76,7 +77,7 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                     fname: _firstNameController.text,
                     lname: _lastNameController.text,
                     email: _emailController.text,
-                    phoneNumber: _phoneController.text,
+                    phoneNumber: phoneNumberInputted,
                   )),
         );
       } on FirebaseAuthException catch (e) {
@@ -347,6 +348,22 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
+                            prefixText: "+63",
+                            prefixIcon: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/phflag.png',
+                                    width: 30,
+                                  ),
+                                  SizedBox(width: 8),
+                                  // Text('+63', style: TextStyle(fontSize: 16)),
+                                ],
+                              ),
+                            ),
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
                             isDense: true,
@@ -373,10 +390,15 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
                             ),
                           ),
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your phone number';
+                            phoneNumberInputted = "+63${value!}";
+                            if (value!.isEmpty || value == null) {
+                              return "Phone number is required.";
                             }
-                            return null;
+                            final RegExp phoneRegex =
+                                RegExp(r'^(09|\+639)\d{9}$');
+                            if (!phoneRegex.hasMatch(phoneNumberInputted)) {
+                              return "Provide a valid Phone number.";
+                            }
                           },
                         ),
                         const SizedBox(height: 15),

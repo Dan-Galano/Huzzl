@@ -17,4 +17,18 @@ class ExperienceEntry {
   bool isPresent = false;
 
   ExperienceEntry();
+
+  Map<String, dynamic> toMap() {
+    return {
+      'jobTitle': jobTitle,
+      'companyName': companyName,
+      'companyAddress': companyAddress,
+      'responsibilitiesAchievements': responsibilitiesAchievements,
+      'fromSelectedMonth': fromSelectedMonth,
+      'fromSelectedYear': fromSelectedYear,
+      'toSelectedMonth': toSelectedMonth,
+      'toSelectedYear': toSelectedYear,
+      'isPresent': isPresent,
+    };
+  }
 }

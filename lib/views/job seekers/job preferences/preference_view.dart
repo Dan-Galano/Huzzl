@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/location_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_contactInfo.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_experience.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_objective.dart';
@@ -12,19 +16,33 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_education
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_summary.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          fontFamily: 'Galano', scaffoldBackgroundColor: Colors.white),
-      home: PreferenceViewPage(
-        userUid: 'sampleUID',
-      )));
-}
+// void main() {
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider(create: (context) => AppState()),
+//         ChangeNotifierProvider(create: (context) => UserProvider()),
+//         ChangeNotifierProvider(create: (context) => ResumeProvider()),
+//         ChangeNotifierProvider(create: (context) => LocationProvider()),
+//       ],
+//       child: MaterialApp(
+//         debugShowCheckedModeBanner: false,
+//         theme: ThemeData(
+//           fontFamily: 'Galano',
+//           scaffoldBackgroundColor: Colors.white,
+//         ),
+//         home: PreferenceViewPage(
+//           userUid: 'sampleUID',
+//         ),
+//       ),
+//     ),
+//   );
+// }
 
 class PreferenceViewPage extends StatefulWidget {
-  final String userUid; // Pass user's UID for saving to Firestore
+  final String userUid; 
   const PreferenceViewPage({super.key, required this.userUid});
 
   @override
@@ -32,24 +50,17 @@ class PreferenceViewPage extends StatefulWidget {
 }
 
 class _PreferenceViewPageState extends State<PreferenceViewPage> {
-  final PageController _pageController = PageController(initialPage: 10);
+  final PageController _pageController = PageController();
   int _currentPage = 0;
   int noOfPages = 4;
   int noOfResumePages = 6;
   int totalLength = 10;
-  // Variables to hold data from each page
-  // String? selectedLocation;
   Map<String, dynamic>? selectedLocation;
-  // String? selectedPayRate;
   Map<String, dynamic>? selectedPayRate;
-  List<String>? selectedJobTitles;
   Map<String, dynamic>? currentResumeOption;
   List? currentSelectedJobTitles;
-
   List<String>? selectedSkills;
-//controllers
 
-//location
 
   void _nextPage() {
     if (_currentPage < totalLength) {
@@ -75,46 +86,13 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
     _pageController.jumpToPage(1);
   }
 
-  // Save data to Firestore
-  Future<void> _savePreferencesToFirestore() async {
-    if (selectedLocation == null ||
-        selectedPayRate == null ||
-        selectedJobTitles == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Please complete all preferences before submitting.')),
-      );
-      return;
-    }
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userUid)
-          .set({
-        'uid': widget.userUid,
-        'role': 'jobseeker',
-        'location': selectedLocation,
-        'payRate': selectedPayRate,
-        'jobTitles': selectedJobTitles,
-      }, SetOptions(merge: true));
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preferences saved successfully!')),
-      );
-
-      _nextPage(); // Navigate to the next page if successful
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving preferences: $e')),
-      );
-    }
-  }
 
   @override
   void initState() {
     super.initState();
+    final loggedInUserId = widget.userUid;
+    Provider.of<UserProvider>(context, listen: false)
+        .setLoggedInUserId(loggedInUserId);
     _pageController.addListener(() {
       setState(() {
         _currentPage = _pageController.page!.round();
@@ -147,7 +125,6 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                       selectedLocation = location;
                     });
                   },
-                  currentLocation: selectedLocation,
                   noOfPages: noOfPages,
                 ),
                 MinimumPayPage(

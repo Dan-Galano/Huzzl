@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 
-class EducationTimePeriodPicker extends StatelessWidget {
+class TimePeriodPicker extends StatelessWidget {
   final String? selectedMonth; // Holds the current selected month
   final int? selectedYear; // Holds the current selected year
   final void Function(String? selectedMonth)? onMonthChanged;
   final void Function(int? selectedYear)? onYearChanged;
+  final FormFieldValidator<String>? validatorMonth; // Validator for Month
+  final FormFieldValidator<int>? validatorYear; // Validator for Year
 
-  const EducationTimePeriodPicker({
+  const TimePeriodPicker({
     Key? key,
     this.selectedMonth, // Initialize the selected month
     this.selectedYear, // Initialize the selected year
     this.onMonthChanged,
     this.onYearChanged,
+    this.validatorMonth, // Validator for Month
+    this.validatorYear, // Validator for Year
   }) : super(key: key);
 
   @override
@@ -43,6 +47,7 @@ class EducationTimePeriodPicker extends StatelessWidget {
             value: selectedMonth, // Set the current selected value
             hint: Text("Select Month"),
             onChanged: onMonthChanged,
+            validator: validatorMonth, // Add validator for month
             items: months.map((month) {
               return DropdownMenuItem<String>(
                 value: month,
@@ -82,6 +87,7 @@ class EducationTimePeriodPicker extends StatelessWidget {
             value: selectedYear, // Set the current selected value
             hint: Text("Select Year"),
             onChanged: onYearChanged,
+            validator: validatorYear, // Add validator for year
             items: years.map((year) {
               return DropdownMenuItem<int>(
                 value: year,

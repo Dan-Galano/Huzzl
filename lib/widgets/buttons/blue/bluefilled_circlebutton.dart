@@ -6,11 +6,13 @@ class BlueFilledCircleButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
   final double width;
+  final Color color;
 
   BlueFilledCircleButton({
     required this.onPressed,
     required this.text,
     this.width = double.infinity,
+    this.color = const Color(0xFF0038FF),
   });
 
   @override
@@ -21,7 +23,7 @@ class BlueFilledCircleButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF0038FF),
+            backgroundColor: color,
             padding:
                 EdgeInsets.all(ResponsiveSizes.submitButtonPadding(sizeInfo)),
             shape: RoundedRectangleBorder(

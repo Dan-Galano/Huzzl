@@ -1,14 +1,15 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/education_entry_model.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/experience_entry_model.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/custom_textfield.dart';
-import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
-import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
-import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
+import 'package:huzzl_web/widgets/loading_dialog.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class ResumePageSummary extends StatefulWidget {
   final VoidCallback nextPage;
@@ -32,95 +33,100 @@ class ResumePageSummary extends StatefulWidget {
 }
 
 class _ResumePageSummaryState extends State<ResumePageSummary> {
-  var fnameController = TextEditingController();
-  var lnameController = TextEditingController();
-  var pnumberController = TextEditingController();
-  var emailController = TextEditingController();
-  void _submitResumeOption() {
-    widget.nextPage();
+  String fname = '';
+  String lname = '';
+  String pnumber = '';
+  String email = '';
+  Map<String, dynamic> locationData = {};
+  String objective = '';
+  List<String> selectedSkills = [];
+  List<EducationEntry> educationEntries = [];
+  List<ExperienceEntry> experienceEntries = [];
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const LoadingDialog(
+          message: 'Loading, please wait...',
+        );
+      },
+    );
   }
 
-  String fname = "Allen";
-  String lname = "Alvaro";
-  String pnumber = "+639123456789";
-  String email = "alllenjjames@gmail.com";
+  void _submitResume() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? userId = userProvider.loggedInUserId;
 
-  Map<String, dynamic> locationData = {
-    'region': 'Ilocos Region',
-    'province': 'Pangasinan',
-    'city': 'Urdaneta City',
-    'barangay': 'San Vicente',
-    'otherLocation': '123, Zone 4',
-  };
-  String objective =
-      "Highly motivated and results-driven professional with strong problem-solving skills and a passion for continuous learning. Offering a solid background in [your field], I seek to leverage my expertise in [specific skills or industry] to contribute to the success of a dynamic organization. Adept at collaborating with cross-functional teams, adapting to new challenges, and delivering high-quality solutions on time. Eager to apply my skills and enthusiasm to help drive growth and achieve company goals.";
-  List<String> selectedSkills = [
-    'Communication Skills',
-    'Decision-making',
-    'Critical Thinking',
-  ];
-  List<EducationEntry> educationEntries = [
-    EducationEntry(),
-    EducationEntry(),
-    EducationEntry(),
-  ];
+    if (userId == null) {
+      print('User not logged in!');
+      return;
+    }
+    Map<String, dynamic> resumeData = {
+      'uid': userId,
+      'fname': fname,
+      'lname': lname,
+      'fullName': '$fname $lname',
+      'pnumber': pnumber,
+      'email': email,
+      'location': locationData,
+      'objective': objective,
+      'skills': selectedSkills,
+      'education': educationEntries.map((entry) => entry.toMap()).toList(),
+      'experience': experienceEntries.map((entry) => entry.toMap()).toList(),
+    };
 
-  List<ExperienceEntry> experienceEntries = [
-    ExperienceEntry(),
-    ExperienceEntry(),
-  ];
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      CollectionReference usersRef =
+          firestore.collection('users').doc(userId).collection('resume');
+
+      QuerySnapshot existingResumes = await usersRef.get();
+
+      if (existingResumes.docs.isEmpty) {
+        DocumentReference newResumeDoc = await usersRef.add(resumeData);
+        await newResumeDoc.update(
+            {'resumeDocId': newResumeDoc.id, 'updatedAt': Timestamp.now()});
+        print('Resume created successfully!');
+      } else {
+        await usersRef
+            .doc(existingResumes.docs.first.id)
+            .set(resumeData, SetOptions(merge: true));
+        print('Resume merged successfully!');
+      }
+
+      print('resume saved successfully!');
+
+      _showLoadingDialog(context);
+
+      await Future.delayed(Duration(seconds: 3));
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => JobseekerMainScreen(uid: userId)),
+      );
+    } catch (e) {
+      print('Error saving job preferences: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    educationEntries[0].degree = "Master of Science in Computer Science";
-    educationEntries[0].institutionName = "University of the Philippines";
-    educationEntries[0].institutionAddress = "Quezon City, Metro Manila";
-    educationEntries[0].fromSelectedMonth = 'June';
-    educationEntries[0].fromSelectedYear = 2023;
-    educationEntries[0].isPresent = true;
-    educationEntries[1].honorsOrAwards = "Thesis Awardee";
+    final resumeProvider = Provider.of<ResumeProvider>(context, listen: false);
 
-    educationEntries[1].degree =
-        "Bachelor of Science in Information Technology";
-    educationEntries[1].institutionName = "Pangasinan State University";
-    educationEntries[1].institutionAddress = "Urdaneta City, Pangasinan";
-    educationEntries[1].fromSelectedMonth = 'January';
-    educationEntries[1].fromSelectedYear = 2020;
-    educationEntries[1].toSelectedMonth = 'March';
-    educationEntries[1].toSelectedYear = 2023;
-    educationEntries[1].honorsOrAwards = "GPA: 1.50";
-
-    educationEntries[2].degree = "Bachelor of Arts in Political Science";
-    educationEntries[2].institutionName = "University of Santo Tomas";
-    educationEntries[2].institutionAddress = "Manila, Metro Manila";
-    educationEntries[2].fromSelectedMonth = 'June';
-    educationEntries[2].fromSelectedYear = 2017;
-    educationEntries[2].toSelectedMonth = 'May';
-    educationEntries[2].toSelectedYear = 2019;
-    educationEntries[2].honorsOrAwards = "Dean's List (2017-2019)";
-
-// Artificial data for experienceEntries[0]
-    experienceEntries[0].jobTitle = "Software Developer";
-    experienceEntries[0].companyName = "Tech Solutions Inc.";
-    experienceEntries[0].companyAddress = "Makati City, Metro Manila";
-    experienceEntries[0].fromSelectedMonth = 'January';
-    experienceEntries[0].fromSelectedYear = 2021;
-    experienceEntries[0].toSelectedMonth = 'March';
-    experienceEntries[0].toSelectedYear =
-        2024; // Current year or null if ongoing
-    experienceEntries[0].responsibilitiesAchievements =
-        "Developed multiple web applications, maintained legacy systems, and implemented performance improvements.";
-
-// Artificial data for experienceEntries[1]
-    experienceEntries[1].jobTitle = "Product Manager";
-    experienceEntries[1].companyName = "Innovatech Solutions";
-    experienceEntries[1].companyAddress = "Taguig City, Metro Manila";
-    experienceEntries[1].fromSelectedMonth = 'May';
-    experienceEntries[1].fromSelectedYear = 2020;
-    experienceEntries[1].toSelectedMonth = 'December';
-    experienceEntries[1].toSelectedYear = 2022;
-    experienceEntries[1].responsibilitiesAchievements =
-        "Led product development teams, managed the product lifecycle, and collaborated with cross-functional teams to launch new features.";
+    setState(() {
+      fname = resumeProvider.fname ?? '';
+      lname = resumeProvider.lname ?? '';
+      pnumber = resumeProvider.pnumber ?? '';
+      email = resumeProvider.email ?? '';
+      locationData = resumeProvider.locationData ?? {};
+      objective = resumeProvider.objective ?? '';
+      selectedSkills = resumeProvider.selectedSkills ?? [];
+      educationEntries = resumeProvider.educationEntries ?? [];
+      experienceEntries = resumeProvider.experienceEntries ?? [];
+    });
   }
 
   @override
@@ -192,78 +198,124 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                       radius: 80,
                                       backgroundColor: Colors.grey[700],
                                       foregroundColor: Colors.white,
-                                      child: Text("${fname[0]}${lname[0]}",
-                                          style: TextStyle(
-                                              fontSize: 50,
-                                              fontWeight: FontWeight.bold)),
+                                      child: fname.isNotEmpty &&
+                                              lname.isNotEmpty
+                                          ? Text("${fname[0]}${lname[0]}",
+                                              style: TextStyle(
+                                                  fontSize: 50,
+                                                  fontWeight: FontWeight.bold))
+                                          : Icon(
+                                              Icons.person,
+                                              size: 80,
+                                              color: Colors.white,
+                                            ),
                                     ),
                                   ),
                                   Gap(50),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              '${fname}',
-                                              style: TextStyle(
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
+                                  fname.isNotEmpty &&
+                                          lname.isNotEmpty &&
+                                          pnumber.isNotEmpty &&
+                                          email.isNotEmpty &&
+                                          locationData.isNotEmpty
+                                      ? Expanded(
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    '${fname}',
+                                                    style: TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Color(0xff373030),
+                                                      fontFamily: 'Galano',
+                                                    ),
+                                                  ),
+                                                  Gap(5),
+                                                  Text(
+                                                    '${lname}',
+                                                    style: TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Color(0xff373030),
+                                                      fontFamily: 'Galano',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Gap(5),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  '${pnumber}',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Color(0xff373030),
+                                                    fontFamily: 'Galano',
+                                                  ),
+                                                ),
+                                              ),
+                                              Gap(5),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  '${email}',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Color(0xff373030),
+                                                    fontFamily: 'Galano',
+                                                  ),
+                                                ),
+                                              ),
+                                              Gap(5),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  '${locationData['otherLocation'] ?? ''} '
+                                                  '${locationData['barangayName'] != null ? locationData['barangayName'] + ', ' : ''}'
+                                                  '${locationData['cityName'] != null ? locationData['cityName'] + ', ' : ''}'
+                                                  '${locationData['provinceName'] != null ? locationData['provinceName'] + ', ' : ''}'
+                                                  '${locationData['regionName'] ?? ''}',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Color(0xff373030),
+                                                    fontFamily: 'Galano',
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.4,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                              width: 0.5,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(50.0),
+                                              child: Text(
+                                                'Personal Information will appear here',
+                                                style: TextStyle(
+                                                  fontStyle: FontStyle.italic,
+                                                  fontSize: 16,
+                                                  color: Colors.grey,
+                                                ),
                                               ),
                                             ),
-                                            Gap(5),
-                                            Text(
-                                              '${lname}',
-                                              style: TextStyle(
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Gap(5),
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            '${pnumber}',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0xff373030),
-                                              fontFamily: 'Galano',
-                                            ),
                                           ),
                                         ),
-                                        Gap(5),
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            '${email}',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0xff373030),
-                                              fontFamily: 'Galano',
-                                            ),
-                                          ),
-                                        ),
-                                        Gap(5),
-                                        Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            '${locationData['otherLocation']} ${locationData['barangay']}, ${locationData['city']}, ${locationData['province']}, ${locationData['region']}',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0xff373030),
-                                              fontFamily: 'Galano',
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ],
                               ),
                               Positioned(
@@ -285,31 +337,67 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                           ),
                           Stack(
                             children: [
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Row(
                                 children: [
-                                  Gap(20),
-                                  Text(
-                                    'Objective',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Color(0xff373030),
-                                      fontFamily: 'Galano',
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  Gap(5),
-                                  Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Text(
-                                      objective,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xff373030),
-                                        fontFamily: 'Galano',
-                                        fontWeight: FontWeight.w100,
-                                      ),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Gap(20),
+                                        Text(
+                                          'Objective',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Color(0xff373030),
+                                            fontFamily: 'Galano',
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        Gap(10),
+                                        objective.isNotEmpty
+                                            ? Padding(
+                                                padding:
+                                                    const EdgeInsets.all(12.0),
+                                                child: Text(
+                                                  objective,
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Color(0xff373030),
+                                                    fontFamily: 'Galano',
+                                                    fontWeight: FontWeight.w100,
+                                                  ),
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.grey,
+                                                    width: 0.5,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            50),
+                                                    child: Text(
+                                                      'Objective will appear here',
+                                                      style: TextStyle(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        fontSize: 16,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -352,36 +440,67 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        Gap(5),
-                                        Wrap(
-                                          spacing:
-                                              8.0, // Horizontal space between the cards
-                                          runSpacing:
-                                              8.0, // Vertical space between the cards
-                                          children: List.generate(
-                                            selectedSkills.length,
-                                            (index) => Card(
-                                              elevation: 0,
-                                              color: Colors.grey[100],
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12.0),
-                                                child: Text(
-                                                  selectedSkills[index],
-                                                  style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.black87,
+                                        Gap(10),
+                                        selectedSkills.isNotEmpty
+                                            ? Wrap(
+                                                spacing:
+                                                    8.0, // Horizontal space between the cards
+                                                runSpacing:
+                                                    8.0, // Vertical space between the cards
+                                                children: List.generate(
+                                                  selectedSkills.length,
+                                                  (index) => Card(
+                                                    elevation: 0,
+                                                    color: Colors.grey[200],
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              12.0),
+                                                      child: Text(
+                                                        selectedSkills[index],
+                                                        style: TextStyle(
+                                                          fontSize: 16.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Colors.black87,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.grey,
+                                                    width: 0.5,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            50.0),
+                                                    child: Text(
+                                                      'Skills will appear here',
+                                                      style: TextStyle(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        fontSize: 16,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -425,170 +544,204 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        Gap(5),
-                                        Column(
-                                          children: List.generate(
-                                            educationEntries.length,
-                                            (index) {
-                                              final entry =
-                                                  educationEntries[index];
-                                              String timePeriod = entry
-                                                      .isPresent
-                                                  ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
-                                                  : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
+                                        Gap(10),
+                                        educationEntries.isNotEmpty
+                                            ? Column(
+                                                children: List.generate(
+                                                  educationEntries.length,
+                                                  (index) {
+                                                    final entry =
+                                                        educationEntries[index];
+                                                    String timePeriod = entry
+                                                            .isPresent
+                                                        ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
+                                                        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
 
-                                              return Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Card(
-                                                      margin: EdgeInsets.only(
-                                                          bottom: 20.0),
-                                                      elevation: 0,
-                                                      color: Colors.grey[100]!
-                                                          .withOpacity(0.5),
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(20.0),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: [
-                                                                Text(
-                                                                  entry.degree,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        18.0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    color: Colors
-                                                                        .black87,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  timePeriod,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        14.0,
-                                                                    fontStyle:
-                                                                        FontStyle
-                                                                            .italic,
-                                                                    color: Colors
-                                                                        .black87,
-                                                                  ),
-                                                                ),
-                                                              ],
+                                                    return Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Card(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    bottom:
+                                                                        20.0),
+                                                            elevation: 0,
+                                                            color: Colors
+                                                                .grey[100],
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
                                                             ),
-                                                            SizedBox(
-                                                                height: 8.0),
-                                                            Row(
-                                                              children: [
-                                                                Icon(
-                                                                    Icons
-                                                                        .school_rounded,
-                                                                    color: Colors
-                                                                        .black54,
-                                                                    size: 15),
-                                                                Gap(5),
-                                                                Text(
-                                                                  entry
-                                                                      .institutionName,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        16.0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color: Colors
-                                                                        .black54,
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      20.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        entry
+                                                                            .degree,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              18.0,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color:
+                                                                              Colors.black87,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        timePeriod,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          fontStyle:
+                                                                              FontStyle.italic,
+                                                                          color:
+                                                                              Colors.black87,
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            SizedBox(
-                                                                height: 4.0),
-                                                            Row(
-                                                              children: [
-                                                                Icon(
-                                                                    Icons
-                                                                        .location_on_rounded,
-                                                                    color: Colors
-                                                                        .black54,
-                                                                    size: 15),
-                                                                Gap(5),
-                                                                Text(
-                                                                  entry
-                                                                      .institutionAddress,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        14.0,
-                                                                    color: Colors
-                                                                        .black54,
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .school_rounded,
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          size:
+                                                                              15),
+                                                                      Gap(5),
+                                                                      Text(
+                                                                        entry
+                                                                            .institutionName,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              16.0,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            SizedBox(
-                                                                height: 8.0),
-                                                            SizedBox(
-                                                                height: 8.0),
-                                                            if (entry
-                                                                .honorsOrAwards
-                                                                .trim()
-                                                                .isNotEmpty) ...[
-                                                              Text(
-                                                                "Honors and Awards",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize:
-                                                                      14.0,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          4.0),
+                                                                  Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .location_on_rounded,
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          size:
+                                                                              15),
+                                                                      Gap(5),
+                                                                      Text(
+                                                                        entry
+                                                                            .institutionAddress,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  if (entry
+                                                                      .honorsOrAwards
+                                                                      .trim()
+                                                                      .isNotEmpty) ...[
+                                                                    Text(
+                                                                      "Honors and Awards",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    Text(
+                                                                      entry
+                                                                          .honorsOrAwards,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                  ]
+                                                                ],
                                                               ),
-                                                              Gap(10),
-                                                              Text(
-                                                                entry
-                                                                    .honorsOrAwards,
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize:
-                                                                      14.0,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
-                                                              ),
-                                                            ]
-                                                          ],
+                                                            ),
+                                                          ),
                                                         ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.grey,
+                                                    width: 0.5,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            50.0),
+                                                    child: Text(
+                                                      'Education will appear here',
+                                                      style: TextStyle(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        fontSize: 16,
+                                                        color: Colors.grey,
                                                       ),
                                                     ),
                                                   ),
-                                                ],
-                                              );
-                                            },
-                                          ),
-                                        ),
+                                                ),
+                                              ),
                                       ],
                                     ),
                                   ),
@@ -632,171 +785,205 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        Gap(5),
-                                        Column(
-                                          children: List.generate(
-                                            experienceEntries.length,
-                                            (index) {
-                                              final entry =
-                                                  experienceEntries[index];
-                                              String timePeriod = entry
-                                                      .isPresent
-                                                  ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
-                                                  : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
+                                        Gap(10),
+                                        experienceEntries.isNotEmpty
+                                            ? Column(
+                                                children: List.generate(
+                                                  experienceEntries.length,
+                                                  (index) {
+                                                    final entry =
+                                                        experienceEntries[
+                                                            index];
+                                                    String timePeriod = entry
+                                                            .isPresent
+                                                        ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
+                                                        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
 
-                                              return Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Card(
-                                                      margin: EdgeInsets.only(
-                                                          bottom: 20.0),
-                                                      elevation: 0,
-                                                      color: Colors.grey[100]!
-                                                          .withOpacity(0.5),
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(20.0),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: [
-                                                                Text(
-                                                                  entry
-                                                                      .jobTitle,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        18.0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    color: Colors
-                                                                        .black87,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  timePeriod,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        14.0,
-                                                                    fontStyle:
-                                                                        FontStyle
-                                                                            .italic,
-                                                                    color: Colors
-                                                                        .black54,
-                                                                  ),
-                                                                ),
-                                                              ],
+                                                    return Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Card(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    bottom:
+                                                                        20.0),
+                                                            elevation: 0,
+                                                            color: Colors
+                                                                .grey[100],
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
                                                             ),
-                                                            SizedBox(
-                                                                height: 8.0),
-                                                            Row(
-                                                              children: [
-                                                                Icon(
-                                                                    Icons
-                                                                        .business_center_rounded,
-                                                                    color: Colors
-                                                                        .black54,
-                                                                    size: 15),
-                                                                Gap(5),
-                                                                Text(
-                                                                  entry
-                                                                      .companyName,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        16.0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color: Colors
-                                                                        .black54,
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      20.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        entry
+                                                                            .jobTitle,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              18.0,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color:
+                                                                              Colors.black87,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        timePeriod,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          fontStyle:
+                                                                              FontStyle.italic,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            SizedBox(
-                                                                height: 4.0),
-                                                            Row(
-                                                              children: [
-                                                                Icon(
-                                                                    Icons
-                                                                        .location_on_rounded,
-                                                                    color: Colors
-                                                                        .black54,
-                                                                    size: 15),
-                                                                Gap(5),
-                                                                Text(
-                                                                  entry
-                                                                      .companyAddress,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        14.0,
-                                                                    color: Colors
-                                                                        .black54,
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .business_center_rounded,
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          size:
+                                                                              15),
+                                                                      Gap(5),
+                                                                      Text(
+                                                                        entry
+                                                                            .companyName,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              16.0,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            SizedBox(
-                                                                height: 8.0),
-                                                            SizedBox(
-                                                                height: 8.0),
-                                                            if (entry
-                                                                .responsibilitiesAchievements
-                                                                .trim()
-                                                                .isNotEmpty) ...[
-                                                              Text(
-                                                                "Key Responsibilities and Achievements",
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize:
-                                                                      14.0,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          4.0),
+                                                                  Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .location_on_rounded,
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          size:
+                                                                              15),
+                                                                      Gap(5),
+                                                                      Text(
+                                                                        entry
+                                                                            .companyAddress,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  if (entry
+                                                                      .responsibilitiesAchievements
+                                                                      .trim()
+                                                                      .isNotEmpty) ...[
+                                                                    Text(
+                                                                      "Key Responsibilities and Achievements",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    Text(
+                                                                      entry
+                                                                          .responsibilitiesAchievements,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ],
                                                               ),
-                                                              Gap(10),
-                                                              Text(
-                                                                entry
-                                                                    .responsibilitiesAchievements,
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize:
-                                                                      14.0,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ],
+                                                            ),
+                                                          ),
                                                         ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.grey,
+                                                    width: 0.5,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            50.0),
+                                                    child: Text(
+                                                      'Work Experience will appear here',
+                                                      style: TextStyle(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        fontSize: 16,
+                                                        color: Colors.grey,
                                                       ),
                                                     ),
                                                   ),
-                                                ],
-                                              );
-                                            },
-                                          ),
-                                        ),
+                                                ),
+                                              ),
                                       ],
                                     ),
                                   ),
@@ -824,7 +1011,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                           child: SizedBox(
                             width: 230,
                             child: BlueFilledCircleButton(
-                              onPressed: _submitResumeOption,
+                              onPressed: _submitResume,
                               text: 'Save and Continue',
                             ),
                           ),
