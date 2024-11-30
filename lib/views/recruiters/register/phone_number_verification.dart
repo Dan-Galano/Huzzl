@@ -13,12 +13,13 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 class PhoneVerificationService {
-  
-  final String accountSid = dotenv.env['TWILIO_ACCOUNT_SID'] ?? 'AC5f8fa163bed2a18b9476736f26fe843c';
-  final String authToken = dotenv.env['TWILIO_AUTH_TOKEN'] ?? '01ad3003ad25a3a990bf5d138f874167';
-  final String serviceSid = dotenv.env['TWILIO_SERVICE_SID'] ?? 'VA38c75772985bb97679fe474c41afa0a9';
+  final String accountSid =
+      dotenv.env['TWILIO_ACCOUNT_SID'] ?? 'AC5f8fa163bed2a18b9476736f26fe843c';
+  final String authToken =
+      dotenv.env['TWILIO_AUTH_TOKEN'] ?? 'b44b0bed9419a01a5b45fa9fd4a76621';
+  final String serviceSid =
+      dotenv.env['TWILIO_SERVICE_SID'] ?? 'VA38c75772985bb97679fe474c41afa0a9';
   Future<void> sendOTP(String phoneNumber) async {
     final url = Uri.parse(
         'https://verify.twilio.com/v2/Services/$serviceSid/Verifications');
@@ -158,30 +159,29 @@ class _PhoneNumberVerificationState extends State<PhoneNumberVerification> {
       try {
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(widget.userCredential.user!.uid) 
+            .doc(widget.userCredential.user!.uid)
             .delete();
 
         await widget.userCredential.user!.delete();
 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>
-                LoginRegister(), 
+            builder: (context) => LoginRegister(),
           ),
         );
       } catch (e) {
         print('Error during user deletion: $e');
-         EasyLoading.instance
-        ..displayDuration = const Duration(milliseconds: 1500)
-        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-        ..loadingStyle = EasyLoadingStyle.custom
-        ..backgroundColor = Color(0xFfd74a4a)
-        ..textColor = Colors.white
-        ..fontSize = 16.0
-        ..indicatorColor = Colors.white
-        ..maskColor = Colors.black.withOpacity(0.5)
-        ..userInteractions = false
-        ..dismissOnTap = true;
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
         EasyLoading.showToast(
           "Error deleting user. Please try again later.",
           toastPosition: EasyLoadingToastPosition.top,

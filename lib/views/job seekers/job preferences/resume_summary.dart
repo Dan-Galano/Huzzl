@@ -88,12 +88,16 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+      CollectionReference usersRefJob = firestore.collection('users');
+
       CollectionReference usersRef =
           firestore.collection('users').doc(userId).collection('resume');
 
       QuerySnapshot existingResumes = await usersRef.get();
 
-      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
+      await usersRefJob
+          .doc(userId)
+          .set(jobPreferences, SetOptions(merge: true));
       print('Job preferences saved successfully!');
 
       if (existingResumes.docs.isEmpty) {
