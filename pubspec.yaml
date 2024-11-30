@@ -62,6 +62,7 @@ dependencies:
   intl: ^0.19.0
   modal_bottom_sheet: ^3.0.0
   path_provider: ^2.1.4
+  percent_indicator: ^4.2.4
   permission_handler: ^11.3.1
   provider: ^6.1.2
   responsive_builder: ^0.7.1

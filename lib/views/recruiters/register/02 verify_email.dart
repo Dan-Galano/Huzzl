@@ -107,7 +107,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'phone': widget.phoneNumber,
         'email': widget.email,
         'password': widget.password,
-      });
+      }); 
  EasyLoading.instance
           ..displayDuration = const Duration(milliseconds: 1500)
           ..indicatorType = EasyLoadingIndicatorType.fadingCircle
@@ -120,7 +120,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
           ..userInteractions = false
           ..dismissOnTap = true;
       EasyLoading.showToast(
-        "Your email has been verified!",
+        "✓ Your email has been verified!",
         dismissOnTap: true,
         toastPosition: EasyLoadingToastPosition.top,
         duration: Duration(seconds: 3),

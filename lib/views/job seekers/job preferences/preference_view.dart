@@ -1,13 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/01%20location.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/02%20minimum_pay.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03%20job_titles.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/04%20resume.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/autobuild_resume_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/location_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_contactInfo.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_experience.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_objective.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_skills.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_education.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_summary.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AppState()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => ResumeProvider()),
+        ChangeNotifierProvider(create: (context) => LocationProvider()),
+        ChangeNotifierProvider(create: (context) => AutoBuildResumeProvider()),
+      ],
+      child: MaterialApp(
+        builder: EasyLoading.init(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: 'Galano',
+          scaffoldBackgroundColor: Colors.white,
+        ),
+        home: PreferenceViewPage(
+          userUid: 'sampleUID',
+        ),
+      ),
+    ),
+  );
+}
 
 class PreferenceViewPage extends StatefulWidget {
-  final String userUid; // Pass user's UID for saving to Firestore
+  final String userUid;
   const PreferenceViewPage({super.key, required this.userUid});
 
   @override
@@ -17,16 +56,17 @@ class PreferenceViewPage extends StatefulWidget {
 class _PreferenceViewPageState extends State<PreferenceViewPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-
-  // Variables to hold data from each page
-  // String? selectedLocation;
+  int noOfPages = 4;
+  int noOfResumePages = 6;
+  int totalLength = 10;
   Map<String, dynamic>? selectedLocation;
-  // String? selectedPayRate;
   Map<String, dynamic>? selectedPayRate;
-  String? selectedJobTitles;
+  Map<String, dynamic>? currentResumeOption;
+  List? currentSelectedJobTitles;
+  List<String>? selectedSkills;
 
   void _nextPage() {
-    if (_currentPage < 4) {
+    if (_currentPage < totalLength) {
       _pageController.animateToPage(
         _currentPage + 1,
         duration: const Duration(milliseconds: 300),
@@ -49,46 +89,12 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
     _pageController.jumpToPage(1);
   }
 
-  // Save data to Firestore
-  Future<void> _savePreferencesToFirestore() async {
-    if (selectedLocation == null ||
-        selectedPayRate == null ||
-        selectedJobTitles == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Please complete all preferences before submitting.')),
-      );
-      return;
-    }
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userUid)
-          .set({
-        'uid': widget.userUid,
-        'role': 'jobseeker',
-        'location': selectedLocation,
-        'payRate': selectedPayRate,
-        'jobTitles': selectedJobTitles,
-      }, SetOptions(merge: true));
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preferences saved successfully!')),
-      );
-
-      _nextPage(); // Navigate to the next page if successful
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving preferences: $e')),
-      );
-    }
-  }
-
   @override
   void initState() {
     super.initState();
+    final loggedInUserId = widget.userUid;
+    Provider.of<UserProvider>(context, listen: false)
+        .setLoggedInUserId(loggedInUserId);
     _pageController.addListener(() {
       setState(() {
         _currentPage = _pageController.page!.round();
@@ -110,6 +116,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
           NavBarLoginRegister(),
           Expanded(
             child: PageView(
+              physics: const NeverScrollableScrollPhysics(),
               controller: _pageController,
               children: [
                 JobSeekerCongratulationsPage(goToJobPref: _gotoJobPref),
@@ -120,6 +127,7 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                       selectedLocation = location;
                     });
                   },
+                  noOfPages: noOfPages,
                 ),
                 MinimumPayPage(
                   nextPage: _nextPage,
@@ -129,16 +137,103 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                       selectedPayRate = payRate;
                     });
                   },
+                  currentPayRate: selectedPayRate,
+                  noOfPages: noOfPages,
                 ),
                 JobTitlesPage(
-                  nextPage:
-                      _savePreferencesToFirestore, // Save and go to the next page
+                  nextPage: _nextPage, // Save and go to the next page
                   previousPage: _previousPage,
                   onSaveJobTitles: (jobTitles) {
                     setState(() {
-                      selectedJobTitles = jobTitles;
+                      currentSelectedJobTitles = jobTitles; // Update the state
                     });
                   },
+                  currentSelectedJobTitles: currentSelectedJobTitles ?? [],
+                  noOfPages: noOfPages,
+                ),
+                ResumePage(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                ),
+                ResumePageContactInfo(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
+                ),
+                ResumePageObjective(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
+                ),
+                ResumePageSkills(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  selectedSkills: selectedSkills ?? [],
+                  noOfResumePages: noOfResumePages,
+                ),
+                ResumePageEducation(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
+                ),
+                ResumePageExperience(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
+                ),
+                ResumePageSummary(
+                  nextPage: _nextPage,
+                  previousPage: _previousPage,
+                  onSaveResumeSetup: (cresume) {
+                    setState(() {
+                      currentResumeOption = cresume;
+                    });
+                  },
+                  currentResumeOption: currentResumeOption,
+                  noOfPages: noOfPages,
+                  noOfResumePages: noOfResumePages,
                 ),
               ],
             ),

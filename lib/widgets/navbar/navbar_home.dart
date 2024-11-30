@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/notification/notif_screen.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
+import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/closeAccount.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
+import 'package:provider/provider.dart';
 
 class NavBarHome extends StatefulWidget {
   final int selectedIndex;
@@ -14,6 +19,13 @@ class NavBarHome extends StatefulWidget {
 }
 
 class _NavBarHomeState extends State<NavBarHome> {
+  User? currentUser;
+  @override
+  void initState() {
+    super.initState();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    currentUser = userProvider.user;
+  }
   // int? selectedIndex;
 
   @override
@@ -174,7 +186,12 @@ class _NavBarHomeState extends State<NavBarHome> {
                           switchScreen(3);
                           break;
                         case 'close_account':
-                          showCloseAccountDialog(context);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CloseAccountDialog();
+                            },
+                          );
                           break;
                         case 'logout':
                           showLogoutDialog(context);
@@ -315,26 +332,6 @@ void showMyReviewsDialog(BuildContext context) {
       return AlertDialog(
         title: const Text("My Reviews"),
         content: const Text("Here are your reviews."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("Close"),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void showCloseAccountDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Close Account"),
-        content: const Text("Are you sure you want to close your account?"),
         actions: [
           TextButton(
             onPressed: () {

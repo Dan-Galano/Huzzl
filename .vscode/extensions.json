@@ -1,5 +1,18 @@
 {
     "recommendations": [
-        "github.copilot"
+        "github.copilot",
+        "xdebug.php-debug",
+        "devsense.profiler-php-vscode",
+        "devsense.phptools-vscode",
+        "ms-vsliveshare.vsliveshare",
+        "ms-toolsai.jupyter-renderers",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.jupyter",
+        "devsense.intelli-php-vscode",
+        "dsznajder.es7-react-js-snippets",
+        "devsense.composer-php-vscode",
+        "kisstkondoros.vscode-codemetrics"
     ]
 }

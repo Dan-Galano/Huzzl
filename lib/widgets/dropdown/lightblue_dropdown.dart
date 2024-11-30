@@ -9,7 +9,7 @@ class LightBlueTextFieldDropdown extends StatelessWidget {
   final String? dropdownValue;
   final List<String>? dropdownItems;
   final ValueChanged<String?>? onChanged;
-  final TextStyle? itemTextStyle; 
+  final TextStyle? itemTextStyle;
 
   LightBlueTextFieldDropdown({
     this.width,
@@ -34,7 +34,6 @@ class LightBlueTextFieldDropdown extends StatelessWidget {
                   vertical: 8.0,
                   horizontal: 14.0,
                 ),
-                isDense: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
@@ -62,12 +61,13 @@ class LightBlueTextFieldDropdown extends StatelessWidget {
                   value: item,
                   child: Text(
                     item,
-                    style: itemTextStyle ?? TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Galano', 
-                      color: Color(0xFF8E8E8E),
-                    ),
+                    style: itemTextStyle ??
+                        TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Galano',
+                          color: Color(0xFF8E8E8E),
+                        ),
                   ),
                 );
               }).toList(),

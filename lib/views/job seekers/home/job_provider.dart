@@ -120,62 +120,70 @@ class JobProvider with ChangeNotifier {
   }
 
   Future<List<Map<String, String>>> fetchAllJobPosts() async {
-    // Fetch all job posts from Firebase
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collectionGroup('job_posts').get();
+    try {
+      // Step 1: Fetch all users where 'role' is 'recruiter'
+      QuerySnapshot usersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'recruiter')
+          .get();
 
-    // Prepare a new list to return
-    List<Map<String, String>> fetchedJobs = [];
+      // Prepare a list to hold all the fetched job posts
+      List<Map<String, String>> fetchedJobs = [];
 
-    // Loop through each document in the snapshot
-    for (var doc in querySnapshot.docs) {
-      // Access the job post data
-      Map<String, dynamic> jobPost = doc.data() as Map<String, dynamic>;
+      // Step 2: Loop through each recruiter user
+      for (var userDoc in usersSnapshot.docs) {
+        // Query the 'job_posts' sub-collection for each recruiter user
+        QuerySnapshot jobPostsSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userDoc.id) // Access the recruiter's document by ID
+            .collection('job_posts') // Access their job posts sub-collection
+            .get();
 
-      String? title = jobPost['jobTitle'] as String?;
-      String? description = jobPost['jobDescription'] as String?;
-      String? location = jobPost['jobPostLocation'] as String?;
-      String? postedDate = jobPost['posted_at']?.toString();
-      String? salary = jobPost['payRate'] as String?;
-      String? skills = jobPost['skills'] as String?;
-      List<String> skillsTag = skills?.split(', ') ?? [];
+        // Step 3: Loop through the job posts of the current recruiter
+        for (var doc in jobPostsSnapshot.docs) {
+          // Access the job post data
+          Map<String, dynamic> jobPost = doc.data() as Map<String, dynamic>;
 
-      // Get the UID of the job post (document ID)
-      String jobPostUid =
-          doc.id; // This is the document ID of the job post itself
-      if (jobPostUid != null) {
-        _jobPostId = jobPostUid; // Store the user UID in the provider
+          String? title = jobPost['jobTitle'] as String?;
+          String? description = jobPost['jobDescription'] as String?;
+          String? location = jobPost['jobPostLocation'] as String?;
+          String? postedDate = jobPost['posted_at']?.toString();
+          String? salary = jobPost['payRate'] as String?;
+          String? skills = jobPost['skills'] as String?;
+          List<String> skillsTag = skills?.split(', ') ?? [];
+
+          // Get the UID of the job post (document ID)
+          String jobPostUid = doc.id;
+
+          // Retrieve the userUid from the document's parent (the user's UID)
+          String userUid = userDoc.id;
+
+          if (title != null && location != null) {
+            String tags = skillsTag.isNotEmpty
+                ? skillsTag.join(', ')
+                : 'No tags available';
+
+            fetchedJobs.add({
+              'uid': jobPostUid, // Job post UID
+              'userUid': userUid, // The user UID who posted the job
+              'datePosted': postedDate ?? 'Unknown date',
+              'title': title,
+              'description': description ?? 'No Description',
+              'location': location,
+              'tags': tags,
+              'salary': salary ?? 'Salary not provided',
+              'proxyLink': 'no proxy link',
+              'website': 'assets/images/huzzl_logo_ulo.png',
+            });
+          }
+        }
       }
 
-      // Retrieve the userUid from the document's parent (the user's UID)
-      String? userUid =
-          doc.reference.parent.parent?.id; // This gets the user's UID
-
-      if (userUid != null) {
-        _recWhoPostTheJob = userUid; // Store the user UID in the provider
-      }
-
-      if (title != null && location != null) {
-        String tags =
-            skillsTag.isNotEmpty ? skillsTag.join(', ') : 'No tags available';
-
-        fetchedJobs.add({
-          'uid': jobPostUid, // Job post UID
-          'userUid':
-              userUid ?? 'Unknown user', // The user UID who posted the job
-          'datePosted': postedDate ?? 'Unknown date',
-          'title': title,
-          'description': description ?? 'No Description',
-          'location': location,
-          'tags': tags,
-          'salary': salary ?? 'Salary not provided',
-          'proxyLink': 'no proxy link',
-          'website': 'assets/images/huzzl_logo_ulo.png',
-        });
-      }
+      return fetchedJobs; // Return the fetched jobs
+    } catch (e) {
+      print('Error fetching job posts: $e');
+      return [];
     }
-
-    return fetchedJobs; // Return the fetched jobs instead of adding to _jobs directly
   }
 }
 

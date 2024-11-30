@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/write_your_review/tell_us_about_you.dart';
 
+void main(){
+  runApp(MaterialApp (debugShowCheckedModeBanner: false, home: WriteReviewPage()));
+}
 class WriteReviewPage extends StatefulWidget {
   const WriteReviewPage({super.key});
 
