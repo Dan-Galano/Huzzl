@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:provider/provider.dart';
 
-void showHiringConfirmationDialog(BuildContext context) {
+void showHiringConfirmationDialog(BuildContext context, Candidate candidate,
+    DateTime hiredDate, String generatedHiringMessage) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) {
+      var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
@@ -62,7 +67,25 @@ void showHiringConfirmationDialog(BuildContext context) {
                       ),
                       Gap(10),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          jobCandidateProvider.hiringCandidate(
+                              candidate.jobPostId,
+                              candidate.id,
+                              candidate.jobApplicationDocId!);
+                          jobCandidateProvider.pushNotificationToJobseeker(
+                            candidate.jobPostId,
+                            candidate.id,
+                            'You are Hired:',
+                            """
+Starting Date: $hiredDate
+
+$generatedHiringMessage
+""",
+                          );
+
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 8),

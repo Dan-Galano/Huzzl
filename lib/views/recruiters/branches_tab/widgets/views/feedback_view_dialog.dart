@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/application_notes.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/application_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/interview_feedback_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/resume_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar_inside.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/views/evaluation_candidate_model.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FeedbackDialog extends StatefulWidget {
   final TickerProvider vsync;
-
-  FeedbackDialog({required this.vsync});
+  final Candidate candidate;
+  final EvaluatedCandidateModel evaluationDetails;
+  FeedbackDialog({
+    required this.vsync,
+    required this.candidate,
+    required this.evaluationDetails,
+  });
 
   @override
   _FeedbackDialogState createState() => _FeedbackDialogState();
@@ -23,13 +31,17 @@ class _FeedbackDialogState extends State<FeedbackDialog>
   void _launchEmail() async {
     final Uri emailUri = Uri(
       scheme: 'mailto',
-      path: 'eleanorpena@gmail.com',
+      path: widget.candidate.email,
     );
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
       throw 'Could not launch $emailUri';
     }
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    return DateFormat("dd MMMM yyyy, h:mma").format(dateTime).toLowerCase();
   }
 
   @override
@@ -80,15 +92,15 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                   ),
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         'Application Date: ',
                         style: TextStyle(
                           fontSize: 13,
                         ),
                       ),
                       Text(
-                        '05 July 2024, 8:42pm',
-                        style: TextStyle(
+                        formatDateTime(widget.candidate.applicationDate),
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -109,9 +121,9 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Eleanor Pena',
-                        style: TextStyle(
+                      Text(
+                        widget.candidate.name,
+                        style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.w700,
                         ),
@@ -120,9 +132,9 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: _launchEmail,
-                          child: const Text(
-                            'eleanorpena@gmail.com',
-                            style: TextStyle(
+                          child: Text(
+                            widget.candidate.email,
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
                               decorationColor: Color(0xFFff9800),
                               color: Color(0xFFff9800),
@@ -130,9 +142,9 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                           ),
                         ),
                       ),
-                      const Text(
-                        'Vocalist',
-                        style: TextStyle(
+                      Text(
+                        widget.candidate.profession,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -151,7 +163,9 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                   Tab(text: 'Resume'),
                 ],
                 views: [
-                  InterviewFeedbackView(),
+                  InterviewFeedbackView(
+                    evaluationDetails: widget.evaluationDetails,
+                  ),
                   ApplicationNotes(),
                   ApplicationView(),
                   ResumeView(),
@@ -165,12 +179,17 @@ class _FeedbackDialogState extends State<FeedbackDialog>
   }
 }
 
-void showFeedbackViewDialog(BuildContext context, TickerProvider vsync) {
+void showFeedbackViewDialog(BuildContext context, TickerProvider vsync,
+    Candidate candidate, EvaluatedCandidateModel evaluationDetails) {
   showDialog(
     context: context,
     barrierDismissible: true,
     builder: (context) {
-      return FeedbackDialog(vsync: vsync);
+      return FeedbackDialog(
+        vsync: vsync,
+        candidate: candidate,
+        evaluationDetails: evaluationDetails,
+      );
     },
   );
 }

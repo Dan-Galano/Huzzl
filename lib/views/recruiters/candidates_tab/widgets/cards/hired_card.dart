@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/feedback_view_dialog.dart';
+import 'package:intl/intl.dart';
 
 class HiredCard extends StatefulWidget {
+  final Candidate candidate;
+  HiredCard({super.key, required this.candidate});
+
   @override
   State<HiredCard> createState() => _HiredCardState();
 }
 
-class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
+class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin {
+  String formatDateOnly(DateTime dateTime) {
+    return DateFormat("dd MMMM yyyy").format(dateTime);
+  }
+
   bool _isHovered = false;
   @override
   Widget build(BuildContext context) {
@@ -41,7 +50,7 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 24,
                         backgroundImage: AssetImage('assets/images/pfp.png'),
                       ),
@@ -50,8 +59,8 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Eleanor Pena',
-                            style: TextStyle(
+                            widget.candidate.name,
+                            style: const TextStyle(
                               fontFamily: 'Galano',
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -63,7 +72,7 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
                               Icon(Icons.badge, size: 16, color: Colors.grey),
                               SizedBox(width: 4),
                               Text(
-                                'Vocalist',
+                                widget.candidate.profession,
                                 style: TextStyle(
                                   fontFamily: 'Galano',
                                   color: Colors.grey.shade800,
@@ -73,32 +82,32 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
                             ],
                           ),
                           SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(Icons.home, size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
-                              Text(
-                                'Urdaneta Branch',
-                                style: TextStyle(
-                                  fontFamily: 'Galano',
-                                  color: Colors.grey.shade500,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     Icon(Icons.home, size: 16, color: Colors.grey),
+                          //     SizedBox(width: 4),
+                          //     Text(
+                          //       'Urdaneta Branch',
+                          //       style: TextStyle(
+                          //         fontFamily: 'Galano',
+                          //         color: Colors.grey.shade500,
+                          //         fontSize: 14,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: Image.asset(
-                            'assets/images/chat-icon-recruiter.png',
-                            width: 20),
-                      ),
+                      // IconButton(
+                      //   onPressed: () {},
+                      //   icon: Image.asset(
+                      //       'assets/images/chat-icon-recruiter.png',
+                      //       width: 20),
+                      // ),
                       Gap(40),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -109,8 +118,8 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          "Hired on July 23, 2024",
-                          style: TextStyle(
+                          "Hired on ${formatDateOnly(widget.candidate.applicationDate)}",
+                          style: const TextStyle(
                             color: Color(0xFF157925),
                             fontFamily: 'Galano',
                           ),
@@ -168,7 +177,7 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
             //     },
             //   ),
             // ),
-              Positioned(
+            Positioned(
               top: 8,
               right: 8,
               child: IconButton(
@@ -194,13 +203,16 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
                       overlay.size.width - position.dx - button.size.width,
                       overlay.size.height - position.dy,
                     ),
-                    items: [ PopupMenuItem(
+                    items: [
+                      PopupMenuItem(
                         value: 'view_previous_feedback',
                         child: Row(
                           children: [
-                            Icon(Icons.feedback_outlined,
-                                color: Colors.grey),
-                            SizedBox(width: 8),Text('View Feedback'),],),
+                            Icon(Icons.feedback_outlined, color: Colors.grey),
+                            SizedBox(width: 8),
+                            Text('View Feedback'),
+                          ],
+                        ),
                       ),
                     ],
                   ).then((value) {
@@ -211,7 +223,6 @@ class _HiredCardState extends State<HiredCard> with TickerProviderStateMixin{
                 },
               ),
             ),
-        
           ],
         ),
       ),

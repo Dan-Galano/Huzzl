@@ -46,17 +46,11 @@ class _HiredViewState extends State<HiredView> {
             ),
           ),
           Expanded(
-            child: ListView(
-              children: [
-                HiredCard(),
-                HiredCard(),
-                HiredCard(),
-                HiredCard(),
-                HiredCard(),
-                HiredCard(),
-                HiredCard(),
-                HiredCard(),
-              ],
+            child: ListView.builder(
+              itemCount: widget.candidates.length,
+              itemBuilder: (context, index) => HiredCard(
+                candidate: widget.candidates[index],
+              ),
             ),
           ),
         ],
@@ -64,3 +58,12 @@ class _HiredViewState extends State<HiredView> {
     }
   }
 }
+
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemCount: widget.candidates.length,
+          //     itemBuilder: (context, index) => ContactedCard(
+          //       candidate: widget.candidates[index],
+          //     ),
+          //   ),
+          // ),

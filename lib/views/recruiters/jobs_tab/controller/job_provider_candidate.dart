@@ -200,7 +200,7 @@ class JobProviderCandidate extends ChangeNotifier {
           "Can you create a rejection message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We regret to inform you that we have selected other candidates whose qualifications more closely align with the position requirements. Do not include anything like this [position], [company] like that.";
     } else if (typeOfMessage == "Hire") {
       prompt =
-          "Can you create a acception/hired message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We're excited to welcome you to [Company Name] as our new [Job Title]! Your skills and enthusiasm truly impressed us, and we're confident you'll bring great value to our team. Starting on [Proposed Start Date], we look forward to your contributions. Congratulations, and welcome aboard!";
+          "Can you create a acception/hired message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We're excited to welcome you! Your skills and enthusiasm truly impressed us, and we're confident you'll bring great value. Starting soon, we look forward to your contributions. Congratulations, and welcome aboard! Do not include anything like this [position], [company] like that.";
     }
     final response = await model.generateContent([prefix.Content.text(prompt)]);
     print(response.text);
@@ -401,6 +401,51 @@ class JobProviderCandidate extends ChangeNotifier {
           .update({'status': 'Contacted'}); // Field to update
       print(
           "Candidate status updated to Contacted in job application collection");
+    } catch (e) {
+      print("Failed to update candidate status: $e");
+    }
+  }
+
+  void hiringCandidate(
+      String jobPostId, String id, String jobApplicationId) async {
+    debugPrint("Hiringggg the candidateeee ...");
+    // Update local candidate list
+    for (var i = 0; i < _candidates.length; i++) {
+      if (_candidates[i].id == id) {
+        _candidates[i] = _candidates[i].copyWith(status: "Hired");
+        notifyListeners();
+        break;
+      }
+    }
+
+    debugPrint("Moving to Hired done in local list");
+
+    // Update candidate status in Firestore
+    try {
+      //Update the candidate collection
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(getCurrentUserId()) // Candidate's document ID
+          .collection("job_posts")
+          .doc(jobPostId)
+          .collection("candidates")
+          .doc(id)
+          .update({
+        'status': 'Hired',
+        'hiredDate': DateTime.now(),
+      }); // Field to update
+      print("Candidate status updated to Hired in candidate collection");
+
+      await FirebaseFirestore.instance
+          .collection('users') // Replace with the correct collection name
+          .doc(id) // Candidate's document ID
+          .collection("job_application")
+          // .where('jobPostId', isEqualTo: jobPostId)
+          .doc(jobApplicationId)
+          .update({'status': 'Hired'}); // Field to update
+      print("Candidate status updated to Hired in job application collection");
+
+      // fetchCandidate(jobPostId);
     } catch (e) {
       print("Failed to update candidate status: $e");
     }

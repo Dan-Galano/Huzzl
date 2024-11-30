@@ -70,7 +70,6 @@ class _ContactedCardState extends State<ContactedCard>
               text: "OK",
             ),
           ],
-          
           content: SizedBox(
             width: MediaQuery.of(context).size.width * 0.5,
             height: MediaQuery.of(context).size.height * 0.5,
@@ -289,16 +288,16 @@ class _ContactedCardState extends State<ContactedCard>
                         ),
                       ),
                       Gap(90),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Image.asset(
-                            'assets/images/chat-icon-recruiter.png',
-                            width: 20),
-                      ),
+                      // IconButton(
+                      //   onPressed: () {},
+                      //   icon: Image.asset(
+                      //       'assets/images/chat-icon-recruiter.png',
+                      //       width: 20),
+                      // ),
                       Gap(40),
                       TextButton(
                         onPressed: () {
-                          showHiringDialog(context, widget.candidate.id);
+                          showHiringDialog(context, widget.candidate);
                           jobCandidateProvider.clearMessage("Hire");
                         },
                         style: TextButton.styleFrom(
@@ -403,7 +402,8 @@ class _ContactedCardState extends State<ContactedCard>
                     ],
                   ).then((value) {
                     if (value == 'view_previous_feedback') {
-                      showFeedbackViewDialog(context, this);
+                      showFeedbackViewDialog(context, this, widget.candidate,
+                          _myEvaluatedCandidateModel!);
                     }
                   });
                 },

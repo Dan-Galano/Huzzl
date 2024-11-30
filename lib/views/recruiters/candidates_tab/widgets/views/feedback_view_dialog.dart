@@ -151,7 +151,7 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                   Tab(text: 'Resume'),
                 ],
                 views: [
-                  InterviewFeedbackView(),
+                  // InterviewFeedbackView(evaluationDetails: ,),
                   ApplicationNotes(),
                   ApplicationView(),
                   ResumeView(),

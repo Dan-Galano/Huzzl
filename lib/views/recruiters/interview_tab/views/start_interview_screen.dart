@@ -1,12 +1,14 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:provider/provider.dart';
 
 class StartInterviewScreen extends StatelessWidget {
-  StartInterviewScreen({super.key});
+  final InterviewEvent interviewDetails;
+  StartInterviewScreen({super.key, required this.interviewDetails,});
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +116,7 @@ class StartInterviewScreen extends StatelessWidget {
                         const Gap(20),
                         IconButton(
                           onPressed: () {
-                            interviewProvider.endCall();
+                            interviewProvider.endCall(interviewDetails);
                             // jobCandidateProvider.contactedCandidate(jobPostId, id, jobApplicationId)
                           },
                           icon: Icon(

@@ -1,3 +1,4 @@
+import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/customDropdown.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/hiring_confirm_dialog.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +7,12 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_cand
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-void showHiringDialog(BuildContext context, String candidateId) {
+void showHiringDialog(BuildContext context, Candidate candidate) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) {
       DateTime? selectedDate;
-
-      String selectedManager = 'Dan Galano';
 
       return StatefulBuilder(
         builder: (context, setState) {
@@ -45,7 +44,7 @@ void showHiringDialog(BuildContext context, String candidateId) {
                     children: [
                       Row(
                         children: [
-                          Text(
+                          const Text(
                             "Hiring ",
                             style: TextStyle(
                               fontSize: 20,
@@ -53,8 +52,8 @@ void showHiringDialog(BuildContext context, String candidateId) {
                             ),
                           ),
                           Text(
-                            "Eleanor Pena",
-                            style: TextStyle(
+                            candidate.name,
+                            style: const TextStyle(
                               color: Color(0xFFfd7206),
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
@@ -72,7 +71,7 @@ void showHiringDialog(BuildContext context, String candidateId) {
                           ),
                           Gap(5),
                           Text(
-                            'Vocalist',
+                            candidate.profession,
                             style: TextStyle(
                               color: Colors.grey.shade800,
                               fontSize: 16,
@@ -80,100 +79,33 @@ void showHiringDialog(BuildContext context, String candidateId) {
                           ),
                         ],
                       ),
-                      Gap(20),
-                      Text("Send Eleanor a congratulatory message!"),
-                      Gap(10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Job Start Date",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                InkWell(
-                                  mouseCursor: SystemMouseCursors.click,
-                                  onTap: _selectDate,
-                                  child: TextField(
-                                    enabled: false,
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                    ),
-                                    controller: TextEditingController(
-                                      text: selectedDate != null
-                                          ? DateFormat('yyyy-MM-dd')
-                                              .format(selectedDate!)
-                                          : 'Select a date',
-                                    ),
-                                    decoration: InputDecoration(
-                                      enabled: true,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
-                                        ),
-                                        borderSide:
-                                            BorderSide(color: Colors.black),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                      const Gap(20),
+                      Text("Send ${candidate.name} a congratulatory message!"),
+                      const Gap(10),
+                      InkWell(
+                        mouseCursor: SystemMouseCursors.click,
+                        onTap: _selectDate,
+                        child: TextField(
+                          enabled: false,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          controller: TextEditingController(
+                            text: selectedDate != null
+                                ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                                : 'Select a date',
+                          ),
+                          decoration: const InputDecoration(
+                            enabled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                              borderSide: BorderSide(color: Colors.black),
                             ),
                           ),
-                          Gap(10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Department",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                TextField(
-                                  style: TextStyle(fontSize: 14),
-                                  controller: TextEditingController(
-                                    text: "Music Department",
-                                  ),
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Gap(10),
-                      Text(
-                        "Manager",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: buildCustomDropdown<String>(
-                              value: selectedManager,
-                              items: <String>[
-                                'Dan Galano',
-                                'Pat Tomas',
-                                'Monica Ave',
-                                'Dessa Mine'
-                              ],
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedManager = newValue!;
-                                });
-                              },
-                            ),
-                          )
-                        ],
+                        ),
                       ),
                       Gap(10),
                       Row(
@@ -182,7 +114,7 @@ void showHiringDialog(BuildContext context, String candidateId) {
                             child: TextButton(
                               onPressed: () async {
                                 await jobCandidateProvider.generateMessage(
-                                    candidateId, "Hire");
+                                    candidate.id, "Hire");
                               },
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
@@ -255,8 +187,14 @@ void showHiringDialog(BuildContext context, String candidateId) {
                         children: [
                           Expanded(
                             child: TextButton(
-                              onPressed: () =>
-                                  showHiringConfirmationDialog(context),
+                              onPressed: () {
+                                if(selectedDate == null && jobCandidateProvider.hireMessage.isEmpty)
+                                {
+                                  return;
+                                }
+                                showHiringConfirmationDialog(
+                                    context, candidate, selectedDate!, jobCandidateProvider.hireMessage);
+                              },
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 30, vertical: 16),

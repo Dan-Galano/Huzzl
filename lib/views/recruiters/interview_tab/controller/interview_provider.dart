@@ -55,6 +55,12 @@ class InterviewProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+    void toggleShowEvaluation() {
+    // _startInterview = !_startInterview;
+    _showEvalScreen = !_showEvalScreen;
+    notifyListeners();
+  }
+
   void startInterviewFunction(BuildContext context, String userType,
       {InterviewEvent? e}) async {
     await dotenv.load();
@@ -135,12 +141,13 @@ class InterviewProvider extends ChangeNotifier {
   }
 
   // End the call
-  Future<void> endCall() async {
+  Future<void> endCall(InterviewEvent e) async {
     await _engine?.leaveChannel();
     _remoteUid = null;
     _localUserJoined = false;
     _startInterview = false;
     _showEvalScreen = true;
+    updateInterviewStatusToDone(e);
     notifyListeners();
   }
 
@@ -708,6 +715,7 @@ class InterviewProvider extends ChangeNotifier {
       try {
         // Fetch interviews scheduled for today
         QuerySnapshot interviewsSnapshot = await interviewsCollection
+            .where('status', isEqualTo: 'not started')
             .where('date',
                 isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
             .where('date', isLessThanOrEqualTo: Timestamp.fromDate(todayEnd))
@@ -792,6 +800,47 @@ class InterviewProvider extends ChangeNotifier {
         'status': 'started',
       }).then((_) {
         print('Jobseeker interview status updated to started');
+      }).catchError((error) {
+        print('Error updating jobseeker interview status: $error');
+      });
+    } catch (e) {
+      print('Error updating interview status: $e');
+    }
+  }
+
+  void updateInterviewStatusToDone(InterviewEvent e) {
+    final recruiterId = getCurrentUserId();
+
+    debugPrint(
+        "Interview Event status: ${e.applicant}, ${e.jobPostId} ${e.interviewId} ${e.jobseekerId}");
+
+    try {
+      // Update the interview status for the recruiter
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(e.jobPostId)
+          .collection('interviews')
+          .doc(e.interviewId)
+          .update({
+        'status': 'done',
+      }).then((_) {
+        print('Recruiter interview status updated to done');
+      }).catchError((error) {
+        print('Error updating recruiter interview status: $error');
+      });
+
+      // Update the interview status for the jobseeker
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(e.jobseekerId)
+          .collection('interviewSched')
+          .doc(e.interviewId)
+          .update({
+        'status': 'started',
+      }).then((_) {
+        print('Jobseeker interview status updated to dont');
       }).catchError((error) {
         print('Error updating jobseeker interview status: $error');
       });

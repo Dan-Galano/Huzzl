@@ -556,7 +556,8 @@ class _EvaluationScreenState extends State<EvaluationScreen> {
                         child: BlueFilledCircleButton(
                           onPressed: () {
                             saveFeedback();
-                            debugPrint("interview details used in evaluationnnnnn: ${widget.interviewDetails.interviewId} ${widget.interviewDetails.applicant}");
+                            debugPrint(
+                                "interview details used in evaluationnnnnn: ${widget.interviewDetails.interviewId} ${widget.interviewDetails.applicant}");
                             interviewProvider.saveInterviewEvaluation(
                               widget.interviewDetails,
                               evaluation,
@@ -564,6 +565,7 @@ class _EvaluationScreenState extends State<EvaluationScreen> {
                               topEvaluationArea,
                               commentController.text,
                             );
+                            interviewProvider.toggleShowEvaluation();
                           },
                           text: 'Save Feedback',
                         ),
