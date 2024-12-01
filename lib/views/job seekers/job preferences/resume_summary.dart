@@ -116,7 +116,6 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
       CollectionReference usersRefJob =
           firestore.collection('users');
 
-      CollectionReference usersRefJob = firestore.collection('users');
 
       CollectionReference usersRef =
           firestore.collection('users').doc(userId).collection('resume');

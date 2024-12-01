@@ -354,39 +354,41 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
       print("No files selected.");
       return;
     }
+print("business docu uploaded!!");
+    // for (var pickedFile in pickedFiles) {
+    //   try {
+    //     final path =
+    //         'BusinessDocuments/${widget.userCredential.user!.uid}/${pickedFile.name}';
 
-    for (var pickedFile in pickedFiles) {
-      try {
-        final path =
-            'BusinessDocuments/${widget.userCredential.user!.uid}/${pickedFile.name}';
+    //     if (pickedFile.bytes != null) {
+    //       // Upload using bytes for web
+    //       print("Uploading file in web using bytes: ${pickedFile.name}...");
+    //       final Uint8List fileBytes = pickedFile.bytes!;
 
-        if (pickedFile.bytes != null) {
-          // Upload using bytes for web
-          print("Uploading file in web using bytes: ${pickedFile.name}...");
-          final Uint8List fileBytes = pickedFile.bytes!;
+    //       final ref = FirebaseStorage.instance.ref().child(path);
+    //       final uploadTask = ref.putData(fileBytes);
 
-          final ref = FirebaseStorage.instance.ref().child(path);
-          final uploadTask = ref.putData(fileBytes);
+    //       // Monitor upload progress
+    //       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+    //         print(
+    //             'Upload progress for ${pickedFile.name}: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
+    //       }, onError: (e) {
+    //         print("Error during file upload: $e");
+    //       });
 
-          // Monitor upload progress
-          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-            print(
-                'Upload progress for ${pickedFile.name}: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
-          }, onError: (e) {
-            print("Error during file upload: $e");
-          });
-
-          // Await the task completion
-          final snapshot = await uploadTask;
-          final downloadUrl = await snapshot.ref.getDownloadURL();
-          print("File uploaded successfully: $downloadUrl");
-        } else {
-          throw Exception("No valid file data found for ${pickedFile.name}.");
-        }
-      } catch (e) {
-        print("File upload failed for ${pickedFile.name}: $e");
-      }
-    }
+    //       // Await the task completion
+    //       final snapshot = await uploadTask;
+    //       final downloadUrl = await snapshot.ref.getDownloadURL();
+    //       print("File uploaded successfully: $downloadUrl");
+    //     } else {
+    //       throw Exception("No valid file data found for ${pickedFile.name}.");
+    //     }
+    //   } catch (e) {
+    //     print("File upload failed for ${pickedFile.name}: $e");
+    //   }
+    // }
+  
+  
   }
 
   //Link
