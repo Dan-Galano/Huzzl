@@ -6,7 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart'; 
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -175,9 +175,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ListTile(
                   onTap: () {
                     // show Contact Information screen
-                    // JobseekerMainScreenState? mainScreenState = context
-                    //     .findAncestorStateOfType<JobseekerMainScreenState>();
-                    // mainScreenState?.switchScreen(5);
+                    JobseekerMainScreenState? mainScreenState = context
+                        .findAncestorStateOfType<JobseekerMainScreenState>();
+                    mainScreenState?.switchScreen(5);
                   },
                   title: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -373,10 +373,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to qualifications screen
-                            // JobseekerMainScreenState? mainScreenState =
-                            //     context.findAncestorStateOfType<
-                            //         JobseekerMainScreenState>();
-                            // mainScreenState?.switchScreen(6);
+                            JobseekerMainScreenState? mainScreenState =
+                                context.findAncestorStateOfType<
+                                    JobseekerMainScreenState>();
+                            mainScreenState?.switchScreen(6);
                           },
                         ),
                       ),
@@ -409,10 +409,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: Icon(Icons.arrow_forward_ios),
                           onTap: () {
                             // Navigate to job preferences screen
-                            // JobseekerMainScreenState? mainScreenState =
-                            //     context.findAncestorStateOfType<
-                            //         JobseekerMainScreenState>();
-                            // mainScreenState?.switchScreen(7);
+                            JobseekerMainScreenState? mainScreenState =
+                                context.findAncestorStateOfType<
+                                    JobseekerMainScreenState>();
+                            mainScreenState?.switchScreen(7);
                           },
                         ),
                       ),
