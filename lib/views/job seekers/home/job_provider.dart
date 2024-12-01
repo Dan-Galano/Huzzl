@@ -7,6 +7,7 @@ class JobProvider with ChangeNotifier {
   List<Map<String, String>> _jobs = [];
   List<Map<String, String>> _defaultJobs = [];
   List<Map<String, String>> _searchJobs = [];
+  // List<String> _selectedJobTitles = [];
   bool _hasResults = true;
   bool _isLoading = false;
   String? _recWhoPostTheJob;
@@ -19,6 +20,18 @@ class JobProvider with ChangeNotifier {
 
   String? get recruiterPosted => _recWhoPostTheJob;
   String? get jobpostId => _jobPostId;
+
+  // List<String> get selectedJobTitles => _selectedJobTitles;
+  List<String> _selectedJobTitles = [];
+
+  // Getter
+  List<String> get selectedJobTitles => _selectedJobTitles;
+
+  // Setter
+  set selectedJobTitles(List<String> value) {
+    _selectedJobTitles = value;
+    notifyListeners(); // Notify listeners about the change
+  }
 
   bool isValidSearchQuery(String query) {
     // Check if the query is valid: at least 3 characters and contains only letters and numbers
@@ -44,6 +57,7 @@ class JobProvider with ChangeNotifier {
       _isLoading = false;
       return;
     }
+    
 
     try {
       // Fetch job data from various sources
@@ -56,9 +70,9 @@ class JobProvider with ChangeNotifier {
       // List<Map<String, String>> linkedInJobs =
       //     parseLinkedInData(linkedInHtmlContent);
       // await fetchLinkedInJobDesc(linkedInJobs);
-      String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
-      List<Map<String, String>> onlineJobsJobs =
-          parseOnlineJobsData(onlineJobsHtmlContent);
+      // String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
+      // List<Map<String, String>> onlineJobsJobs =
+      //     parseOnlineJobsData(onlineJobsHtmlContent);
       String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
       List<Map<String, String>> kalibrrJobs =
           parseKalibrrData(kalibrrHtmlContent);
@@ -70,10 +84,10 @@ class JobProvider with ChangeNotifier {
       // Combine all jobs from all sources
       List<Map<String, String>> allJobs = [
         ...huzzlJobs,
-        // ...jobstreetJobs,
         // ...linkedInJobs,
-        ...onlineJobsJobs,
+        // ...onlineJobsJobs,
         ...kalibrrJobs,
+        // ...jobstreetJobs,
         ...philJobNetJobs,
       ];
 
@@ -85,6 +99,7 @@ class JobProvider with ChangeNotifier {
               .addAll(allJobs); // Save default jobs for later restoration
         }
       } else {
+        
         _searchJobs.addAll(allJobs.where((job) {
           final titleMatch =
               job['title']?.toLowerCase().contains(searchQuery.toLowerCase()) ??

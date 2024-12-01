@@ -6,13 +6,13 @@ import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 //logout
 void logOut(BuildContext context) async {
   try {
-    await FirebaseAuth.instance.signOut();
-
+    await FirebaseAuth.instance.signOut(); 
+    Navigator.of(context).pop();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => LoginRegister(),
       ),
-    );
+    );   
     print("User logged out successfully.");
   } catch (e) {
     print("Error signing out: $e");
@@ -80,14 +80,6 @@ void showLogoutDialog(BuildContext context) {
                     child: BlueFilledCircleButton(
                       onPressed: () {
                         logOut(context);
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return LoginRegister();
-                            },
-                          ),
-                        );
                       },
                       text: "Log Out", // Button text
                       width: 470, // Optional width for the button

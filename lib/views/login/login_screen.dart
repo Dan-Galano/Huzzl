@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/Landing_Page/landing_page.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
+import 'package:huzzl_web/views/admins/screens/main/main_screen.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -181,6 +182,9 @@ class _LoginScreenState extends State<LoginScreen> {
               } else if (role == 'recruiter') {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => RecruiterHomeScreen()));
+              } else if (role == 'admin') {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => MainScreen()));
               }
             } else {
               print("Role is null, handling error");

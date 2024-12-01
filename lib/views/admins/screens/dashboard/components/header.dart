@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 import '../../../constants.dart';
 
 class Header extends StatelessWidget {
+  final String name;
   const Header({
+    required this.name,
     Key? key,
   }) : super(key: key);
 
@@ -22,12 +24,12 @@ class Header extends StatelessWidget {
           ),
         if (!Responsive.isMobile(context))
           Text(
-            "Dashboard",
+            name,
             style: Theme.of(context).textTheme.titleLarge,
           ),
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
-        Expanded(child: SearchField()),
+        // Expanded(child: SearchField()),
         ProfileCard()
       ],
     );
@@ -56,7 +58,7 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-     var adminController = Provider.of<MenuAppController>(context);
+    var adminController = Provider.of<MenuAppController>(context);
     return Container(
       margin: EdgeInsets.only(left: defaultPadding),
       padding: EdgeInsets.symmetric(
@@ -70,57 +72,51 @@ class _ProfileCardState extends State<ProfileCard> {
       ),
       child: Row(
         children: [
-          Image.asset(
-            "assets/images/profile_pic.png",
-            height: 38,
-          ),
+          const Icon(Icons.person),
           if (!Responsive.isMobile(context))
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: defaultPadding / 2),
               child: Text("${_adminProvider.adminName}"),
             ),
-          IconButton(onPressed: ()async {
-                            // Your existing logic for the icon button
-                            final RenderBox button =
-                                context.findRenderObject() as RenderBox;
-                            final RenderBox overlay = Overlay.of(context)
-                                .context
-                                .findRenderObject() as RenderBox;
+          IconButton(
+              onPressed: () async {
+                // Your existing logic for the icon button
+                final RenderBox button =
+                    context.findRenderObject() as RenderBox;
+                final RenderBox overlay =
+                    Overlay.of(context).context.findRenderObject() as RenderBox;
 
-                            final position = button.localToGlobal(Offset.zero,
-                                ancestor: overlay);
+                final position =
+                    button.localToGlobal(Offset.zero, ancestor: overlay);
 
-                            await showMenu(
-                              context: context,
-                              position: RelativeRect.fromLTRB(
-                                position.dx,
-                                position.dy,
-                                overlay.size.width -
-                                    position.dx -
-                                    button.size.width,
-                                overlay.size.height - position.dy,
-                              ),
-                              items: [
-                                const PopupMenuItem(
-                                  value: 'logout',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.logout,
-                                          color: Colors.grey),
-                                      SizedBox(width: 8),
-                                      Text('Logout'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ).then((value) {
-                              if(value == 'logout'){
-                                adminController.logout();
-                              }
-                            });
-                          }, 
-          icon: Icon(Icons.keyboard_arrow_down)),
+                await showMenu(
+                  context: context,
+                  position: RelativeRect.fromLTRB(
+                    position.dx,
+                    position.dy,
+                    overlay.size.width - position.dx - button.size.width,
+                    overlay.size.height - position.dy,
+                  ),
+                  items: [
+                    const PopupMenuItem(
+                      value: 'logout',
+                      child: Row(
+                        children: [
+                          Icon(Icons.logout, color: Colors.grey),
+                          SizedBox(width: 8),
+                          Text('Logout'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == 'logout') {
+                    adminController.logout(context);
+                  }
+                });
+              },
+              icon: Icon(Icons.keyboard_arrow_down)),
         ],
       ),
     );

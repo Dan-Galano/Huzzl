@@ -11,6 +11,7 @@ import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_model.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
+import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -37,6 +38,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   bool isSearching = false;
   List<String> selectedJobTitles = [];
   var locationController = TextEditingController();
+  // List<String> selectedJobTitles = []; // Tracks selected job titles
 
   List<String> datePostedOptions = [
     'Last 24 hours',
@@ -86,6 +88,25 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   void onSearch() {
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
     final searchedWord = _searchController.text.trim().toLowerCase();
+    if (searchedWord.isNotEmpty) {
+      jobProvider.loadJobs(searchedWord);
+    }
+    if (jobProvider.jobs.isEmpty) {
+      jobProvider.loadJobs(searchedWord);
+    }
+    // setState(() {
+    //   jobProvider.jobs.shuffle(Random());
+    // });
+    print("---UID:----- ${widget.uid}");
+  }
+
+  void onFilterClicked() {
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    // final searchedWord = _searchController.text.trim().toLowerCase();
+    String searchedWord = "";
+    if (jobProvider.selectedJobTitles.length == 1) {
+      searchedWord = jobProvider.selectedJobTitles[0].trim().toLowerCase();
+    }
     if (searchedWord.isNotEmpty) {
       jobProvider.loadJobs(searchedWord);
     }

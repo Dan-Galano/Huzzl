@@ -191,6 +191,8 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
 }
 
 Future<String> fetchKalibrrData(String searchQuery) async {
+  searchQuery = searchQuery.trim().toLowerCase().replaceAll(' ', '-');
+  print("--searchquery-- ${searchQuery}");
   String url =
       'https://corsproxy.io/?https://www.kalibrr.com/home/co/Philippines';
   if (searchQuery.isNotEmpty) {

@@ -31,30 +31,30 @@ class _FileInfoCardState extends State<FileInfoCard> {
   void initState() {
     // TODO: implement initState
     adminProvider = Provider.of<MenuAppController>(context, listen: false);
-    getCounterFunction();
+    // getCounterFunction();
     super.initState();
   }
 
-  void getCounterFunction() async{
-    counterRecruiter = await adminProvider.recruitersCount();
-    counterJobPosting = await adminProvider.jobPostCount();
-    counterJobseeker = await adminProvider.jobseekersCount();
+  // void getCounterFunction() async{
+  //   counterRecruiter = await adminProvider.recruitersCount();
+  //   counterJobPosting = await adminProvider.jobPostCount();
+  //   counterJobseeker = await adminProvider.jobseekersCount();
 
-    if(widget.info.title == "Recruiter"){
-      setState(() {
-        count = counterRecruiter;
-      });
-    }else if (widget.info.title == "Job-seeker"){
-      setState(() {
-        count = counterJobseeker;
-      });
-    }else {
-      setState(() {
-        count = counterJobPosting;
-      });
-    }
+  //   if(widget.info.title == "Recruiter"){
+  //     setState(() {
+  //       count = counterRecruiter;
+  //     });
+  //   }else if (widget.info.title == "Job-seeker"){
+  //     setState(() {
+  //       count = counterJobseeker;
+  //     });
+  //   }else {
+  //     setState(() {
+  //       count = counterJobPosting;
+  //     });
+  //   }
 
-  }
+  // }
 
   @override
   Widget build(BuildContext context) {

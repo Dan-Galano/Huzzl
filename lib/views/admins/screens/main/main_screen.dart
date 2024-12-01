@@ -3,6 +3,7 @@ import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dashboard_screen.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/manage_user.dart';
+import 'package:huzzl_web/views/admins/screens/manageUsers/manage_user_old.dart';
 import 'package:provider/provider.dart';
 
 import 'components/side_menu.dart';
@@ -36,9 +37,9 @@ class MainScreen extends StatelessWidget {
   Widget _getScreen(int index) {
     switch (index) {
       case 0:
-        return ManageUsers();
-      case 1:
         return DashboardScreen();
+      case 1:
+        return ManageUsers();
       case 2:
         return Center(
           child: Text("Manage Job Listing tab"),
