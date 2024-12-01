@@ -36,7 +36,7 @@ class SideMenu extends StatelessWidget {
             },
           ),
           DrawerListTile(
-            title: "Manage Job Listings",
+            title: "Manage Industries",
             svgSrc: "assets/icons/menu_task.svg",
             press: () {
               adminController.changeTabLocation(2);

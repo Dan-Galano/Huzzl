@@ -175,34 +175,16 @@ DataRow recentFileDataRow(RecentUser fileInfo, VoidCallback edit) {
       DataCell(Text(fileInfo.lname ?? 'No name')), // Default text if null
       DataCell(Text(fileInfo.email ?? 'No email')), // Default text if null
       DataCell(
-        Row(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                edit();
-              },
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
-                foregroundColor: WidgetStateProperty.all(Colors.white),
-                padding: WidgetStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-              ),
-              child: const Text('Edit'),
+        ElevatedButton(
+          onPressed: () {},
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all(Colors.redAccent),
+            foregroundColor: WidgetStateProperty.all(Colors.white),
+            padding: WidgetStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            const Gap(5),
-            ElevatedButton(
-              onPressed: () {},
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(Colors.redAccent),
-                foregroundColor: WidgetStateProperty.all(Colors.white),
-                padding: WidgetStateProperty.all(
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-              ),
-              child: const Text('Archive'),
-            ),
-          ],
+          ),
+          child: const Text('Disable'),
         ),
       ),
     ],

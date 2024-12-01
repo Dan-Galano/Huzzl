@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dashboard_screen.dart';
+import 'package:huzzl_web/views/admins/screens/jobs/manage_industries_screen.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/manage_user.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/manage_user_old.dart';
 import 'package:provider/provider.dart';
@@ -41,9 +42,7 @@ class MainScreen extends StatelessWidget {
       case 1:
         return ManageUsers();
       case 2:
-        return Center(
-          child: Text("Manage Job Listing tab"),
-        );
+        return ManageIndustriesScreen();
       case 3:
         return Center(
           child: Text("Manage Usage Analytics tab"),

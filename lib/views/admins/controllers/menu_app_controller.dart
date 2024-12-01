@@ -28,6 +28,63 @@ class MenuAppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  final List<String> _industries = [
+    'Aerospace & Defense',
+    'Agriculture',
+    'Arts, Entertainment & Recreation',
+    'Automotive',
+    'Education',
+    'Energy, Mining & Utilities',
+    'Fashion & Beauty',
+    'Finance & Accounting',
+    'Food & Beverage',
+    'Government & Public Administration',
+    'Healthcare',
+    'Hotels & Travel Accommodation',
+    'Human Resources & Staffing',
+    'Information Technology',
+    'Insurance',
+    'Legal',
+    'Management & Consulting',
+    'Manufacturing',
+    'Media & Entertainment',
+    'Military & Defense',
+    'Mining',
+    'Real Estate',
+    'Retail & Consumer Goods',
+    'Sales & Marketing',
+    'Science & Medicine',
+    'Sports & Medicine',
+    'Supply Chain',
+    'Transportation & Warehousing',
+    'Travel & Hospitality',
+  ];
+  List<String> get industries => _industries;
+
+  void addIndustry(String industry) {
+    _industries.add(industry);
+    _industries.sort((a, b) => a.compareTo(b)); // Sort alphabetically
+    notifyListeners();
+  }
+
+  // Edit an industry
+  void editIndustry(String oldIndustry, String newIndustry) {
+    final index = _industries.indexOf(oldIndustry);
+    if (index != -1) {
+      _industries[index] =
+          newIndustry; // Update the industry at the found index
+      _industries.sort((a, b) => a.compareTo(b)); // Sort alphabetically
+      notifyListeners();
+    }
+  }
+
+  // Delete an industry
+  void deleteIndustry(String industry) {
+    _industries.remove(industry);
+    _industries.sort((a, b) => a.compareTo(b)); // Sort alphabetically
+    notifyListeners();
+  }
+
   //Count recruiters
   Future<int> recruitersCount() async {
     try {
@@ -180,5 +237,3 @@ class MenuAppController extends ChangeNotifier {
     }
   }
 }
-
-
