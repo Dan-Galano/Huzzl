@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
           //   errorMessage = "User not found.";
           // });
           EasyLoading.showToast(
-            "⚠️ User not found.",
+            "⚠︎ User not found.",
             dismissOnTap: true,
             toastPosition: EasyLoadingToastPosition.top,
             duration: Duration(seconds: 3),
@@ -200,8 +200,19 @@ class _LoginScreenState extends State<LoginScreen> {
         //   isError = true;
         //   errorMessage = "Invalid credentials";
         // });
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color.fromARGB(255, 150, 31, 31)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
         EasyLoading.showToast(
-          "⚠️ Invalid credentials.",
+          "⚠︎ Invalid credentials.",
           dismissOnTap: true,
           toastPosition: EasyLoadingToastPosition.top,
           duration: Duration(seconds: 3),

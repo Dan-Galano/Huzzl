@@ -9,7 +9,7 @@ class ApplicationProvider with ChangeNotifier {
   String? email;
   String? address;
   String? phoneNumber;
-  String? recruiterQuestionAnswer;
+  List<String>? recruiterQuestionAnswer;
 
   final String uid;
 
@@ -26,6 +26,7 @@ class ApplicationProvider with ChangeNotifier {
     String jobId,
     String recruiterId,
     String jobTitle,
+    List<String> preScreenAnswer,
   ) async {
     if (fullName == null ||
         email == null ||
@@ -58,7 +59,10 @@ class ApplicationProvider with ChangeNotifier {
         'status': 'For Review',
         'dateRejected': null,
         'jobTitle': jobTitle,
+        'preScreenAnswer': preScreenAnswer
       });
+
+      print("Jobseeker applied");
 
       String jobApplicationDocId = jobApplicationRef.id;
 
@@ -81,8 +85,11 @@ class ApplicationProvider with ChangeNotifier {
         'status': 'For Review',
         'dateRejected': null,
         'jobTitle': jobTitle,
-        'jobApplicationDocId': jobApplicationDocId
+        'jobApplicationDocId': jobApplicationDocId,
+        'preScreenAnswer': preScreenAnswer
       });
+
+      print("Jobseeker applied data put to the databaseeee!");
 
       notifyListeners(); // Notify listeners if needed
     } catch (e) {
@@ -202,4 +209,18 @@ class ApplicationProvider with ChangeNotifier {
   String getCurrentUserId() {
     return FirebaseAuth.instance.currentUser!.uid;
   }
+
+  // Future<void> getJobPostDetails(String jobPostId, String recruiterId) async {
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection("users")
+  //         .doc(recruiterId)
+  //         .collection('job_posts')
+  //         .doc(jobPostId)
+  //         .get();
+  //     debugPrint("Fetch the jobpost details done!!");
+  //   } catch (e) {
+  //     debugPrint("Error in fetching the job post details: ${e.toString()}");
+  //   }
+  // }
 }

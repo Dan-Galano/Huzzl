@@ -90,13 +90,17 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Galano',
+              Flexible(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Galano',
+                  ),
                 ),
               ),
               Spacer(),
@@ -127,11 +131,14 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
           bottom: BorderSide(color: Color(0xffCFCFCF)),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: items.map((String item) {
-          return _buildCustomCheckbox(item);
-        }).toList(),
+      child: SingleChildScrollView(
+        // Make dropdown items scrollable
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: items.map((String item) {
+            return _buildCustomCheckbox(item);
+          }).toList(),
+        ),
       ),
     );
   }
@@ -145,12 +152,18 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
           activeColor: Color(0xff0038FF),
           onChanged: (bool? value) => _onItemCheckChanged(item, value),
         ),
-        Text(
-          item,
-          style: TextStyle(
-            fontFamily: 'Galano',
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+        Flexible(
+          // Allow text to wrap if too long
+          child: Text(
+            item,
+            style: TextStyle(
+              color: Colors.black,
+              fontFamily: 'Galano',
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              overflow: TextOverflow
+                  .ellipsis, // Optionally use ellipsis for long text
+            ),
           ),
         ),
       ],

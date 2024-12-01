@@ -3,9 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/preference_view.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/recruiters/register/06%20congrats.dart';
+import 'package:huzzl_web/views/recruiters/register/phone_number_verification.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
+import 'package:provider/provider.dart';
 
 class EmailValidationScreen extends StatefulWidget {
   UserCredential userCredential;
@@ -79,11 +84,67 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
         'phoneNumber': widget.phoneNumber,
       });
       String uid = widget.userCredential.user!.uid;
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "✓ Your email has been verified!",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
+      final user = widget.userCredential.user!;
+      final loggedInUserId = user.uid;
 
-      Navigator.of(context).push(MaterialPageRoute(
+      Provider.of<UserProvider>(context, listen: false).setUser(user);
+
+      final resumeProvider =
+          Provider.of<ResumeProvider>(context, listen: false);
+
+      resumeProvider.updateEmail(user.email!);
+
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(loggedInUserId)
+          .get()
+          .then((userDoc) {
+        if (userDoc.exists) {
+          String firstName = userDoc['firstName'] ?? '';
+          String lastName = userDoc['lastName'] ?? '';
+          String pNumber = userDoc['phoneNumber'] ?? '';
+
+          resumeProvider.updateName(firstName, lastName);
+          resumeProvider.updatePhoneNumber(pNumber);
+        }
+      }).catchError((error) {
+        print('Error fetching user data from Firestore: $error');
+      });
+      
+      
+      
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (_) => PreferenceViewPage(
                 userUid: uid,
               )));
+
+
+      //TURN ON PHONE VERIFICATION
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(
+      //       builder: (_) => PhoneNumberVerification(
+      //             phoneNumber: widget.phoneNumber,
+      //             userCredential: widget.userCredential,
+      //           )),
+      // );
+  
     }
   }
 
@@ -97,42 +158,6 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       );
     }
   }
-
-  // final codeDigitOne = TextEditingController();
-  // final codeDigitTwo = TextEditingController();
-  // final codeDigitThree = TextEditingController();
-  // final codeDigitFour = TextEditingController();
-  // final codeDigitFive = TextEditingController();
-  // final codeDigitSix = TextEditingController();
-
-  // final focusNode1 = FocusNode();
-  // final focusNode2 = FocusNode();
-  // final focusNode3 = FocusNode();
-  // final focusNode4 = FocusNode();
-  // final focusNode5 = FocusNode();
-  // final focusNode6 = FocusNode();
-
-  // void submitValidationCode() {
-  //   if (codeDigitOne.text.isEmpty ||
-  //       codeDigitTwo.text.isEmpty ||
-  //       codeDigitThree.text.isEmpty ||
-  //       codeDigitFour.text.isEmpty ||
-  //       codeDigitFive.text.isEmpty ||
-  //       codeDigitSix.text.isEmpty) {
-  //     print('all are required');
-  //     return;
-  //   }
-
-  //   // Clear focus
-  //   focusNode1.unfocus();
-  //   focusNode2.unfocus();
-  //   focusNode3.unfocus();
-  //   focusNode4.unfocus();
-  //   focusNode5.unfocus();
-  //   focusNode6.unfocus();
-
-  //   // print("goods $userInputOTP");
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -179,16 +204,31 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
                           //   ),
                           // ),
                           const SizedBox(height: 20),
-                          const Text(
-                            'A verification email has sent to your email address.',
+                          RichText(
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Galano',
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'A verification link has been sent to',
+                                  style: const TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' ${widget.email}',
+                                  style: const TextStyle(
+                                    fontFamily: 'Galano',
+                                    fontSize: 25,
+                                    color: Color(0xffFD7206),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 20),
                           const Text(
                             'Click the link sent to your email address to verify your account.',
                             textAlign: TextAlign.center,
@@ -254,7 +294,7 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
                                         ),
                                         SizedBox(width: 10),
                                         Text(
-                                          'Resent Email',
+                                          'Resend Email',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontFamily: 'Galano',

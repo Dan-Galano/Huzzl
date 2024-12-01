@@ -168,15 +168,17 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                       alignment: Alignment.center,
                                       child: Row(
                                         children: [
-                                          const Text("Status: "),
+                                          const Text(
+                                            "Status: ",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
                                           Text(
                                             jobCandidateProvider
                                                 .findDataOfCandidate(
                                                     widget.candidateId)!
                                                 .status,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                            ),
                                           ),
                                         ],
                                       ),
@@ -300,7 +302,15 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                               Tab(text: 'Resume'),
                             ],
                             views: [
-                              ApplicationView(),
+                              ApplicationView(
+                                jobPostId: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobPostId,
+                                jobSeekerId: widget.candidateId,
+                                jobApplication: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobApplicationDocId!,
+                              ),
                               ResumeView(),
                             ],
                           ),

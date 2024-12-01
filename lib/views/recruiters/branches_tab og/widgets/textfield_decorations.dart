@@ -137,7 +137,6 @@ InputDecoration customHintTextInputDecoration(String hintTxt) {
   return InputDecoration(
     hintText: hintTxt,
     contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-    isDense: true,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
       borderSide: const BorderSide(

@@ -136,7 +136,7 @@ class _JobTabState extends State<JobTab> {
                         );
                       },
                     ),
-                    JobFilterRowWidget(),
+                    // JobFilterRowWidget(),
                     TabBar(
                       tabAlignment: TabAlignment.start,
                       isScrollable: true,

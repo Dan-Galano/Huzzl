@@ -153,7 +153,7 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                 views: [
                   // InterviewFeedbackView(evaluationDetails: ,),
                   ApplicationNotes(),
-                  ApplicationView(),
+                  // ApplicationView(),
                   ResumeView(),
                 ],
               ),

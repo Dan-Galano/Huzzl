@@ -148,7 +148,17 @@ List<Map<String, String>> parseOnlineJobsData(String htmlContent) {
   List<Map<String, String>> jobs = [];
 
   document.querySelectorAll('.jobpost-cat-box').take(10).forEach((element) {
-    String? title = element.querySelector('h4.fs-16')?.text.trim();
+    String? title;
+
+// Find the <h4> element
+    var h4Element = element.querySelector('h4.fs-16');
+
+    if (h4Element != null) {
+      // Remove all <span> elements within the <h4>
+      h4Element.querySelectorAll('span').forEach((span) => span.remove());
+      // Get the cleaned text from the <h4>
+      title = h4Element.text.trim();
+    }
     String? postedDate = element.querySelector('p.fs-13 em')?.text.trim();
     String? description = element.querySelector('div.desc')?.text.trim();
     String? salary = element.querySelector('dl.row.fs-14 dd')?.text.trim();

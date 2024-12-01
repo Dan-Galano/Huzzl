@@ -30,22 +30,22 @@ class _ChartState extends State<Chart> {
   void initState() {
     super.initState();
     adminProvider = Provider.of<MenuAppController>(context, listen: false);
-    getCounterFunction();
+    // getCounterFunction();
   }
 
-  void getCounterFunction() async {
-    counterRecruiter = await adminProvider.recruitersCount();
-    counterJobPosting = await adminProvider.jobPostCount();
-    counterJobseeker = await adminProvider.jobseekersCount();
+  // void getCounterFunction() async {
+  //   counterRecruiter = await adminProvider.recruitersCount();
+  //   counterJobPosting = await adminProvider.jobPostCount();
+  //   counterJobseeker = await adminProvider.jobseekersCount();
 
-    setState(() {
-      recruiterCount = counterRecruiter.toDouble();
-      jobseekerCount = counterJobseeker.toDouble();
-      jobPostingCount = counterJobPosting.toDouble();
+  //   setState(() {
+  //     recruiterCount = counterRecruiter.toDouble();
+  //     jobseekerCount = counterJobseeker.toDouble();
+  //     jobPostingCount = counterJobPosting.toDouble();
 
-      totalUsage = counterRecruiter + counterJobPosting + counterJobseeker;
-    });
-  }
+  //     totalUsage = counterRecruiter + counterJobPosting + counterJobseeker;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

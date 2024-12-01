@@ -174,7 +174,7 @@ class _MyFormModalState extends State<MyFormModal> {
         //   SnackBar(content: Text("Error: ${e.message}")),
         // );
         EasyLoading.showToast(
-          "⚠️ ${e.message}",
+          "⚠︎ ${e.message}",
           dismissOnTap: true,
           toastPosition: EasyLoadingToastPosition.top,
           duration: Duration(seconds: 3),

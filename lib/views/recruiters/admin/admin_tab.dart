@@ -129,13 +129,13 @@ class _AdminContentState extends State<AdminContent>
                       ),
                     ),
                     const SizedBox(width: 20),
-                    const Row(
-                      children: [
-                        Icon(Icons.filter_alt),
-                        SizedBox(width: 10),
-                        Text("Filters"),
-                      ],
-                    ),
+                    // const Row(
+                    //   children: [
+                    //     Icon(Icons.filter_alt),
+                    //     SizedBox(width: 10),
+                    //     Text("Filters"),
+                    //   ],
+                    // ),
                     const Spacer(),
                     ElevatedButton(
                       onPressed: addNewSubAdmin,
