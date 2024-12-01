@@ -311,7 +311,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
           );
         } else {
           print("LOGIN!");
-          return LandingPageNew();
+          return LoginRegister();
         }
       },
     );
