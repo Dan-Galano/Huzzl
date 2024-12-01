@@ -183,8 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => RecruiterHomeScreen()));
               } else if (role == 'admin') {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => MainScreen()));
+                Navigator.of(context).pop();
               }
             } else {
               print("Role is null, handling error");

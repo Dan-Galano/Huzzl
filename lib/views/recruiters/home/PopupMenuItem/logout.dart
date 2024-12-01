@@ -80,14 +80,6 @@ void showLogoutDialog(BuildContext context) {
                     child: BlueFilledCircleButton(
                       onPressed: () {
                         logOut(context);
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return LoginRegister();
-                            },
-                          ),
-                        );
                       },
                       text: "Log Out", // Button text
                       width: 470, // Optional width for the button

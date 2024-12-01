@@ -152,13 +152,13 @@ class MenuAppController extends ChangeNotifier {
 
   void logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
-
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => LoginRegister(),
         ),
       );
+      await FirebaseAuth.instance.signOut();
+
       print("User logged out successfully.");
     } catch (e) {
       print("Error signing out: $e");
