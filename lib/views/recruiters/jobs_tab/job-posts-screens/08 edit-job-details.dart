@@ -142,7 +142,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
       'isResumeRequired': requireResumeController.text,
       'applicationDeadline': applicationDeadlineController.text,
       'updatesController': updatesController.text,
-      'preScreenQuestions': preScreeningController.text,
+      'preScreenQuestions': widget.prescreenQuestions,
       'status': "open",
       'posted_at': formattedCurrentDate,
       'posted_by':

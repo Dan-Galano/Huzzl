@@ -1504,8 +1504,24 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                               Tab(text: 'Resume'),
                             ],
                             views: [
-                              // ApplicationView(),
-                              ResumeView(),
+                              ApplicationView(
+                                jobPostId: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobPostId,
+                                jobSeekerId: widget.candidateId,
+                                jobApplication: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobApplicationDocId!,
+                              ),
+                              ResumeView(
+                                jobPostId: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobPostId,
+                                jobSeekerId: widget.candidateId,
+                                jobApplication: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobApplicationDocId!,
+                              ),
                             ],
                           ),
                         ],

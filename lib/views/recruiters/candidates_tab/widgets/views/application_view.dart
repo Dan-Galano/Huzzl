@@ -22,14 +22,25 @@ class ApplicationView extends StatefulWidget {
 
 class _ApplicationViewState extends State<ApplicationView> {
   List<String> skills = [];
-  List<String> preScreenQuestion = [];
+  List<dynamic> preScreenQuestion = [];
   List<dynamic> preScreenAnswer = [];
+
+  //Portfolio
+  String portfolioPath = "";
 
   @override
   void initState() {
     super.initState();
     fetchJobPost();
-    fetchJobApplication();
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      await Future.wait([fetchJobPost(), fetchJobApplication()]);
+    } catch (e) {
+      print('Error in fetchData: $e');
+    }
   }
 
   Future<void> fetchJobPost() async {
@@ -47,15 +58,16 @@ class _ApplicationViewState extends State<ApplicationView> {
       if (jobPostDoc.exists) {
         var jobPostData = jobPostDoc.data();
         String skillsString = jobPostData?['skills'] ?? '';
-        String preScreenQuestionString =
-            jobPostData?['preScreenQuestions'] ?? '';
+        // String preScreenQuestionString =
+        //     jobPostData?['preScreenQuestions'] ?? '';
 
         setState(() {
+          preScreenQuestion = jobPostData?['preScreenQuestions'] ?? [];
           skills = skillsString.split(', ').where((e) => e.isNotEmpty).toList();
-          preScreenQuestion = preScreenQuestionString
-              .split(RegExp(r',\s*(?=[A-Z])'))
-              .where((e) => e.isNotEmpty)
-              .toList();
+          // preScreenQuestion = preScreenQuestionString
+          //     .split(RegExp(r',\s*(?=[A-Z])'))
+          //     .where((e) => e.isNotEmpty)
+          //     .toList();
         });
       } else {
         print('No job post found');
@@ -80,6 +92,7 @@ class _ApplicationViewState extends State<ApplicationView> {
         if (jobApplicationData != null) {
           setState(() {
             preScreenAnswer = jobApplicationData['preScreenAnswer'] ?? [];
+            portfolioPath = jobApplicationData['portfolioPath'] ?? "";
           });
           print("List of answer ${preScreenAnswer.length}");
         } else {
@@ -95,13 +108,18 @@ class _ApplicationViewState extends State<ApplicationView> {
 
   @override
   Widget build(BuildContext context) {
+    if (preScreenAnswer.isEmpty && preScreenQuestion.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Applicant Qualifications",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -113,18 +131,81 @@ class _ApplicationViewState extends State<ApplicationView> {
             if (preScreenQuestion.isNotEmpty && preScreenQuestion.isNotEmpty)
               ListView.separated(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: preScreenQuestion.length,
-                separatorBuilder: (context, index) => Gap(10),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 15),
                 itemBuilder: (context, index) {
-                  return Text(
-                    "- ${preScreenQuestion[index]} : ${preScreenAnswer[index]}",
-                    style: TextStyle(fontSize: 16),
+                  final question = preScreenQuestion.isNotEmpty
+                      ? preScreenQuestion[index]
+                      : 'Loading question...';
+                  final answer = preScreenAnswer.length > index
+                      ? preScreenAnswer[index]
+                      : 'Loading answer...';
+
+                  return Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: const Color(0xFFD1E1FF),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Pre-screen question ${index + 1}:",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff202855),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          question,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff202855),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Divider(thickness: 1.2, color: Color(0xFFD1E1FF)),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Applicant's Answer:",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff202855),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          answer,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff505050),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               )
             else
-              Text(
+              const Text(
                 "No pre-screen questions available.",
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
@@ -134,7 +215,7 @@ class _ApplicationViewState extends State<ApplicationView> {
               height: 40,
             ),
             Text(
-              "Skills",
+              "Required Skills for the Job",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -165,35 +246,38 @@ class _ApplicationViewState extends State<ApplicationView> {
               ),
             ),
             Gap(20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    // Replace with your function to open the PDF
-                    print("Open PDF");
-                  },
-                  child: Text(
-                    "Open Portfolio in New Tab",
-                    style: TextStyle(color: Color(0xFFff9800)),
-                  ),
-                ),
-                Container(
-                  constraints: BoxConstraints(
-                    maxHeight: 800,
-                    maxWidth: 800,
-                  ),
-                  child: SfPdfViewer.asset(
-                    'assets/pdf/portfolio.pdf',
-                    canShowScrollHead: true,
-                    canShowScrollStatus: true,
-                    onDocumentLoaded: (details) => print('Document loaded'),
-                    onDocumentLoadFailed: (details) =>
-                        print('Document failed to load'),
-                  ),
-                ),
-              ],
-            ),
+            portfolioPath.isNotEmpty
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // Replace with your function to open the PDF
+                          print("Open PDF");
+                        },
+                        child: Text(
+                          "Open Portfolio in New Tab",
+                          style: TextStyle(color: Color(0xFFff9800)),
+                        ),
+                      ),
+                      Container(
+                        constraints: BoxConstraints(
+                          maxHeight: 800,
+                          maxWidth: 800,
+                        ),
+                        child: SfPdfViewer.asset(
+                          'assets/pdf/portfolio.pdf',
+                          canShowScrollHead: true,
+                          canShowScrollStatus: true,
+                          onDocumentLoaded: (details) =>
+                              print('Document loaded'),
+                          onDocumentLoadFailed: (details) =>
+                              print('Document failed to load'),
+                        ),
+                      ),
+                    ],
+                  )
+                : Text("No uploaded portfolio."),
             Divider(
               thickness: 2,
               color: Color(0xFFff9800),

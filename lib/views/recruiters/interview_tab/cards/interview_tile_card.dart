@@ -10,33 +10,11 @@ import 'package:huzzl_web/views/recruiters/interview_tab/widgets/buttons.dart';
 import 'package:provider/provider.dart';
 
 class InterviewTile extends StatefulWidget {
-  // final String intervieweeName;
-  // final String profession;
-  // // final String branch;
-  // final String interviewTitle;
-  // final String interviewType;
-  // // final DateTimeRange timeRange;
-  // final TimeOfDay startTime;
-  // final TimeOfDay endTime;
-  InterviewEvent interview;
-
-// intervieweeName
-// profession
-// branch?
-// interviewTitle
-//in.terviewType
+  final InterviewEvent interview;
 
   InterviewTile({
     super.key,
     required this.interview
-    // required this.intervieweeName,
-    // required this.profession,
-    // // required this.branch,
-    // required this.interviewTitle,
-    // required this.interviewType,
-    // // required this.timeRange,
-    // required this.startTime,
-    // required this.endTime,
   });
 
   @override

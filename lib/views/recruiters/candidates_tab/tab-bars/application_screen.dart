@@ -264,32 +264,32 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                     ),
                                   ),
                                   const Gap(30),
-                                  TextButton(
-                                    onPressed: () {},
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 54, vertical: 8),
-                                      backgroundColor: const Color(0xFF3b7dff),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          "assets/images/msg-white-icon.png",
-                                          width: 14,
-                                        ),
-                                        const Gap(10),
-                                        const Text(
-                                          'Message',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // TextButton(
+                                  //   onPressed: () {},
+                                  //   style: TextButton.styleFrom(
+                                  //     padding: const EdgeInsets.symmetric(
+                                  //         horizontal: 54, vertical: 8),
+                                  //     backgroundColor: const Color(0xFF3b7dff),
+                                  //     shape: RoundedRectangleBorder(
+                                  //       borderRadius: BorderRadius.circular(8),
+                                  //     ),
+                                  //   ),
+                                  //   child: Row(
+                                  //     children: [
+                                  //       Image.asset(
+                                  //         "assets/images/msg-white-icon.png",
+                                  //         width: 14,
+                                  //       ),
+                                  //       const Gap(10),
+                                  //       const Text(
+                                  //         'Message',
+                                  //         style: TextStyle(
+                                  //           color: Colors.white,
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ],
@@ -311,7 +311,15 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                     .findDataOfCandidate(widget.candidateId)!
                                     .jobApplicationDocId!,
                               ),
-                              ResumeView(),
+                              ResumeView(
+                                jobPostId: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobPostId,
+                                jobSeekerId: widget.candidateId,
+                                jobApplication: jobCandidateProvider
+                                    .findDataOfCandidate(widget.candidateId)!
+                                    .jobApplicationDocId!,
+                              ),
                             ],
                           ),
                         ],

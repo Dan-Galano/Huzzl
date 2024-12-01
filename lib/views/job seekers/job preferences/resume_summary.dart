@@ -98,6 +98,8 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
       await usersRefJob
           .doc(userId)
           .set(jobPreferences, SetOptions(merge: true));
+
+      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
       print('Job preferences saved successfully!');
 
       if (existingResumes.docs.isEmpty) {

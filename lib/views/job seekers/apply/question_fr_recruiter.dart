@@ -26,8 +26,8 @@ class QuestionFromRecScreen extends StatefulWidget {
 }
 
 class _QuestionFromRecScreenState extends State<QuestionFromRecScreen> {
-  List<String> preScreenQuestion = [];
-  String preScreenString = "";
+  List<dynamic> preScreenQuestion = [];
+  // String preScreenString = "";
 
   Map<String, TextEditingController> controllers = {};
 
@@ -54,9 +54,12 @@ class _QuestionFromRecScreenState extends State<QuestionFromRecScreen> {
       if (documentSnapshot.exists) {
         // Extract the pre-screen questions
         setState(() {
-          preScreenString = documentSnapshot.data()?['preScreenQuestions'];
+          preScreenQuestion = documentSnapshot.data()?['preScreenQuestions'];
         });
-        splitPreScreenString(preScreenString);
+        for (var question in preScreenQuestion) {
+          controllers[question] = TextEditingController();
+        }
+        // splitPreScreenString(preScreenString);
       } else {
         debugPrint("No such document exists.");
       }
@@ -65,16 +68,16 @@ class _QuestionFromRecScreenState extends State<QuestionFromRecScreen> {
     }
   }
 
-  void splitPreScreenString(String stringPreScreen) {
-    setState(() {
-      preScreenQuestion = stringPreScreen.split(RegExp(r',\s*(?=[A-Z])'));
-    });
+  // void splitPreScreenString(String stringPreScreen) {
+  //   setState(() {
+  //     preScreenQuestion = stringPreScreen.split(RegExp(r',\s*(?=[A-Z])'));
+  //   });
 
-    // Initialize controllers for each question after preScreenQuestion is set
-    for (var question in preScreenQuestion) {
-      controllers[question] = TextEditingController();
-    }
-  }
+  //   // Initialize controllers for each question after preScreenQuestion is set
+  //   for (var question in preScreenQuestion) {
+  //     controllers[question] = TextEditingController();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
