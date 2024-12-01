@@ -1,192 +1,185 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/open_in_newtab.dart';
-import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/skillchip.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
+class ApplicationView extends StatefulWidget {
+  final String jobPostId;
+  final String jobSeekerId;
+  final String jobApplication;
 
-class ApplicationView extends StatelessWidget {
-  ApplicationView({super.key});
+  ApplicationView({
+    Key? key,
+    required this.jobPostId,
+    required this.jobSeekerId,
+    required this.jobApplication,
+  }) : super(key: key);
 
-  final List<String> skills = [
-    'Communication Skills',
-    'Problem-Solving',
-    'Customer Service',
-    'Adaptability',
-    'Critical Thinking',
-    'Design',
-    'Work under Pressure',
-    'Project Management',
-    'Conflict Resolution',
-    'Attention to Detail',
-    'Time-management',
-  ];
+  @override
+  State<ApplicationView> createState() => _ApplicationViewState();
+}
+
+class _ApplicationViewState extends State<ApplicationView> {
+  List<String> skills = [];
+  List<String> preScreenQuestion = [];
+  List<dynamic> preScreenAnswer = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchJobPost();
+    fetchJobApplication();
+  }
+
+  Future<void> fetchJobPost() async {
+    print("${widget.jobApplication} hereeeeeeeeeeeee ${widget.jobSeekerId}");
+    final recruiterId = FirebaseAuth.instance.currentUser!.uid;
+
+    try {
+      final jobPostDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(widget.jobPostId)
+          .get();
+
+      if (jobPostDoc.exists) {
+        var jobPostData = jobPostDoc.data();
+        String skillsString = jobPostData?['skills'] ?? '';
+        String preScreenQuestionString =
+            jobPostData?['preScreenQuestions'] ?? '';
+
+        setState(() {
+          skills = skillsString.split(', ').where((e) => e.isNotEmpty).toList();
+          preScreenQuestion = preScreenQuestionString
+              .split(RegExp(r',\s*(?=[A-Z])'))
+              .where((e) => e.isNotEmpty)
+              .toList();
+        });
+      } else {
+        print('No job post found');
+      }
+    } catch (e) {
+      print('Error fetching job post: $e');
+    }
+  }
+
+  Future<void> fetchJobApplication() async {
+    try {
+      final jobApplicationDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.jobSeekerId)
+          .collection('job_application')
+          .doc(widget.jobApplication) // Assuming you meant jobPostId here
+          .get();
+
+      if (jobApplicationDoc.exists) {
+        final jobApplicationData = jobApplicationDoc.data();
+
+        if (jobApplicationData != null) {
+          setState(() {
+            preScreenAnswer = jobApplicationData['preScreenAnswer'] ?? [];
+          });
+          print("List of answer ${preScreenAnswer.length}");
+        } else {
+          print('No data found in the job application document.');
+        }
+      } else {
+        print('No job application document found.');
+      }
+    } catch (e) {
+      print('Error fetching job application: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Applicant Qualifications",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Color(0xFF202855),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Applicant Qualifications",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color(0xFF202855),
+              ),
             ),
-          ),
-          Gap(10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'How many years of vocalist experience do you have?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'Your requirement: ',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      Text(
-                        'at least 1 year',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+            Gap(10),
+            if (preScreenQuestion.isNotEmpty && preScreenQuestion.isNotEmpty)
+              ListView.separated(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: preScreenQuestion.length,
+                separatorBuilder: (context, index) => Gap(10),
+                itemBuilder: (context, index) {
+                  return Text(
+                    "- ${preScreenQuestion[index]} : ${preScreenAnswer[index]}",
+                    style: TextStyle(fontSize: 16),
+                  );
+                },
+              )
+            else
+              Text(
+                "No pre-screen questions available.",
+                style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                constraints: BoxConstraints(
-                  minWidth: 80,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Text(
-                  textAlign: TextAlign.center,
-                  '3 years',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Gap(10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "How many live performances you've done?",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'Your requirement: ',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      Text(
-                        'at least 5',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                constraints: BoxConstraints(
-                  minWidth: 80,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(5),
-                  ),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Text(
-                  textAlign: TextAlign.center,
-                  '16',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Divider(
-            thickness: 1,
-            color: Colors.grey,
-            height: 60,
-          ),
-          Text(
-            "Skills",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Color(0xFF202855),
+            Divider(
+              thickness: 1,
+              color: Colors.grey,
+              height: 40,
             ),
-          ),
-          Gap(20),
-          Wrap(
-            spacing: 8.0,
-            runSpacing: 8.0,
-            children: skills.map((skill) => SkillChip(skill: skill)).toList(),
-          ),
-          Divider(
-            thickness: 1,
-            color: Colors.grey,
-            height: 60,
-          ),
-          Text(
-            "Portfolio",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Color(0xFF202855),
+            Text(
+              "Skills",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color(0xFF202855),
+              ),
             ),
-          ),
-          Gap(20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () => openPdfInNewTab('assets/pdf/portfolio.pdf'),
-                child: Text(
-                  "Open Portfolio in New Tab",
-                  style: TextStyle(
-                    color: Color(0xFFff9800),
+            Gap(20),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: skills
+                  .map((skill) => Chip(
+                        label: Text(skill),
+                      ))
+                  .toList(),
+            ),
+            Divider(
+              thickness: 1,
+              color: Colors.grey,
+              height: 40,
+            ),
+            Text(
+              "Portfolio",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color(0xFF202855),
+              ),
+            ),
+            Gap(20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    // Replace with your function to open the PDF
+                    print("Open PDF");
+                  },
+                  child: Text(
+                    "Open Portfolio in New Tab",
+                    style: TextStyle(color: Color(0xFFff9800)),
                   ),
                 ),
-              ),
-              Container(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
+                Container(
+                  constraints: BoxConstraints(
                     maxHeight: 800,
                     maxWidth: 800,
                   ),
@@ -199,15 +192,15 @@ class ApplicationView extends StatelessWidget {
                         print('Document failed to load'),
                   ),
                 ),
-              ),
-            ],
-          ),
-          Divider(
-            thickness: 2,
-            color: Color(0xFFff9800),
-            height: 60,
-          ),
-        ],
+              ],
+            ),
+            Divider(
+              thickness: 2,
+              color: Color(0xFFff9800),
+              height: 60,
+            ),
+          ],
+        ),
       ),
     );
   }

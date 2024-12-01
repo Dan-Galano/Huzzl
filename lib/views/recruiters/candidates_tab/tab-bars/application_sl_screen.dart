@@ -224,17 +224,17 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
     // setState(() {
     //   events.add(e);
     // });
-    
+
     _jobProvider.forInterviewCandidate(widget.candidateId);
 
     _interviewProvider.saveInterview(
-        e,
-        widget.candidateId,
-        widget.candidate.jobPostId,
-        widget.candidate.id,
-        widget.candidate.jobApplicationDocId!,
-        widget.candidate.profession,
-        );
+      e,
+      widget.candidateId,
+      widget.candidate.jobPostId,
+      widget.candidate.id,
+      widget.candidate.jobApplicationDocId!,
+      widget.candidate.profession,
+    );
     _jobProvider.pushNotificationToJobseeker(
       widget.candidate.jobPostId,
       widget.candidate.id,
@@ -1504,7 +1504,7 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                               Tab(text: 'Resume'),
                             ],
                             views: [
-                              ApplicationView(),
+                              // ApplicationView(),
                               ResumeView(),
                             ],
                           ),

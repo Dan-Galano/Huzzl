@@ -167,7 +167,7 @@ class _FeedbackDialogState extends State<FeedbackDialog>
                     evaluationDetails: widget.evaluationDetails,
                   ),
                   ApplicationNotes(),
-                  ApplicationView(),
+                  // ApplicationView(),
                   ResumeView(),
                 ],
               ),

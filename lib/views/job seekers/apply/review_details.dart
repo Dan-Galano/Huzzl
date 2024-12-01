@@ -325,9 +325,9 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
                                 _phoneController.text;
 
                             // Now, call the save functions
-                            applicationProvider.saveReviewDetails(
-                                context, widget.jobId, widget.recruiterId, widget.jobTitle);
-                            applicationProvider.saveReviewDetailsInRec(context);
+                            // applicationProvider.saveReviewDetails(
+                            //     context, widget.jobId, widget.recruiterId, widget.jobTitle);
+                            // applicationProvider.saveReviewDetailsInRec(context);
 
                             // If saving is successful, navigate to the next screen
                             Navigator.pushReplacement(
