@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:huzzl_web/views/job%20seekers/interview_screen/job_seeker_interview.dart';
+import 'package:huzzl_web/views/job%20seekers/my_jobs/model/notification.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/views/evaluation_candidate_model.dart';
@@ -283,7 +284,9 @@ class InterviewProvider extends ChangeNotifier {
     );
   }
 
-  void showConfirmationToJoinInterview(BuildContext context, ) {
+  void showConfirmationToJoinInterview(
+    BuildContext context,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1161,5 +1164,44 @@ class InterviewProvider extends ChangeNotifier {
     } catch (e) {
       print('Error fetching shortlisted candidates for user: $e');
     }
+  }
+
+  List<NotificationModel> _notificationList = [];
+  List<NotificationModel> get notificationList => _notificationList;
+
+  Future<List<NotificationModel>> fetchNotification() async {
+    try {
+      final jobSeekerId = getCurrentUserId();
+      _notificationList.clear();
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(jobSeekerId)
+          .collection('notifications')
+          .orderBy('notifDate', descending: true)
+          .get();
+
+      _notificationList = querySnapshot.docs
+          .map((doc) => NotificationModel.fromFirestore(doc))
+          .toList();
+      print("Notification DATA HERE: ${_notificationList.length}");
+      print("Notif title: ${_notificationList[0].jobTitle}");
+
+      return _notificationList;
+    } catch (e) {
+      print('Error fetching notifications jobs: $e');
+      return [];
+    }
+  }
+
+    void viewNotification(NotificationModel notif) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(notif.recruiterId)
+        .collection("notifications")
+        .doc(notif.notificationId)
+        .update({
+      'status': 'read',
+    });
+    debugPrint("Updated status: nabasa na");
   }
 }

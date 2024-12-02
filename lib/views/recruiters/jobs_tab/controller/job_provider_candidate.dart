@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -173,7 +175,7 @@ class JobProviderCandidate extends ChangeNotifier {
 
   String getCurrentUserId() {
     return FirebaseAuth.instance.currentUser!.uid;
-  } 
+  }
 
   String _rejectMessage = "";
   String _hireMessage = "";
@@ -493,6 +495,111 @@ class JobProviderCandidate extends ChangeNotifier {
       }
     } catch (e) {
       print('Error fetching job post details or adding notification: $e');
+    }
+  }
+
+// Push notification to recruiter
+  void pushNotificationToRecruiter(
+    String jobPostId,
+    String jobseekerId,
+    String recruiterId,
+  ) async {
+    try {
+      // Fetch jobseeker details
+      DocumentSnapshot jobseekerSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(jobseekerId)
+          .get();
+
+      if (!jobseekerSnapshot.exists) {
+        print('Jobseeker details not found.');
+        return;
+      }
+
+      // Extract jobseeker details
+      Map<String, dynamic> jobseekerData =
+          jobseekerSnapshot.data() as Map<String, dynamic>;
+
+      // Fetch job post details
+      DocumentSnapshot jobPostSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('job_posts')
+          .doc(jobPostId)
+          .get();
+
+      if (!jobPostSnapshot.exists) {
+        print('Job post not found.');
+        return;
+      }
+
+      // Extract job post details
+      Map<String, dynamic> jobPostData =
+          jobPostSnapshot.data() as Map<String, dynamic>;
+
+      String currentJobTitles = "";
+      String payRate = "";
+
+      // Concatenate job titles
+      if (jobseekerData['currentSelectedJobTitles'] != null) {
+        for (var item in jobseekerData['currentSelectedJobTitles']) {
+          currentJobTitles += "$item, ";
+        }
+        // Remove trailing comma and space
+        if (currentJobTitles.isNotEmpty) {
+          currentJobTitles =
+              currentJobTitles.substring(0, currentJobTitles.length - 2);
+        }
+      }
+
+      // Format pay rate
+      Map<String, dynamic>? fetchedMap = jobseekerData['selectedPayRate'];
+      if (fetchedMap != null) {
+        int? minimum = fetchedMap['minimum'];
+        int? maximum = fetchedMap['maximum'];
+        String? rate = fetchedMap['rate'];
+
+        if (minimum != null && maximum != null && rate != null) {
+          payRate = "$minimum pesos - $maximum pesos $rate";
+        }
+      }
+
+      String notifTitle = "New Job Application Received!";
+      String message = """
+You have a new application for your job posting: ${jobPostData['jobTitle']}.
+
+Applicant Details:
+Applicant name: ${jobseekerData['firstName']} ${jobseekerData['lastName']}
+Applicant email: ${jobseekerData['email']}
+Applicant phone number: ${jobseekerData['phoneNumber']}
+Applicant current/experience job titles: $currentJobTitles
+Applicant salary rate: $payRate
+
+
+Please review their profile and application to assess their suitability for your job posting. This could be a great opportunity to connect with a qualified candidate!
+""";
+
+      // Push notification to the recruiter's notifications collection
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .collection('notifications')
+          .add({
+        'recruiterId': recruiterId,
+        'jobseekerId': jobseekerId,
+        'jobPostId': jobPostId,
+        'notifDate': DateTime.now(),
+        'notifTitle': notifTitle,
+        'notifMessage': message,
+        'jobseekerName':
+            "${jobseekerData['firstName']} ${jobseekerData['lastName']}",
+        'jobTitle': jobPostData['jobTitle'] ?? 'Unknown',
+        'status': 'not read',
+      });
+
+      print('Notification successfully added to recruiter!');
+    } catch (e) {
+      print('Error pushing notification to recruiter: $e');
     }
   }
 

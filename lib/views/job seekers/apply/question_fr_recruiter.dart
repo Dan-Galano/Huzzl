@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/application_prov.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/application_submitted.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/review_details.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:provider/provider.dart';
 
@@ -81,6 +82,7 @@ class _QuestionFromRecScreenState extends State<QuestionFromRecScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var jobProviderCandidate = Provider.of<JobProviderCandidate>(context);
     return Scaffold(
       body: Column(
         children: [
@@ -227,6 +229,13 @@ class _QuestionFromRecScreenState extends State<QuestionFromRecScreen> {
                             preScreenAnswer,
                           );
                           // applicationProvider.saveReviewDetailsInRec(context);
+
+                          //After apply push notification to recruiter
+                          jobProviderCandidate.pushNotificationToRecruiter(
+                            widget.jobId,
+                            widget.uid,
+                            widget.recruiterId,
+                          );
 
                           Navigator.push(
                               context,

@@ -20,6 +20,7 @@ import 'package:huzzl_web/views/recruiters/interview_tab/views/start_interview_s
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
+import 'package:huzzl_web/views/recruiters/notification/notif_screen_recruiter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -257,10 +258,14 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         );
       case 3:
         if (interviewProvider.startInterview) {
-          return StartInterviewScreen(interviewDetails: interviewProvider.interviewDetails!,);
+          return StartInterviewScreen(
+            interviewDetails: interviewProvider.interviewDetails!,
+          );
         }
         if (interviewProvider.showEvalScreen) {
-          return EvaluationScreen(interviewDetails: interviewProvider.interviewDetails!,);
+          return EvaluationScreen(
+            interviewDetails: interviewProvider.interviewDetails!,
+          );
         }
         return buildInterviewsContent();
       case 4:
@@ -346,7 +351,15 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             const SizedBox(width: 10),
             sizingInformation.isDesktop
                 ? IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return RecruiterNotifScreen();
+                          },
+                        ),
+                      );
+                    },
                     icon: Image.asset('assets/images/notif-icon-recruiter.png',
                         width: 25),
                   )

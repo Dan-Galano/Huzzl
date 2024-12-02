@@ -20,7 +20,7 @@ class ApplicationProvider with ChangeNotifier {
     return Provider.of<JobProvider>(context, listen: false);
   }
 
-  // Method to save review details
+  // Method to save review details or pag-apply
   Future<void> saveReviewDetails(
     BuildContext context,
     String jobId,
