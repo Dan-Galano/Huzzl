@@ -79,6 +79,17 @@ class _ApplicationViewState extends State<ApplicationView> {
 
   Future<void> fetchJobApplication() async {
     try {
+      final jobseekerInformationDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.jobSeekerId)
+          .get();
+
+      final jobseekerData = jobseekerInformationDoc.data();
+
+      setState(() {
+        portfolioPath = jobseekerData!['portfolioFileName'];
+      });
+
       final jobApplicationDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.jobSeekerId)
@@ -92,7 +103,6 @@ class _ApplicationViewState extends State<ApplicationView> {
         if (jobApplicationData != null) {
           setState(() {
             preScreenAnswer = jobApplicationData['preScreenAnswer'] ?? [];
-            portfolioPath = jobApplicationData['portfolioPath'] ?? "";
           });
           print("List of answer ${preScreenAnswer.length}");
         } else {
@@ -266,7 +276,7 @@ class _ApplicationViewState extends State<ApplicationView> {
                           maxWidth: 800,
                         ),
                         child: SfPdfViewer.asset(
-                          'assets/pdf/portfolio.pdf',
+                          'assets/pdf/$portfolioPath',
                           canShowScrollHead: true,
                           canShowScrollStatus: true,
                           onDocumentLoaded: (details) =>
