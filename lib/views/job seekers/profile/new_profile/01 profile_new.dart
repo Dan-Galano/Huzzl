@@ -609,11 +609,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: TextButton.styleFrom(
                               backgroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(20),
                                 side: BorderSide(
                                     color: Color(0xff202855).withOpacity(0.3)),
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 50),
+                              padding: const EdgeInsets.symmetric(vertical: 30),
                             ),
                             child: Text(
                               "Build your huzzl resume",
@@ -628,7 +628,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 40),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               "Portfolio",
@@ -639,45 +639,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Color(0xff202855),
                               ),
                             ),
-                            Row(
-                              children: [
-                                if (portfolioFileName.isNotEmpty &&
-                                    portfolioFileName != "notset") ...[
-                                  TextButton(
-                                    onPressed: () async {
-                                      final shouldDelete =
-                                          await _showDeleteConfirmationDialog(
-                                              context);
-
-                                      if (shouldDelete) {
-                                        _deletePortFolio();
-                                      }
-                                    },
-                                    child: Text(
-                                      "Delete Portfolio",
-                                      style: TextStyle(
-                                          color: const Color.fromARGB(
-                                              255, 195, 68, 59)),
-                                    ),
-                                  ),
-                                  Gap(20),
-                                ],
-                                TextButton(
-                                  onPressed: () async {
-                                    bool isSuccess =
-                                        await fileUploader.uploadFile(context);
-                                    _fetchPortfolio();
-                                  },
-                                  child: Text(
-                                    portfolioFileName.isEmpty ||
-                                            portfolioFileName == "notset"
-                                        ? "Upload PDF file"
-                                        : "Replace Portfolio",
-                                    style: TextStyle(color: Colors.orange),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                         const SizedBox(height: 10),
@@ -685,7 +646,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Container(
-                              padding: EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                   border: portfolioFileName.isEmpty
                                       ? null
@@ -693,7 +653,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           ? null
                                           : Border.all(
                                               color: Colors.grey, width: 0.5),
-                                  borderRadius: BorderRadius.circular(30)),
+                                  borderRadius: BorderRadius.circular(20)),
                               child: Center(
                                 child: portfolioFileName.isEmpty
                                     ? Shimmer.fromColors(
@@ -714,84 +674,150 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       )
                                     : portfolioFileName == "notset"
-                                        ? Row(
-                                            children: [
-                                              Expanded(
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                      color: Colors.grey,
-                                                      width: 0.5,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
+                                        ? SizedBox(
+                                            width: double.infinity,
+                                            child: TextButton(
+                                              onPressed: () async {
+                                                bool isSuccess =
+                                                    await fileUploader
+                                                        .uploadFile(context);
+                                                _fetchPortfolio();
+                                              },
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  side: BorderSide(
+                                                      color: Color(0xff202855)
+                                                          .withOpacity(0.3)),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 30),
+                                              ),
+                                              child: Text(
+                                                "Upload your career portfolio",
+                                                style: TextStyle(
+                                                  fontFamily: 'Galano',
+                                                  fontSize: 16,
+                                                  color: Color(0xff202855),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : Padding(
+                                            padding: const EdgeInsets.all(20.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                // ConstrainedBox(
+                                                //   constraints:
+                                                //       const BoxConstraints(
+                                                //     maxHeight: 900,
+                                                //     maxWidth: 800,
+                                                //   ),
+                                                //   child: SfPdfViewer.asset(
+                                                //     'assets/pdf/$portfolioFileName',
+                                                //     controller:
+                                                //         _pdfViewerController,
+                                                //     initialZoomLevel: 1.0,
+                                                //     canShowScrollHead: true,
+                                                //     canShowScrollStatus: true,
+                                                //     onDocumentLoaded: (details) {
+                                                //       print('Document loaded');
+                                                //       print(
+                                                //           'Portfolio Path: assets/pdf/$portfolioFileName');
+                                                //     },
+                                                //     onDocumentLoadFailed:
+                                                //         (details) {
+                                                //       print(
+                                                //           'Portfolio Path: assets/pdf/$portfolioFileName');
+
+                                                //       print(
+                                                //           'Document failed to load');
+                                                //     },
+                                                //   ),
+                                                // ),
+                                                Row(children: [
+                                                  Image.asset(
+                                                    'assets/images/portfolio_icon.png',
+                                                    height: 30,
                                                   ),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              50),
-                                                      child: Text(
-                                                        'Your portfolio will appear here',
-                                                        style: TextStyle(
-                                                          fontStyle:
-                                                              FontStyle.italic,
-                                                          fontSize: 16,
-                                                          color: Colors.grey,
-                                                        ),
+                                                  Gap(10),
+                                                  Text(
+                                                    portfolioFileName,
+                                                    style: TextStyle(
+                                                      fontFamily: 'Galano',
+                                                      fontSize: 16,
+                                                      color: Color(0xff202855),
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  if (portfolioFileName
+                                                          .isNotEmpty &&
+                                                      portfolioFileName !=
+                                                          "notset") ...[
+                                                    Gap(10),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.delete,
+                                                        size: 20,
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 165, 66, 59),
+                                                      ),
+                                                      onPressed: () async {
+                                                        final shouldDelete =
+                                                            await _showDeleteConfirmationDialog(
+                                                                context);
+
+                                                        if (shouldDelete) {
+                                                          _deletePortFolio();
+                                                        }
+                                                      },
+                                                    ),
+                                                    Gap(5),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.edit,
+                                                        size: 20,
+                                                        color: Colors
+                                                            .amber.shade900,
+                                                      ),
+                                                      onPressed: () async {
+                                                        bool isSuccess =
+                                                            await fileUploader
+                                                                .uploadFile(
+                                                                    context);
+                                                        _fetchPortfolio();
+                                                      },
+                                                    )
+                                                  ],
+                                                ]),
+
+                                                Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: TextButton(
+                                                    onPressed: () =>
+                                                        openPdfInNewTab(
+                                                            'assets/pdf/$portfolioFileName'),
+                                                    child: Text(
+                                                      "See Portfolio",
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xff202855),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          )
-                                        : Column(
-                                            children: [
-                                              ConstrainedBox(
-                                                constraints:
-                                                    const BoxConstraints(
-                                                  maxHeight: 900,
-                                                  maxWidth: 800,
-                                                ),
-                                                child: SfPdfViewer.asset(
-                                                  'assets/pdf/$portfolioFileName',
-                                                  controller:
-                                                      _pdfViewerController,
-                                                  initialZoomLevel: 1.0,
-                                                  canShowScrollHead: true,
-                                                  canShowScrollStatus: true,
-                                                  onDocumentLoaded: (details) {
-                                                    print('Document loaded');
-                                                    print(
-                                                        'Portfolio Path: assets/pdf/$portfolioFileName');
-                                                  },
-                                                  onDocumentLoadFailed:
-                                                      (details) {
-                                                    print(
-                                                        'Portfolio Path: assets/pdf/$portfolioFileName');
-
-                                                    print(
-                                                        'Document failed to load');
-                                                  },
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: TextButton(
-                                                  onPressed: () => openPdfInNewTab(
-                                                      'assets/pdf/$portfolioFileName'),
-                                                  child: Text(
-                                                    "Open Portfolio in New Tab",
-                                                    style: TextStyle(
-                                                      color: Color(0xFFff9800),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                               ),
                             ),

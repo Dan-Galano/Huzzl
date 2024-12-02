@@ -16,8 +16,6 @@ class SetupResumeDialog extends StatefulWidget {
 }
 
 class _SetupResumeDialogState extends State<SetupResumeDialog> {
-
-  
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -25,7 +23,7 @@ class _SetupResumeDialogState extends State<SetupResumeDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.4,
-        height: MediaQuery.of(context).size.height * 0.7,
+        height: MediaQuery.of(context).size.height * 0.5,
         child: Padding(
           padding: EdgeInsets.all(40.0),
           child: Center(
@@ -38,7 +36,7 @@ class _SetupResumeDialogState extends State<SetupResumeDialog> {
                     Text(
                       "Let's set up your ",
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 20,
                         color: Color(0xff373030),
                         fontFamily: 'Galano',
                         fontWeight: FontWeight.w700,
@@ -47,7 +45,7 @@ class _SetupResumeDialogState extends State<SetupResumeDialog> {
                     Text(
                       'huzzl ',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 20,
                         color: Colors.orange,
                         fontFamily: 'Galano',
                         fontWeight: FontWeight.w700,
@@ -56,7 +54,7 @@ class _SetupResumeDialogState extends State<SetupResumeDialog> {
                     Text(
                       'resume',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 20,
                         color: Color(0xff373030),
                         fontFamily: 'Galano',
                         fontWeight: FontWeight.w700,
@@ -67,7 +65,7 @@ class _SetupResumeDialogState extends State<SetupResumeDialog> {
                 Text(
                   'This helps us create a personalized resume to match you with the best job opportunities.',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 14,
                     color: Color(0xff373030),
                     fontFamily: 'Galano',
                     fontWeight: FontWeight.w100,
