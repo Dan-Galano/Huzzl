@@ -251,6 +251,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
       body: Column(
         children: [
           NavBarLoginRegister(),

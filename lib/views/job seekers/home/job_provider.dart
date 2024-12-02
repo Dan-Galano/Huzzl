@@ -70,9 +70,9 @@ class JobProvider with ChangeNotifier {
       // List<Map<String, String>> linkedInJobs =
       //     parseLinkedInData(linkedInHtmlContent);
       // await fetchLinkedInJobDesc(linkedInJobs);
-      // String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
-      // List<Map<String, String>> onlineJobsJobs =
-      //     parseOnlineJobsData(onlineJobsHtmlContent);
+      String onlineJobsHtmlContent = await fetchOnlineJobsData(searchQuery);
+      List<Map<String, String>> onlineJobsJobs =
+          parseOnlineJobsData(onlineJobsHtmlContent);
       String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
       List<Map<String, String>> kalibrrJobs =
           parseKalibrrData(kalibrrHtmlContent);
@@ -85,7 +85,7 @@ class JobProvider with ChangeNotifier {
       List<Map<String, String>> allJobs = [
         ...huzzlJobs,
         // ...linkedInJobs,
-        // ...onlineJobsJobs,
+        ...onlineJobsJobs,
         ...kalibrrJobs,
         // ...jobstreetJobs,
         ...philJobNetJobs,

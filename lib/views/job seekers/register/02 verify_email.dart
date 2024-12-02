@@ -164,6 +164,7 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
         body: Column(
           children: [
             NavBarLoginRegister(),

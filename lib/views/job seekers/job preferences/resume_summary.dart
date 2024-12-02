@@ -16,7 +16,6 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'dart:html' as html;
 
 class ResumePageSummary extends StatefulWidget {
@@ -51,48 +50,64 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
   List<EducationEntry> educationEntries = [];
   List<ExperienceEntry> experienceEntries = [];
 
+  bool isExporting = false;
   final ScreenshotController _screenshotController = ScreenshotController();
 
   Future<void> _generateAndDownloadPdf(String fullName) async {
+    setState(() {
+      isExporting = true;
+    });
     _showLoadingDialog(context);
+
     try {
       // Capture the widget as an image
       final Uint8List? imageBytes = await _screenshotController.capture();
+
       if (imageBytes == null) {
         print("Failed to capture screenshot.");
-         EasyLoading.instance
-        ..displayDuration = const Duration(milliseconds: 1500)
-        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-        ..loadingStyle = EasyLoadingStyle.custom
-        ..backgroundColor = Color(0xFfd74a4a)
-        ..textColor = Colors.white
-        ..fontSize = 16.0
-        ..indicatorColor = Colors.white
-        ..maskColor = Colors.black.withOpacity(0.5)
-        ..userInteractions = false
-        ..dismissOnTap = true;
-      EasyLoading.showToast(
-        "⚠︎ Cannot export to PDF. Try again later.",
-        dismissOnTap: true,
-        toastPosition: EasyLoadingToastPosition.top,
-        duration: Duration(seconds: 3),
-      );
-      Navigator.pop(context);
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "⚠︎ Cannot export to PDF. Try again later.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+        Navigator.pop(context);
         return;
       }
+
+      setState(() {
+        isExporting = false;
+      });
 
       // Create a PDF document
       final pdf = pw.Document();
 
-      // Add the screenshot image to the PDF
+      // Add the screenshot image to the PDF, aligned at the top, centered horizontally
       final image = pw.MemoryImage(imageBytes);
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.legal,
-          build: (pw.Context context) => pw.Center(
-            child: pw.Image(image,
-                width: PdfPageFormat.legal.width *0.95,
-                height: PdfPageFormat.legal.height * 0.95),
+          build: (pw.Context context) => pw.Column(
+            children: [
+              pw.SizedBox(
+                  height: 0), // No extra space above (or minimal if you want)
+              pw.Image(image,
+                  width: PdfPageFormat.legal.width *
+                      0.95, // Center image horizontally
+                  height: PdfPageFormat.legal.height *
+                      0.65), // Adjust height to fit the page (optional)
+            ],
           ),
         ),
       );
@@ -150,31 +165,31 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
     }
   }
 
-  String _getEducationTimePeriod(EducationEntry entry) {
-    String fromPeriod =
-        _getFormattedDate(entry.fromSelectedMonth, entry.fromSelectedYear);
-    String toPeriod = entry.isPresent
-        ? 'Present'
-        : _getFormattedDate(entry.toSelectedMonth, entry.toSelectedYear);
+  // String _getEducationTimePeriod(EducationEntry entry) {
+  //   String fromPeriod =
+  //       _getFormattedDate(entry.fromSelectedMonth, entry.fromSelectedYear);
+  //   String toPeriod = entry.isPresent
+  //       ? 'Present'
+  //       : _getFormattedDate(entry.toSelectedMonth, entry.toSelectedYear);
 
-    if (fromPeriod == toPeriod) {
-      return fromPeriod;
-    } else {
-      if (entry.fromSelectedMonth == null || entry.fromSelectedMonth!.isEmpty) {
-        return '$fromPeriod${toPeriod != 'Present' ? ' to $toPeriod' : ''}';
-      } else {
-        return '$fromPeriod${toPeriod != 'Present' ? ' to $toPeriod' : ''}';
-      }
-    }
-  }
+  //   if (fromPeriod == toPeriod) {
+  //     return fromPeriod;
+  //   } else {
+  //     if (entry.fromSelectedMonth == null || entry.fromSelectedMonth!.isEmpty) {
+  //       return '$fromPeriod${toPeriod != 'Present' ? ' to $toPeriod' : ''}';
+  //     } else {
+  //       return '$fromPeriod${toPeriod != 'Present' ? ' to $toPeriod' : ''}';
+  //     }
+  //   }
+  // }
 
-  String _getFormattedDate(String? month, int? year) {
-    if (month == null || month.isEmpty) {
-      return year != null ? '$year' : '';
-    }
+  // String _getFormattedDate(String? month, int? year) {
+  //   if (month == null || month.isEmpty) {
+  //     return year != null ? '$year' : '';
+  //   }
 
-    return '$month $year';
-  }
+  //   return '$month $year';
+  // }
 
   void _showLoadingDialog(BuildContext context) {
     showDialog(
@@ -208,6 +223,10 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
       'skills': selectedSkills,
       'education': educationEntries.map((entry) => entry.toMap()).toList(),
       'experience': experienceEntries.map((entry) => entry.toMap()).toList(),
+      'selectedLocation': appState.selectedLocation,
+      'selectedPayRate': appState.selectedPayRate,
+      'currentSelectedJobTitles': appState.currentSelectedJobTitles,
+      'updatedAt': DateTime.now(),
     };
 
     Map<String, dynamic> jobPreferences = {
@@ -221,28 +240,22 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
       CollectionReference usersRefJob = firestore.collection('users');
 
-      CollectionReference usersRef =
+      CollectionReference usersRefResume =
           firestore.collection('users').doc(userId).collection('resume');
 
-      QuerySnapshot existingResumes = await usersRef.get();
+      QuerySnapshot existingResumes = await usersRefResume.get();
 
       await usersRefJob
           .doc(userId)
           .set(jobPreferences, SetOptions(merge: true));
-
-      await usersRef.doc(userId).set(jobPreferences, SetOptions(merge: true));
       print('Job preferences saved successfully!');
 
       if (existingResumes.docs.isEmpty) {
-        DocumentReference newResumeDoc = await usersRef.add(resumeData);
-        await newResumeDoc.update(
-            {'resumeDocId': newResumeDoc.id, 'updatedAt': Timestamp.now()});
-        print('Resume created successfully!');
+        DocumentReference newResumeDoc = await usersRefResume.add(resumeData);
       } else {
-        await usersRef
+        await usersRefResume
             .doc(existingResumes.docs.first.id)
             .set(resumeData, SetOptions(merge: true));
-        print('Resume merged successfully!');
       }
 
       print('resume saved successfully!');
@@ -362,7 +375,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                           border: Border.all(color: Colors.grey, width: 0.5),
                           borderRadius: BorderRadius.circular(30)),
                       child: Screenshot(
-                      controller: _screenshotController,
+                        controller: _screenshotController,
                         child: Column(
                           children: [
                             Stack(
@@ -397,30 +410,44 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                             locationData.isNotEmpty
                                         ? Expanded(
                                             child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment
+                                                  .start, // Align content to the start
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Text(
-                                                      '${fname}',
-                                                      style: TextStyle(
-                                                        fontSize: 30,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            Color(0xff373030),
-                                                        fontFamily: 'Galano',
+                                                    Flexible(
+                                                      child: Text(
+                                                        '${fname}',
+                                                        style: TextStyle(
+                                                          fontSize: 30,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              Color(0xff373030),
+                                                          fontFamily: 'Galano',
+                                                        ),
+                                                        maxLines:
+                                                            2, // Allow text to wrap to the next line if needed
+                                                        overflow: TextOverflow
+                                                            .visible,
                                                       ),
                                                     ),
                                                     Gap(5),
-                                                    Text(
-                                                      '${lname}',
-                                                      style: TextStyle(
-                                                        fontSize: 30,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            Color(0xff373030),
-                                                        fontFamily: 'Galano',
+                                                    Flexible(
+                                                      child: Text(
+                                                        '${lname}',
+                                                        style: TextStyle(
+                                                          fontSize: 30,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              Color(0xff373030),
+                                                          fontFamily: 'Galano',
+                                                        ),
+                                                        maxLines:
+                                                            2, // Allow text to wrap to the next line if needed
+                                                        overflow: TextOverflow
+                                                            .visible,
                                                       ),
                                                     ),
                                                   ],
@@ -436,6 +463,9 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                       color: Color(0xff373030),
                                                       fontFamily: 'Galano',
                                                     ),
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.visible,
                                                   ),
                                                 ),
                                                 Gap(5),
@@ -449,6 +479,9 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                       color: Color(0xff373030),
                                                       fontFamily: 'Galano',
                                                     ),
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.visible,
                                                   ),
                                                 ),
                                                 Gap(5),
@@ -456,16 +489,20 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                   alignment:
                                                       Alignment.centerLeft,
                                                   child: Text(
-                                                    '${(locationData['otherLocation']?.trim() ?? '').isNotEmpty ? locationData['otherLocation']!.trim() + ' ' : ''}'
-                                                    '${(locationData['barangayName']?.trim() ?? '').isNotEmpty ? locationData['barangayName']!.trim() + ', ' : ''}'
-                                                    '${(locationData['cityName']?.trim() ?? '').isNotEmpty ? locationData['cityName']!.trim() + ', ' : ''}'
-                                                    '${(locationData['provinceName']?.trim() ?? '').isNotEmpty ? locationData['provinceName']!.trim() + ', ' : ''}'
-                                                    '${(locationData['regionName']?.trim() ?? '').isNotEmpty ? locationData['regionName']!.trim() : ''}',
+                                                    '${locationData['otherLocation'] ?? ''} '
+                                                    '${locationData['barangayName'] != null ? locationData['barangayName'] + ', ' : ''}'
+                                                    '${locationData['cityName'] != null ? locationData['cityName'] + ', ' : ''}'
+                                                    '${locationData['provinceName'] != null ? locationData['provinceName'] + ', ' : ''}'
+                                                    '${locationData['regionName'] ?? ''}',
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       color: Color(0xff373030),
                                                       fontFamily: 'Galano',
                                                     ),
+                                                    maxLines:
+                                                        3, // Allow wrapping onto multiple lines
+                                                    overflow:
+                                                        TextOverflow.visible,
                                                   ),
                                                 ),
                                               ],
@@ -501,14 +538,15 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                           ),
                                   ],
                                 ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {},
+                                if (!isExporting)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {},
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                             Padding(
@@ -587,14 +625,15 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {},
+                                if (!isExporting)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {},
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                             Padding(
@@ -691,14 +730,15 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {},
+                                if (!isExporting)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {},
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                             Padding(
@@ -738,10 +778,18 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                       final entry =
                                                           educationEntries[
                                                               index];
-                                                      String timePeriod =
-                                                          _getEducationTimePeriod(
-                                                              entry);
-                                            
+                                                  String timePeriod = entry.isPresent
+    ? (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
+        ? (entry.toSelectedMonth == null
+            ? '${entry.toSelectedYear}'
+            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
+    : (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
+        ? (entry.toSelectedMonth == null
+            ? '${entry.toSelectedYear}'
+            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
+
                                                       return Row(
                                                         children: [
                                                           Expanded(
@@ -805,55 +853,50 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                                     SizedBox(
                                                                         height:
                                                                             8.0),
-                                                                    Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .school_rounded,
-                                                                            color:
-                                                                                Colors.black54,
-                                                                            size: 15),
-                                                                        Gap(5),
-                                                                        Text(
-                                                                          entry
-                                                                              .institutionName,
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                16.0,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            color:
-                                                                                Colors.black54,
+                                                                    if (entry
+                                                                        .institutionName
+                                                                        .isNotEmpty)
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(
+                                                                              Icons.school_rounded,
+                                                                              color: Colors.black54,
+                                                                              size: 15),
+                                                                          Gap(5),
+                                                                          Text(
+                                                                            entry.institutionName,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 16.0,
+                                                                              fontWeight: FontWeight.w500,
+                                                                              color: Colors.black54,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
+                                                                        ],
+                                                                      ),
                                                                     SizedBox(
                                                                         height:
                                                                             4.0),
-                                                                    Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .location_on_rounded,
-                                                                            color:
-                                                                                Colors.black54,
-                                                                            size: 15),
-                                                                        Gap(5),
-                                                                        Text(
-                                                                          entry
-                                                                              .institutionAddress,
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                14.0,
-                                                                            color:
-                                                                                Colors.black54,
+                                                                    if (entry
+                                                                        .institutionAddress
+                                                                        .isNotEmpty)
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(
+                                                                              Icons.location_on_rounded,
+                                                                              color: Colors.black54,
+                                                                              size: 15),
+                                                                          Gap(5),
+                                                                          Text(
+                                                                            entry.institutionAddress,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 14.0,
+                                                                              color: Colors.black54,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
+                                                                        ],
+                                                                      ),
                                                                     SizedBox(
                                                                         height:
                                                                             8.0),
@@ -931,14 +974,15 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {},
+                                if (!isExporting)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {},
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                             Padding(
@@ -978,11 +1022,19 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                       final entry =
                                                           experienceEntries[
                                                               index];
-                                                      String timePeriod = entry
-                                                              .isPresent
-                                                          ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
-                                                          : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
-                                            
+                                                  String timePeriod = entry.isPresent
+    ? (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
+        ? (entry.toSelectedMonth == null
+            ? '${entry.toSelectedYear}'
+            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
+    : (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
+        ? (entry.toSelectedMonth == null
+            ? '${entry.toSelectedYear}'
+            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
+
+
                                                       return Row(
                                                         children: [
                                                           Expanded(
@@ -1046,55 +1098,50 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                                     SizedBox(
                                                                         height:
                                                                             8.0),
-                                                                    Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .business_center_rounded,
-                                                                            color:
-                                                                                Colors.black54,
-                                                                            size: 15),
-                                                                        Gap(5),
-                                                                        Text(
-                                                                          entry
-                                                                              .companyName,
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                16.0,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            color:
-                                                                                Colors.black54,
+                                                                    if (entry
+                                                                        .companyName
+                                                                        .isNotEmpty)
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(
+                                                                              Icons.business_center_rounded,
+                                                                              color: Colors.black54,
+                                                                              size: 15),
+                                                                          Gap(5),
+                                                                          Text(
+                                                                            entry.companyName,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 16.0,
+                                                                              fontWeight: FontWeight.w500,
+                                                                              color: Colors.black54,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
+                                                                        ],
+                                                                      ),
                                                                     SizedBox(
                                                                         height:
                                                                             4.0),
-                                                                    Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .location_on_rounded,
-                                                                            color:
-                                                                                Colors.black54,
-                                                                            size: 15),
-                                                                        Gap(5),
-                                                                        Text(
-                                                                          entry
-                                                                              .companyAddress,
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                14.0,
-                                                                            color:
-                                                                                Colors.black54,
+                                                                    if (entry
+                                                                        .companyAddress
+                                                                        .isNotEmpty)
+                                                                      Row(
+                                                                        children: [
+                                                                          Icon(
+                                                                              Icons.location_on_rounded,
+                                                                              color: Colors.black54,
+                                                                              size: 15),
+                                                                          Gap(5),
+                                                                          Text(
+                                                                            entry.companyAddress,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 14.0,
+                                                                              color: Colors.black54,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
+                                                                        ],
+                                                                      ),
                                                                     SizedBox(
                                                                         height:
                                                                             8.0),
@@ -1172,14 +1219,15 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {},
+                                if (!isExporting)
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {},
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ],

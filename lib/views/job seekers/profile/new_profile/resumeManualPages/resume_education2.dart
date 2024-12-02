@@ -194,7 +194,7 @@ class _ResumePageEducation2State extends State<ResumePageEducation2> {
                                   Row(
                                     children: [
                                       Text(
-                                        'Degree/Qualification',
+                                        'Degree/Qualification/Level of Education',
                                         style: TextStyle(
                                           fontSize: 16,
                                           color: Color(0xff373030),
