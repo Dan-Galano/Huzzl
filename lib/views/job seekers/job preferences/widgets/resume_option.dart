@@ -36,7 +36,7 @@ class _CustomButtonState extends State<CustomButton> {
             EdgeInsets.symmetric(vertical: 25, horizontal: 25),
           ),
           side: WidgetStateProperty.all<BorderSide>(
-            BorderSide(color: Colors.orange, width: 2),
+            BorderSide(color: Colors.orange, width: 1),
           ),
           backgroundColor: WidgetStateProperty.all<Color>(
             _isHovered ? Colors.orange : Colors.white,
@@ -53,7 +53,7 @@ class _CustomButtonState extends State<CustomButton> {
             Text(
               widget.label,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 color: _isHovered ? Colors.white : Colors.orange,
               ),
             ),
@@ -62,7 +62,7 @@ class _CustomButtonState extends State<CustomButton> {
                     " ${widget.sublabel!}",
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w100,
                       color: _isHovered ? Colors.white : Colors.orange,
                     ),

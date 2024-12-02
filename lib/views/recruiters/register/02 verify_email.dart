@@ -126,6 +126,14 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         duration: Duration(seconds: 3),
       );
 
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(
+      //       builder: (_) => PhoneNumberVerification(
+      //             phoneNumber: widget.phoneNumber,
+      //             userCredential: widget.userCredential,
+      //           )),
+      // );
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => CompanyProfileRecruiter(

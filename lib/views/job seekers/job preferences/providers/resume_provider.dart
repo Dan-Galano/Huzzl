@@ -156,4 +156,87 @@ class ResumeProvider with ChangeNotifier {
     experienceEntries = entries;
     notifyListeners();
   }
+
+  Future<void> fetchAndSetResumeDetails(String userId) async {
+  try {
+    final docSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('resume')
+        .limit(1) 
+        .get();
+
+    if (docSnapshot.docs.isNotEmpty) {
+      final data = docSnapshot.docs.first.data();
+
+      if (data.containsKey('fname') && data.containsKey('lname')) {
+        updateName(data['fname'], data['lname']);
+      }
+
+      if (data.containsKey('pnumber')) {
+        updatePhoneNumber(data['pnumber']);
+      }
+
+      if (data.containsKey('email')) {
+        updateEmail(data['email']);
+      }
+
+      if (data.containsKey('location')) {
+        updateLocation(data['location'] as Map<String, dynamic>);
+      }
+
+      if (data.containsKey('objective')) {
+        updateObjective(data['objective']);
+      }
+
+      if (data.containsKey('skills')) {
+        updateSkills(
+          (data['skills'] as List<dynamic>)
+              .map((skill) => skill.toString())
+              .toList(),
+        );
+      }
+
+      if (data.containsKey('education')) {
+        updateEducationEntries(
+          (data['education'] as List<dynamic>)
+              .map((entry) => EducationEntry()
+                ..degree = entry['degree'] ?? ''
+                ..institutionName = entry['institutionName'] ?? ''
+                ..institutionAddress = entry['institutionAddress'] ?? ''
+                ..honorsOrAwards = entry['honorsOrAwards'] ?? ''
+                ..fromSelectedMonth = entry['fromSelectedMonth']
+                ..fromSelectedYear = entry['fromSelectedYear']
+                ..toSelectedMonth = entry['toSelectedMonth']
+                ..toSelectedYear = entry['toSelectedYear']
+                ..isPresent = entry['isPresent'] ?? false)
+              .toList(),
+        );
+      }
+
+      if (data.containsKey('experience')) {
+        updateExperienceEntries(
+          (data['experience'] as List<dynamic>)
+              .map((entry) => ExperienceEntry()
+                ..jobTitle = entry['jobTitle'] ?? ''
+                ..companyName = entry['companyName'] ?? ''
+                ..companyAddress = entry['companyAddress'] ?? ''
+                ..responsibilitiesAchievements =
+                    entry['responsibilitiesAchievements'] ?? ''
+                ..fromSelectedMonth = entry['fromSelectedMonth']
+                ..fromSelectedYear = entry['fromSelectedYear']
+                ..toSelectedMonth = entry['toSelectedMonth']
+                ..toSelectedYear = entry['toSelectedYear']
+                ..isPresent = entry['isPresent'] ?? false)
+              .toList(),
+        );
+      }
+
+
+    }
+  } catch (e) {
+    print('Error fetching resume details: $e');
+  }
+}
+
 }

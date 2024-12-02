@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/location_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
@@ -54,6 +55,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
   }
 
   void _submitLocationForm() {
+    final appState = Provider.of<AppState>(context, listen: false);
     final resumeProvider = Provider.of<ResumeProvider>(context, listen: false);
     final locationProvider =
         Provider.of<LocationProvider>(context, listen: false);
@@ -61,7 +63,7 @@ class _LocationSelectorPageState extends State<LocationSelectorPage> {
     if (_formKey.currentState!.validate()) {
       try {
         final locationData = locationProvider.getLocationData();
-
+        appState.setSelectedLocation(locationData);
         resumeProvider.updateLocation(locationData);
 
         locationData.forEach((key, value) {

@@ -53,7 +53,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-  apiKey: "AIzaSyCZI7RKKwX4a8yS22oZJS85g3mfKtSkfo8",
+   apiKey: "AIzaSyCZI7RKKwX4a8yS22oZJS85g3mfKtSkfo8",
   authDomain: "huzzl02.firebaseapp.com",
   projectId: "huzzl02",
   storageBucket: "huzzl02.firebasestorage.app",
@@ -63,8 +63,8 @@ class DefaultFirebaseOptions {
 
 
 
-  // // na exceeded
-  // static const FirebaseOptions web = FirebaseOptions(
+// // na exceeded
+    // static const FirebaseOptions web = FirebaseOptions(
   //   apiKey: 'AIzaSyAlDCY6OBK4zRlLafxjyG__thsdWZML2CU',
   //   appId: '1:764873088756:web:8966d144e2f5584fb6c8a1',
   //   messagingSenderId: '764873088756',

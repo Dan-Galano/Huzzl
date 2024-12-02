@@ -4,20 +4,25 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/education_entry_model.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/experience_entry_model.dart';
 import 'package:google_generative_ai/google_generative_ai.dart' as prefix;
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/functions/education_sorter.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/functions/experience_sorter.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
+import 'package:provider/provider.dart';
 
 class AutoBuildResumeProvider extends ChangeNotifier {
-  String extractedText = '';
-  String fname = '';
-  String lname = '';
-  String pnumber = '';
-  String email = '';
-  Map<String, dynamic> locationData = {};
-  String objective = '';
-  List<String> selectedSkills = [];
-  List<EducationEntry> educationEntries = [];
-  List<ExperienceEntry> experienceEntries = [];
+  String? extractedText;
+  String? fname;
+  String? lname;
+  String? pnumber;
+  String? email;
+  Map<String, dynamic>? locationData;
+  String? objective;
+  List<String>? selectedSkills;
+  List<EducationEntry>? educationEntries;
+  List<ExperienceEntry>? experienceEntries;
 
-  Future<void> generateResumeContent(String extractedText) async {
+  Future<bool> generateResumeContent(
+      BuildContext context, String extractedText) async {
     try {
       this.extractedText = extractedText;
 
@@ -35,8 +40,14 @@ class AutoBuildResumeProvider extends ChangeNotifier {
 ${extractedText}
 
 \n
-Please extract the following resume information from the provided text above. Always input each data in a bracket. Strictly follow this specific structure (including spacing) Refer to example output:
 
+If the above is not a resume type and then just say 'error', nothing else.
+Please extract the following resume information from the provided text above. Always input each data in a bracket. Strictly follow this specific structure (including spacing) Refer to example output:
+Important Notes:
+If any information is missing or unclear, please leave it as `null` or empty.
+Please ensure the response strictly follows this format for each section.
+Avoid adding any additional text or explanations outside the required fields.
+Ensure that each field is populated according to the information found in the text. If a section is not present in the text, leave it as null like 'first-name:[null]'.
 
 1. Personal Information:
   first-name:[First Name] (e.g. output this as 'first-name: [Allen]')
@@ -55,42 +66,66 @@ Please extract the following resume information from the provided text above. Al
   objective:[Objective/Summary/Introduction Text] (if not explicitly mentioned, you can get it based on the overall info available)
 
 4. Skills:
-   skills:[List of Skills] (If skills are not explicitly mentioned, extract them from the objective or other relevant sections.)
+   skills:[List of Skills] (If skills are not explicitly mentioned, extract them from the objective or other relevant sections. separate by comma e.g. [adaptability, creativity])
 
-5. Education:
-  degree: [Degree]
-  institution-name: [Institution Name]
-  institution address: [Institution Address]
-  Honors, awards, coursework, or any other descriptions: [Honors or Descriptions]
-  Start year: [Start Year]
-  End year: [End Year] (if available)
+5. Education: (add another set of this {degree,institution-name,institution-address,honors-awards,start-year,end-year} if there's more than one. the latest based on dates will be always on the top of the list)
+  degree:[Degree or level of education]
+  institution-name:[Institution Name]
+  institution-address:[Institution Address]
+  honors-awards:[Honors, awards, coursework, or any other descriptions] (use semicolon ';' to separate every description, e.g., '[statement1; statement2; statement3]')
+  start-month:[Start month] (e.g. 'January')
+  start-year:[Start Year] (e.g. '2024')
+  end-month:[End month] (e.g. 'December')
+  end-year:[End Year] (if 'Present' available, then set 'isPresent' to true value)
+  isPresent:[true/false] (see the whole info indicating Present like currently enrolled, etc.)
 
-  If any of the education details are missing or unclear, leave them as null or empty.
 
-6. Experience:
-  Job title: [Job Title]
-  Company name: [Company Name]
-  Company address: [Company Address]
-  Job responsibilities or achievements: [Responsibilities/Achievements]
-  Start year: [Start Year]
-  End year: [End Year] (if available)
-
-   If any of the experience details are missing or unclear, leave them as null or empty.
-
-Important Notes:
-If any information is missing or unclear, please leave it as `null` or empty.
-Please ensure the response strictly follows this format for each section.
-Avoid adding any additional text or explanations outside the required fields.
-
-Ensure that each field is populated according to the information found in the text. If a section is not present in the text, leave it as null like 'first-name:[null]'.
+6. Experience:(add another set of this {job-title,company-name,company-address,job-responsibilities-achievements,start-year,end-year} if there's more than one. the latest based on dates will be always on the top of the list)
+  job-title:[Job Title]
+  company-name:[Company Name]
+  company-address:[Company Address]
+  job-responsibilities-achievements:[Responsibilities/Achievements/description](use semicolon ';' to separate every description, e.g., '[statement1; statement2; statement3]')
+  start-month:[Start month] (e.g. 'January')
+  start-year:[Start year] (e.g. '2024')
+  end-month:[End month] (e.g. 'December')
+  end-year:[End Year] (if 'Present' available, then set 'isPresent' to true value)
+  isPresent:[true/false] (see the whole info indicating Present like currently working, etc.)
 """;
 
       print("passed here 2");
       final response =
           await model.generateContent([prefix.Content.text(prompt)]);
-      print(response.text!);
+      if (response.text!.trim().toLowerCase().contains('error')) {
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = const Color(0xFfd74a4a)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
 
-      _processResumeData(response.text!);
+        EasyLoading.showToast(
+          "⚠︎ There's error occured. Please try again later.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 5),
+        );
+        return false;
+      }
+      final finalResponse = response.text!
+          .split('\n')
+          .map((line) => line.trim())
+          .where((line) => line.isNotEmpty)
+          .map((line) => '$line')
+          .join('\n');
+      print(finalResponse);
+
+      _processResumeData(context, finalResponse);
+      return true;
     } catch (error) {
       EasyLoading.instance
         ..displayDuration = const Duration(milliseconds: 1500)
@@ -110,68 +145,77 @@ Ensure that each field is populated according to the information found in the te
         toastPosition: EasyLoadingToastPosition.top,
         duration: Duration(seconds: 5),
       );
+      return false;
     }
   }
 
-  void _processResumeData(String responseText) {
-    fname = _extractPersonalInfo(responseText, 'first_name');
-    print("First Name: $fname");
+  void _processResumeData(BuildContext context, String responseText) {
+    final resumeProvider = Provider.of<ResumeProvider>(context, listen: false);
+    // Extract personal info
+    String firstName = _extractPersonalInfo(responseText, 'first_name') ?? '';
+    String lastName = _extractPersonalInfo(responseText, 'last_name') ?? '';
+    String phoneNumber =
+        _extractPersonalInfo(responseText, 'phone_number') ?? '';
+    String emailAddress = _extractPersonalInfo(responseText, 'email') ?? '';
 
-    lname = _extractPersonalInfo(responseText, 'last_name');
-    print("Last Name: $lname");
+    // Update the resume provider with personal info
+    resumeProvider.updateName(firstName, lastName);
+    resumeProvider.updateEmail(emailAddress);
+    resumeProvider.updatePhoneNumber(phoneNumber);
 
-    pnumber = _extractPersonalInfo(responseText, 'phone_number') ?? '';
-    print("Phone Number: $pnumber");
+    // Extract and update location data
+    Map<String, dynamic> locationData = _extractLocationData(responseText);
+    resumeProvider.updateLocation(locationData);
 
-    email = _extractPersonalInfo(responseText, 'email') ?? '';
-    print("Email: $email");
+    // Extract and update objective
+    String objectiveText = _extractObjective(responseText) ?? '';
+    resumeProvider.updateObjective(objectiveText);
 
-    locationData = _extractLocationData(responseText);
-    print("Location Data: $locationData");
+    // Extract and update skills
+    List<String> skills = _extractSkills(responseText);
+    resumeProvider.updateSkills(skills);
 
-    objective = _extractObjective(responseText);
-    print("Objective: $objective");
+    // Extract and update education entries
+    List<EducationEntry> educationEntries =
+        _extractEducationEntries(responseText);
+    resumeProvider.updateEducationEntries(educationEntries);
 
-    selectedSkills = _extractSkills(responseText);
-    print("Skills: $selectedSkills");
+    // Extract and update experience entries
+    List<ExperienceEntry> experienceEntries =
+        _extractExperienceEntries(responseText);
+    resumeProvider.updateExperienceEntries(experienceEntries);
 
-    educationEntries = _extractEducationEntries(responseText);
-    print("Education Entries: ");
-    educationEntries.forEach((entry) {
-      print(
-          "Degree: ${entry.degree}, Institution: ${entry.institutionName}, From: ${entry.fromSelectedYear}, To: ${entry.toSelectedYear}");
-    });
-
-    experienceEntries = _extractExperienceEntries(responseText);
-    print("Experience Entries: ");
-    experienceEntries.forEach((entry) {
-      print(
-          "Job Title: ${entry.jobTitle}, Company: ${entry.companyName}, Responsibilities: ${entry.responsibilitiesAchievements}");
-    });
-
-    notifyListeners();
+    // Notify listeners (this is handled inside each update function, no need for another notifyListeners call here)
   }
 
-  String _extractPersonalInfo(String responseText, String field) {
+  String? _extractPersonalInfo(String responseText, String field) {
     switch (field) {
       case 'first_name':
-        return _extractWithRegex(responseText, r'First Name: (\w+)');
+        return _handleNullString(
+            _extractWithRegex(responseText, r'first-name:\[([^\]]+)\]'));
       case 'last_name':
-        return _extractWithRegex(responseText, r'Last Name: (\w+)');
+        return _handleNullString(
+            _extractWithRegex(responseText, r'last-name:\[([^\]]+)\]'));
       case 'phone_number':
-        return _extractWithRegex(
-            responseText, r'Phone: (\+?\d[\d\- ]{7,12}\d)');
+        return _handleNullString(
+            _extractWithRegex(responseText, r'phone-number:\[([^\]]*)\]'));
       case 'email':
-        return _extractWithRegex(responseText, r'Email: (\S+@\S+\.\S+)');
+        return _handleNullString(
+            _extractWithRegex(responseText, r'email-address:\[([^\]]+)\]'));
       default:
-        return '';
+        return null;
     }
   }
 
-  String _extractWithRegex(String text, String pattern) {
+  String? _handleNullString(String? value) {
+    // Check if the value is 'null' (as a string) and return null instead
+    return (value != null && value.trim() != 'null') ? value : null;
+  }
+
+  String? _extractWithRegex(String text, String pattern) {
     final regex = RegExp(pattern);
     final match = regex.firstMatch(text);
-    return match != null ? match.group(1) ?? '' : '';
+    return match != null ? match.group(1)?.trim() : null;
   }
 
   Map<String, dynamic> _extractLocationData(String responseText) {
@@ -185,30 +229,40 @@ Ensure that each field is populated according to the information found in the te
     return location;
   }
 
-  String _extractLocationField(String responseText, String field) {
+  String? _extractLocationField(String responseText, String field) {
+    String? value = '';
     switch (field) {
       case 'region':
-        return _extractWithRegex(responseText, r'Region: ([\w\s]+)');
+        value = _extractWithRegex(responseText, r'region:\[([^\]]*)\]');
+        break;
       case 'province':
-        return _extractWithRegex(responseText, r'Province: ([\w\s]+)');
+        value = _extractWithRegex(responseText, r'province:\[([^\]]*)\]');
+        break;
       case 'city':
-        return _extractWithRegex(responseText, r'City: ([\w\s]+)');
+        value = _extractWithRegex(responseText, r'city:\[([^\]]*)\]');
+        break;
       case 'barangay':
-        return _extractWithRegex(responseText, r'Barangay: ([\w\s]+)');
+        value = _extractWithRegex(responseText, r'barangay:\[([^\]]*)\]');
+        break;
       case 'other_location':
-        return _extractWithRegex(responseText, r'Other Location: ([\w\s]+)');
-      default:
-        return '';
+        value = _extractWithRegex(responseText, r'other-location:\[([^\]]*)\]');
+        break;
     }
+
+    // Check if the value is the string 'null' and return null instead
+    return (value != null && value.trim() != 'null') ? value : null;
   }
 
-  String _extractObjective(String responseText) {
-    return _extractWithRegex(responseText, r'Objective: ([\s\S]+?)\n');
+  String? _extractObjective(String responseText) {
+    return _handleNullString(
+        _extractWithRegex(responseText, r'objective:\[([^\]]+)\]'));
   }
 
   List<String> _extractSkills(String responseText) {
-    String skillsText =
-        _extractWithRegex(responseText, r'Skills: ([\s\S]+?)\n');
+    String skillsText = _handleNullString(
+            _extractWithRegex(responseText, r'skills:\[([^\]]+)\]')) ??
+        '';
+
     if (skillsText.isNotEmpty) {
       return skillsText.split(',').map((skill) => skill.trim()).toList();
     }
@@ -218,55 +272,109 @@ Ensure that each field is populated according to the information found in the te
   List<EducationEntry> _extractEducationEntries(String responseText) {
     List<EducationEntry> entries = [];
     RegExp regExp = RegExp(
-        r'Degree: ([\w\s]+)\s*Institution: ([\w\s]+)\s*Address: ([\w\s,]+)\s*Honors: ([\w\s]+)\s*From: (\d{4})\s*To: (\d{4})');
+        r'degree:\[([^\]]+)\]\s*institution-name:\[([^\]]+)\]\s*institution-address:\[([^\]]+)\]\s*honors-awards:\[([^\]]+)\]\s*start-month:\[([^\]]+)\]\s*start-year:\[([^\]]*)\]\s*end-month:\[([^\]]+)\]\s*end-year:\[([^\]]*)\]\s*isPresent:\[([^\]]+)\]');
+
     Iterable<RegExpMatch> matches = regExp.allMatches(responseText);
 
     for (var match in matches) {
       EducationEntry entry = EducationEntry();
 
-      entry.degree = match.group(1) ?? '';
-      entry.institutionName = match.group(2) ?? '';
-      entry.institutionAddress = match.group(3) ?? '';
-      entry.honorsOrAwards = match.group(4) ?? '';
-      entry.fromSelectedYear = int.tryParse(match.group(5) ?? '');
-      entry.toSelectedYear = int.tryParse(match.group(6) ?? '');
+      // Extract degree, institution name, institution address, honors, and start/end details
+      entry.degree = _handleNullString(match.group(1)) ?? '';
+      entry.institutionName = _handleNullString(match.group(2)) ?? '';
+      entry.institutionAddress = _handleNullString(match.group(3)) ?? '';
 
-      entry.degreeController.text = entry.degree;
-      entry.institutionNameController.text = entry.institutionName;
-      entry.institutionAddressController.text = entry.institutionAddress;
-      entry.honorsOrAwardsController.text = entry.honorsOrAwards;
+      // Format honors or awards with bullets
+      entry.honorsOrAwards =
+          _formatListWithBullets(_handleNullString(match.group(4)) ?? '');
 
+      entry.fromSelectedMonth = _handleNullString(match.group(5));
+      entry.fromSelectedYear = _handleNullString(match.group(6)) != null
+          ? int.tryParse(match.group(6) ?? '') ?? null
+          : null;
+      entry.toSelectedMonth = _handleNullString(match.group(7));
+      entry.toSelectedYear = _handleNullString(match.group(8)) != null
+          ? int.tryParse(match.group(8) ?? '') ?? null
+          : null;
+
+      // Check if the end year is 'Present'
+      entry.isPresent = match.group(9) == 'true' ? true : false;
+
+      // Assign values to controllers if necessary
+      entry.degreeController.text = entry.degree ?? '';
+      entry.institutionNameController.text = entry.institutionName ?? '';
+      entry.institutionAddressController.text = entry.institutionAddress ?? '';
+      entry.honorsOrAwardsController.text = entry.honorsOrAwards ?? '';
+
+      // Add the entry to the list
       entries.add(entry);
     }
 
+    EducationSorter.sortEducationEntries(entries);
     return entries;
   }
 
   List<ExperienceEntry> _extractExperienceEntries(String responseText) {
     List<ExperienceEntry> entries = [];
     RegExp regExp = RegExp(
-        r'Job Title: ([\w\s]+)\s*Company: ([\w\s]+)\s*Address: ([\w\s,]+)\s*Responsibilities: ([\s\S]+?)\s*(From: (\d{4})\s*To: (\d{4}))');
+        r'job-title:\[([^\]]+)\]\s*company-name:\[([^\]]+)\]\s*company-address:\[([^\]]+)\]\s*job-responsibilities-achievements:\[([^\]]*)\]\s*start-month:\[([^\]]+)\]\s*start-year:\[([^\]]*)\]\s*end-month:\[([^\]]+)\]\s*end-year:\[([^\]]*)\]\s*isPresent:\[([^\]]+)\]');
+
     Iterable<RegExpMatch> matches = regExp.allMatches(responseText);
 
     for (var match in matches) {
       ExperienceEntry entry = ExperienceEntry();
 
-      entry.jobTitle = match.group(1) ?? '';
-      entry.companyName = match.group(2) ?? '';
-      entry.companyAddress = match.group(3) ?? '';
-      entry.responsibilitiesAchievements = match.group(4) ?? '';
-      entry.fromSelectedYear = int.tryParse(match.group(6) ?? '');
-      entry.toSelectedYear = int.tryParse(match.group(7) ?? '');
+      // Extract job title, company name, company address, and job responsibilities
+      entry.jobTitle = _handleNullString(match.group(1)) ??
+          ''; // Fallback to empty string if null
+      entry.companyName = _handleNullString(match.group(2)) ?? '';
+      entry.companyAddress = _handleNullString(match.group(3)) ?? '';
 
+      // Format responsibilities with bullets
+      entry.responsibilitiesAchievements =
+          _formatListWithBullets(_handleNullString(match.group(4)) ?? '');
+
+      // Extract start month and year
+      entry.fromSelectedMonth = _handleNullString(match.group(5)) ?? '';
+      entry.fromSelectedYear = _handleNullString(match.group(6)) != null
+          ? int.tryParse(match.group(6) ?? '') ?? null
+          : null;
+
+      // Extract end month and year
+      entry.toSelectedMonth = _handleNullString(match.group(7)) ?? '';
+      entry.toSelectedYear = _handleNullString(match.group(8)) != null &&
+              match.group(8) != 'Present'
+          ? int.tryParse(match.group(8) ?? '') ?? null
+          : null;
+
+      // Check if the position is currently active (i.e., end year is 'Present')
+      entry.isPresent = match.group(9) == 'true' ? true : false;
+
+      // Assign values to controllers if necessary
       entry.jobTitleController.text = entry.jobTitle;
       entry.companyNameController.text = entry.companyName;
       entry.companyAddressController.text = entry.companyAddress;
       entry.responsibilitiesAchievementsController.text =
           entry.responsibilitiesAchievements;
 
+      // Add the entry to the list
       entries.add(entry);
     }
 
+    ExperienceSorter.sortExperienceEntries(entries);
     return entries;
+  }
+
+  String _formatListWithBullets(String text) {
+    if (text.isEmpty) return ''; // Return empty string if text is empty
+
+    // Split the text by semicolons and remove extra spaces
+    List<String> items = text.split(';').map((item) => item.trim()).toList();
+
+    // Remove empty items
+    items.removeWhere((item) => item.isEmpty);
+
+    // Join with bullet points
+    return items.map((item) => '• $item').join('\n');
   }
 }

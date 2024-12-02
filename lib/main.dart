@@ -20,6 +20,8 @@ import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/Landing_Page/landing_page.dart';
 import 'package:huzzl_web/landing%20page/landing_page.dart';
 import 'package:huzzl_web/views/job%20seekers/my_jobs/my_jobs.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/providers/portfolio_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/providers/user-profile_provider.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
@@ -50,6 +52,8 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ResumeProvider()),
         ChangeNotifierProvider(create: (context) => LocationProvider()),
         ChangeNotifierProvider(create: (context) => AutoBuildResumeProvider()),
+        ChangeNotifierProvider(create: (context) => PortfolioProvider()),
+        ChangeNotifierProvider(create: (context) => UserProfileProvider()),
         ChangeNotifierProvider(
           create: (context) {
             final hiringManagerProvider = HiringManagerProvider();

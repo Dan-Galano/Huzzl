@@ -6,7 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart'; 
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;

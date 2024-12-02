@@ -7,21 +7,15 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/autobu
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
-import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/loading_dialog.dart';
-import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:docx_to_text/docx_to_text.dart';
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
-import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
-import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ResumePage extends StatefulWidget {
+  final Function(int) jumpToPage;
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(Map<String, dynamic>) onSaveResumeSetup;
@@ -29,6 +23,7 @@ class ResumePage extends StatefulWidget {
   final int noOfPages;
   const ResumePage({
     super.key,
+    required this.jumpToPage,
     required this.nextPage,
     required this.previousPage,
     required this.onSaveResumeSetup,
@@ -111,6 +106,7 @@ class _ResumePageState extends State<ResumePage> {
 
   void _extractFromTxt(Uint8List fileBytes) async {
     try {
+      _showLoadingDialog(context);
       String extractedText = String.fromCharCodes(fileBytes);
 
       setState(() {
@@ -123,6 +119,14 @@ class _ResumePageState extends State<ResumePage> {
         ;
         print("EXTRACTED TEXT: ${_extractedText}");
       });
+      final autoBuildResumeProvider =
+          Provider.of<AutoBuildResumeProvider>(context, listen: false);
+      bool isSucess = await autoBuildResumeProvider.generateResumeContent(
+          context, _extractedText);
+      Navigator.pop(context);
+      if (isSucess == true) {
+        widget.jumpToPage(10);
+      }
     } catch (e) {
       setState(() {
         _extractedText = 'Error during TXT extraction: $e';
@@ -132,6 +136,7 @@ class _ResumePageState extends State<ResumePage> {
 
   void _extractFromPdf(Uint8List fileBytes) async {
     try {
+      _showLoadingDialog(context);
       PdfDocument document = PdfDocument(inputBytes: fileBytes);
       PdfTextExtractor extractor = PdfTextExtractor(document);
       String extractedText = extractor.extractText();
@@ -146,9 +151,15 @@ class _ResumePageState extends State<ResumePage> {
             .map((line) => '$line')
             .join('\n');
         print("EXTRACTED TEXT: ${_extractedText}");
-        final autoBuildResumeProvider = Provider.of<AutoBuildResumeProvider>(context, listen: false);
-        autoBuildResumeProvider.generateResumeContent(_extractedText);
       });
+      final autoBuildResumeProvider =
+          Provider.of<AutoBuildResumeProvider>(context, listen: false);
+      bool isSucess = await autoBuildResumeProvider.generateResumeContent(
+          context, _extractedText);
+      Navigator.pop(context);
+      if (isSucess == true) {
+        widget.jumpToPage(10);
+      }
     } catch (e) {
       setState(() {
         _extractedText = 'Error during PDF extraction: $e';
@@ -158,6 +169,7 @@ class _ResumePageState extends State<ResumePage> {
 
   void _extractFromDocx(Uint8List fileBytes) async {
     try {
+      _showLoadingDialog(context);
       String extractedText = await docxToText(fileBytes);
 
       setState(() {
@@ -169,6 +181,14 @@ class _ResumePageState extends State<ResumePage> {
             .join('\n');
         print("EXTRACTED TEXT: ${_extractedText}");
       });
+      final autoBuildResumeProvider =
+          Provider.of<AutoBuildResumeProvider>(context, listen: false);
+      bool isSucess = await autoBuildResumeProvider.generateResumeContent(
+          context, _extractedText);
+      Navigator.pop(context);
+      if (isSucess == true) {
+        widget.jumpToPage(10);
+      }
     } catch (e) {
       setState(() {
         _extractedText = 'Error during DOCX extraction: $e';
