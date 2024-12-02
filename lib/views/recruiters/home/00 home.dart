@@ -21,6 +21,7 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_cand
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
 import 'package:huzzl_web/views/recruiters/notification/notif_screen_recruiter.dart';
+import 'package:huzzl_web/views/recruiters/subscription/basic_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -257,6 +258,11 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           initialIndex: _jobTabInitialIndex,
         );
       case 3:
+        if (interviewProvider.subscriptionType != "basic") {
+          debugPrint("Hindi pwede sa interview");
+
+          return MembershipPlansPage();
+        }
         if (interviewProvider.startInterview) {
           return StartInterviewScreen(
             interviewDetails: interviewProvider.interviewDetails!,
@@ -267,6 +273,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             interviewDetails: interviewProvider.interviewDetails!,
           );
         }
+        debugPrint("Pwede sa interview");
         return buildInterviewsContent();
       case 4:
         return InterviewCalendar();

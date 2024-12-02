@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/subscription/add_cart.dart';
 
-void main() {
-  runApp(MyApp());
-}
+// void main() {
+//   runApp(MyApp());
+// }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MembershipPlansPage(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: MembershipPlansPage(),
+//       debugShowCheckedModeBanner: false,
+//     );
+//   }
+// }
 
 class MembershipPlansPage extends StatelessWidget {
   @override
@@ -80,14 +80,13 @@ class MembershipPlansPage extends StatelessWidget {
               ],
             ),
           ),
-          Spacer(),
-          Footer(),
+          // Spacer(),
+          // Footer(),
         ],
       ),
     );
   }
 }
-
 
 class MembershipCard extends StatelessWidget {
   final String title;

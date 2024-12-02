@@ -1,5 +1,6 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:docx_to_text/docx_to_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -1193,7 +1194,7 @@ class InterviewProvider extends ChangeNotifier {
     }
   }
 
-    void viewNotification(NotificationModel notif) async {
+  void viewNotification(NotificationModel notif) async {
     await FirebaseFirestore.instance
         .collection("users")
         .doc(notif.recruiterId)
@@ -1203,5 +1204,33 @@ class InterviewProvider extends ChangeNotifier {
       'status': 'read',
     });
     debugPrint("Updated status: nabasa na");
+  }
+
+  String _subscriptionType = "";
+  String get subscriptionType => _subscriptionType;
+
+  void fetchSubscriptionType() async {
+    try {
+      var recruiterId = getCurrentUserId();
+      if (recruiterId == null || recruiterId.isEmpty) {
+        throw Exception("Invalid recruiter ID");
+      }
+
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(recruiterId)
+          .get();
+
+      if (docSnapshot.exists) {
+        _subscriptionType = docSnapshot.data()?["subscriptionType"];
+      } else {
+        throw Exception("Document does not exist");
+      }
+
+      notifyListeners();
+    } catch (e) {
+      // Handle errors (e.g., log them or show a message to the user)
+      print("Error fetching subscription type: $e");
+    }
   }
 }
