@@ -8,15 +8,15 @@ import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-class ProfileScreen extends StatefulWidget {
+class OldProfileScreen extends StatefulWidget {
   final String uid;
-  ProfileScreen({super.key, required this.uid});
+  OldProfileScreen({super.key, required this.uid});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<OldProfileScreen> createState() => _OldProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _OldProfileScreenState extends State<OldProfileScreen> {
   String _extractedText = '';
   String _selectedFileType = '';
 
