@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/closeAccount.dart';
@@ -36,17 +37,32 @@ class _NavBarHomeState extends State<NavBarHome> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Left side: Logo
             SizedBox(
               child: Image.asset('assets/images/huzzl.png', width: 80),
             ),
-            const Spacer(),
+
+            // Spacer to push the center content to the middle
+            Spacer(),
+
+            // Centered buttons (Home and Company Reviews)
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize
+                  .min, // This ensures the row takes only as much space as needed
               children: [
                 _buildNavButton(0, 'Home'),
                 const SizedBox(width: 20),
                 _buildNavButton(1, 'Company Reviews'),
-                const SizedBox(width: 500),
+              ],
+            ),
+
+            // Spacer to push icons to the right
+            Spacer(),
+
+            // Right side: Icons
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 IconButton(
                   onPressed: () {},
                   icon: Image.asset(
@@ -216,6 +232,7 @@ class _NavBarHomeState extends State<NavBarHome> {
   Widget _buildNavButton(int index, String title) {
     return Column(
       children: [
+        Gap(20),
         TextButton(
           onPressed: () {
             // setState(() {
@@ -226,12 +243,15 @@ class _NavBarHomeState extends State<NavBarHome> {
           child: Text(
             title,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               // color: selectedIndex == index ? Colors.blue : Color(0xff373030),
               color: widget.selectedIndex == index
                   ? Colors.blue
                   : Color(0xff373030),
               fontFamily: 'Galano',
+              fontWeight: widget.selectedIndex == index
+                  ? FontWeight.bold
+                  : FontWeight.w300,
             ),
           ),
         ),

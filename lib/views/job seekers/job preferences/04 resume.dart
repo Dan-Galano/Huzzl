@@ -7,18 +7,11 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/autobu
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
-import 'package:huzzl_web/widgets/dropdown/lightblue_dropdown.dart';
 import 'package:huzzl_web/widgets/loading_dialog.dart';
-import 'package:huzzl_web/widgets/textfield/lightblue_prefix.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:docx_to_text/docx_to_text.dart';
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:huzzl_web/views/job%20seekers/home/00%20home.dart';
-import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
-import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class ResumePage extends StatefulWidget {

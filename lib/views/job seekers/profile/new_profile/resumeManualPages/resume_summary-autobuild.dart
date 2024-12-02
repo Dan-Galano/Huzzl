@@ -19,28 +19,18 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'dart:html' as html;
 
-class ResumePageSummary extends StatefulWidget {
-  final VoidCallback nextPage;
+class ResumePageSummary2autoBuild extends StatefulWidget {
   final VoidCallback previousPage;
-  final Function(Map<String, dynamic>) onSaveResumeSetup;
-  final Map<String, dynamic>? currentResumeOption;
-  final int noOfPages;
-  final int noOfResumePages;
-  const ResumePageSummary({
+  const ResumePageSummary2autoBuild({
     super.key,
-    required this.nextPage,
     required this.previousPage,
-    required this.onSaveResumeSetup,
-    required this.currentResumeOption,
-    required this.noOfPages,
-    required this.noOfResumePages,
   });
 
   @override
-  _ResumePageSummaryState createState() => _ResumePageSummaryState();
+  _ResumePageSummary2autoBuildState createState() => _ResumePageSummary2autoBuildState();
 }
 
-class _ResumePageSummaryState extends State<ResumePageSummary> {
+class _ResumePageSummary2autoBuildState extends State<ResumePageSummary2autoBuild> {
   String fname = '';
   String lname = '';
   String pnumber = '';
@@ -50,14 +40,18 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
   List<String> selectedSkills = [];
   List<EducationEntry> educationEntries = [];
   List<ExperienceEntry> experienceEntries = [];
-
+bool isExporting = false;
   final ScreenshotController _screenshotController = ScreenshotController();
 
   Future<void> _generateAndDownloadPdf(String fullName) async {
+    setState(() {
+    isExporting = true;
+  });
     _showLoadingDialog(context);
     try {
       // Capture the widget as an image
       final Uint8List? imageBytes = await _screenshotController.capture();
+      
       if (imageBytes == null) {
         print("Failed to capture screenshot.");
          EasyLoading.instance
@@ -81,6 +75,9 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
         return;
       }
 
+      setState(() {
+    isExporting = false;
+  });
       // Create a PDF document
       final pdf = pw.Document();
 
@@ -96,6 +93,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
           ),
         ),
       );
+
 
       // Save the PDF to Uint8List
       final Uint8List pdfBytes = await pdf.save();
@@ -291,24 +289,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 40),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: LinearPercentIndicator(
-                            animation: true,
-                            animationDuration: 300,
-                            animateFromLastPercent: true,
-                            barRadius: Radius.circular(20),
-                            lineHeight: 10,
-                            percent:
-                                widget.noOfResumePages / widget.noOfResumePages,
-                            backgroundColor: Colors.orange.withOpacity(0.4),
-                            progressColor: Colors.orange,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 40),
+                 
                     Text(
                       'Review your Huzzl resume',
                       style: TextStyle(
@@ -360,7 +341,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                           border: Border.all(color: Colors.grey, width: 0.5),
                           borderRadius: BorderRadius.circular(30)),
                       child: Screenshot(
-                      controller: _screenshotController,
+                    controller: _screenshotController,
                         child: Column(
                           children: [
                             Stack(
@@ -499,6 +480,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                           ),
                                   ],
                                 ),
+                                 if (!isExporting)
                                 Positioned(
                                   top: 0,
                                   right: 0,
@@ -585,6 +567,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
+                                 if (!isExporting)
                                 Positioned(
                                   top: 0,
                                   right: 0,
@@ -689,6 +672,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
+                                 if (!isExporting)
                                 Positioned(
                                   top: 0,
                                   right: 0,
@@ -739,7 +723,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                       String timePeriod =
                                                           _getEducationTimePeriod(
                                                               entry);
-                                            
+                        
                                                       return Row(
                                                         children: [
                                                           Expanded(
@@ -929,6 +913,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
+                                 if (!isExporting)
                                 Positioned(
                                   top: 0,
                                   right: 0,
@@ -980,7 +965,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                               .isPresent
                                                           ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
                                                           : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
-                                            
+                        
                                                       return Row(
                                                         children: [
                                                           Expanded(
@@ -1170,6 +1155,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                     ),
                                   ],
                                 ),
+                                 if (!isExporting)
                                 Positioned(
                                   top: 0,
                                   right: 0,

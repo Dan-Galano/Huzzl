@@ -109,7 +109,7 @@ Ensure that each field is populated according to the information found in the te
           ..dismissOnTap = true;
 
         EasyLoading.showToast(
-          "⚠︎ Oops! It must be a resume.",
+          "⚠︎ There's error occured. Please try again later.",
           dismissOnTap: true,
           toastPosition: EasyLoadingToastPosition.top,
           duration: Duration(seconds: 5),

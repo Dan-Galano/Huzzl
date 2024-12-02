@@ -27,7 +27,7 @@ class _ResumeViewState extends State<ResumeView> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         TextButton(
-          onPressed: () => openPdfInNewTab('assets/pdf/myResume.pdf'),
+          onPressed: () => openPdfInNewTab('assets/pdf/my_portfolio_1.pdf'),
           child: Text(
             "Open Resume in New Tab",
             style: TextStyle(
@@ -42,7 +42,7 @@ class _ResumeViewState extends State<ResumeView> {
               maxWidth: 800,
             ),
             child: SfPdfViewer.asset(
-              'assets/pdf/myResume.pdf',
+              'assets/pdf/my_portfolio_1.pdf',
               controller: _pdfViewerController,
               initialZoomLevel: 1.0,
               canShowScrollHead: true,

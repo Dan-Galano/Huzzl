@@ -19,14 +19,14 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'dart:html' as html;
 
-class ResumePageSummary extends StatefulWidget {
+class ResumePageSummary2 extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback previousPage;
   final Function(Map<String, dynamic>) onSaveResumeSetup;
   final Map<String, dynamic>? currentResumeOption;
   final int noOfPages;
   final int noOfResumePages;
-  const ResumePageSummary({
+  const ResumePageSummary2({
     super.key,
     required this.nextPage,
     required this.previousPage,
@@ -37,10 +37,10 @@ class ResumePageSummary extends StatefulWidget {
   });
 
   @override
-  _ResumePageSummaryState createState() => _ResumePageSummaryState();
+  _ResumePageSummary2State createState() => _ResumePageSummary2State();
 }
 
-class _ResumePageSummaryState extends State<ResumePageSummary> {
+class _ResumePageSummary2State extends State<ResumePageSummary2> {
   String fname = '';
   String lname = '';
   String pnumber = '';
@@ -96,6 +96,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
           ),
         ),
       );
+
 
       // Save the PDF to Uint8List
       final Uint8List pdfBytes = await pdf.save();
@@ -229,6 +230,9 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
       await usersRefJob
           .doc(userId)
           .set(jobPreferences, SetOptions(merge: true));
+      await usersRef
+          .doc(userId)
+          .set(jobPreferences, SetOptions(merge: true));
       print('Job preferences saved successfully!');
 
       if (existingResumes.docs.isEmpty) {
@@ -262,7 +266,6 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
   void initState() {
     super.initState();
     final resumeProvider = Provider.of<ResumeProvider>(context, listen: false);
-
     setState(() {
       fname = resumeProvider.fname ?? '';
       lname = resumeProvider.lname ?? '';
@@ -275,6 +278,8 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
       experienceEntries = resumeProvider.experienceEntries ?? [];
     });
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +365,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                           border: Border.all(color: Colors.grey, width: 0.5),
                           borderRadius: BorderRadius.circular(30)),
                       child: Screenshot(
-                      controller: _screenshotController,
+                    controller: _screenshotController,
                         child: Column(
                           children: [
                             Stack(
@@ -739,7 +744,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                       String timePeriod =
                                                           _getEducationTimePeriod(
                                                               entry);
-                                            
+                        
                                                       return Row(
                                                         children: [
                                                           Expanded(
@@ -980,7 +985,7 @@ class _ResumePageSummaryState extends State<ResumePageSummary> {
                                                               .isPresent
                                                           ? '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present'
                                                           : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}';
-                                            
+                        
                                                       return Row(
                                                         children: [
                                                           Expanded(

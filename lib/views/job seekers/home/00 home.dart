@@ -713,7 +713,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                         // Main content based on search and job data state
                         jobProvider.isLoading
                             ? Padding(
-                                padding: const EdgeInsets.only(top: 150),
+                                padding: const EdgeInsets.only(top: 250),
                                 child: Center(
                                   child: Column(
                                     children: [
