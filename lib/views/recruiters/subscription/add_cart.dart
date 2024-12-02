@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
-class AddCardModal extends StatelessWidget {
+class AddCardModal extends StatefulWidget {
+  @override
+  State<AddCardModal> createState() => _AddCardModalState();
+}
+
+class _AddCardModalState extends State<AddCardModal> {
+  String selectedPaymentMethod = "Gcash";
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -12,7 +19,7 @@ class AddCardModal extends StatelessWidget {
         ),
         child: Container(
           padding: EdgeInsets.all(30),
-          height: 480, // Modal height
+          height: 550,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -38,6 +45,163 @@ class AddCardModal extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedPaymentMethod = "Gcash";
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: selectedPaymentMethod == "Gcash"
+                                ? Color(0xffFD7206)
+                                : Color(0xff202855),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedPaymentMethod = "Gcash";
+                                  });
+                                },
+                                child: Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: selectedPaymentMethod == "Gcash"
+                                          ? Color(0xffFD7206)
+                                          : Color(0xff202855),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: selectedPaymentMethod == "Gcash"
+                                      ? Center(
+                                          child: Container(
+                                            width: 12,
+                                            height: 12,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(0xffFD7206),
+                                            ),
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Image.asset(
+                              'assets/images/gcash.png',
+                              width: 30,
+                              height: 30,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Gcash",
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedPaymentMethod = "Paypal";
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: selectedPaymentMethod == "Paypal"
+                                ? Color(0xffFD7206)
+                                : Color(0xff202855),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedPaymentMethod = "Paypal";
+                                  });
+                                },
+                                child: Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: selectedPaymentMethod == "Paypal"
+                                          ? Color(0xffFD7206)
+                                          : Color(0xff202855),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: selectedPaymentMethod == "Paypal"
+                                      ? Center(
+                                          child: Container(
+                                            width: 12,
+                                            height: 12,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Color(0xffFD7206),
+                                            ),
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Image.asset(
+                              'assets/images/paypal.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Paypal",
+                              style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
               SizedBox(height: 20),
               // Card Number
               TextField(
@@ -83,7 +247,7 @@ class AddCardModal extends StatelessWidget {
                         labelText: "MM / YY",
                         labelStyle: TextStyle(
                           fontFamily: 'Galano',
-                          color: Color(0xff202855), // Updated color
+                          color: Color(0xff202855),
                         ),
                         filled: true,
                         fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -102,7 +266,7 @@ class AddCardModal extends StatelessWidget {
                         labelText: "CVC",
                         labelStyle: TextStyle(
                           fontFamily: 'Galano',
-                          color: Color(0xff202855), // Updated color
+                          color: Color(0xff202855),
                         ),
                         filled: true,
                         fillColor: const Color.fromARGB(255, 255, 255, 255),
