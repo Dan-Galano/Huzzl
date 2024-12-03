@@ -11,6 +11,9 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/02%20resumeManually.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/functions/file_uploader.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/models/user-profile_model.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/preferencesDialogs/jobtitles_dialog.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/preferencesDialogs/location_dialog.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/preferencesDialogs/payrate_dialog.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/providers/portfolio_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/providers/user-profile_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_summary-autobuild.dart';
@@ -1066,67 +1069,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          PreferenceItem(
-                            iconImage: AssetImage('assets/images/pay_rate.png'),
-                            title: "Pay Rate",
-                            value: userProfile.selectedPayRate?['minimum'] ==
-                                        null &&
-                                    userProfile.selectedPayRate?['maximum'] ==
-                                        null
-                                ? 'Pay rate not set'
-                                : userProfile.selectedPayRate?['minimum'] ==
-                                        null
-                                    ? 'maximum of ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}'
-                                    : userProfile.selectedPayRate?['maximum'] ==
-                                            null
-                                        ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
-                                        : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
-                            onTap: () {
-                              _showModal(
-                                context,
-                                "Pay Rate",
-                                userProfile.selectedPayRate?['minimum'] ==
-                                            null &&
-                                        userProfile
-                                                .selectedPayRate?['maximum'] ==
-                                            null
-                                    ? 'Pay rate not set'
-                                    : userProfile.selectedPayRate?['minimum'] ==
-                                            null
-                                        ? 'maximum of ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}'
-                                        : userProfile.selectedPayRate?[
-                                                    'maximum'] ==
-                                                null
-                                            ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
-                                            : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
-                              );
-                            },
-                          ),
-                          PreferenceItem(
-                            iconImage: AssetImage(
-                                'assets/images/location_profile.png'),
-                            title: "Location",
-                            value:
-                                _getLocationText(userProfile?.selectedLocation),
-                            onTap: () {
-                              _showModal(
-                                  context,
-                                  "Location",
-                                  _getLocationText(
-                                      userProfile?.selectedLocation));
-                            },
-                          ),
-                          PreferenceItem(
-                            iconImage:
-                                AssetImage('assets/images/job_title.png'),
-                            title: "Job Titles",
-                            value: _getJobTitlesText(
-                                userProfile?.currentSelectedJobTitles),
-                            onTap: () {
-                              _showModal(context, "Job Titles",
-                                  '${_getJobTitlesText(userProfile?.currentSelectedJobTitles)}');
-                            },
-                          ),
+                        PreferenceItem(
+  iconImage: AssetImage('assets/images/pay_rate.png'),
+  title: "Pay Rate",
+  value: userProfile.selectedPayRate?['minimum'] == null &&
+          userProfile.selectedPayRate?['maximum'] == null
+      ? 'Pay rate not set'
+      : userProfile.selectedPayRate?['minimum'] == null
+          ? 'maximum of ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}'
+          : userProfile.selectedPayRate?['maximum'] == null
+              ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
+              : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
+  onTap: () {
+    showDialog(
+      context: context,
+      builder: (context) => PayRateDialog(
+        initialRate: userProfile.selectedPayRate?['rate'] ?? 'per hour',
+        initialMin: userProfile.selectedPayRate?['minimum'] ?? '',
+        initialMax: userProfile.selectedPayRate?['maximum'] ?? '',
+        onSave: (rate, min, max) {
+          // Save the updated pay rate data
+          setState(() {
+            userProfile.selectedPayRate = {
+              'rate': rate,
+              'minimum': min,
+              'maximum': max,
+            };
+          });
+        },
+      ),
+    );
+  },
+),
+
+                       PreferenceItem(
+  iconImage: AssetImage('assets/images/location_profile.png'),
+  title: "Location",
+  value: _getLocationText(userProfile?.selectedLocation),
+  onTap: () {
+    showDialog(
+      context: context,
+      builder: (context) => LocationDialog(
+        initialLocation: {
+          'regionName': userProfile.selectedLocation?['regionName'] ?? '',
+          'provinceName': userProfile.selectedLocation?['provinceName'] ?? '',
+          'cityName': userProfile.selectedLocation?['cityName'] ?? '',
+          'barangayName': userProfile.selectedLocation?['barangayName'] ?? '',
+          'otherLocation': userProfile.selectedLocation?['otherLocation'] ?? '',
+        },
+        onSave: (location) {
+          // Save the updated location data
+          setState(() {
+            userProfile.selectedLocation = location;
+          });
+        },
+      ),
+    );
+  },
+),
+
+                        PreferenceItem(
+  iconImage: AssetImage('assets/images/job_title.png'),
+  title: "Job Titles",
+  value: _getJobTitlesText(userProfile?.currentSelectedJobTitles),
+  onTap: () {
+    showDialog(
+      context: context,
+      builder: (context) => JobTitlesDialog(
+        initialJobTitles: userProfile.currentSelectedJobTitles ?? [],
+        onSave: (jobTitles) {
+          // Save the updated job titles data
+          setState(() {
+            userProfile.currentSelectedJobTitles = jobTitles;
+          });
+        },
+      ),
+    );
+  },
+),
+
                           Container(
                             decoration: BoxDecoration(
                               border: Border(
@@ -1146,114 +1167,116 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showModal(BuildContext context, String title, String value) {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 350, vertical: 200),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.all(30),
-              color: Colors.white,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title Text
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff202855),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+  // void _showModal(BuildContext context, String title, String value) {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: true,
+  //     builder: (context) {
+  //       return Dialog(
+  //         backgroundColor: Colors.transparent,
+  //         insetPadding:
+  //             const EdgeInsets.symmetric(horizontal: 350, vertical: 200),
+  //         child: ClipRRect(
+  //           borderRadius: BorderRadius.circular(20),
+  //           child: Container(
+  //             padding: const EdgeInsets.all(30),
+  //             color: Colors.white,
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 // Title Text
+  //                 Text(
+  //                   title,
+  //                   style: const TextStyle(
+  //                     fontFamily: 'Galano',
+  //                     fontSize: 18,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Color(0xff202855),
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 10),
 
-                  // Value Text
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+  //                 // Value Text
+  //                 Text(
+  //                   value,
+  //                   style: TextStyle(
+  //                     fontFamily: 'Galano',
+  //                     fontSize: 16,
+  //                     fontWeight: FontWeight.normal,
+  //                     color: Colors.grey.shade600,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 20),
 
-                  const Spacer(),
+  //                 const Spacer(),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: Colors.grey.shade300,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Add your save action here
-                        },
-                        child: const Text(
-                          "Save",
-                          style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          elevation: 2,
-                          backgroundColor: Color(0xff0038FF),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.end,
+  //                   children: [
+  //                     ElevatedButton(
+  //                       onPressed: () {
+  //                         Navigator.of(context).pop();
+  //                       },
+  //                       child: const Text(
+  //                         "Cancel",
+  //                         style: TextStyle(
+  //                           fontFamily: 'Galano',
+  //                           fontSize: 16,
+  //                           fontWeight: FontWeight.w600,
+  //                         ),
+  //                       ),
+  //                       style: ElevatedButton.styleFrom(
+  //                         elevation: 0,
+  //                         backgroundColor: Colors.grey.shade300,
+  //                         foregroundColor: Colors.black,
+  //                         shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(10),
+  //                         ),
+  //                         padding: const EdgeInsets.symmetric(
+  //                           vertical: 12,
+  //                           horizontal: 20,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     const SizedBox(width: 10),
+  //                     ElevatedButton(
+  //                       onPressed: () {
+  //                         // Add your save action here
+  //                       },
+  //                       child: const Text(
+  //                         "Save",
+  //                         style: TextStyle(
+  //                           fontFamily: 'Galano',
+  //                           fontSize: 16,
+  //                           fontWeight: FontWeight.w600,
+  //                         ),
+  //                       ),
+  //                       style: ElevatedButton.styleFrom(
+  //                         elevation: 2,
+  //                         backgroundColor: Color(0xff0038FF),
+  //                         foregroundColor: Colors.white,
+  //                         shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(10),
+  //                         ),
+  //                         padding: const EdgeInsets.symmetric(
+  //                           vertical: 12,
+  //                           horizontal: 30,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+
 }
 
 class PreferenceItem extends StatelessWidget {
