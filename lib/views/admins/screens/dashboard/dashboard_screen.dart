@@ -1,26 +1,32 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/components/bar_chart.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/components/line_chart.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/my_fields.dart';
 
 import '../../constants.dart';
 import 'components/header.dart';
 
-import 'components/recent_files.dart';
+import '../manageUsers/widgets/recent_files.dart';
 import 'components/storage_details.dart';
 
 class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
         primary: false,
-        padding: EdgeInsets.all(defaultPadding),
+        padding: const EdgeInsets.all(defaultPadding),
         child: Column(
           children: [
-            Header(
+            const Header(
               name: "Dashboard",
             ),
-            SizedBox(height: defaultPadding),
+            const SizedBox(height: defaultPadding),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -30,7 +36,27 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       MyFiles(),
                       SizedBox(height: defaultPadding),
-                      RecentFiles(),
+                      // RecentFiles(),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: secondaryColor,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Gap(20),
+                              Text(
+                                'Subscribed Users',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              LineChartSample2(),
+                            ],
+                          ),
+                        ),
+                      ),
                       if (Responsive.isMobile(context))
                         SizedBox(height: defaultPadding),
                       if (Responsive.isMobile(context)) StorageDetails(),

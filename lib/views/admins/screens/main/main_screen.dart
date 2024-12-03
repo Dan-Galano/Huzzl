@@ -1,22 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
+import 'package:huzzl_web/views/admins/screens/activity_logs/activity_logs.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dashboard_screen.dart';
-import 'package:huzzl_web/views/admins/screens/jobs/manage_industries_screen.dart';
+import 'package:huzzl_web/views/admins/screens/industries/manage_industries_screen.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/manage_user.dart';
-import 'package:huzzl_web/views/admins/screens/manageUsers/manage_user_old.dart';
 import 'package:provider/provider.dart';
 
 import 'components/side_menu.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final menuController =
+        Provider.of<MenuAppController>(context, listen: false);
+    menuController.fetchRecentUsers();
+    print('Fetched users in admin (main_screen.dart)');
+  }
+
   @override
   Widget build(BuildContext context) {
     final menuController = Provider.of<MenuAppController>(context);
-
     return Scaffold(
       key: menuController.scaffoldKey,
-      drawer: SideMenu(),
+      drawer: const SideMenu(),
       body: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,13 +57,11 @@ class MainScreen extends StatelessWidget {
       case 1:
         return ManageUsers();
       case 2:
-        return ManageIndustriesScreen();
+        return const ManageIndustriesScreen();
       case 3:
-        return Center(
-          child: Text("Manage Usage Analytics tab"),
-        );
+        return const ActivityLogsScreen();
       default:
-        return Center(
+        return const Center(
           child: Text("Screen not found!"),
         );
     }

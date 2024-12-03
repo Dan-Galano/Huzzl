@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/header.dart';
+import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/recent_files.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/manage_jobseekerr_tab.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/manage_recruiter_tab.dart';
 
 import '../../constants.dart';
 
 class ManageUsers extends StatefulWidget {
+  const ManageUsers({super.key});
+
   @override
   State<ManageUsers> createState() => _ManageUsersState();
 }
@@ -17,7 +20,7 @@ class _ManageUsersState extends State<ManageUsers>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -54,6 +57,7 @@ class _ManageUsersState extends State<ManageUsers>
                 fontFamily: 'Galano',
               ),
               tabs: const [
+                Tab(text: 'Recent'),
                 Tab(text: 'Recruiter'),
                 Tab(text: 'Jobseeker'),
               ],
@@ -63,6 +67,8 @@ class _ManageUsersState extends State<ManageUsers>
               child: TabBarView(
                 controller: _tabController,
                 children: [
+                  //Recent
+                  const RecentFiles(),
                   //Recruiter
                   ManageRecruiterTab(),
                   //Jobseeker

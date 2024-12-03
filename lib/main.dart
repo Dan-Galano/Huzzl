@@ -209,28 +209,38 @@ class _AuthWrapperState extends State<AuthWrapper> {
           final user = snapshot.data!;
           final loggedInUserId = user.uid;
 
-          Provider.of<UserProvider>(context, listen: false).setUser(user);
-
-          final resumeProvider =
-              Provider.of<ResumeProvider>(context, listen: false);
-
-          resumeProvider.updateEmail(user.email!);
-
+// Fetch the role from Firestore based on the logged-in user's UID
           FirebaseFirestore.instance
               .collection('users')
               .doc(loggedInUserId)
               .get()
               .then((userDoc) {
             if (userDoc.exists) {
-              String firstName = userDoc['firstName'] ?? '';
-              String lastName = userDoc['lastName'] ?? '';
-              String pNumber = userDoc['phoneNumber'] ?? '';
+              final data = userDoc.data();
+              final role = data?['role'] ??
+                  'admin'; // Default to 'admin' if role is not found
 
-              resumeProvider.updateName(firstName, lastName);
-              resumeProvider.updatePhoneNumber(pNumber);
+              if (role != 'admin') {
+                // Perform the code block for non-admin users
+                final resumeProvider =
+                    Provider.of<ResumeProvider>(context, listen: false);
+
+                resumeProvider.updateEmail(user.email!);
+
+                String firstName = data!['firstName'] ?? '';
+                String lastName = data!['lastName'] ?? '';
+                String pNumber = data!['phoneNumber'] ?? '';
+
+                resumeProvider.updateName(firstName, lastName);
+                resumeProvider.updatePhoneNumber(pNumber);
+              } else {
+                print("Admin user detected. Skipping operation.");
+              }
+            } else {
+              print("User document does not exist.");
             }
           }).catchError((error) {
-            print('Error fetching user data from Firestore: $error');
+            print('Error fetching user role from Firestore: $error');
           });
 
           return FutureBuilder<DocumentSnapshot>(
@@ -242,7 +252,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 // print(snapshot.data!.id);
                 // print('User Document ID (uid): ${snapshot.data!.id}');
-                print('Fetching user document...');
+                print('Fetching user document in main.dart...');
                 return Scaffold(
                   backgroundColor: Colors.white,
                   body: Center(
@@ -286,7 +296,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   ),
                 );
               }
-              print('TEST');
               if (snapshot.hasError) {
                 print('Error: ${snapshot.error}');
                 return ErrorWidget(snapshot.error.toString());
@@ -302,7 +311,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 } else if (userType == 'recruiter') {
                   return RecruiterHomeScreen();
                 } else if (userType == 'admin') {
-                  return MainScreen();                  
+                  return MainScreen();
                 } else {
                   return LoginRegister();
                 }

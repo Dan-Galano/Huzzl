@@ -52,19 +52,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-   apiKey: "AIzaSyCZI7RKKwX4a8yS22oZJS85g3mfKtSkfo8",
-  authDomain: "huzzl02.firebaseapp.com",
-  projectId: "huzzl02",
-  storageBucket: "huzzl02.firebasestorage.app",
-  messagingSenderId: "407897970861",
-  appId: "1:407897970861:web:597143bd7532939df9ce24"
-  );
-
-
-
-// // na exceeded
-    // static const FirebaseOptions web = FirebaseOptions(
+  //huzzl
+  //   static const FirebaseOptions web = FirebaseOptions(
   //   apiKey: 'AIzaSyAlDCY6OBK4zRlLafxjyG__thsdWZML2CU',
   //   appId: '1:764873088756:web:8966d144e2f5584fb6c8a1',
   //   messagingSenderId: '764873088756',
@@ -72,4 +61,23 @@ class DefaultFirebaseOptions {
   //   authDomain: 'huzzl-proj.firebaseapp.com',
   //   storageBucket: 'huzzl-proj.appspot.com',
   // );
+  
+//huzzl02
+  // static const FirebaseOptions web = FirebaseOptions(
+  //  apiKey: "AIzaSyCZI7RKKwX4a8yS22oZJS85g3mfKtSkfo8",
+  // authDomain: "huzzl02.firebaseapp.com",
+  // projectId: "huzzl02",
+  // storageBucket: "huzzl02.firebasestorage.app",
+  // messagingSenderId: "407897970861",
+  // appId: "1:407897970861:web:597143bd7532939df9ce24"
+  // );
+
+  //huzzl03
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: "AIzaSyC1VUjgmRO6d-wax6LU3254lU-g2GKIY10",
+  authDomain: "huzzl03.firebaseapp.com",
+  projectId: "huzzl03",
+  storageBucket: "huzzl03.firebasestorage.app",
+  messagingSenderId: "266369978822",
+  appId: "1:266369978822:web:b4088eed07bbc8999d22c7"  );
 }
