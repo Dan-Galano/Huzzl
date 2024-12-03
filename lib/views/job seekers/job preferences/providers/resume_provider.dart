@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/education_entry_model.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/class/experience_entry_model.dart';
 
+import 'package:timeago/timeago.dart' as timeago;
+
 class ResumeProvider with ChangeNotifier {
+  String? updatedAt;
   String? fname;
   String? lname;
   String? pnumber;
@@ -27,8 +30,41 @@ class ResumeProvider with ChangeNotifier {
   List<EducationEntry>? get education => educationEntries;
   List<ExperienceEntry>? get experience => experienceEntries;
 
+ Future<void> removeResume(String userId) async {
+  try {
+    // Reference to the user's resume collection
+    final resumeCollection = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('resume');
+
+    // Delete all documents in the resume collection
+    final querySnapshot = await resumeCollection.get();
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Reset local fields to null
+    updatedAt = null;
+    fname = null;
+    lname = null;
+    pnumber = null;
+    email = null;
+    locationData = null;
+    objective = null;
+    selectedSkills = null;
+    educationEntries = null;
+    experienceEntries = null;
+notifyListeners();
+    print("Resume removed successfully and local fields reset.");
+  } catch (e) {
+    print("Error removing resume: $e");
+  }
+}
+
+
   //get resume using uid
-  Future<void> getResumeByJobSeekerId(String jobSeekerId) async {
+  Future<bool> getResumeByJobSeekerId(String jobSeekerId) async {
     try {
       // Fetch the resume collection
       final querySnapshot = await FirebaseFirestore.instance
@@ -37,15 +73,21 @@ class ResumeProvider with ChangeNotifier {
           .collection('resume')
           .get();
 
-      // Ensure the collection has at least one document
       if (querySnapshot.docs.isNotEmpty) {
-        // Get the first document
         final resumeDoc = querySnapshot.docs.first;
 
-        // Extract the resume data
         final resumeData = resumeDoc.data();
 
-        // Update the provider fields using the update methods
+        if (resumeData.containsKey('updatedAt')) {
+          // Make sure 'updatedAt' is a valid timestamp or date object.
+          if (resumeData['updatedAt'] is Timestamp) {
+            updateLastDate(
+                "Updated ${timeago.format((resumeData['updatedAt'] as Timestamp).toDate(), allowFromNow: true, locale: 'en')}");
+          } else {
+            print("Error: 'updatedAt' is not a valid timestamp.");
+          }
+        }
+
         if (resumeData.containsKey('fname') &&
             resumeData.containsKey('lname')) {
           updateName(resumeData['fname'] ?? '', resumeData['lname'] ?? '');
@@ -107,15 +149,23 @@ class ResumeProvider with ChangeNotifier {
           }
           updateExperienceEntries(experienceList);
         }
+        return true;
       } else {
         print('No resume document found for user: $jobSeekerId');
+        return false;
       }
     } catch (e) {
       print('Error fetching resume: $e');
+      return false;
     }
   }
 
   // Update methods for the data
+  void updateLastDate(String lastDate) {
+    updatedAt = lastDate;
+    notifyListeners();
+  }
+
   void updateName(String firstName, String lastName) {
     fname = firstName;
     lname = lastName;
@@ -158,85 +208,85 @@ class ResumeProvider with ChangeNotifier {
   }
 
   Future<void> fetchAndSetResumeDetails(String userId) async {
-  try {
-    final docSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('resume')
-        .limit(1) 
-        .get();
+    try {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('resume')
+          .limit(1)
+          .get();
 
-    if (docSnapshot.docs.isNotEmpty) {
-      final data = docSnapshot.docs.first.data();
+      if (docSnapshot.docs.isNotEmpty) {
+        final data = docSnapshot.docs.first.data();
 
-      if (data.containsKey('fname') && data.containsKey('lname')) {
-        updateName(data['fname'], data['lname']);
+        if (data.containsKey('fname') && data.containsKey('lname')) {
+          updateName(data['fname'], data['lname']);
+        }
+
+        if (data.containsKey('pnumber')) {
+          updatePhoneNumber(data['pnumber']);
+        }
+
+        if (data.containsKey('email')) {
+          updateEmail(data['email']);
+        }
+
+        if (data.containsKey('location')) {
+          updateLocation(data['location'] as Map<String, dynamic>);
+        }
+
+        if (data.containsKey('objective')) {
+          updateObjective(data['objective']);
+        }
+
+        if (data.containsKey('skills')) {
+          updateSkills(
+            (data['skills'] as List<dynamic>)
+                .map((skill) => skill.toString())
+                .toList(),
+          );
+        }
+
+        if (data.containsKey('education')) {
+          updateEducationEntries(
+            (data['education'] as List<dynamic>)
+                .map((entry) => EducationEntry()
+                  ..degree = entry['degree'] ?? ''
+                  ..institutionName = entry['institutionName'] ?? ''
+                  ..institutionAddress = entry['institutionAddress'] ?? ''
+                  ..honorsOrAwards = entry['honorsOrAwards'] ?? ''
+                  ..fromSelectedMonth = entry['fromSelectedMonth']
+                  ..fromSelectedYear = entry['fromSelectedYear']
+                  ..toSelectedMonth = entry['toSelectedMonth']
+                  ..toSelectedYear = entry['toSelectedYear']
+                  ..isPresent = entry['isPresent'] ?? false)
+                .toList(),
+          );
+        }
+
+        if (data.containsKey('experience')) {
+          updateExperienceEntries(
+            (data['experience'] as List<dynamic>)
+                .map((entry) => ExperienceEntry()
+                  ..jobTitle = entry['jobTitle'] ?? ''
+                  ..companyName = entry['companyName'] ?? ''
+                  ..companyAddress = entry['companyAddress'] ?? ''
+                  ..responsibilitiesAchievements =
+                      entry['responsibilitiesAchievements'] ?? ''
+                  ..fromSelectedMonth = entry['fromSelectedMonth']
+                  ..fromSelectedYear = entry['fromSelectedYear']
+                  ..toSelectedMonth = entry['toSelectedMonth']
+                  ..toSelectedYear = entry['toSelectedYear']
+                  ..isPresent = entry['isPresent'] ?? false)
+                .toList(),
+          );
+        }
       }
-
-      if (data.containsKey('pnumber')) {
-        updatePhoneNumber(data['pnumber']);
-      }
-
-      if (data.containsKey('email')) {
-        updateEmail(data['email']);
-      }
-
-      if (data.containsKey('location')) {
-        updateLocation(data['location'] as Map<String, dynamic>);
-      }
-
-      if (data.containsKey('objective')) {
-        updateObjective(data['objective']);
-      }
-
-      if (data.containsKey('skills')) {
-        updateSkills(
-          (data['skills'] as List<dynamic>)
-              .map((skill) => skill.toString())
-              .toList(),
-        );
-      }
-
-      if (data.containsKey('education')) {
-        updateEducationEntries(
-          (data['education'] as List<dynamic>)
-              .map((entry) => EducationEntry()
-                ..degree = entry['degree'] ?? ''
-                ..institutionName = entry['institutionName'] ?? ''
-                ..institutionAddress = entry['institutionAddress'] ?? ''
-                ..honorsOrAwards = entry['honorsOrAwards'] ?? ''
-                ..fromSelectedMonth = entry['fromSelectedMonth']
-                ..fromSelectedYear = entry['fromSelectedYear']
-                ..toSelectedMonth = entry['toSelectedMonth']
-                ..toSelectedYear = entry['toSelectedYear']
-                ..isPresent = entry['isPresent'] ?? false)
-              .toList(),
-        );
-      }
-
-      if (data.containsKey('experience')) {
-        updateExperienceEntries(
-          (data['experience'] as List<dynamic>)
-              .map((entry) => ExperienceEntry()
-                ..jobTitle = entry['jobTitle'] ?? ''
-                ..companyName = entry['companyName'] ?? ''
-                ..companyAddress = entry['companyAddress'] ?? ''
-                ..responsibilitiesAchievements =
-                    entry['responsibilitiesAchievements'] ?? ''
-                ..fromSelectedMonth = entry['fromSelectedMonth']
-                ..fromSelectedYear = entry['fromSelectedYear']
-                ..toSelectedMonth = entry['toSelectedMonth']
-                ..toSelectedYear = entry['toSelectedYear']
-                ..isPresent = entry['isPresent'] ?? false)
-              .toList(),
-        );
-      }
-
-
+    } catch (e) {
+      print('Error fetching resume details: $e');
     }
-  } catch (e) {
-    print('Error fetching resume details: $e');
   }
-}
+
+
 
 }

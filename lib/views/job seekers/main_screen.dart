@@ -16,13 +16,14 @@ import 'package:huzzl_web/widgets/navbar/navbar_home.dart';
 
 class JobseekerMainScreen extends StatefulWidget {
   final String uid;
-  JobseekerMainScreen({super.key, required this.uid});
+  final int selectedScreen;
+  JobseekerMainScreen({super.key, required this.uid, this.selectedScreen=0});
   @override
   JobseekerMainScreenState createState() => JobseekerMainScreenState();
 }
 
 class JobseekerMainScreenState extends State<JobseekerMainScreen> {
-  int selectedIndex = 0;
+  late int selectedIndex;
 
   // List of screens to switch between
   // final List<Widget> _screens = [
@@ -43,6 +44,7 @@ class JobseekerMainScreenState extends State<JobseekerMainScreen> {
   @override
   void initState() {
     super.initState();
+
     _screens = [
       JobSeekerHomeScreen(
         uid: widget.uid,
@@ -56,6 +58,7 @@ class JobseekerMainScreenState extends State<JobseekerMainScreen> {
       // QualificationsScreen(),
       // JobPreferencesScreen(),
     ];
+    selectedIndex = widget.selectedScreen;
   }
 
   void switchScreen(int index) {

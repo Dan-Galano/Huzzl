@@ -107,6 +107,8 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'phone': widget.phoneNumber,
         'email': widget.email,
         'password': widget.password,
+        'subscriptionType' : 'basic',
+        'jobPostsCount' : 0,
       }); 
  EasyLoading.instance
           ..displayDuration = const Duration(milliseconds: 1500)
@@ -251,6 +253,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
       body: Column(
         children: [
           NavBarLoginRegister(),

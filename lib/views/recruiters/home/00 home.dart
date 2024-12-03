@@ -258,8 +258,8 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           initialIndex: _jobTabInitialIndex,
         );
       case 3:
-        if (interviewProvider.subscriptionType != "basic") {
-          debugPrint("Hindi pwede sa interview");
+        if (userData!['subscriptionType'] == "basic") {
+          debugPrint("Hindi pwede sa interview: ${userData!['subscriptionType']}");
 
           return MembershipPlansPage();
         }
@@ -284,6 +284,8 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var interviewProvider = Provider.of<InterviewProvider>(context);
+
     String convertToRelativeTime(String dateString) {
       // Parse the string into DateTime
       DateFormat format =
@@ -335,6 +337,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
             sizingInformation.isDesktop
                 ? IconButton(
                     onPressed: () {
+                      if (userData!['subscriptionType'] == "basic") {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MembershipPlansPage()));
+                        return;
+                      }
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -345,6 +354,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                   )
                 : IconButton(
                     onPressed: () {
+                      if (userData!['subscriptionType'] == "basic") {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MembershipPlansPage()));
+                        return;
+                      }
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -396,7 +412,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                           position.dx + 15,
                           overlay.size.height - position.dy,
                         ),
-                        items: [
+                        items: const [
                           PopupMenuItem(
                             value: 'view_profile',
                             child: Row(
@@ -422,6 +438,24 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                                 SizedBox(width: 8),
                                 Text(
                                   'Close Account',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'subscription_screen',
+                            child: Row(
+                              children: [
+                                Icon(Icons.subscriptions,
+                                    color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Subscription Plan',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xff373030),
@@ -467,6 +501,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                           case 'logout':
                             showLogoutDialog(context);
                             break;
+                          case "subscription_screen":
+                            debugPrint("Subscription Plan clicked");
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) {
+                                return MembershipPlansPage();
+                              },
+                            ));
                         }
                       });
                     },
@@ -501,7 +542,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                           position.dx + 15,
                           overlay.size.height - position.dy,
                         ),
-                        items: [
+                        items: const [
                           PopupMenuItem(
                             value: 'view_profile',
                             child: Row(
@@ -527,6 +568,24 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                                 SizedBox(width: 8),
                                 Text(
                                   'Close Account',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'subscription_screen',
+                            child: Row(
+                              children: [
+                                Icon(Icons.subscriptions,
+                                    color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Subscription Plan',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xff373030),
@@ -572,6 +631,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                           case 'logout':
                             showLogoutDialog(context);
                             break;
+                          case "subscription_screen":
+                            debugPrint("Subscription Plan clicked");
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) {
+                                return MembershipPlansPage();
+                              },
+                            ));
                         }
                       });
                     },

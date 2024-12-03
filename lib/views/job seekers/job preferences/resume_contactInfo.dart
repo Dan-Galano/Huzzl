@@ -53,7 +53,7 @@ class _ResumePageContactInfoState extends State<ResumePageContactInfo> {
         final locationProvider =
             Provider.of<LocationProvider>(context, listen: false);
         String firstName =
-            fnameController.text.toLowerCaseTrimmed().toCapitalCase();
+            fnameController.text.toLowerCaseTrimmed().toCapitalCase(); 
         String lastName =
             lnameController.text.toLowerCaseTrimmed().toCapitalCase();
         String phoneNumber = phoneNumberInputted.trim();
