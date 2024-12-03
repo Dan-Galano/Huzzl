@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/admins/screens/business_documents/screens/approved_docs_screen.dart';
+import 'package:huzzl_web/views/admins/screens/business_documents/screens/denied_docs_screen.dart';
+import 'package:huzzl_web/views/admins/screens/business_documents/screens/pending_docs_screen.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/header.dart';
-import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/recent_files.dart';
-import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/manage_jobseekerr_tab.dart';
-import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/manage_recruiter_tab.dart';
 
 import '../../constants.dart';
 
-class ManageUsers extends StatefulWidget {
-  const ManageUsers({super.key});
+class ManageBusinessDocumentsScreen extends StatefulWidget {
+  const ManageBusinessDocumentsScreen({super.key});
 
   @override
-  State<ManageUsers> createState() => _ManageUsersState();
+  State<ManageBusinessDocumentsScreen> createState() =>
+      _ManageBusinessDocumentsScreenState();
 }
 
-class _ManageUsersState extends State<ManageUsers>
+class _ManageBusinessDocumentsScreenState
+    extends State<ManageBusinessDocumentsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -37,7 +39,7 @@ class _ManageUsersState extends State<ManageUsers>
         child: Column(
           children: [
             const Header(
-              name: "Manage Users",
+              name: "Manage Business Documents",
             ),
             const SizedBox(height: defaultPadding),
             TabBar(
@@ -57,9 +59,9 @@ class _ManageUsersState extends State<ManageUsers>
                 fontFamily: 'Galano',
               ),
               tabs: const [
-                Tab(text: 'Recent'),
-                Tab(text: 'Recruiter'),
-                Tab(text: 'Jobseeker'),
+                Tab(text: 'Pending'),
+                Tab(text: 'Approved'),
+                Tab(text: 'Denied'),
               ],
             ),
             const SizedBox(height: defaultPadding),
@@ -67,12 +69,12 @@ class _ManageUsersState extends State<ManageUsers>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  //Recent
-                  const RecentFiles(),
-                  //Recruiter
-                  ManageRecruiterTab(),
-                  //Jobseeker
-                  ManageJobseekerrTab(),
+                  //Pending
+                  PendingDocumentsScreen(),
+                  //Approved
+                  ApprovedDocumentsScreen(),
+                  //Denied
+                  DeniedDocumentsScreen(),
                 ],
               ),
             ),

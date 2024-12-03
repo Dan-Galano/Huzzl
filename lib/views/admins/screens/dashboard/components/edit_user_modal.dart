@@ -28,8 +28,6 @@ class _EditUserModalState extends State<EditUserModal> {
   final TextEditingController _firstname = TextEditingController();
   final TextEditingController _lastname = TextEditingController();
   final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
-  final TextEditingController _phoneNumber = TextEditingController();
 
   String errorMessage = "";
 
@@ -102,7 +100,7 @@ class _EditUserModalState extends State<EditUserModal> {
           "⚠️ ${e.message}",
           dismissOnTap: true,
           toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
           // maskType: EasyLoadingMaskType.black,
         );
         // Navigator.pop(context);
@@ -112,7 +110,7 @@ class _EditUserModalState extends State<EditUserModal> {
           "An unexpected error occurred.",
           dismissOnTap: true,
           toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
           // maskType: EasyLoadingMaskType.black,
         );
         Navigator.pop(context);

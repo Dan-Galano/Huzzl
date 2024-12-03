@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/constants.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
-import 'package:huzzl_web/views/admins/screens/jobs/components/add_industry_modal.dart';
-import 'package:huzzl_web/views/admins/screens/jobs/components/delete_industry_modal.dart';
-import 'package:huzzl_web/views/admins/screens/jobs/components/edit_industry_modal.dart';
+import 'package:huzzl_web/views/admins/screens/industries/components/add_industry_modal.dart';
+import 'package:huzzl_web/views/admins/screens/industries/components/delete_industry_modal.dart';
+import 'package:huzzl_web/views/admins/screens/industries/components/edit_industry_modal.dart';
 import 'package:provider/provider.dart';
 
 class IndustriesTable extends StatelessWidget {
@@ -27,7 +27,7 @@ class IndustriesTable extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Manage Industries",
+                  "Industries",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 IconButton(
