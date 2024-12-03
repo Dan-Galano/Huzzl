@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 class EditJobDetails extends StatefulWidget {
   final VoidCallback submitForm;
   final VoidCallback previousPage;
-  final TextEditingController jobTitleController;
+  String jobTitleController;
   String industry; // one or more
   String numOfPeopleToHire; // one or more
   String numPeople; // 1 to 10+
@@ -64,8 +64,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   final _formKey = GlobalKey<FormState>();
 
   // samples
-  late TextEditingController jobTitleController =
-      TextEditingController(text: widget.jobTitleController.text);
+  late TextEditingController jobTitleControllerTemp =
+      TextEditingController(text: widget.jobTitleController);
   late TextEditingController industryController =
       TextEditingController(text: widget.industry);
   late TextEditingController jobDescriptionController =
@@ -113,54 +113,64 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   //Get current date
   String formattedCurrentDate = DateFormat.yMMMd().format(DateTime.now());
 
-  void _submitJobPost() {
-    // if (_formKey.currentState!.validate()) {
-    widget.submitForm();
+void _submitJobPost() {
+  // Submit the job post form
+  widget.submitForm();
 
-    print("Job Title: ${jobTitleController.text}");
-    print("Job Industry: ${industryController.text}");
-    print("Job Description: ${jobDescriptionController.text}");
-    print("Job Type: ${jobTypeController.text}");
-    print("Job Location: ${locationController.text}");
+  print("Job Title: ${jobTitleControllerTemp.text}");
+  print("Job Industry: ${industryController.text}");
+  print("Job Description: ${jobDescriptionController.text}");
+  print("Job Type: ${jobTypeController.text}");
+  print("Job Location: ${locationController.text}");
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.user.uid) // UID of the user
-        .collection('job_posts')
-        .add({
-      'jobTitle': jobTitleController.text,
-      'jobIndustry': industryController.text,
-      'jobDescription': jobDescriptionController.text,
-      'numberOfPeopleToHire': openingsController.text,
-      'jobPostLocation': locationController.text,
-      'jobType': jobTypeController.text,
-      'hoursPerWeek': scheduleController.text,
-      'skills': skillController.text,
-      'payRate': payController.text,
-      'supplementalPay': supplementalPayController.text,
-      'isResumeRequired': requireResumeController.text,
-      'applicationDeadline': applicationDeadlineController.text,
-      'updatesController': updatesController.text,
-      'preScreenQuestions': widget.prescreenQuestions,
-      'status': "open",
-      'posted_at': formattedCurrentDate,
-      'posted_by':
-          '${widget.userData['hiringManagerFirstName']} ${widget.userData['hiringManagerLastName']}',
-    }).then((docRef) {
-      // Add the document ID to the job post
-      docRef.update({
-        'jobPostID': docRef.id,
-      }).then((_) {
-        print('Job post added successfully with ID: ${docRef.id}');
-      }).catchError((error) {
-        print('Error updating job post with ID: $error');
-      });
+  FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.user.uid) // UID of the user
+      .collection('job_posts')
+      .add({
+    'jobTitle': jobTitleControllerTemp.text,
+    'jobIndustry': industryController.text,
+    'jobDescription': jobDescriptionController.text,
+    'numberOfPeopleToHire': openingsController.text,
+    'jobPostLocation': locationController.text,
+    'jobType': jobTypeController.text,
+    'hoursPerWeek': scheduleController.text,
+    'skills': skillController.text,
+    'payRate': payController.text,
+    'supplementalPay': supplementalPayController.text,
+    'isResumeRequired': requireResumeController.text,
+    'applicationDeadline': applicationDeadlineController.text,
+    'updatesController': updatesController.text,
+    'preScreenQuestions': widget.prescreenQuestions,
+    'status': "open",
+    'posted_at': formattedCurrentDate,
+    'posted_by':
+        '${widget.userData['hiringManagerFirstName']} ${widget.userData['hiringManagerLastName']}',
+  }).then((docRef) {
+    // Add the document ID to the job post
+    docRef.update({
+      'jobPostID': docRef.id,
+    }).then((_) {
+      print('Job post added successfully with ID: ${docRef.id}');
+
+      // Update or increment the jobPostCount field in the user's document
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.user.uid)
+          .update({
+            'jobPostsCount': FieldValue.increment(1), // Increment by 1
+          })
+          .then((_) => print('jobPostCount updated successfully'))
+          .catchError((error) => print('Error updating jobPostCount: $error'));
     }).catchError((error) {
-      print('Error adding job post: $error');
+      print('Error updating job post with ID: $error');
     });
+  }).catchError((error) {
+    print('Error adding job post: $error');
+  });
+}
 
-    // }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +218,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildJobDetailRow('Job title', jobTitleController),
+                        _buildJobDetailRow('Job title', jobTitleControllerTemp),
                         const Gap(10),
                         _buildJobDetailRow('Job industry', industryController),
                         const Gap(10),

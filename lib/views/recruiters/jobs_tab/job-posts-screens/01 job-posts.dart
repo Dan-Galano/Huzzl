@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-manager-staff-model.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
@@ -12,9 +14,10 @@ import 'package:provider/provider.dart';
 class JobPosts extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback cancel;
-  final TextEditingController jobTitleController;
+  String jobTitleController;
   String selectedIndustry;
   final ValueChanged<String?> onselectedIndustryChanged;
+  final ValueChanged<String?> onselectedJobTitleChanged;
   String numOfPeopleToHire;
   final ValueChanged<String?> onNumOfPeopleToHireChanged;
   final ValueChanged<String?> onNumPeopleChanged;
@@ -27,6 +30,7 @@ class JobPosts extends StatefulWidget {
     required this.jobTitleController,
     required this.selectedIndustry,
     required this.onselectedIndustryChanged,
+    required this.onselectedJobTitleChanged,
     required this.numOfPeopleToHire,
     required this.onNumOfPeopleToHireChanged,
     required this.onNumPeopleChanged,
@@ -53,24 +57,24 @@ class _JobPostsState extends State<JobPosts> {
   List<dynamic> cities = [];
   List<dynamic> barangays = [];
 
- @override
-void initState() {
-  super.initState();
-  _initializeData();
-}
-
-Future<void> _initializeData() async {
-  final loggedInUserId = Provider.of<UserProvider>(context, listen: false).loggedInUserId;
-  final branchProvider = Provider.of<BranchProvider>(context, listen: false);
-
-  if (loggedInUserId != null) {
-    await branchProvider.fetchActiveBranches(loggedInUserId);
-    setState(() {
-      branches = branchProvider.branches; 
-    });
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
   }
-}
 
+  Future<void> _initializeData() async {
+    final loggedInUserId =
+        Provider.of<UserProvider>(context, listen: false).loggedInUserId;
+    final branchProvider = Provider.of<BranchProvider>(context, listen: false);
+
+    if (loggedInUserId != null) {
+      await branchProvider.fetchActiveBranches(loggedInUserId);
+      setState(() {
+        branches = branchProvider.branches;
+      });
+    }
+  }
 
   void _submitJobPosts() {
     if (_formKey.currentState!.validate()) {
@@ -194,7 +198,7 @@ Future<void> _initializeData() async {
         onSuggestionSelected: (Branch branch) {
           _dropdownSearchFieldController.text = branch.branchName;
           selectedBranch = branch;
-           widget.onBranchChanged(selectedBranch!.branchName);
+          widget.onBranchChanged(selectedBranch!.branchName);
         },
         suggestionsBoxController: suggestionBoxController,
         validator: (value) => value == null ? 'Please select branch' : null,
@@ -418,9 +422,123 @@ Future<void> _initializeData() async {
     'Travel & Hospitality',
   ];
 
+// Remove duplicates from listOfJobTitle
+  List<String>? listOfJobTitle = [];
+  bool jobTitleIsEmpty = true;
+
+  Future<void> generateJobTitleList(String selectedIndustry) async {
+    // setState(() {
+    //   jobTitleIsEmpty = listOfJobTitle.isEmpty;
+    // });
+    String geminiAPIKey = dotenv.env['GEMINI_API_KEY']!;
+    String geminiModel = dotenv.env['MODEL']!;
+
+    debugPrint("Selected industry: $selectedIndustry");
+
+    var prompt =
+        "Can you create a list of job titles based on this industry $selectedIndustry. Example output ['Software Engineer', 'Network Admin']. Always return your output like that. DONT RETURN ANYTHING BESIDES THE LIST.";
+
+    final model = GenerativeModel(
+      model: geminiModel,
+      apiKey: geminiAPIKey,
+    );
+
+    try {
+      final response = await model.generateContent([Content.text(prompt)]);
+      debugPrint(response.text);
+
+      // Parse the response text into a list of strings and remove duplicates
+      setState(() {
+        listOfJobTitle = _parseJobTitles(response.text!)
+            .toSet()
+            .toList(); // Removes duplicates
+        jobTitleIsEmpty = listOfJobTitle!.isEmpty;
+        debugPrint(listOfJobTitle!.length.toString());
+      });
+
+      for (var element in listOfJobTitle!) {
+        debugPrint(element);
+      }
+    } catch (e) {
+      debugPrint("Error generating job title list: $e");
+    }
+  }
+
+// Function to parse the response text into a list of strings
+  List<String> _parseJobTitles(String text) {
+    // Strip out the brackets and split by comma
+    text = text.replaceAll('[', '').replaceAll(']', '');
+    return text.split(',').map((e) => e.trim().replaceAll("'", "")).toList();
+  }
+
+  Future<void> generateDescription(String selectedJobTitle) async {
+    String geminiAPIKey = dotenv.env['GEMINI_API_KEY']!;
+    String geminiModel = dotenv.env['MODEL']!;
+
+    debugPrint("Selected job title: $selectedJobTitle");
+
+    var prompt =
+        "Generate a one-paragraph job description (80-100 words) for the job title: $selectedJobTitle. Follow the instructions strictly and return only the requested content. Just provide the description no [Company Name] [Position] anything like that. just pure job description.";
+
+    final model = GenerativeModel(
+      model: geminiModel,
+      apiKey: geminiAPIKey,
+    );
+
+    try {
+      final response = await model.generateContent([Content.text(prompt)]);
+      if (response.text != null && response.text!.isNotEmpty) {
+        debugPrint("Generated Description: ${response.text}");
+        setState(() {
+           widget.jobDescriptionController.text = response.text!;
+        });
+        debugPrint("Setted: ${widget.jobTitleController}");
+      } else {
+        debugPrint("Received empty or invalid response from the AI model.");
+        // Optionally show a fallback message to the user
+      }
+    } catch (e) {
+      debugPrint("Error generating job description: $e");
+      // Handle errors more gracefully by notifying the user
+    }
+  }
+
+  //   Future<void> generateMessage(String candidateId, String typeOfMessage) async {
+  //   Candidate candidate = findDataOfCandidate(candidateId)!;
+
+  //   await dotenv.load();
+  //   String geminiAPIKey = dotenv.env['GEMINI_API_KEY']!;
+  //   String geminiModel = dotenv.env['MODEL']!;
+
+  //   final model = prefix.GenerativeModel(
+  //     model: geminiModel,
+  //     apiKey: geminiAPIKey,
+  //   );
+
+  //   var prompt = "";
+
+  //   if (typeOfMessage == "Reject") {
+  //     prompt =
+  //         "Can you create a rejection message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We regret to inform you that we have selected other candidates whose qualifications more closely align with the position requirements. Do not include anything like this [position], [company] like that.";
+  //   } else if (typeOfMessage == "Hire") {
+  //     prompt =
+  //         "Can you create a acception/hired message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We're excited to welcome you! Your skills and enthusiasm truly impressed us, and we're confident you'll bring great value. Starting soon, we look forward to your contributions. Congratulations, and welcome aboard! Do not include anything like this [position], [company] like that.";
+  //   }
+  //   final response = await model.generateContent([prefix.Content.text(prompt)]);
+  //   print(response.text);
+  //   if (typeOfMessage == "Reject") {
+  //     _rejectMessage = response.text!;
+  //   } else if (typeOfMessage == "Hire") {
+  //     _hireMessage = response.text!;
+  //   }
+
+  //   notifyListeners();
+
+  //   // return response.text!;
+  // }
+
   @override
   Widget build(BuildContext context) {
-
     return SingleChildScrollView(
       child: Center(
         child: Container(
@@ -448,14 +566,14 @@ Future<void> _initializeData() async {
                   ),
                 ),
                 Gap(20),
-                Row(
+                 Row(
                   children: [
                     Text(
-                      'Job title',
+                      'Where would you like to advertise this job?',
                       style: TextStyle(
                         fontFamily: 'Galano',
                         fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: Color(0xff202855),
                       ),
                     ),
@@ -470,16 +588,16 @@ Future<void> _initializeData() async {
                     )
                   ],
                 ),
-                TextFormField(
-                  controller: widget.jobTitleController,
-                  decoration: customInputDecoration(),
-                  validator: (value) {
-                    if (value!.isEmpty || value == null) {
-                      return "Job title is required.";
-                    }
-                  },
+                const Text(
+                  'Select branch',
+                  style: TextStyle(
+                    fontFamily: 'Galano',
+                    fontSize: 12,
+                  ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 10),
+                buildSearchDropdown(setState),
+                const SizedBox(height: 20),
                 Row(
                   children: [
                     Text(
@@ -502,7 +620,6 @@ Future<void> _initializeData() async {
                     )
                   ],
                 ),
-                //Industry (Wala pa sa database)
                 DropdownButtonFormField<String>(
                   isExpanded: true,
                   hint: const Text('Select an industry'),
@@ -515,11 +632,17 @@ Future<void> _initializeData() async {
                       child: Text(industry),
                     );
                   }).toList(),
-                  onChanged: (String? newValue) {
+                  onChanged: (String? newValue) async {
                     setState(() {
                       widget.selectedIndustry = newValue!;
+                      // Reset the job title list when a new industry is selected
+                      listOfJobTitle!.clear(); // Clear the previous job titles
+                      jobTitleIsEmpty =
+                          true; // Indicate that the job title list is empty
                     });
                     widget.onselectedIndustryChanged(newValue);
+                    await generateJobTitleList(
+                        newValue!); // Trigger to fetch job titles based on selected industry
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -529,6 +652,108 @@ Future<void> _initializeData() async {
                   },
                 ),
                 Gap(20),
+                if (!jobTitleIsEmpty) // Only show job title dropdown when job titles are available
+                  Row(
+                    children: [
+                      Text(
+                        'Job title',
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xff202855),
+                        ),
+                      ),
+                      Text(
+                        ' *',
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.redAccent,
+                        ),
+                      )
+                    ],
+                  ),
+                // Job Title (Dropdown to dynamically populate based on selected industry)
+                if (!jobTitleIsEmpty)
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    hint: const Text('Select a job title'),
+                    decoration: customInputDecoration(),
+                    value: widget.jobTitleController.isNotEmpty
+                        ? widget.jobTitleController
+                        : null, // Ensure it reflects the selected value
+                    items: listOfJobTitle!
+                        .map<DropdownMenuItem<String>>((String jobTitle) {
+                      return DropdownMenuItem<String>(
+                        value: jobTitle,
+                        child: Text(jobTitle),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) async {
+                      setState(() {
+                        widget.jobTitleController = newValue!;
+                        debugPrint("Job title: ${newValue}");
+                      });
+                      widget.onselectedJobTitleChanged(newValue);
+                      widget.jobDescriptionController.clear();
+                      await generateDescription(newValue!);
+                      
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Job title is required.';
+                      }
+                      return null;
+                    },
+                  ),
+
+                SizedBox(height: 20),
+                Row(
+                  children: [
+                    Text(
+                      'Job description',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff202855),
+                      ),
+                    ),
+                    Text(
+                      ' *',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.redAccent,
+                      ),
+                    )
+                  ],
+                ),
+                TextFormField(
+                  controller: widget.jobDescriptionController,
+                  minLines: 3,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  decoration: customInputDecoration(),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Job description is required.";
+                    } else {
+                      // Split the text into words using space as the separator
+                      List<String> words = value.trim().split(RegExp(r'\s+'));
+                      if (words.length < 30) {
+                        // if (words.length < 30) {
+                        return "Job description must be at least 30 words.";
+                      }
+                    }
+                    return null; // Return null if validation passes
+                  },
+                ),
+                SizedBox(height: 20),
+
                 Row(
                   children: [
                     Text(
@@ -630,39 +855,6 @@ Future<void> _initializeData() async {
                   ),
                 ],
                 Gap(10),
-                Row(
-                  children: [
-                    Text(
-                      'Where would you like to advertise this job?',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff202855),
-                      ),
-                    ),
-                    Text(
-                      ' *',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
-                      ),
-                    )
-                  ],
-                ),
-                const Text(
-                  'Select branch',
-                  style: TextStyle(
-                    fontFamily: 'Galano',
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                buildSearchDropdown(setState),
-                const SizedBox(height: 20),
-
                 // // Region Dropdown
                 // buildRegionDropdown(),
                 // const SizedBox(height: 10),
@@ -681,50 +873,6 @@ Future<void> _initializeData() async {
 
                 // // Other location information field
                 // if (selectedBarangay != null) buildOtherLocationField(),
-                Row(
-                  children: [
-                    Text(
-                      'Job description',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff202855),
-                      ),
-                    ),
-                    Text(
-                      ' *',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
-                      ),
-                    )
-                  ],
-                ),
-                TextFormField(
-                  controller: widget.jobDescriptionController,
-                  minLines: 3,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  decoration: customInputDecoration(),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Job description is required.";
-                    } else {
-                      // Split the text into words using space as the separator
-                      List<String> words = value.trim().split(RegExp(r'\s+'));
-                      if (words.length < 30) {
-                        // if (words.length < 30) {
-                        return "Job description must be at least 30 words.";
-                      }
-                    }
-                    return null; // Return null if validation passes
-                  },
-                ),
-
-                Gap(20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

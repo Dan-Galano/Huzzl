@@ -25,7 +25,8 @@ class JobScreens extends StatefulWidget {
     required this.jobPostsData,
     required this.user,
     required this.userData,
-    super.key, required this.initialIndex,
+    super.key,
+    required this.initialIndex,
   });
 
   @override
@@ -40,7 +41,8 @@ class _JobScreensState extends State<JobScreens> {
   int _currentPage = 0;
 
   // first screen (Job Post)
-  TextEditingController jobTitleController = TextEditingController();
+  // TextEditingController jobTitleController = TextEditingController();
+  String selectedJobTitle = '';
   TextEditingController jobDescriptionController = TextEditingController();
   String _selectedIndustry = '';
   String _numOfPeopleToHire = 'One person';
@@ -101,10 +103,11 @@ class _JobScreensState extends State<JobScreens> {
 
   void _submitJobPostForm() {
     // ADD THE DB HERE
-    print("Data: ${jobTitleController.text} ${jobDescriptionController.text}");
+    print("Data: ${selectedJobTitle} ${jobDescriptionController.text}");
 
     // clear all values
-    jobTitleController.clear();
+    // jobTitleController.clear();
+    selectedJobTitle = '';
     _selectedIndustry = '';
     jobDescriptionController.clear();
     _numOfPeopleToHire = 'One person'; // Reset to default value
@@ -137,7 +140,8 @@ class _JobScreensState extends State<JobScreens> {
 
   void _cancel() {
     // clears everything then go to job tab
-    jobTitleController.clear();
+    // jobTitleController.clear();
+    selectedJobTitle = '';
     jobDescriptionController.clear();
     _selectedIndustry = '';
     _numOfPeopleToHire = 'One person'; // Reset to default value
@@ -179,7 +183,7 @@ class _JobScreensState extends State<JobScreens> {
     // TODO: implement dispose
     _pageController.dispose();
     super.dispose();
-    jobTitleController.dispose();
+    // jobTitleController.dispose();
     jobDescriptionController.dispose();
     _numOfPeopleToHire = '';
   }
@@ -190,7 +194,7 @@ class _JobScreensState extends State<JobScreens> {
       children: [
         Expanded(
             child: PageView(
-               physics: const NeverScrollableScrollPhysics(), 
+          physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           children: [
             JobTab(
@@ -199,14 +203,17 @@ class _JobScreensState extends State<JobScreens> {
               jobPostsData: widget.jobPostsData,
               user: widget.user,
               initialIndex: widget.initialIndex,
+              userData: widget.userData,
             ),
             JobPosts(
               nextPage: _nextPage,
               cancel: _cancel,
-              jobTitleController: jobTitleController,
+              jobTitleController: selectedJobTitle,
               selectedIndustry: _selectedIndustry,
               onselectedIndustryChanged: (value) =>
                   setState(() => _selectedIndustry = value!),
+              onselectedJobTitleChanged: (value) =>
+                  setState(() => selectedJobTitle = value!),
               numOfPeopleToHire: _numOfPeopleToHire,
               onNumOfPeopleToHireChanged: (value) =>
                   setState(() => _numOfPeopleToHire = value!),
@@ -278,7 +285,7 @@ class _JobScreensState extends State<JobScreens> {
             EditJobDetails(
               submitForm: _submitJobPostForm,
               previousPage: _previousPage,
-              jobTitleController: jobTitleController,
+              jobTitleController: selectedJobTitle,
               industry: _selectedIndustry,
               numOfPeopleToHire: _numOfPeopleToHire,
               numPeople: _numPeople,

@@ -107,6 +107,8 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'phone': widget.phoneNumber,
         'email': widget.email,
         'password': widget.password,
+        'subscriptionType' : 'basic',
+        'jobPostsCount' : 0,
       }); 
  EasyLoading.instance
           ..displayDuration = const Duration(milliseconds: 1500)

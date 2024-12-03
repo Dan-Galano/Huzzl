@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddCardModal extends StatefulWidget {
   @override
@@ -7,6 +9,47 @@ class AddCardModal extends StatefulWidget {
 
 class _AddCardModalState extends State<AddCardModal> {
   String selectedPaymentMethod = "Gcash";
+
+  // Function to upgrade subscription from Basic to Premium
+  Future<void> upgradeToPremium() async {
+    try {
+      // Get the current user ID
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+      if (userId.isEmpty) {
+        // Handle the case where there is no current user (e.g., user not logged in)
+        print('No user is logged in');
+        return;
+      }
+
+      // Fetch the user's current subscription type from the database
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      // Check if the user is currently on a Basic subscription
+      String currentSubscription = userSnapshot['subscriptionType'];
+
+      if (currentSubscription == 'basic') {
+        // Upgrade the user to Premium
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'subscriptionType': 'premium',  // Update subscription type to Premium
+        });
+
+        // Optionally notify the user of the successful upgrade
+        print('User $userId has been successfully upgraded to Premium.');
+        // congratsModel(context);
+      } else {
+        // If the user is already on Premium, handle accordingly
+        print('User $userId is already on Premium.');
+      }
+    } catch (e) {
+      // Handle any errors (e.g., network or Firestore errors)
+      print('Error upgrading to Premium: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -276,62 +319,41 @@ class _AddCardModalState extends State<AddCardModal> {
                         ),
                       ),
                       keyboardType: TextInputType.number,
-                      obscureText: true,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              // Checkbox
-              Row(
-                children: [
-                  Checkbox(
-                    value: true,
-                    onChanged: (bool? value) {},
-                    activeColor: Colors.blue,
-                  ),
-                  Expanded(
-                    child: Text(
-                      "Set this card as default for Auto-Pay",
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 30),
               Spacer(),
               // Continue Button
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              Container(
+                width: double.infinity,
+                height: 55,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xffFD7206),
+                      Color(0xffFD7206),
+                    ],
                   ),
                 ),
-                child: Center(
-                  child: Text(
+                child: TextButton(
+                  onPressed: () async {
+                    // Upgrade the user's subscription when the button is pressed
+                    await upgradeToPremium();
+                    congratsModel(context);
+                    // Navigator.pop(context); // Close the modal after upgrade
+                    // Navigator.pop(context); // Close the modal after upgrade
+                  },
+                  child: const Text(
                     "Continue",
                     style: TextStyle(
                       fontFamily: 'Galano',
                       color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 20),
-              // Footer
-              Text(
-                "By clicking on continue you agree to our Terms of Service. For more info on our data processing see our Privacy Policy.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Galano',
-                  color: Colors.grey,
-                  fontSize: 12,
                 ),
               ),
             ],
@@ -340,4 +362,71 @@ class _AddCardModalState extends State<AddCardModal> {
       ),
     );
   }
+}
+
+void congratsModel(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: Center(
+          child: Icon(
+            Icons.check_circle,
+            color: Colors.green,
+            size: 60,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Congratulations!",
+              style: TextStyle(
+                fontFamily: 'Galano',  // Use your custom font if desired
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              "You've successfully upgraded to Premium.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Galano',
+                fontSize: 16,
+                color: Colors.black.withOpacity(0.7),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);  // Close the dialog
+                Navigator.pop(context);  // Close the dialog
+                // Optionally, navigate to another screen or perform an action here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xffFD7206),  // Customize color if needed
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              ),
+              child: Text(
+                "Continue",
+                style: TextStyle(
+                  fontFamily: 'Galano',
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

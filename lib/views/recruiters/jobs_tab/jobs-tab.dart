@@ -7,6 +7,7 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/closed.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/open.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/paused.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/jobfilterrow.dart';
+import 'package:huzzl_web/views/recruiters/subscription/basic_plus.dart';
 
 class JobTab extends StatefulWidget {
   final VoidCallback postJob;
@@ -14,6 +15,7 @@ class JobTab extends StatefulWidget {
   final List<Map<String, dynamic>> jobPostsData;
   final User user;
   final int initialIndex;
+  final Map<String, dynamic> userData;
   const JobTab({
     super.key,
     required this.candidates,
@@ -21,6 +23,7 @@ class JobTab extends StatefulWidget {
     required this.jobPostsData,
     required this.user,
     required this.initialIndex,
+    required this.userData,
   });
 
   @override
@@ -113,7 +116,29 @@ class _JobTabState extends State<JobTab> {
                             ),
                             const Spacer(),
                             ElevatedButton(
-                              onPressed: widget.postJob,
+                              onPressed: () {
+                                // widget.postJob
+                                final subscriptionType =
+                                    widget.userData['subscriptionType'];
+                                final jobPostsCount =
+                                    widget.userData['jobPostsCount'] ?? 0;
+
+                                    debugPrint("$subscriptionType ${jobPostsCount.toString()}");
+
+                                if (subscriptionType == 'basic' &&
+                                    jobPostsCount >= 2) {
+                                  // Show a message if the limit is reached for basic subscription
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) {
+                                      return MembershipPlansPage();
+                                    },
+                                  ));
+                                } else {
+                                  // Allow submission for Premium or Basic with available slots
+                                  // _submitJobPost();
+                                  widget.postJob();
+                                }
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFF0038FF),
                                 padding: EdgeInsets.all(20),
