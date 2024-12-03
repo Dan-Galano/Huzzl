@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -20,7 +21,7 @@ class JobPosts extends StatefulWidget {
   final ValueChanged<String?> onselectedJobTitleChanged;
   String numOfPeopleToHire;
   final ValueChanged<String?> onNumOfPeopleToHireChanged;
-  final ValueChanged<String?> onNumPeopleChanged;
+  // final ValueChanged<String?> onNumPeopleChanged;
   final ValueChanged<String?> onBranchChanged;
   final TextEditingController jobDescriptionController;
 
@@ -33,7 +34,7 @@ class JobPosts extends StatefulWidget {
     required this.onselectedJobTitleChanged,
     required this.numOfPeopleToHire,
     required this.onNumOfPeopleToHireChanged,
-    required this.onNumPeopleChanged,
+    // required this.onNumPeopleChanged,
     required this.onBranchChanged,
     required this.jobDescriptionController,
   });
@@ -60,6 +61,7 @@ class _JobPostsState extends State<JobPosts> {
   @override
   void initState() {
     super.initState();
+    widget.numOfPeopleToHire = 1.toString();
     _initializeData();
   }
 
@@ -422,6 +424,9 @@ class _JobPostsState extends State<JobPosts> {
     'Travel & Hospitality',
   ];
 
+  bool showOtherTextField = false;
+  var tempJobTitleController = TextEditingController();
+
 // Remove duplicates from listOfJobTitle
   List<String>? listOfJobTitle = [];
   bool jobTitleIsEmpty = true;
@@ -436,7 +441,7 @@ class _JobPostsState extends State<JobPosts> {
     debugPrint("Selected industry: $selectedIndustry");
 
     var prompt =
-        "Can you create a list of job titles based on this industry $selectedIndustry. Example output ['Software Engineer', 'Network Admin']. Always return your output like that. DONT RETURN ANYTHING BESIDES THE LIST.";
+        "Can you create a list of job titles based on this industry $selectedIndustry. Example output ['Software Engineer', 'Network Admin'] and always include 'others' in the last index of the list. Always return your output like that. DONT RETURN ANYTHING BESIDES THE LIST.";
 
     final model = GenerativeModel(
       model: geminiModel,
@@ -478,7 +483,7 @@ class _JobPostsState extends State<JobPosts> {
     debugPrint("Selected job title: $selectedJobTitle");
 
     var prompt =
-        "Generate a one-paragraph job description (80-100 words) for the job title: $selectedJobTitle. Follow the instructions strictly and return only the requested content. Just provide the description no [Company Name] [Position] anything like that. just pure job description.";
+        "Generate a one-paragraph job description (50-80 words) for the job title: $selectedJobTitle. Follow the instructions strictly and return only the requested content. Just provide the description no [Company Name] [Position] anything like that. just pure job description.";
 
     final model = GenerativeModel(
       model: geminiModel,
@@ -490,7 +495,7 @@ class _JobPostsState extends State<JobPosts> {
       if (response.text != null && response.text!.isNotEmpty) {
         debugPrint("Generated Description: ${response.text}");
         setState(() {
-           widget.jobDescriptionController.text = response.text!;
+          widget.jobDescriptionController.text = response.text!;
         });
         debugPrint("Setted: ${widget.jobTitleController}");
       } else {
@@ -566,7 +571,7 @@ class _JobPostsState extends State<JobPosts> {
                   ),
                 ),
                 Gap(20),
-                 Row(
+                Row(
                   children: [
                     Text(
                       'Where would you like to advertise this job?',
@@ -681,9 +686,12 @@ class _JobPostsState extends State<JobPosts> {
                     isExpanded: true,
                     hint: const Text('Select a job title'),
                     decoration: customInputDecoration(),
-                    value: widget.jobTitleController.isNotEmpty
-                        ? widget.jobTitleController
-                        : null, // Ensure it reflects the selected value
+                    value: showOtherTextField
+                        ? 'others'
+                        : widget.jobTitleController.isNotEmpty
+                            ? widget.jobTitleController
+                            : null,
+                    // Ensure it reflects the selected value
                     items: listOfJobTitle!
                         .map<DropdownMenuItem<String>>((String jobTitle) {
                       return DropdownMenuItem<String>(
@@ -692,14 +700,20 @@ class _JobPostsState extends State<JobPosts> {
                       );
                     }).toList(),
                     onChanged: (String? newValue) async {
-                      setState(() {
-                        widget.jobTitleController = newValue!;
-                        debugPrint("Job title: ${newValue}");
-                      });
-                      widget.onselectedJobTitleChanged(newValue);
-                      widget.jobDescriptionController.clear();
-                      await generateDescription(newValue!);
-                      
+                      if (newValue!.toLowerCase() == 'others') {
+                        setState(() {
+                          showOtherTextField = true;
+                        });
+                      } else {
+                        setState(() {
+                          widget.jobTitleController = newValue!;
+                          debugPrint("Job title: ${newValue}");
+                        });
+                        widget.onselectedJobTitleChanged(newValue);
+                        widget.jobDescriptionController.clear();
+                        await generateDescription(newValue!);
+                        showOtherTextField = false;
+                      }
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -710,26 +724,61 @@ class _JobPostsState extends State<JobPosts> {
                   ),
 
                 SizedBox(height: 20),
+                if (showOtherTextField)
+                  TextFormField(
+                    controller: tempJobTitleController,
+                    // minLines: 3,
+                    // maxLines: null,
+                    // keyboardType: TextInputType.multiline,
+                    decoration: customInputDecoration(),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Job Title is required.";
+                      }
+                      return null; // Return null if validation passes
+                    },
+                  ),
+                SizedBox(height: 20),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Job description',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff202855),
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          'Job description',
+                          style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff202855),
+                          ),
+                        ),
+                        Text(
+                          ' *',
+                          style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.redAccent,
+                          ),
+                        )
+                      ],
                     ),
-                    Text(
-                      ' *',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
-                      ),
-                    )
+                    TextButton(
+                      onPressed: () {
+                        if (tempJobTitleController.text.isEmpty) {
+                          return;
+                        }
+                        setState(() {
+                          widget.jobTitleController =
+                              tempJobTitleController.text;
+                          widget.onselectedJobTitleChanged(
+                              tempJobTitleController.text);
+                        });
+                        generateDescription(tempJobTitleController.text);
+                      },
+                      child: const Text("Generate"),
+                    ),
                   ],
                 ),
                 TextFormField(
@@ -752,9 +801,9 @@ class _JobPostsState extends State<JobPosts> {
                     return null; // Return null if validation passes
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-                Row(
+                const Row(
                   children: [
                     Text(
                       'Number of people to hire for this job',
@@ -773,87 +822,122 @@ class _JobPostsState extends State<JobPosts> {
                         fontWeight: FontWeight.w600,
                         color: Colors.redAccent,
                       ),
-                    )
+                    ),
                   ],
                 ),
-                RadioListTile<String>(
-                  title: const Text(
-                    'One person',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff202855),
-                    ),
-                  ),
-                  value: 'One person',
-                  groupValue: widget.numOfPeopleToHire,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.numOfPeopleToHire = value!;
-                      _selectedValue = null; // Reset dropdown value
-                    });
-                    widget.onNumOfPeopleToHireChanged(value);
+                const SizedBox(height: 10),
+                TextFormField(
+                  initialValue: widget.numOfPeopleToHire, // Default value is 1
+                  keyboardType:
+                      TextInputType.number, // Ensures numeric keyboard
+                  decoration: customInputDecoration(),
+                  inputFormatters: [
+                    FilteringTextInputFormatter
+                        .digitsOnly, // Allows only numeric input
+                  ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required.';
+                    }
+
+                    final intValue = int.tryParse(value);
+                    if (intValue == null || intValue < 1) {
+                      return 'Please enter a number greater than or equal to 1.';
+                    }
+
+                    return null; // Validation passes
                   },
-                ),
-                RadioListTile<String>(
-                  title: const Text(
-                    'More than one person',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff202855),
-                    ),
-                  ),
-                  value: 'More than one person',
-                  groupValue: widget.numOfPeopleToHire,
                   onChanged: (value) {
-                    setState(() {
-                      widget.numOfPeopleToHire = value!;
-                      _selectedValue = null; // Reset dropdown value
-                    });
-                    widget.onNumOfPeopleToHireChanged(value);
-                  },
-                ),
-                Gap(10),
-                if (widget.numOfPeopleToHire == 'More than one person') ...[
-                  DropdownButtonFormField<String>(
-                    decoration: customInputDecoration(),
-                    value: _selectedValue,
-                    hint: const Text("Select an option"),
-                    items: <String>[
-                      // '1',
-                      '2',
-                      '3',
-                      '4',
-                      '5',
-                      '6',
-                      '7',
-                      '8',
-                      '9',
-                      '10+',
-                      'I have an ongoing need to fill this role'
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedValue = newValue;
-                      });
-                      widget.onNumPeopleChanged(newValue);
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Required to select";
+                    if (value.isNotEmpty) {
+                      final intValue = int.tryParse(value);
+                      if (intValue != null && intValue >= 1) {
+                        widget.numOfPeopleToHire = intValue.toString(); // Update value
+                        widget.onNumOfPeopleToHireChanged(value);
+                        debugPrint('Number of people: ${widget.numOfPeopleToHire}');
+                      } else {
+                        debugPrint('Value must be at least 1.');
                       }
-                      return null;
-                    },
-                  ),
-                ],
+                    }
+                  },
+                ),
+                // RadioListTile<String>(
+                //   title: const Text(
+                //     'One person',
+                //     style: TextStyle(
+                //       fontFamily: 'Galano',
+                //       fontSize: 13,
+                //       fontWeight: FontWeight.w700,
+                //       color: Color(0xff202855),
+                //     ),
+                //   ),
+                //   value: 'One person',
+                //   groupValue: widget.numOfPeopleToHire,
+                //   onChanged: (value) {
+                //     setState(() {
+                //       widget.numOfPeopleToHire = value!;
+                //       _selectedValue = null; // Reset dropdown value
+                //     });
+                //     widget.onNumOfPeopleToHireChanged(value);
+                //   },
+                // ),
+                // RadioListTile<String>(
+                //   title: const Text(
+                //     'More than one person',
+                //     style: TextStyle(
+                //       fontFamily: 'Galano',
+                //       fontSize: 13,
+                //       fontWeight: FontWeight.w700,
+                //       color: Color(0xff202855),
+                //     ),
+                //   ),
+                //   value: 'More than one person',
+                //   groupValue: widget.numOfPeopleToHire,
+                //   onChanged: (value) {
+                //     setState(() {
+                //       widget.numOfPeopleToHire = value!;
+                //       _selectedValue = null; // Reset dropdown value
+                //     });
+                //     widget.onNumOfPeopleToHireChanged(value);
+                //   },
+                // ),
+                // Gap(10),
+                // if (widget.numOfPeopleToHire == 'More than one person') ...[
+                //   DropdownButtonFormField<String>(
+                //     decoration: customInputDecoration(),
+                //     value: _selectedValue,
+                //     hint: const Text("Select an option"),
+                //     items: <String>[
+                //       // '1',
+                //       '2',
+                //       '3',
+                //       '4',
+                //       '5',
+                //       '6',
+                //       '7',
+                //       '8',
+                //       '9',
+                //       '10+',
+                //       'I have an ongoing need to fill this role'
+                //     ].map<DropdownMenuItem<String>>((String value) {
+                //       return DropdownMenuItem<String>(
+                //         value: value,
+                //         child: Text(value),
+                //       );
+                //     }).toList(),
+                //     onChanged: (String? newValue) {
+                //       setState(() {
+                //         _selectedValue = newValue;
+                //       });
+                //       widget.onNumPeopleChanged(newValue);
+                //     },
+                //     validator: (value) {
+                //       if (value == null || value.isEmpty) {
+                //         return "Required to select";
+                //       }
+                //       return null;
+                //     },
+                //   ),
+                // ],
                 Gap(10),
                 // // Region Dropdown
                 // buildRegionDropdown(),
