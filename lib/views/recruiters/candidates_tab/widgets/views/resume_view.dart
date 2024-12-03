@@ -91,7 +91,6 @@ class _ResumeViewState extends State<ResumeView> {
         return;
       }
 
-
       // Create a PDF document
       final pdf = pw.Document();
 
@@ -100,20 +99,15 @@ class _ResumeViewState extends State<ResumeView> {
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.legal,
-          build: (pw.Context context) => pw.Column(
-            children: [
-              pw.SizedBox(
-                  height: 0), // No extra space above (or minimal if you want)
-              pw.Image(image,
-                  width: PdfPageFormat.legal.width *
-                      0.95, // Center image horizontally
-                  height: PdfPageFormat.legal.height *
-                      0.65), // Adjust height to fit the page (optional)
-            ],
+          build: (pw.Context context) => pw.Center(
+            child: pw.Image(
+              image,
+              width: PdfPageFormat.legal.width * 98,
+              height: PdfPageFormat.legal.height * 0.95,
+            ),
           ),
         ),
       );
-
       // Save the PDF to Uint8List
       final Uint8List pdfBytes = await pdf.save();
 
@@ -169,7 +163,7 @@ class _ResumeViewState extends State<ResumeView> {
 
   Future<void> _loadResumeData() async {
     final resumeProvider = Provider.of<ResumeProvider>(context, listen: false);
-    await resumeProvider.getResumeByJobSeekerId(widget.jobSeekerId); 
+    await resumeProvider.getResumeByJobSeekerId(widget.jobSeekerId);
 
     setState(() {
       fname = resumeProvider.fname ?? '';
@@ -567,18 +561,26 @@ class _ResumeViewState extends State<ResumeView> {
                                               (index) {
                                                 final entry =
                                                     educationEntries[index];
-                                          String timePeriod = entry.isPresent
-    ? (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
-        ? (entry.toSelectedMonth == null
-            ? '${entry.toSelectedYear}'
-            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
-    : (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
-        ? (entry.toSelectedMonth == null
-            ? '${entry.toSelectedYear}'
-            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
-
+                                                String timePeriod = entry
+                                                        .isPresent
+                                                    ? (entry.fromSelectedMonth ==
+                                                                null ||
+                                                            entry.fromSelectedYear ==
+                                                                null
+                                                        ? (entry.toSelectedMonth ==
+                                                                null
+                                                            ? '${entry.toSelectedYear}'
+                                                            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
+                                                    : (entry.fromSelectedMonth ==
+                                                                null ||
+                                                            entry.fromSelectedYear ==
+                                                                null
+                                                        ? (entry.toSelectedMonth ==
+                                                                null
+                                                            ? '${entry.toSelectedYear}'
+                                                            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
 
                                                 return Row(
                                                   children: [
@@ -797,17 +799,26 @@ class _ResumeViewState extends State<ResumeView> {
                                               (index) {
                                                 final entry =
                                                     experienceEntries[index];
-                                            String timePeriod = entry.isPresent
-    ? (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
-        ? (entry.toSelectedMonth == null
-            ? '${entry.toSelectedYear}'
-            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
-    : (entry.fromSelectedMonth == null || entry.fromSelectedYear == null
-        ? (entry.toSelectedMonth == null
-            ? '${entry.toSelectedYear}'
-            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
+                                                String timePeriod = entry
+                                                        .isPresent
+                                                    ? (entry.fromSelectedMonth ==
+                                                                null ||
+                                                            entry.fromSelectedYear ==
+                                                                null
+                                                        ? (entry.toSelectedMonth ==
+                                                                null
+                                                            ? '${entry.toSelectedYear}'
+                                                            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
+                                                    : (entry.fromSelectedMonth ==
+                                                                null ||
+                                                            entry.fromSelectedYear ==
+                                                                null
+                                                        ? (entry.toSelectedMonth ==
+                                                                null
+                                                            ? '${entry.toSelectedYear}'
+                                                            : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                        : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
 
                                                 return Row(
                                                   children: [

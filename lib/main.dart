@@ -210,6 +210,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
           final loggedInUserId = user.uid;
 
           Provider.of<UserProvider>(context, listen: false).setUser(user);
+          Provider.of<UserProvider>(context, listen: false).setLoggedInUserId(loggedInUserId);
 
           final resumeProvider =
               Provider.of<ResumeProvider>(context, listen: false);

@@ -75,7 +75,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String portfolioFileName = '';
   final ScreenshotController _screenshotController = ScreenshotController();
 
-  String userId = "";
 
   String _extractedText = '';
   String _selectedFileType = '';
@@ -223,6 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (isSucess == true) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ResumePageSummary2autoBuild(
+            isInitialSetup: true,
             title: 'Review your Huzzl resume',
             subtitle:
                 "Review and finalize the details of your Huzzl resume before submission.",
@@ -265,6 +265,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (isSucess == true) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ResumePageSummary2autoBuild(
+            isInitialSetup: true,
             title: 'Review your Huzzl resume',
             subtitle:
                 "Review and finalize the details of your Huzzl resume before submission.",
@@ -303,6 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (isSucess == true) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ResumePageSummary2autoBuild(
+            isInitialSetup: true,
             title: 'Review your Huzzl resume',
             subtitle:
                 "Review and finalize the details of your Huzzl resume before submission.",
@@ -320,6 +322,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showSetupResumeDialog(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final String userId = userProvider.loggedInUserId ?? '';
     showDialog(
       context: context,
       builder: (_) => SetupResumeDialog(
@@ -544,7 +548,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            '${userProfile?.firstName!.toLowerCaseTrimmed().toCapitalCase() ?? ''} ${userProfile?.lastName!.toLowerCaseTrimmed().toCapitalCase() ?? ''}',
+                                            '${userProfile?.firstName!.toLowerCaseTrimmed().toTitleCase() ?? ''} ${userProfile?.lastName!.toLowerCaseTrimmed().toTitleCase() ?? ''}',
                                             style: const TextStyle(
                                               fontFamily: 'Galano',
                                               fontSize: 22,
@@ -765,7 +769,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                               'Your Huzzl Resume',
                                                           subtitle:
                                                               "The information displayed here will be visible to potential employers when you apply for jobs. You can update it at any time to keep it current.",
-                                                          inProfile: true,
+                                                          isInitialSetup: false,
                                                           previousPage:
                                                               () async {
                                                             WidgetsBinding
@@ -983,7 +987,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         ),
                                                         onPressed: () async {
                                                           final shouldDelete =
-                                                              await _showDeleteConfirmationDialog(
+                                                              await _showDeleteConfirmationDialog( 
                                                                   context);
 
                                                           if (shouldDelete) {

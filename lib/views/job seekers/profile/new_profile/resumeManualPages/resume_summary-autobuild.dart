@@ -10,6 +10,8 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appsta
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/01%20profile_new.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeDialogs/addOreditEducationItem.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeDialogs/addOreditExperienceItem.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeDialogs/editObjective.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeDialogs/editPersonalInfo.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeDialogs/editSkills.dart';
@@ -27,13 +29,29 @@ class ResumePageSummary2autoBuild extends StatefulWidget {
   final String title;
   final String subtitle;
   final VoidCallback previousPage;
-  final bool inProfile;
+  final VoidCallback? nextPage;
+  final bool isInitialSetup;
+  final Function(Map<String, dynamic>)? onSaveResumeSetup;
+  final Map<String, dynamic>? currentResumeOption;
+  final int? noOfPages;
+  final int? noOfResumePages;
+  final bool isManualInitialSetup;
+  final bool isSetupInRegistration;
+  final String? uid;
   const ResumePageSummary2autoBuild({
     super.key,
     required this.title,
+    this.uid,
     required this.subtitle,
     required this.previousPage,
-    this.inProfile = false,
+    required this.isInitialSetup,
+    this.onSaveResumeSetup,
+    this.currentResumeOption,
+    this.noOfPages,
+    this.noOfResumePages,
+    this.nextPage,
+    this.isManualInitialSetup = false,
+    this.isSetupInRegistration = false,
   });
 
   @override
@@ -54,6 +72,136 @@ class _ResumePageSummary2autoBuildState
   List<ExperienceEntry> experienceEntries = [];
   bool isExporting = false;
   final ScreenshotController _screenshotController = ScreenshotController();
+
+  void _submitResumeAtRegistration() async {
+    final appState = Provider.of<AppState>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? userId = userProvider.loggedInUserId;
+
+    if (userId == null) {
+      print('User not logged in!');
+      return;
+    }
+    Map<String, dynamic> resumeData = {
+      'uid': userId,
+      'fname': fname,
+      'lname': lname,
+      'fullName': '$fname $lname',
+      'pnumber': pnumber,
+      'email': email,
+      'location': locationData,
+      'objective': objective,
+      'skills': selectedSkills,
+      'education': educationEntries.map((entry) => entry.toMap()).toList(),
+      'experience': experienceEntries.map((entry) => entry.toMap()).toList(),
+      'selectedLocation': appState.selectedLocation,
+      'selectedPayRate': appState.selectedPayRate,
+      'currentSelectedJobTitles': appState.currentSelectedJobTitles,
+      'updatedAt': DateTime.now(),
+    };
+
+    Map<String, dynamic> jobPreferences = {
+      'selectedLocation': appState.selectedLocation,
+      'selectedPayRate': appState.selectedPayRate,
+      'currentSelectedJobTitles': appState.currentSelectedJobTitles,
+      'uid': userId,
+    };
+
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference usersRefJob = firestore.collection('users');
+
+      CollectionReference usersRefResume =
+          firestore.collection('users').doc(userId).collection('resume');
+
+      QuerySnapshot existingResumes = await usersRefResume.get();
+
+      await usersRefJob
+          .doc(userId)
+          .set(jobPreferences, SetOptions(merge: true));
+      print('Job preferences saved successfully!');
+
+      if (existingResumes.docs.isEmpty) {
+        DocumentReference newResumeDoc = await usersRefResume.add(resumeData);
+      } else {
+        await usersRefResume
+            .doc(existingResumes.docs.first.id)
+            .set(resumeData, SetOptions(merge: true));
+      }
+
+      print('resume saved successfully!');
+
+      _showLoadingDialog(context);
+
+      await Future.delayed(Duration(seconds: 3));
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+            builder: (context) => JobseekerMainScreen(uid: userId)),
+      );
+    } catch (e) {
+      print('Error saving job preferences and resume: $e');
+    }
+  }
+
+  void _submitResumeManuallyInitialSetup() async {
+    String? userId = widget.uid;
+    if (userId == null || userId.isEmpty) {
+      print('NO USER ID FETCHED!');
+      return;
+    }
+    Map<String, dynamic> resumeData = {
+      'uid': userId,
+      'fname': fname,
+      'lname': lname,
+      'fullName': '$fname $lname',
+      'pnumber': pnumber,
+      'email': email,
+      'location': locationData,
+      'objective': objective,
+      'skills': selectedSkills,
+      'education': educationEntries.map((entry) => entry.toMap()).toList(),
+      'experience': experienceEntries.map((entry) => entry.toMap()).toList(),
+      'updatedAt': DateTime.now(),
+    };
+
+    try {
+      _showLoadingDialog(context);
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference usersRefJob = firestore.collection('users');
+
+      CollectionReference usersRefResume =
+          firestore.collection('users').doc(userId).collection('resume');
+
+      QuerySnapshot existingResumes = await usersRefResume.get();
+
+      if (existingResumes.docs.isEmpty) {
+        DocumentReference newResumeDoc = await usersRefResume.add(resumeData);
+      } else {
+        await usersRefResume
+            .doc(existingResumes.docs.first.id)
+            .set(resumeData, SetOptions(merge: true));
+      }
+
+      print('resume saved successfully!');
+
+      await Future.delayed(Duration(seconds: 3));
+      final resumeProvider =
+          Provider.of<ResumeProvider>(context, listen: false);
+      resumeProvider.getResumeByJobSeekerId(userId);
+
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => JobseekerMainScreen(
+              uid: userId,
+              selectedScreen: 4,
+            ),
+          ));
+    } catch (e) {
+      print('Error saving job preferences and resume: $e');
+    }
+  }
 
   Future<void> _generateAndDownloadPdf(String fullName) async {
     setState(() {
@@ -100,16 +248,12 @@ class _ResumePageSummary2autoBuildState
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.legal,
-          build: (pw.Context context) => pw.Column(
-            children: [
-              pw.SizedBox(
-                  height: 0), // No extra space above (or minimal if you want)
-              pw.Image(image,
-                  width: PdfPageFormat.legal.width *
-                      0.95, // Center image horizontally
-                  height: PdfPageFormat.legal.height *
-                      0.65), // Adjust height to fit the page (optional)
-            ],
+          build: (pw.Context context) => pw.Center(
+            child: pw.Image(
+              image,
+              width: PdfPageFormat.legal.width * 98,
+              height: PdfPageFormat.legal.height * 0.95,
+            ),
           ),
         ),
       );
@@ -204,28 +348,39 @@ class _ResumePageSummary2autoBuildState
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      CollectionReference usersRefResume =
-          firestore.collection('users').doc(userId).collection('resume');
+      // Reference to the user's resume sub-collection
+      CollectionReference resumeCollection = firestore
+          .collection('users')
+          .doc(userId) // Specify the document path with userId
+          .collection('resume');
 
-      QuerySnapshot existingResumes = await usersRefResume.get();
+      // Check if there are any existing resumes
+      QuerySnapshot existingResumes = await resumeCollection.get();
 
       if (existingResumes.docs.isEmpty) {
-        DocumentReference newResumeDoc = await usersRefResume.add(resumeData);
+        // Add a new document if no resumes exist
+        await resumeCollection.add(resumeData);
       } else {
-        await usersRefResume
-            .doc(existingResumes.docs.first.id)
-            .set(resumeData, SetOptions(merge: true));
+        // Update the first existing resume document
+        await resumeCollection
+            .doc(existingResumes
+                .docs.first.id) // Get the document ID of the first resume
+            .set(
+                resumeData,
+                SetOptions(
+                    merge: true)); // Merge new data with the existing document
       }
 
-      print('resume saved successfully!');
+      print('Resume saved successfully!');
 
+      // Continue with your loading and navigation logic
       _showLoadingDialog(context);
 
       await Future.delayed(Duration(seconds: 3));
 
       final resumeProvider =
           Provider.of<ResumeProvider>(context, listen: false);
-      resumeProvider.getResumeByJobSeekerId(userId!);
+      resumeProvider.getResumeByJobSeekerId(userId);
 
       Navigator.pushReplacement(
           context,
@@ -235,6 +390,24 @@ class _ResumePageSummary2autoBuildState
               selectedScreen: 4,
             ),
           ));
+
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "✓ Your huzzl resume has been successfully created!",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
     } catch (e) {
       print('Error saving and resume: $e');
     }
@@ -256,6 +429,48 @@ class _ResumePageSummary2autoBuildState
       educationEntries = resumeProvider.educationEntries ?? [];
       experienceEntries = resumeProvider.experienceEntries ?? [];
     });
+  }
+
+  Future<bool> _showDeleteConfirmationDialog(
+      BuildContext context, String type) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor:
+                  Colors.white, // Set the background color to white
+              title: Text(
+                'Delete this ${type}',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Text(
+                'Are you sure you want to delete this ${type}?',
+                style: TextStyle(color: Colors.black),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // Return false
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true); // Return true
+                  },
+                  child: const Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // If dismissed, return false
   }
 
   @override
@@ -286,7 +501,7 @@ class _ResumePageSummary2autoBuildState
                     children: [
                       SizedBox(height: 40),
                       Row(
-                        mainAxisAlignment: widget.inProfile == true
+                        mainAxisAlignment: widget.isInitialSetup == false
                             ? MainAxisAlignment.spaceBetween
                             : MainAxisAlignment.start,
                         children: [
@@ -299,7 +514,7 @@ class _ResumePageSummary2autoBuildState
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          widget.inProfile == true
+                          widget.isInitialSetup == false
                               ? PopupMenuButton<String>(
                                   icon: Icon(
                                     Icons.more_vert,
@@ -685,7 +900,9 @@ class _ResumePageSummary2autoBuildState
                                           showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
-                                              return EditPersonalInfoDialog();
+                                              return EditPersonalInfoDialog(
+                                                  isInitialSetup:
+                                                      widget.isInitialSetup);
                                             },
                                           );
                                         },
@@ -781,7 +998,10 @@ class _ResumePageSummary2autoBuildState
                                           showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
-                                              return EditObjectiveDialog();
+                                              return EditObjectiveDialog(
+                                                isInitialSetup:
+                                                    widget.isInitialSetup,
+                                              );
                                             },
                                           );
                                         },
@@ -895,7 +1115,10 @@ class _ResumePageSummary2autoBuildState
                                           showDialog(
                                             context: context,
                                             builder: (BuildContext context) {
-                                              return EditSkillsDialog();
+                                              return EditSkillsDialog(
+                                                isInitialSetup:
+                                                    widget.isInitialSetup,
+                                              );
                                             },
                                           );
                                         },
@@ -910,18 +1133,20 @@ class _ResumePageSummary2autoBuildState
                                   thickness: 0.5,
                                 ),
                               ),
-                              Stack(
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Column(
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Gap(20),
+                                        Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Gap(20),
                                             Text(
                                               'Education',
                                               style: TextStyle(
@@ -931,396 +1156,216 @@ class _ResumePageSummary2autoBuildState
                                                 fontWeight: FontWeight.w700,
                                               ),
                                             ),
-                                            Gap(10),
-                                            educationEntries.isNotEmpty
-                                                ? Column(
-                                                    children: List.generate(
-                                                      educationEntries.length,
-                                                      (index) {
-                                                        final entry =
-                                                            educationEntries[
-                                                                index];
-                                                        String timePeriod = entry
-                                                                .isPresent
-                                                            ? (entry.fromSelectedMonth ==
-                                                                        null ||
-                                                                    entry.fromSelectedYear ==
-                                                                        null
-                                                                ? (entry.toSelectedMonth ==
-                                                                        null
-                                                                    ? '${entry.toSelectedYear}'
-                                                                    : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-                                                                : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
-                                                            : (entry.fromSelectedMonth ==
-                                                                        null ||
-                                                                    entry.fromSelectedYear ==
-                                                                        null
-                                                                ? (entry.toSelectedMonth ==
-                                                                        null
-                                                                    ? '${entry.toSelectedYear}'
-                                                                    : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-                                                                : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
-
-                                                        return Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Card(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        bottom:
-                                                                            20.0),
-                                                                elevation: 0,
-                                                                color: Colors
-                                                                    .grey[100],
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                ),
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .all(
-                                                                          20.0),
-                                                                  child: Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: [
-                                                                          Text(
-                                                                            entry.degree,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 18.0,
-                                                                              fontWeight: FontWeight.bold,
-                                                                              color: Colors.black87,
-                                                                            ),
-                                                                          ),
-                                                                          Text(
-                                                                            timePeriod,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 14.0,
-                                                                              fontStyle: FontStyle.italic,
-                                                                              color: Colors.black87,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              8.0),
-                                                                      Row(
-                                                                        children: [
-                                                                          Icon(
-                                                                              Icons.school_rounded,
-                                                                              color: Colors.black54,
-                                                                              size: 15),
-                                                                          Gap(5),
-                                                                          Text(
-                                                                            entry.institutionName,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 16.0,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              color: Colors.black54,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              4.0),
-                                                                      if (entry
-                                                                          .institutionAddress
-                                                                          .trim()
-                                                                          .isNotEmpty)
-                                                                        Row(
-                                                                          children: [
-                                                                            Icon(Icons.location_on_rounded,
-                                                                                color: Colors.black54,
-                                                                                size: 15),
-                                                                            Gap(5),
-                                                                            Text(
-                                                                              entry.institutionAddress,
-                                                                              style: TextStyle(
-                                                                                fontSize: 14.0,
-                                                                                color: Colors.black54,
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              8.0),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              8.0),
-                                                                      if (entry
-                                                                          .honorsOrAwards
-                                                                          .trim()
-                                                                          .isNotEmpty) ...[
-                                                                        Text(
-                                                                          "Honors and Awards",
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            fontSize:
-                                                                                14.0,
-                                                                            color:
-                                                                                Colors.black54,
-                                                                          ),
-                                                                        ),
-                                                                        Gap(10),
-                                                                        Text(
-                                                                          entry
-                                                                              .honorsOrAwards,
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                14.0,
-                                                                            color:
-                                                                                Colors.black54,
-                                                                          ),
-                                                                        ),
-                                                                      ]
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
+                                            TextButton(
+                                              child: Text(
+                                                '+ Add another',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: educationEntries
+                                                              .length <
+                                                          3
+                                                      ? Color(0xff373030)
+                                                      : const Color.fromARGB(
+                                                          255, 207, 207, 207),
+                                                  fontFamily: 'Galano',
+                                                ),
+                                              ),
+                                              onPressed:
+                                                  educationEntries.length < 3
+                                                      ? () async {
+                                                          final newEntry =
+                                                              EducationEntry();
+                                                          final result =
+                                                              await showDialog<
+                                                                  EducationEntry>(
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                AddOrEditEducationItem(
+                                                              isInitialSetup: widget
+                                                                  .isInitialSetup,
+                                                              educationEntries:
+                                                                  educationEntries,
+                                                              entry: newEntry,
+                                                              isEditing: false,
                                                             ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    ),
-                                                  )
-                                                : Container(
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Colors.grey,
-                                                        width: 0.5,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                    ),
-                                                    child: Center(
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(50.0),
-                                                        child: Text(
-                                                          'Education will appear here',
-                                                          style: TextStyle(
-                                                            fontStyle: FontStyle
-                                                                .italic,
-                                                            fontSize: 16,
-                                                            color: Colors.grey,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
+                                                          );
+
+                                                          if (result != null) {
+                                                            setState(() {
+                                                              educationEntries
+                                                                  .add(result);
+                                                            });
+                                                          }
+                                                        }
+                                                      : null,
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (!isExporting)
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: IconButton(
-                                        icon: Icon(Icons.edit),
-                                        onPressed: () {},
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                child: Divider(
-                                  color: Colors.grey,
-                                  thickness: 0.5,
-                                ),
-                              ),
-                              Stack(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Gap(20),
-                                            Text(
-                                              'Work Experience',
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            Gap(10),
-                                            experienceEntries.isNotEmpty
-                                                ? Column(
-                                                    children: List.generate(
-                                                      experienceEntries.length,
-                                                      (index) {
-                                                        final entry =
-                                                            experienceEntries[
-                                                                index];
-                                                        String timePeriod = entry
-                                                                .isPresent
-                                                            ? (entry.fromSelectedMonth ==
-                                                                        null ||
-                                                                    entry.fromSelectedYear ==
-                                                                        null
-                                                                ? (entry.toSelectedMonth ==
-                                                                        null
-                                                                    ? '${entry.toSelectedYear}'
-                                                                    : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-                                                                : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
-                                                            : (entry.fromSelectedMonth ==
-                                                                        null ||
-                                                                    entry.fromSelectedYear ==
-                                                                        null
-                                                                ? (entry.toSelectedMonth ==
-                                                                        null
-                                                                    ? '${entry.toSelectedYear}'
-                                                                    : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
-                                                                : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
+                                        Gap(10),
+                                        educationEntries.isNotEmpty
+                                            ? Column(
+                                                children: List.generate(
+                                                  educationEntries.length,
+                                                  (index) {
+                                                    final entry =
+                                                        educationEntries[index];
+                                                    String timePeriod = entry
+                                                            .isPresent
+                                                        ? (entry.fromSelectedMonth ==
+                                                                    null ||
+                                                                entry.fromSelectedYear ==
+                                                                    null
+                                                            ? (entry.toSelectedMonth ==
+                                                                    null
+                                                                ? '${entry.toSelectedYear}'
+                                                                : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                            : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
+                                                        : (entry.fromSelectedMonth ==
+                                                                    null ||
+                                                                entry.fromSelectedYear ==
+                                                                    null
+                                                            ? (entry.toSelectedMonth ==
+                                                                    null
+                                                                ? '${entry.toSelectedYear}'
+                                                                : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                            : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
 
-                                                        return Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Card(
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        bottom:
-                                                                            20.0),
-                                                                elevation: 0,
-                                                                color: Colors
-                                                                    .grey[100],
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                ),
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .all(
-                                                                          20.0),
-                                                                  child: Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
+                                                    return Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Card(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    bottom:
+                                                                        20.0),
+                                                            elevation: 0,
+                                                            color: Colors
+                                                                .grey[100],
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                            ),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      20.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
                                                                     children: [
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: [
-                                                                          Text(
-                                                                            entry.jobTitle,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 18.0,
-                                                                              fontWeight: FontWeight.bold,
-                                                                              color: Colors.black87,
-                                                                            ),
-                                                                          ),
-                                                                          Text(
-                                                                            timePeriod,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 14.0,
-                                                                              fontStyle: FontStyle.italic,
-                                                                              color: Colors.black87,
-                                                                            ),
-                                                                          ),
-                                                                        ],
+                                                                      Text(
+                                                                        entry
+                                                                            .degree,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              18.0,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color:
+                                                                              Colors.black87,
+                                                                        ),
                                                                       ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              8.0),
                                                                       Row(
-                                                                        children: [
-                                                                          Icon(
-                                                                              Icons.business_center_rounded,
-                                                                              color: Colors.black54,
-                                                                              size: 15),
-                                                                          Gap(5),
-                                                                          Text(
-                                                                            entry.companyName,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 16.0,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              color: Colors.black54,
+                                                                          children: [
+                                                                            Text(
+                                                                              timePeriod,
+                                                                              style: TextStyle(
+                                                                                fontSize: 14.0,
+                                                                                fontStyle: FontStyle.italic,
+                                                                                color: Colors.black87,
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                        ],
+                                                                            Gap(30),
+                                                                            if (!isExporting) ...[
+                                                                              IconButton(
+                                                                                icon: Icon(Icons.delete),
+                                                                                onPressed: () async {
+                                                                                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                                                                                  String userId = userProvider.loggedInUserId!;
+                                                                                  final shouldDelete = await _showDeleteConfirmationDialog(context, 'Institution');
+
+                                                                                  if (shouldDelete) {
+                                                                                    await Provider.of<ResumeProvider>(context, listen: false).deleteEducationEntry(userId, entry, widget.isInitialSetup);
+                                                                                  }
+                                                                                },
+                                                                              ),
+                                                                              Gap(10),
+                                                                              IconButton(
+                                                                                icon: Icon(Icons.edit),
+                                                                                onPressed: () {
+                                                                                  showDialog(
+                                                                                    context: context,
+                                                                                    builder: (context) => AddOrEditEducationItem(
+                                                                                      isInitialSetup: widget.isInitialSetup,
+                                                                                      educationEntries: educationEntries,
+                                                                                      entry: entry,
+                                                                                      isEditing: true,
+                                                                                    ),
+                                                                                  );
+                                                                                },
+                                                                              )
+                                                                            ],
+                                                                          ]),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .school_rounded,
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          size:
+                                                                              15),
+                                                                      Gap(5),
+                                                                      Text(
+                                                                        entry
+                                                                            .institutionName,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              16.0,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
                                                                       ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              4.0),
-                                                                      Row(
-                                                                        children: [
-                                                                          Icon(
-                                                                              Icons.location_on_rounded,
-                                                                              color: Colors.black54,
-                                                                              size: 15),
-                                                                          Gap(5),
-                                                                          Text(
-                                                                            entry.companyAddress,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 14.0,
-                                                                              color: Colors.black54,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              8.0),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              8.0),
-                                                                      if (entry
-                                                                          .responsibilitiesAchievements
-                                                                          .trim()
-                                                                          .isNotEmpty) ...[
-                                                                        Text(
-                                                                          "Key Responsibilities and Achievements",
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            fontSize:
-                                                                                14.0,
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          4.0),
+                                                                  if (entry
+                                                                      .institutionAddress
+                                                                      .trim()
+                                                                      .isNotEmpty)
+                                                                    Row(
+                                                                      children: [
+                                                                        Icon(
+                                                                            Icons
+                                                                                .location_on_rounded,
                                                                             color:
                                                                                 Colors.black54,
-                                                                          ),
-                                                                        ),
-                                                                        Gap(10),
+                                                                            size: 15),
+                                                                        Gap(5),
                                                                         Text(
                                                                           entry
-                                                                              .responsibilitiesAchievements,
+                                                                              .institutionAddress,
                                                                           style:
                                                                               TextStyle(
                                                                             fontSize:
@@ -1330,57 +1375,407 @@ class _ResumePageSummary2autoBuildState
                                                                           ),
                                                                         ),
                                                                       ],
-                                                                    ],
-                                                                  ),
-                                                                ),
+                                                                    ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  if (entry
+                                                                      .honorsOrAwards
+                                                                      .trim()
+                                                                      .isNotEmpty) ...[
+                                                                    Text(
+                                                                      "Honors and Awards",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    Text(
+                                                                      entry
+                                                                          .honorsOrAwards,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                  ]
+                                                                ],
                                                               ),
                                                             ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    ),
-                                                  )
-                                                : Container(
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Colors.grey,
-                                                        width: 0.5,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                    ),
-                                                    child: Center(
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(50.0),
-                                                        child: Text(
-                                                          'Work Experience will appear here',
-                                                          style: TextStyle(
-                                                            fontStyle: FontStyle
-                                                                .italic,
-                                                            fontSize: 16,
-                                                            color: Colors.grey,
                                                           ),
                                                         ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.grey,
+                                                    width: 0.5,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            50.0),
+                                                    child: Text(
+                                                      'Education will appear here',
+                                                      style: TextStyle(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        fontSize: 16,
+                                                        color: Colors.grey,
                                                       ),
                                                     ),
                                                   ),
+                                                ),
+                                              ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: 20),
+                                child: Divider(
+                                  color: Colors.grey,
+                                  thickness: 0.5,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Gap(20),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Work Experience',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Color(0xff373030),
+                                                fontFamily: 'Galano',
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            TextButton(
+                                              child: Text(
+                                                '+ Add another',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: experienceEntries
+                                                              .length <
+                                                          11
+                                                      ? Color(0xff373030)
+                                                      : const Color.fromARGB(
+                                                          255, 207, 207, 207),
+                                                  fontFamily: 'Galano',
+                                                ),
+                                              ),
+                                              onPressed:
+                                                  experienceEntries.length < 11
+                                                      ? () async {
+                                                          final newEntry =
+                                                              ExperienceEntry();
+                                                          final result =
+                                                              await showDialog<
+                                                                  ExperienceEntry>(
+                                                            context: context,
+                                                            builder: (context) =>
+                                                                AddOrEditExperienceItem(
+                                                              isInitialSetup: widget
+                                                                  .isInitialSetup,
+                                                              experienceEntries:
+                                                                  experienceEntries,
+                                                              entry: newEntry,
+                                                              isEditing: false,
+                                                            ),
+                                                          );
+
+                                                          if (result != null) {
+                                                            setState(() {
+                                                              experienceEntries
+                                                                  .add(result);
+                                                            });
+                                                          }
+                                                        }
+                                                      : null,
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (!isExporting)
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: IconButton(
-                                        icon: Icon(Icons.edit),
-                                        onPressed: () {},
-                                      ),
+                                        Gap(10),
+                                        experienceEntries.isNotEmpty
+                                            ? Column(
+                                                children: List.generate(
+                                                  experienceEntries.length,
+                                                  (index) {
+                                                    final entry =
+                                                        experienceEntries[
+                                                            index];
+                                                    String timePeriod = entry
+                                                            .isPresent
+                                                        ? (entry.fromSelectedMonth ==
+                                                                    null ||
+                                                                entry.fromSelectedYear ==
+                                                                    null
+                                                            ? (entry.toSelectedMonth ==
+                                                                    null
+                                                                ? '${entry.toSelectedYear}'
+                                                                : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                            : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to Present')
+                                                        : (entry.fromSelectedMonth ==
+                                                                    null ||
+                                                                entry.fromSelectedYear ==
+                                                                    null
+                                                            ? (entry.toSelectedMonth ==
+                                                                    null
+                                                                ? '${entry.toSelectedYear}'
+                                                                : '${entry.toSelectedMonth} ${entry.toSelectedYear}')
+                                                            : '${entry.fromSelectedMonth} ${entry.fromSelectedYear} to ${entry.toSelectedMonth} ${entry.toSelectedYear}');
+
+                                                    return Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Card(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    bottom:
+                                                                        20.0),
+                                                            elevation: 0,
+                                                            color: Colors
+                                                                .grey[100],
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                            ),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      20.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        entry
+                                                                            .jobTitle,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              18.0,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color:
+                                                                              Colors.black87,
+                                                                        ),
+                                                                      ),
+                                                                      Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            timePeriod,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 14.0,
+                                                                              fontStyle: FontStyle.italic,
+                                                                              color: Colors.black87,
+                                                                            ),
+                                                                          ),
+                                                                          Gap(20),
+                                                                          if (!isExporting) ...[
+                                                                            IconButton(
+                                                                              icon: Icon(Icons.delete),
+                                                                              onPressed: () async {
+                                                                                final userProvider = Provider.of<UserProvider>(context, listen: false);
+                                                                                String userId = userProvider.loggedInUserId!;
+                                                                                final shouldDelete = await _showDeleteConfirmationDialog(context, 'Work Experience');
+
+                                                                                if (shouldDelete) {
+                                                                                  await Provider.of<ResumeProvider>(context, listen: false).deleteExperienceEntry(userId, entry, widget.isInitialSetup);
+                                                                                }
+                                                                              },
+                                                                            ),
+                                                                            Gap(10),
+                                                                            IconButton(
+                                                                              icon: Icon(Icons.edit),
+                                                                              onPressed: () {
+                                                                                showDialog(
+                                                                                  context: context,
+                                                                                  builder: (context) => AddOrEditExperienceItem(
+                                                                                    isInitialSetup: widget.isInitialSetup,
+                                                                                    experienceEntries: experienceEntries,
+                                                                                    entry: entry,
+                                                                                    isEditing: true,
+                                                                                  ),
+                                                                                );
+                                                                              },
+                                                                            )
+                                                                          ]
+                                                                        ],
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .business_center_rounded,
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          size:
+                                                                              15),
+                                                                      Gap(5),
+                                                                      Text(
+                                                                        entry
+                                                                            .companyName,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              16.0,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          4.0),
+                                                                  Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .location_on_rounded,
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          size:
+                                                                              15),
+                                                                      Gap(5),
+                                                                      Text(
+                                                                        entry
+                                                                            .companyAddress,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14.0,
+                                                                          color:
+                                                                              Colors.black54,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          8.0),
+                                                                  if (entry
+                                                                      .responsibilitiesAchievements
+                                                                      .trim()
+                                                                      .isNotEmpty) ...[
+                                                                    Text(
+                                                                      "Key Responsibilities and Achievements",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    Text(
+                                                                      entry
+                                                                          .responsibilitiesAchievements,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black54,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Colors.grey,
+                                                    width: 0.5,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            50.0),
+                                                    child: Text(
+                                                      'Work Experience will appear here',
+                                                      style: TextStyle(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        fontSize: 16,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                      ],
                                     ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -1388,9 +1783,8 @@ class _ResumePageSummary2autoBuildState
                         ),
                       ),
                       SizedBox(height: 50),
-                      widget.inProfile == true
-                          ? SizedBox()
-                          : Row(
+                      widget.isSetupInRegistration == true
+                          ? Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Align(
@@ -1398,13 +1792,34 @@ class _ResumePageSummary2autoBuildState
                                   child: SizedBox(
                                     width: 230,
                                     child: BlueFilledCircleButton(
-                                      onPressed: _submitResume,
+                                      onPressed: _submitResumeAtRegistration,
                                       text: 'Save and Continue',
                                     ),
                                   ),
                                 ),
                               ],
-                            ),
+                            )
+                          : widget.isInitialSetup == false
+                              ? SizedBox()
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: SizedBox(
+                                        width: 230,
+                                        child: BlueFilledCircleButton(
+                                          onPressed: widget
+                                                      .isManualInitialSetup ==
+                                                  true
+                                              ? _submitResumeManuallyInitialSetup
+                                              : _submitResume,
+                                          text: 'Save and Continue',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                       SizedBox(height: 20),
                     ],
                   );

@@ -10,6 +10,11 @@ import 'package:huzzl_web/widgets/loading_dialog.dart';
 import 'package:provider/provider.dart';
 
 class EditObjectiveDialog extends StatefulWidget {
+  final bool isInitialSetup;
+  const EditObjectiveDialog({
+    super.key,
+    required this.isInitialSetup,
+  });
   @override
   _EditObjectiveDialogState createState() => _EditObjectiveDialogState();
 }
@@ -56,6 +61,30 @@ class _EditObjectiveDialogState extends State<EditObjectiveDialog> {
         'objective': _objectiveController.text,
         'updatedAt': DateTime.now(),
       };
+        if (widget.isInitialSetup == true) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+
+        // Optionally, show a success message
+        EasyLoading.instance
+          ..displayDuration = const Duration(milliseconds: 1500)
+          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+          ..loadingStyle = EasyLoadingStyle.custom
+          ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+          ..textColor = Colors.white
+          ..fontSize = 16.0
+          ..indicatorColor = Colors.white
+          ..maskColor = Colors.black.withOpacity(0.5)
+          ..userInteractions = false
+          ..dismissOnTap = true;
+        EasyLoading.showToast(
+          "✓ You edited your personal info.",
+          dismissOnTap: true,
+          toastPosition: EasyLoadingToastPosition.top,
+          duration: Duration(seconds: 3),
+        );
+        return;
+      }
 
       try {
         FirebaseFirestore firestore = FirebaseFirestore.instance;
