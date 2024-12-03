@@ -43,7 +43,7 @@ class SideMenu extends StatelessWidget {
             },
           ),
           DrawerListTile(
-            title: "Activity Logs",
+            title: "Business Documents",
             svgSrc: "assets/icons/menu_doc.svg",
             press: () {
               adminController.changeTabLocation(3);

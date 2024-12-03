@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
 import 'package:huzzl_web/views/admins/screens/activity_logs/activity_logs.dart';
+import 'package:huzzl_web/views/admins/screens/business_documents/business_docs.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dashboard_screen.dart';
 import 'package:huzzl_web/views/admins/screens/industries/manage_industries_screen.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/manage_user.dart';
@@ -59,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
       case 2:
         return const ManageIndustriesScreen();
       case 3:
-        return const ActivityLogsScreen();
+        return const ManageBusinessDocumentsScreen();
       default:
         return const Center(
           child: Text("Screen not found!"),
