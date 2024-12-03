@@ -1,15 +1,12 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
-import 'package:huzzl_web/views/admins/screens/dashboard/components/bar_chart.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/line_chart.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/my_fields.dart';
 
 import '../../constants.dart';
 import 'components/header.dart';
 
-import '../manageUsers/widgets/recent_files.dart';
 import 'components/storage_details.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -34,8 +31,8 @@ class DashboardScreen extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-                      MyFiles(),
-                      SizedBox(height: defaultPadding),
+                      const MyFiles(),
+                      const SizedBox(height: defaultPadding),
                       // RecentFiles(),
                       Container(
                         decoration: BoxDecoration(
@@ -58,16 +55,16 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ),
                       if (Responsive.isMobile(context))
-                        SizedBox(height: defaultPadding),
-                      if (Responsive.isMobile(context)) StorageDetails(),
+                        const SizedBox(height: defaultPadding),
+                      if (Responsive.isMobile(context)) const StorageDetails(),
                     ],
                   ),
                 ),
                 if (!Responsive.isMobile(context))
-                  SizedBox(width: defaultPadding),
+                  const SizedBox(width: defaultPadding),
                 // On Mobile means if the screen is less than 850 we don't want to show it
                 if (!Responsive.isMobile(context))
-                  Expanded(
+                  const Expanded(
                     flex: 2,
                     child: StorageDetails(),
                   ),
