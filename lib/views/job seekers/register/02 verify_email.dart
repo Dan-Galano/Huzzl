@@ -83,7 +83,7 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
         'email': widget.email,
         'phoneNumber': widget.phoneNumber,
         'accStatus' : 'enabled',
-      });
+      },SetOptions(merge: true));
       String uid = widget.userCredential.user!.uid;
       EasyLoading.instance
         ..displayDuration = const Duration(milliseconds: 1500)
