@@ -107,18 +107,21 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
         'phone': widget.phoneNumber,
         'email': widget.email,
         'password': widget.password,
-      }); 
- EasyLoading.instance
-          ..displayDuration = const Duration(milliseconds: 1500)
-          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-          ..loadingStyle = EasyLoadingStyle.custom
-          ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
-          ..textColor = Colors.white
-          ..fontSize = 16.0
-          ..indicatorColor = Colors.white
-          ..maskColor = Colors.black.withOpacity(0.5)
-          ..userInteractions = false
-          ..dismissOnTap = true;
+        'subscriptionType': 'basic',
+        'jobPostsCount': 0,
+        'accStatus': 'enabled'
+      }, SetOptions(merge: true));
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
       EasyLoading.showToast(
         "✓ Your email has been verified!",
         dismissOnTap: true,
@@ -204,41 +207,41 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
       final user = FirebaseAuth.instance.currentUser!;
       await user.sendEmailVerification();
       startResendTimer();
-       EasyLoading.instance
-          ..displayDuration = const Duration(milliseconds: 1500)
-          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-          ..loadingStyle = EasyLoadingStyle.custom
-          ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
-          ..textColor = Colors.white
-          ..fontSize = 16.0
-          ..indicatorColor = Colors.white
-          ..maskColor = Colors.black.withOpacity(0.5)
-          ..userInteractions = false
-          ..dismissOnTap = true;
-        EasyLoading.showToast(
-          "Verification link has been sent to your email!",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-        );
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "Verification link has been sent to your email!",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
     } catch (e) {
-       EasyLoading.instance
-          ..displayDuration = const Duration(milliseconds: 1500)
-          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-          ..loadingStyle = EasyLoadingStyle.custom
-          ..backgroundColor = Color(0xFfd74a4a)
-          ..textColor = Colors.white
-          ..fontSize = 16.0
-          ..indicatorColor = Colors.white
-          ..maskColor = Colors.black.withOpacity(0.5)
-          ..userInteractions = false
-          ..dismissOnTap = true;
-        EasyLoading.showToast(
-          "Failed to send verification link: $e",
-          dismissOnTap: true,
-          toastPosition: EasyLoadingToastPosition.top,
-          duration: Duration(seconds: 3),
-        );
+      EasyLoading.instance
+        ..displayDuration = const Duration(milliseconds: 1500)
+        ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+        ..loadingStyle = EasyLoadingStyle.custom
+        ..backgroundColor = Color(0xFfd74a4a)
+        ..textColor = Colors.white
+        ..fontSize = 16.0
+        ..indicatorColor = Colors.white
+        ..maskColor = Colors.black.withOpacity(0.5)
+        ..userInteractions = false
+        ..dismissOnTap = true;
+      EasyLoading.showToast(
+        "Failed to send verification link: $e",
+        dismissOnTap: true,
+        toastPosition: EasyLoadingToastPosition.top,
+        duration: Duration(seconds: 3),
+      );
     }
   }
 
@@ -251,7 +254,7 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           NavBarLoginRegister(),
@@ -292,7 +295,8 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: 'A verification link has been sent to',
+                                    text:
+                                        'A verification link has been sent to',
                                     style: const TextStyle(
                                       fontFamily: 'Galano',
                                       fontSize: 25,
@@ -322,13 +326,15 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
                             const SizedBox(height: 10),
                             canResendEmail
                                 ? Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: ElevatedButton(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: ElevatedButton(
                                       onPressed: sendVerificationEmail,
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF0038FF),
+                                        backgroundColor:
+                                            const Color(0xFF0038FF),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(5),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
                                         ),
                                         elevation: 5,
                                       ),
@@ -350,11 +356,12 @@ class _VerifyEmailRecruiterState extends State<VerifyEmailRecruiter> {
                                         ],
                                       ),
                                     ),
-                                )
+                                  )
                                 : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text('You can resend the verification link in:'),
+                                      const Text(
+                                          'You can resend the verification link in:'),
                                       const SizedBox(width: 5),
                                       Text(
                                         formatRemainingTime(remainingTime),

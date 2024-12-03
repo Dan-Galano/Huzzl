@@ -77,10 +77,18 @@ class _JobSkillsState extends State<JobSkills> {
   ];
 
   void _addResponsibility() {
-    final questionText = _responsibilitiesController.text.trim();
-    if (questionText.isNotEmpty) {
+    final inputText = _responsibilitiesController.text.trim();
+    if (inputText.isNotEmpty) {
+      // Split the input by semicolon and trim each responsibility
+      final responsibilities = inputText
+          .split(';')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+
       setState(() {
-        widget.responsibilities.add(questionText);
+        // Add the new responsibilities to the list
+        widget.responsibilities.addAll(responsibilities);
         _responsibilitiesController.clear();
       });
     }
@@ -324,9 +332,11 @@ class _JobSkillsState extends State<JobSkills> {
                       Expanded(
                         child: TextFormField(
                           controller: _responsibilitiesController,
+                          maxLines: 5,
                           style: const TextStyle(),
                           decoration: InputDecoration(
-                            hintText: 'Add responsibility...',
+                            hintText:
+                                'Add multiple responsibilities by separating them with a semicolon (";") ... ex. Manage team; Prepare reports; Attend meetings',
                             contentPadding: const EdgeInsets.symmetric(
                               vertical: 10.0,
                               horizontal: 10.0,

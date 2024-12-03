@@ -111,10 +111,15 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
         email: _email.text,
         password: _password.text,
       );
-      _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set({'uid': userCredential.user!.uid, 'email': _email.text});
+      _firestore.collection('users').doc(userCredential.user!.uid).set(
+        {
+          'uid': userCredential.user!.uid,
+          'email': _email.text,
+          'created_at': Timestamp.now(),
+          'accStatus': 'enabled'
+        },
+        SetOptions(merge: true),
+      );
 
       // Send verification email
       final user = FirebaseAuth.instance.currentUser!;

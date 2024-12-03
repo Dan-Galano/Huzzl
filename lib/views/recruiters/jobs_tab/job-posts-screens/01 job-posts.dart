@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-manager-staff-model.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
@@ -12,12 +15,13 @@ import 'package:provider/provider.dart';
 class JobPosts extends StatefulWidget {
   final VoidCallback nextPage;
   final VoidCallback cancel;
-  final TextEditingController jobTitleController;
+  String jobTitleController;
   String selectedIndustry;
   final ValueChanged<String?> onselectedIndustryChanged;
+  final ValueChanged<String?> onselectedJobTitleChanged;
   String numOfPeopleToHire;
   final ValueChanged<String?> onNumOfPeopleToHireChanged;
-  final ValueChanged<String?> onNumPeopleChanged;
+  // final ValueChanged<String?> onNumPeopleChanged;
   final ValueChanged<String?> onBranchChanged;
   final TextEditingController jobDescriptionController;
 
@@ -27,9 +31,10 @@ class JobPosts extends StatefulWidget {
     required this.jobTitleController,
     required this.selectedIndustry,
     required this.onselectedIndustryChanged,
+    required this.onselectedJobTitleChanged,
     required this.numOfPeopleToHire,
     required this.onNumOfPeopleToHireChanged,
-    required this.onNumPeopleChanged,
+    // required this.onNumPeopleChanged,
     required this.onBranchChanged,
     required this.jobDescriptionController,
   });
@@ -53,24 +58,25 @@ class _JobPostsState extends State<JobPosts> {
   List<dynamic> cities = [];
   List<dynamic> barangays = [];
 
- @override
-void initState() {
-  super.initState();
-  _initializeData();
-}
-
-Future<void> _initializeData() async {
-  final loggedInUserId = Provider.of<UserProvider>(context, listen: false).loggedInUserId;
-  final branchProvider = Provider.of<BranchProvider>(context, listen: false);
-
-  if (loggedInUserId != null) {
-    await branchProvider.fetchActiveBranches(loggedInUserId);
-    setState(() {
-      branches = branchProvider.branches; 
-    });
+  @override
+  void initState() {
+    super.initState();
+    widget.numOfPeopleToHire = 1.toString();
+    _initializeData();
   }
-}
 
+  Future<void> _initializeData() async {
+    final loggedInUserId =
+        Provider.of<UserProvider>(context, listen: false).loggedInUserId;
+    final branchProvider = Provider.of<BranchProvider>(context, listen: false);
+
+    if (loggedInUserId != null) {
+      await branchProvider.fetchActiveBranches(loggedInUserId);
+      setState(() {
+        branches = branchProvider.branches;
+      });
+    }
+  }
 
   void _submitJobPosts() {
     if (_formKey.currentState!.validate()) {
@@ -194,7 +200,7 @@ Future<void> _initializeData() async {
         onSuggestionSelected: (Branch branch) {
           _dropdownSearchFieldController.text = branch.branchName;
           selectedBranch = branch;
-           widget.onBranchChanged(selectedBranch!.branchName);
+          widget.onBranchChanged(selectedBranch!.branchName);
         },
         suggestionsBoxController: suggestionBoxController,
         validator: (value) => value == null ? 'Please select branch' : null,
@@ -418,9 +424,126 @@ Future<void> _initializeData() async {
     'Travel & Hospitality',
   ];
 
+  bool showOtherTextField = false;
+  var tempJobTitleController = TextEditingController();
+
+// Remove duplicates from listOfJobTitle
+  List<String>? listOfJobTitle = [];
+  bool jobTitleIsEmpty = true;
+
+  Future<void> generateJobTitleList(String selectedIndustry) async {
+    // setState(() {
+    //   jobTitleIsEmpty = listOfJobTitle.isEmpty;
+    // });
+    String geminiAPIKey = dotenv.env['GEMINI_API_KEY']!;
+    String geminiModel = dotenv.env['MODEL']!;
+
+    debugPrint("Selected industry: $selectedIndustry");
+
+    var prompt =
+        "Can you create a list of job titles based on this industry $selectedIndustry. Example output ['Software Engineer', 'Network Admin'] and always include 'others' in the last index of the list. Always return your output like that. DONT RETURN ANYTHING BESIDES THE LIST.";
+
+    final model = GenerativeModel(
+      model: geminiModel,
+      apiKey: geminiAPIKey,
+    );
+
+    try {
+      final response = await model.generateContent([Content.text(prompt)]);
+      debugPrint(response.text);
+
+      // Parse the response text into a list of strings and remove duplicates
+      setState(() {
+        listOfJobTitle = _parseJobTitles(response.text!)
+            .toSet()
+            .toList(); // Removes duplicates
+        jobTitleIsEmpty = listOfJobTitle!.isEmpty;
+        debugPrint(listOfJobTitle!.length.toString());
+      });
+
+      for (var element in listOfJobTitle!) {
+        debugPrint(element);
+      }
+    } catch (e) {
+      debugPrint("Error generating job title list: $e");
+    }
+  }
+
+// Function to parse the response text into a list of strings
+  List<String> _parseJobTitles(String text) {
+    // Strip out the brackets and split by comma
+    text = text.replaceAll('[', '').replaceAll(']', '');
+    return text.split(',').map((e) => e.trim().replaceAll("'", "")).toList();
+  }
+
+  Future<void> generateDescription(String selectedJobTitle) async {
+    String geminiAPIKey = dotenv.env['GEMINI_API_KEY']!;
+    String geminiModel = dotenv.env['MODEL']!;
+
+    debugPrint("Selected job title: $selectedJobTitle");
+
+    var prompt =
+        "Generate a one-paragraph job description (50-80 words) for the job title: $selectedJobTitle. Follow the instructions strictly and return only the requested content. Just provide the description no [Company Name] [Position] anything like that. just pure job description.";
+
+    final model = GenerativeModel(
+      model: geminiModel,
+      apiKey: geminiAPIKey,
+    );
+
+    try {
+      final response = await model.generateContent([Content.text(prompt)]);
+      if (response.text != null && response.text!.isNotEmpty) {
+        debugPrint("Generated Description: ${response.text}");
+        setState(() {
+          widget.jobDescriptionController.text = response.text!;
+        });
+        debugPrint("Setted: ${widget.jobTitleController}");
+      } else {
+        debugPrint("Received empty or invalid response from the AI model.");
+        // Optionally show a fallback message to the user
+      }
+    } catch (e) {
+      debugPrint("Error generating job description: $e");
+      // Handle errors more gracefully by notifying the user
+    }
+  }
+
+  //   Future<void> generateMessage(String candidateId, String typeOfMessage) async {
+  //   Candidate candidate = findDataOfCandidate(candidateId)!;
+
+  //   await dotenv.load();
+  //   String geminiAPIKey = dotenv.env['GEMINI_API_KEY']!;
+  //   String geminiModel = dotenv.env['MODEL']!;
+
+  //   final model = prefix.GenerativeModel(
+  //     model: geminiModel,
+  //     apiKey: geminiAPIKey,
+  //   );
+
+  //   var prompt = "";
+
+  //   if (typeOfMessage == "Reject") {
+  //     prompt =
+  //         "Can you create a rejection message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We regret to inform you that we have selected other candidates whose qualifications more closely align with the position requirements. Do not include anything like this [position], [company] like that.";
+  //   } else if (typeOfMessage == "Hire") {
+  //     prompt =
+  //         "Can you create a acception/hired message for ${candidate.name}. Make it formal and pleasing. In a paragraph form. Just show the message no other information. Example: We're excited to welcome you! Your skills and enthusiasm truly impressed us, and we're confident you'll bring great value. Starting soon, we look forward to your contributions. Congratulations, and welcome aboard! Do not include anything like this [position], [company] like that.";
+  //   }
+  //   final response = await model.generateContent([prefix.Content.text(prompt)]);
+  //   print(response.text);
+  //   if (typeOfMessage == "Reject") {
+  //     _rejectMessage = response.text!;
+  //   } else if (typeOfMessage == "Hire") {
+  //     _hireMessage = response.text!;
+  //   }
+
+  //   notifyListeners();
+
+  //   // return response.text!;
+  // }
+
   @override
   Widget build(BuildContext context) {
-
     return SingleChildScrollView(
       child: Center(
         child: Container(
@@ -448,188 +571,6 @@ Future<void> _initializeData() async {
                   ),
                 ),
                 Gap(20),
-                Row(
-                  children: [
-                    Text(
-                      'Job title',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff202855),
-                      ),
-                    ),
-                    Text(
-                      ' *',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
-                      ),
-                    )
-                  ],
-                ),
-                TextFormField(
-                  controller: widget.jobTitleController,
-                  decoration: customInputDecoration(),
-                  validator: (value) {
-                    if (value!.isEmpty || value == null) {
-                      return "Job title is required.";
-                    }
-                  },
-                ),
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    Text(
-                      'Industry',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff202855),
-                      ),
-                    ),
-                    Text(
-                      ' *',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
-                      ),
-                    )
-                  ],
-                ),
-                //Industry (Wala pa sa database)
-                DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  hint: const Text('Select an industry'),
-                  decoration: customInputDecoration(),
-                  value: widget.selectedIndustry,
-                  items: _industries
-                      .map<DropdownMenuItem<String>>((String industry) {
-                    return DropdownMenuItem<String>(
-                      value: industry,
-                      child: Text(industry),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      widget.selectedIndustry = newValue!;
-                    });
-                    widget.onselectedIndustryChanged(newValue);
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Industry is required.';
-                    }
-                    return null;
-                  },
-                ),
-                Gap(20),
-                Row(
-                  children: [
-                    Text(
-                      'Number of people to hire for this job',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff202855),
-                      ),
-                    ),
-                    Text(
-                      ' *',
-                      style: TextStyle(
-                        fontFamily: 'Galano',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.redAccent,
-                      ),
-                    )
-                  ],
-                ),
-                RadioListTile<String>(
-                  title: const Text(
-                    'One person',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff202855),
-                    ),
-                  ),
-                  value: 'One person',
-                  groupValue: widget.numOfPeopleToHire,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.numOfPeopleToHire = value!;
-                      _selectedValue = null; // Reset dropdown value
-                    });
-                    widget.onNumOfPeopleToHireChanged(value);
-                  },
-                ),
-                RadioListTile<String>(
-                  title: const Text(
-                    'More than one person',
-                    style: TextStyle(
-                      fontFamily: 'Galano',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xff202855),
-                    ),
-                  ),
-                  value: 'More than one person',
-                  groupValue: widget.numOfPeopleToHire,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.numOfPeopleToHire = value!;
-                      _selectedValue = null; // Reset dropdown value
-                    });
-                    widget.onNumOfPeopleToHireChanged(value);
-                  },
-                ),
-                Gap(10),
-                if (widget.numOfPeopleToHire == 'More than one person') ...[
-                  DropdownButtonFormField<String>(
-                    decoration: customInputDecoration(),
-                    value: _selectedValue,
-                    hint: const Text("Select an option"),
-                    items: <String>[
-                      // '1',
-                      '2',
-                      '3',
-                      '4',
-                      '5',
-                      '6',
-                      '7',
-                      '8',
-                      '9',
-                      '10+',
-                      'I have an ongoing need to fill this role'
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedValue = newValue;
-                      });
-                      widget.onNumPeopleChanged(newValue);
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Required to select";
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-                Gap(10),
                 Row(
                   children: [
                     Text(
@@ -662,29 +603,10 @@ Future<void> _initializeData() async {
                 const SizedBox(height: 10),
                 buildSearchDropdown(setState),
                 const SizedBox(height: 20),
-
-                // // Region Dropdown
-                // buildRegionDropdown(),
-                // const SizedBox(height: 10),
-
-                // // Province Dropdown
-                // if (selectedRegion != null) buildProvinceDropdown(),
-                // const SizedBox(height: 10),
-
-                // // City Dropdown
-                // if (selectedProvince != null) buildCityDropdown(),
-                // const SizedBox(height: 10),
-
-                // // Barangay Dropdown
-                // if (selectedCity != null) buildBarangayDropdown(),
-                // const SizedBox(height: 10),
-
-                // // Other location information field
-                // if (selectedBarangay != null) buildOtherLocationField(),
                 Row(
                   children: [
                     Text(
-                      'Job description',
+                      'Industry',
                       style: TextStyle(
                         fontFamily: 'Galano',
                         fontSize: 14,
@@ -701,6 +623,162 @@ Future<void> _initializeData() async {
                         color: Colors.redAccent,
                       ),
                     )
+                  ],
+                ),
+                DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  hint: const Text('Select an industry'),
+                  decoration: customInputDecoration(),
+                  value: widget.selectedIndustry,
+                  items: _industries
+                      .map<DropdownMenuItem<String>>((String industry) {
+                    return DropdownMenuItem<String>(
+                      value: industry,
+                      child: Text(industry),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) async {
+                    setState(() {
+                      widget.selectedIndustry = newValue!;
+                      // Reset the job title list when a new industry is selected
+                      listOfJobTitle!.clear(); // Clear the previous job titles
+                      jobTitleIsEmpty =
+                          true; // Indicate that the job title list is empty
+                    });
+                    widget.onselectedIndustryChanged(newValue);
+                    await generateJobTitleList(
+                        newValue!); // Trigger to fetch job titles based on selected industry
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Industry is required.';
+                    }
+                    return null;
+                  },
+                ),
+                Gap(20),
+                if (!jobTitleIsEmpty) // Only show job title dropdown when job titles are available
+                  Row(
+                    children: [
+                      Text(
+                        'Job title',
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xff202855),
+                        ),
+                      ),
+                      Text(
+                        ' *',
+                        style: TextStyle(
+                          fontFamily: 'Galano',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.redAccent,
+                        ),
+                      )
+                    ],
+                  ),
+                // Job Title (Dropdown to dynamically populate based on selected industry)
+                if (!jobTitleIsEmpty)
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    hint: const Text('Select a job title'),
+                    decoration: customInputDecoration(),
+                    value: showOtherTextField
+                        ? 'others'
+                        : widget.jobTitleController.isNotEmpty
+                            ? widget.jobTitleController
+                            : null,
+                    // Ensure it reflects the selected value
+                    items: listOfJobTitle!
+                        .map<DropdownMenuItem<String>>((String jobTitle) {
+                      return DropdownMenuItem<String>(
+                        value: jobTitle,
+                        child: Text(jobTitle),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) async {
+                      if (newValue!.toLowerCase() == 'others') {
+                        setState(() {
+                          showOtherTextField = true;
+                        });
+                      } else {
+                        setState(() {
+                          widget.jobTitleController = newValue!;
+                          debugPrint("Job title: ${newValue}");
+                        });
+                        widget.onselectedJobTitleChanged(newValue);
+                        widget.jobDescriptionController.clear();
+                        await generateDescription(newValue!);
+                        showOtherTextField = false;
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Job title is required.';
+                      }
+                      return null;
+                    },
+                  ),
+
+                SizedBox(height: 20),
+                if (showOtherTextField)
+                  TextFormField(
+                    controller: tempJobTitleController,
+                    // minLines: 3,
+                    // maxLines: null,
+                    // keyboardType: TextInputType.multiline,
+                    decoration: customInputDecoration(),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Job Title is required.";
+                      }
+                      return null; // Return null if validation passes
+                    },
+                  ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Job description',
+                          style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff202855),
+                          ),
+                        ),
+                        Text(
+                          ' *',
+                          style: TextStyle(
+                            fontFamily: 'Galano',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.redAccent,
+                          ),
+                        )
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        if (tempJobTitleController.text.isEmpty) {
+                          return;
+                        }
+                        setState(() {
+                          widget.jobTitleController =
+                              tempJobTitleController.text;
+                          widget.onselectedJobTitleChanged(
+                              tempJobTitleController.text);
+                        });
+                        generateDescription(tempJobTitleController.text);
+                      },
+                      child: const Text("Generate"),
+                    ),
                   ],
                 ),
                 TextFormField(
@@ -723,8 +801,162 @@ Future<void> _initializeData() async {
                     return null; // Return null if validation passes
                   },
                 ),
+                const SizedBox(height: 20),
 
-                Gap(20),
+                const Row(
+                  children: [
+                    Text(
+                      'Number of people to hire for this job',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff202855),
+                      ),
+                    ),
+                    Text(
+                      ' *',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.redAccent,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  initialValue: widget.numOfPeopleToHire, // Default value is 1
+                  keyboardType:
+                      TextInputType.number, // Ensures numeric keyboard
+                  decoration: customInputDecoration(),
+                  inputFormatters: [
+                    FilteringTextInputFormatter
+                        .digitsOnly, // Allows only numeric input
+                  ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required.';
+                    }
+
+                    final intValue = int.tryParse(value);
+                    if (intValue == null || intValue < 1) {
+                      return 'Please enter a number greater than or equal to 1.';
+                    }
+
+                    return null; // Validation passes
+                  },
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      final intValue = int.tryParse(value);
+                      if (intValue != null && intValue >= 1) {
+                        widget.numOfPeopleToHire = intValue.toString(); // Update value
+                        widget.onNumOfPeopleToHireChanged(value);
+                        debugPrint('Number of people: ${widget.numOfPeopleToHire}');
+                      } else {
+                        debugPrint('Value must be at least 1.');
+                      }
+                    }
+                  },
+                ),
+                // RadioListTile<String>(
+                //   title: const Text(
+                //     'One person',
+                //     style: TextStyle(
+                //       fontFamily: 'Galano',
+                //       fontSize: 13,
+                //       fontWeight: FontWeight.w700,
+                //       color: Color(0xff202855),
+                //     ),
+                //   ),
+                //   value: 'One person',
+                //   groupValue: widget.numOfPeopleToHire,
+                //   onChanged: (value) {
+                //     setState(() {
+                //       widget.numOfPeopleToHire = value!;
+                //       _selectedValue = null; // Reset dropdown value
+                //     });
+                //     widget.onNumOfPeopleToHireChanged(value);
+                //   },
+                // ),
+                // RadioListTile<String>(
+                //   title: const Text(
+                //     'More than one person',
+                //     style: TextStyle(
+                //       fontFamily: 'Galano',
+                //       fontSize: 13,
+                //       fontWeight: FontWeight.w700,
+                //       color: Color(0xff202855),
+                //     ),
+                //   ),
+                //   value: 'More than one person',
+                //   groupValue: widget.numOfPeopleToHire,
+                //   onChanged: (value) {
+                //     setState(() {
+                //       widget.numOfPeopleToHire = value!;
+                //       _selectedValue = null; // Reset dropdown value
+                //     });
+                //     widget.onNumOfPeopleToHireChanged(value);
+                //   },
+                // ),
+                // Gap(10),
+                // if (widget.numOfPeopleToHire == 'More than one person') ...[
+                //   DropdownButtonFormField<String>(
+                //     decoration: customInputDecoration(),
+                //     value: _selectedValue,
+                //     hint: const Text("Select an option"),
+                //     items: <String>[
+                //       // '1',
+                //       '2',
+                //       '3',
+                //       '4',
+                //       '5',
+                //       '6',
+                //       '7',
+                //       '8',
+                //       '9',
+                //       '10+',
+                //       'I have an ongoing need to fill this role'
+                //     ].map<DropdownMenuItem<String>>((String value) {
+                //       return DropdownMenuItem<String>(
+                //         value: value,
+                //         child: Text(value),
+                //       );
+                //     }).toList(),
+                //     onChanged: (String? newValue) {
+                //       setState(() {
+                //         _selectedValue = newValue;
+                //       });
+                //       widget.onNumPeopleChanged(newValue);
+                //     },
+                //     validator: (value) {
+                //       if (value == null || value.isEmpty) {
+                //         return "Required to select";
+                //       }
+                //       return null;
+                //     },
+                //   ),
+                // ],
+                Gap(10),
+                // // Region Dropdown
+                // buildRegionDropdown(),
+                // const SizedBox(height: 10),
+
+                // // Province Dropdown
+                // if (selectedRegion != null) buildProvinceDropdown(),
+                // const SizedBox(height: 10),
+
+                // // City Dropdown
+                // if (selectedProvince != null) buildCityDropdown(),
+                // const SizedBox(height: 10),
+
+                // // Barangay Dropdown
+                // if (selectedCity != null) buildBarangayDropdown(),
+                // const SizedBox(height: 10),
+
+                // // Other location information field
+                // if (selectedBarangay != null) buildOtherLocationField(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

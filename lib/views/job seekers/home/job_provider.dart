@@ -164,8 +164,8 @@ class JobProvider with ChangeNotifier {
           String? location = jobPost['jobPostLocation'] as String?;
           String? postedDate = jobPost['posted_at']?.toString();
           String? salary = jobPost['payRate'] as String?;
-          String? skills = jobPost['skills'] as String?;
-          List<String> skillsTag = skills?.split(', ') ?? [];
+          List? skills = jobPost['skills'];
+          // List<String> skillsTag = skills?.split(', ') ?? [];
 
           // Get the UID of the job post (document ID)
           String jobPostUid = doc.id;
@@ -174,8 +174,8 @@ class JobProvider with ChangeNotifier {
           String userUid = userDoc.id;
 
           if (title != null && location != null) {
-            String tags = skillsTag.isNotEmpty
-                ? skillsTag.join(', ')
+            String tags = skills!.isNotEmpty
+                ? skills.join(', ')
                 : 'No tags available';
 
             fetchedJobs.add({

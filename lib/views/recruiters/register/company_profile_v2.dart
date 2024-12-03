@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/logic/date-converter.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/register/mainHiringManager_provider.dart';
@@ -349,48 +350,38 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
     }
   }
 
-  Future<void> uploadFiles() async {
+  Future<void> uploadFiles(BuildContext context) async {
     if (fileNames.isEmpty) {
-      print("No files selected.");
+      debugPrint("No files selected.");
       return;
     }
 
-    print("business docu uploaded!!!");
+    try {
+      final userId =
+          Provider.of<UserProvider>(context, listen: false).loggedInUserId;
 
-    // for (var pickedFile in pickedFiles) {
-    //   try {
-    //     final path =
-    //         'BusinessDocuments/${widget.userCredential.user!.uid}/${pickedFile.name}';
+      final companyInfoCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection("company_information");
 
-    //     if (pickedFile.bytes != null) {
-    //       // Upload using bytes for web
-    //       print("Uploading file in web using bytes: ${pickedFile.name}...");
-    //       final Uint8List fileBytes = pickedFile.bytes!;
+      final docSnapshot = await companyInfoCollection.limit(1).get();
 
-    //       final ref = FirebaseStorage.instance.ref().child(path);
-    //       final uploadTask = ref.putData(fileBytes);
+      if (docSnapshot.docs.isNotEmpty) {
+        final documentId = docSnapshot.docs.first.id;
 
-    //       // Monitor upload progress
-    //       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-    //         print(
-    //             'Upload progress for ${pickedFile.name}: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%');
-    //       }, onError: (e) {
-    //         print("Error during file upload: $e");
-    //       });
+        await companyInfoCollection.doc(documentId).set(
+          {'businessDocuments': fileNames},
+          SetOptions(merge: true),
+        );
 
-    //       // Await the task completion
-    //       final snapshot = await uploadTask;
-    //       final downloadUrl = await snapshot.ref.getDownloadURL();
-    //       print("File uploaded successfully: $downloadUrl");
-    //     } else {
-    //       throw Exception("No valid file data found for ${pickedFile.name}.");
-    //     }
-    //   } catch (e) {
-    //     print("File upload failed for ${pickedFile.name}: $e");
-    //   }
-    // }
- 
- 
+        debugPrint("Business documents uploaded successfully!");
+      } else {
+        debugPrint("No document found in 'company_information' collection.");
+      }
+    } catch (e) {
+      debugPrint('Error uploading business documents: $e');
+    }
   }
 
   //Link
@@ -436,7 +427,6 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
         fileNames.isNotEmpty;
     if (isValid) {
       try {
-        await uploadFiles();
         // Social Links
         if (_socialMediaLinks.text.isNotEmpty) {
           String inputSocialMedia = _socialMediaLinks.text;
@@ -450,27 +440,31 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
             .collection('users')
             .doc(widget.userCredential.user!.uid)
             .collection("company_information")
-            .add({
-          'uid': widget.userCredential.user!.uid,
-          'companyName': _companyName.text.trim().toCapitalCase(),
-          'ceoFirstName': _ceoFirstName.text.trim().toCapitalCase(),
-          'ceoLastName': _ceoLastName.text.trim().toCapitalCase(),
-          'region': selectedRegion ?? 'not specified',
-          'province': selectedProvince ?? 'not specified',
-          'city': selectedCity ?? 'not specified',
-          'barangay': selectedBarangay ?? 'not specified',
-          'industry': _selectedIndustry ?? 'not specified',
-          'locationOtherInformation':
-              houseController.text.trim().toCapitalCase(),
-          'companySize': _selectedSizeOfCompany,
-          'companyDescription': _description.text.trim().toSentenceCase(),
-          'companyWebsite': _companyWebsite.text.isNotEmpty
-              ? _companyWebsite.text.toLowerCase().trim()
-              : 'none',
-          'companyLinks': _socialMediaLinks.text.isNotEmpty
-              ? socialMediaLinks
-              : "not specified",
-        });
+            .add(
+          {
+            'uid': widget.userCredential.user!.uid,
+            'companyName': _companyName.text.trim().toCapitalCase(),
+            'ceoFirstName': _ceoFirstName.text.trim().toCapitalCase(),
+            'ceoLastName': _ceoLastName.text.trim().toCapitalCase(),
+            'region': selectedRegion ?? 'not specified',
+            'province': selectedProvince ?? 'not specified',
+            'city': selectedCity ?? 'not specified',
+            'barangay': selectedBarangay ?? 'not specified',
+            'industry': _selectedIndustry ?? 'not specified',
+            'locationOtherInformation':
+                houseController.text.trim().toCapitalCase(),
+            'companySize': _selectedSizeOfCompany,
+            'companyDescription': _description.text.trim().toSentenceCase(),
+            'companyWebsite': _companyWebsite.text.isNotEmpty
+                ? _companyWebsite.text.toLowerCase().trim()
+                : 'none',
+            'companyLinks': _socialMediaLinks.text.isNotEmpty
+                ? socialMediaLinks
+                : "not specified",
+            'companyStatus': 'pending',
+            'created_at': DateTime.now(),
+          },
+        );
         String loggedInUserId = widget.userCredential.user!.uid;
         String formattedDateEstablished =
             DateFormat('MMMM d, yyyy').format(DateTime.now());
@@ -510,9 +504,12 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
           'password': hiringManager.password,
           'role': 'hiringManager',
           'branchId': docRef.id,
-          'created_at': Timestamp.now(),
           'created_by': loggedInUserId,
+          'created_at': Timestamp.now(),
+          'accStatus': 'enabled'
         });
+
+        await uploadFiles(context);
 
         Navigator.of(context).push(
           MaterialPageRoute(

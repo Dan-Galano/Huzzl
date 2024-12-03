@@ -23,10 +23,18 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
   // final List<String> _questions = [];
 
   void _addQuestion() {
-    final questionText = _controller.text.trim();
-    if (questionText.isNotEmpty) {
+    final inputText = _controller.text.trim();
+    if (inputText.isNotEmpty) {
+      // Split the input by semicolon and trim each question
+      final questions = inputText
+          .split(';')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+
       setState(() {
-        widget.prescreenQuestions.add(questionText);
+        // Add the new questions to the list
+        widget.prescreenQuestions.addAll(questions);
         _controller.clear();
       });
     }
@@ -115,8 +123,10 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                         Gap(10),
                         TextField(
                           controller: _controller,
+                          maxLines: 5,
                           decoration: InputDecoration(
-                            hintText: 'Type your question here',
+                            hintText:
+                                'Enter multiple questions by separating them with semi-colon (";") ... ex. What is your experience?; Why do you want this job?; What are your salary expectations?',
                             contentPadding: const EdgeInsets.symmetric(
                               vertical: 5.0,
                               horizontal: 10.0,

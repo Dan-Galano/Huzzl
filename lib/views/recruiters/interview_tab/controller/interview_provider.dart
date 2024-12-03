@@ -1223,6 +1223,7 @@ class InterviewProvider extends ChangeNotifier {
 
       if (docSnapshot.exists) {
         _subscriptionType = docSnapshot.data()?["subscriptionType"];
+        debugPrint("Fetching subscription type");
       } else {
         throw Exception("Document does not exist");
       }

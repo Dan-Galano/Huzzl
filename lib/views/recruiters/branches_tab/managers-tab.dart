@@ -3213,7 +3213,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                       manager.branchId == selectedBranch?.id,
                                   orElse: () => HiringManager(
                                     // Provide a default instance here
-                                    uid:'',
+                                    uid: '',
                                     fname: '',
                                     lname: '',
                                     email: '',
@@ -3447,7 +3447,8 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                               child: Row(
                                                 children: [
                                                   Icon(Icons.edit,
-                                                      color: Colors.grey,size: 18),
+                                                      color: Colors.grey,
+                                                      size: 18),
                                                   SizedBox(width: 8),
                                                   Text('Edit account'),
                                                 ],
@@ -3456,626 +3457,808 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
                                           ],
                                           onSelected: (value) {
                                             if (value == 'edit_hr') {
-                                             var edithrfnamecontroller = TextEditingController();
-                                             var edithrlnamecontroller = TextEditingController();
-                                             var edithremailcontroller = TextEditingController();
-                                             var edithroldpasscontroller = TextEditingController();
-                                             var edithrnewpasscontroller = TextEditingController();
-                                             var edithrphonecontroller = TextEditingController();
+                                              var edithrfnamecontroller =
+                                                  TextEditingController();
+                                              var edithrlnamecontroller =
+                                                  TextEditingController();
+                                              var edithremailcontroller =
+                                                  TextEditingController();
+                                              var edithroldpasscontroller =
+                                                  TextEditingController();
+                                              var edithrnewpasscontroller =
+                                                  TextEditingController();
+                                              var edithrphonecontroller =
+                                                  TextEditingController();
 
-                                            
-setState((){
-  edithrfnamecontroller.text = matchingHiringManager.fname ?? '';
-  edithrlnamecontroller.text = matchingHiringManager.lname ?? '';
-  edithremailcontroller.text = matchingHiringManager.email ?? '';
-  edithrphonecontroller.text = matchingHiringManager.phoneNum ?? '';
-  edithroldpasscontroller.text = matchingHiringManager.password ?? '';
-});
-                                             
+                                              setState(() {
+                                                edithrfnamecontroller.text =
+                                                    matchingHiringManager
+                                                            .fname ??
+                                                        '';
+                                                edithrlnamecontroller.text =
+                                                    matchingHiringManager
+                                                            .lname ??
+                                                        '';
+                                                edithremailcontroller.text =
+                                                    matchingHiringManager
+                                                            .email ??
+                                                        '';
+                                                edithrphonecontroller.text =
+                                                    matchingHiringManager
+                                                            .phoneNum ??
+                                                        '';
+                                                edithroldpasscontroller.text =
+                                                    matchingHiringManager
+                                                            .password ??
+                                                        '';
+                                              });
 
+                                              showDialog(
+                                                barrierDismissible: false,
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return StatefulBuilder(
+                                                    builder:
+                                                        (context, setState) {
+                                                      return AlertDialog(
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        content: SizedBox(
+                                                          width: 400,
+                                                          height: 400,
+                                                          child:
+                                                              SingleChildScrollView(
+                                                            child: StatefulBuilder(
+                                                                builder: (context,
+                                                                    setState) {
+                                                              return Form(
+                                                                key:
+                                                                    edithrFieldKey,
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      "Editing ${matchingHiringManager.fname} ${matchingHiringManager.lname} Account",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        color: Color(
+                                                                            0xff373030),
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                        fontWeight:
+                                                                            FontWeight.w700,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(15),
+                                                                    Text(
+                                                                      "First Name",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                        color: Color(
+                                                                            0xff373030),
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    TextFormField(
+                                                                      controller:
+                                                                          edithrfnamecontroller,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        enabledBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        focusedBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      validator:
+                                                                          (value) {
+                                                                        if (value ==
+                                                                                null ||
+                                                                            value.isEmpty) {
+                                                                          return 'First name is required.'; // Retained validator
+                                                                        }
+                                                                        return null;
+                                                                      },
+                                                                    ),
+                                                                    Gap(15),
+                                                                    Text(
+                                                                      "Last Name",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                        color: Color(
+                                                                            0xff373030),
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    TextFormField(
+                                                                      controller:
+                                                                          edithrlnamecontroller,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        enabledBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        focusedBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      validator:
+                                                                          (value) {
+                                                                        if (value ==
+                                                                                null ||
+                                                                            value.isEmpty) {
+                                                                          return 'Last name is required.'; // Retained validator
+                                                                        }
+                                                                        return null;
+                                                                      },
+                                                                    ),
+                                                                    Gap(15),
+                                                                    Text(
+                                                                      "Phone Number",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                        color: Color(
+                                                                            0xff373030),
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    TextFormField(
+                                                                      controller:
+                                                                          edithrphonecontroller,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        enabledBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        focusedBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      validator:
+                                                                          (value) {
+                                                                        if (value ==
+                                                                                null ||
+                                                                            value.isEmpty) {
+                                                                          return 'Phone number is required.'; // Show error message
+                                                                        }
+                                                                        return null; // No error if valid
+                                                                      },
+                                                                    ),
+                                                                    Gap(15),
+                                                                    Text(
+                                                                      "Work Email Address",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                        color: Color(
+                                                                            0xff373030),
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    TextFormField(
+                                                                      controller:
+                                                                          edithremailcontroller,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        enabledBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        focusedBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      validator:
+                                                                          (value) {
+                                                                        if (value ==
+                                                                                null ||
+                                                                            value.isEmpty) {
+                                                                          return "Email Address is required."; // Show error message
+                                                                        }
+                                                                        if (!EmailValidator.validate(
+                                                                            value)) {
+                                                                          return "Please provide a valid email address."; // Show error message for invalid email
+                                                                        }
+                                                                        return null; // No error if valid
+                                                                      },
+                                                                    ),
+                                                                    Gap(15),
+                                                                    Text(
+                                                                      "Old Password",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                        color: Color(
+                                                                            0xff373030),
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    TextFormField(
+                                                                      controller:
+                                                                          edithroldpasscontroller,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                      ),
+                                                                      obscureText: isPasswordVisible
+                                                                          ? false
+                                                                          : true,
+                                                                      readOnly:
+                                                                          true,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        suffixIcon:
+                                                                            IconButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            setState(() {
+                                                                              isPasswordVisible = !isPasswordVisible; // Retain the visibility toggle
+                                                                            });
+                                                                          },
+                                                                          icon: isPasswordVisible
+                                                                              ? const Icon(Icons.visibility)
+                                                                              : const Icon(Icons.visibility_off),
+                                                                        ),
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        enabledBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        focusedBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Gap(15),
+                                                                    Text(
+                                                                      "New Password",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12,
+                                                                        color: Color(
+                                                                            0xff373030),
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                    ),
+                                                                    Gap(10),
+                                                                    TextFormField(
+                                                                      controller:
+                                                                          edithrnewpasscontroller,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        fontFamily:
+                                                                            'Galano',
+                                                                      ),
+                                                                      obscureText: isConfirmPasswordVisible
+                                                                          ? false
+                                                                          : true,
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        suffixIcon:
+                                                                            IconButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            setState(() {
+                                                                              isConfirmPasswordVisible = !isConfirmPasswordVisible; // Retain the visibility toggle
+                                                                            });
+                                                                          },
+                                                                          icon: isConfirmPasswordVisible
+                                                                              ? const Icon(Icons.visibility)
+                                                                              : const Icon(Icons.visibility_off),
+                                                                        ),
+                                                                        border:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        enabledBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                        focusedBorder:
+                                                                            OutlineInputBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8),
+                                                                          borderSide:
+                                                                              BorderSide(
+                                                                            color:
+                                                                                Color(0xFFD1E1FF), // Retained color
+                                                                            width:
+                                                                                1.5,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      validator:
+                                                                          (value) {
+                                                                        if (value!.isNotEmpty &&
+                                                                            value.length <
+                                                                                8) {
+                                                                          return 'Password must be at least 8 characters long.';
+                                                                        }
 
-                                                    showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return StatefulBuilder(
-                            builder: (context, setState) {
-                              return AlertDialog(
-                                backgroundColor: Colors.white,
-                                content: SizedBox(
-                                  width: 400,
-                                  height: 400,
-                                  child: SingleChildScrollView(
-                                    child: StatefulBuilder(
-                                        builder: (context, setState) {
-                                      return Form(
-                                        key: edithrFieldKey,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Editing ${matchingHiringManager.fname} ${matchingHiringManager.lname} Account",
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            Gap(15),
-                                            Text(
-                                              "First Name",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-                                            TextFormField(
-                                              controller: edithrfnamecontroller,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                              ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'First name is required.'; // Retained validator
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            Gap(15),
-                                            Text(
-                                              "Last Name",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-                                             TextFormField(
-                                              controller: edithrlnamecontroller,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                              ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Last name is required.'; // Retained validator
-                                                }
-                                                return null;
-                                              },
-                                            ),  Gap(15),
-                                            Text(
-                                              "Phone Number",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-                                              TextFormField(
-              controller: edithrphonecontroller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Phone number is required.'; // Show error message
-                }
-                return null; // No error if valid
-              },
-            ),
-          
-                                         Gap(15),
+                                                                        return null; // No error if valid
+                                                                      },
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            }),
+                                                          ),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .end,
+                                                            children: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  bool
+                                                                      _areFieldsFilled() {
+                                                                    return edithrfnamecontroller.text.isNotEmpty ||
+                                                                        edithrlnamecontroller
+                                                                            .text
+                                                                            .isNotEmpty ||
+                                                                        edithremailcontroller
+                                                                            .text
+                                                                            .isNotEmpty ||
+                                                                        edithrnewpasscontroller
+                                                                            .text
+                                                                            .isNotEmpty ||
+                                                                        edithrphonecontroller
+                                                                            .text
+                                                                            .isNotEmpty;
+                                                                  }
 
-                                            Text(
-                                              "Work Email Address",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
+                                                                  // if (_areFieldsFilled()) {
+                                                                  //   cancelAddingDialog(
+                                                                  //       context, 'hiring manager', 'updating');
+                                                                  // } else {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  // }
+                                                                },
+                                                                style: TextButton
+                                                                    .styleFrom(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          30,
+                                                                      vertical:
+                                                                          8),
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          180,
+                                                                          180,
+                                                                          180),
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8),
+                                                                  ),
+                                                                ),
+                                                                child:
+                                                                    const Text(
+                                                                  'Cancel',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Gap(10),
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  bool isValid =
+                                                                      edithrFieldKey
+                                                                              .currentState!
+                                                                              .validate() ??
+                                                                          false;
 
-                                           TextFormField(
-              controller: edithremailcontroller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Email Address is required."; // Show error message
-                }
-                if (!EmailValidator.validate(value)) {
-                  return "Please provide a valid email address."; // Show error message for invalid email
-                }
-                return null; // No error if valid
-              },
-            ),
-             Gap(15),
-                                            Text(
-                                              "Old Password",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-            TextFormField(
-              controller: edithroldpasscontroller,
-              style: const TextStyle(
-                fontFamily: 'Galano',
-              ),
-              obscureText: isPasswordVisible ? false : true,
-              readOnly: true,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isPasswordVisible =
-                          !isPasswordVisible; // Retain the visibility toggle
-                    });
-                  },
-                  icon: isPasswordVisible
-                      ? const Icon(Icons.visibility)
-                      : const Icon(Icons.visibility_off),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-            ),
-             Gap(15),
-                                            Text(
-                                              "New Password",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-            TextFormField(
-              controller: edithrnewpasscontroller,
-              style: const TextStyle(
-                fontFamily: 'Galano',
-              ),
-              obscureText: isConfirmPasswordVisible ? false : true,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isConfirmPasswordVisible =
-                          !isConfirmPasswordVisible; // Retain the visibility toggle
-                    });
-                  },
-                  icon: isConfirmPasswordVisible
-                      ? const Icon(Icons.visibility)
-                      : const Icon(Icons.visibility_off),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                
-                if (value!.isNotEmpty && value.length < 8) {
-                  return 'Password must be at least 8 characters long.';
-                }
-               
-                return null; // No error if valid
-              },
-            ),
-         
+                                                                  if (!isValid) {
+                                                                    print(
+                                                                        "Validation failed: One or more fields are invalid.");
+                                                                    return;
+                                                                  }
 
-                                          
-                                            ],
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          bool _areFieldsFilled() {
-                                            return edithrfnamecontroller
-                                                    .text.isNotEmpty ||
-                                                edithrlnamecontroller
-                                                    .text.isNotEmpty ||
-                                                edithremailcontroller
-                                                    .text.isNotEmpty ||
-                                                edithrnewpasscontroller
-                                                    .text.isNotEmpty ||
-                                                    edithrphonecontroller.text.isNotEmpty;
-                                          }
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    barrierDismissible:
+                                                                        false,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return AlertDialog(
+                                                                        shape:
+                                                                            const RoundedRectangleBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.all(Radius.circular(15.0)),
+                                                                        ),
+                                                                        content:
+                                                                            Container(
+                                                                          width:
+                                                                              MediaQuery.of(context).size.width * 0.4,
+                                                                          child:
+                                                                              Column(
+                                                                            mainAxisSize:
+                                                                                MainAxisSize.min,
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              Text(
+                                                                                "Confirm Update",
+                                                                                style: TextStyle(
+                                                                                  fontSize: 20,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                ),
+                                                                              ),
+                                                                              const SizedBox(height: 10),
+                                                                              Text(
+                                                                                "Are you sure to update ${matchingHiringManager.fname} ${matchingHiringManager.lname} Account?",
+                                                                                style: TextStyle(fontSize: 16),
+                                                                              ),
+                                                                              const SizedBox(height: 8),
+                                                                              Text(
+                                                                                "This will overwrite the current information.",
+                                                                                style: TextStyle(
+                                                                                  fontSize: 14,
+                                                                                  fontStyle: FontStyle.italic,
+                                                                                  color: Colors.grey.shade600,
+                                                                                ),
+                                                                              ),
+                                                                              const SizedBox(height: 20),
+                                                                              Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                                                children: [
+                                                                                  TextButton(
+                                                                                    onPressed: () => Navigator.pop(context), // Close the dialog
+                                                                                    style: TextButton.styleFrom(
+                                                                                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                                                                                      backgroundColor: const Color.fromARGB(255, 180, 180, 180),
+                                                                                      shape: RoundedRectangleBorder(
+                                                                                        borderRadius: BorderRadius.circular(8),
+                                                                                      ),
+                                                                                    ),
+                                                                                    child: const Text(
+                                                                                      'Cancel',
+                                                                                      style: TextStyle(color: Colors.white),
+                                                                                    ),
+                                                                                  ),
+                                                                                  const SizedBox(width: 10),
+                                                                                  TextButton(
+                                                                                    onPressed: () async {
+                                                                                      try {
+                                                                                        await FirebaseFirestore.instance.collection('users').doc(loggedInUserId).collection('branches').doc(matchingHiringManager.branchId).update({
+                                                                                          'firstName': edithrfnamecontroller.text.trim().isNotEmpty ? edithrfnamecontroller.text.trim() : matchingHiringManager.fname,
+                                                                                          'lastName': edithrlnamecontroller.text.trim().isNotEmpty ? edithrlnamecontroller.text.trim() : matchingHiringManager.lname,
+                                                                                          'email': edithremailcontroller.text.trim().isNotEmpty ? edithremailcontroller.text.trim() : matchingHiringManager.email,
+                                                                                          if (matchingHiringManager.phoneNum!.isNotEmpty) 'phone': edithrphonecontroller.text.trim().isNotEmpty ? edithrphonecontroller.text.trim() : matchingHiringManager.phoneNum ?? '',
+                                                                                          'password': edithrnewpasscontroller.text.trim().isNotEmpty ? edithrnewpasscontroller.text.trim() : matchingHiringManager.password,
+                                                                                          'last_updated_at': Timestamp.now(),
+                                                                                          'last_updated_by': loggedInUserId,
+                                                                                        });
 
-                                          // if (_areFieldsFilled()) {
-                                          //   cancelAddingDialog(
-                                          //       context, 'hiring manager', 'updating');
-                                          // } else {
-                                            Navigator.pop(context);
-                                          // }
-                                        },
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 8),
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 180, 180, 180),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'Cancel',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                      Gap(10),
-                                      TextButton(
-                                        onPressed: ()  {
-                                          
-    bool isValid = edithrFieldKey.currentState!.validate() ?? false;
-    
+                                                                                        print("Branch hiring manager updated in branch id: ${matchingHiringManager.branchId}");
 
-    if (!isValid) {
-      print("Validation failed: One or more fields are invalid.");
-      return;
-    }
+                                                                                        await FirebaseFirestore.instance.collection('users').doc(matchingHiringManager.uid).update({
+                                                                                          'firstName': edithrfnamecontroller.text.trim().isNotEmpty ? edithrfnamecontroller.text.trim() : matchingHiringManager.fname,
+                                                                                          'lastName': edithrlnamecontroller.text.trim().isNotEmpty ? edithrlnamecontroller.text.trim() : matchingHiringManager.lname,
+                                                                                          'email': edithremailcontroller.text.trim().isNotEmpty ? edithremailcontroller.text.trim() : matchingHiringManager.email,
+                                                                                          if (matchingHiringManager.phoneNum!.isNotEmpty) 'phone': edithrphonecontroller.text.trim().isNotEmpty ? edithrphonecontroller.text.trim() : matchingHiringManager.phoneNum ?? '',
+                                                                                          'password': edithrnewpasscontroller.text.trim().isNotEmpty ? edithrnewpasscontroller.text.trim() : matchingHiringManager.password,
+                                                                                          'last_updated_at': Timestamp.now(),
+                                                                                          'last_updated_by': loggedInUserId,
+                                                                                        });
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          ),
-          content: Container(
-            width: MediaQuery.of(context).size.width * 0.4,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Confirm Update",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Are you sure to update ${matchingHiringManager.fname} ${matchingHiringManager.lname} Account?",
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "This will overwrite the current information.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.pop(context), // Close the dialog
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 8),
-                        backgroundColor:
-                            const Color.fromARGB(255, 180, 180, 180),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    TextButton(
-                      onPressed: () async {
-                      
+                                                                                        print("user hiring manager updated with id: ${matchingHiringManager.uid}");
 
-                        try {
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(loggedInUserId)
-                              .collection('branches')
-                              .doc(matchingHiringManager.branchId)
-                              .update({
-                            'firstName': edithrfnamecontroller.text.trim().isNotEmpty ? edithrfnamecontroller.text.trim() : matchingHiringManager.fname,
-                            'lastName': edithrlnamecontroller.text.trim().isNotEmpty ? edithrlnamecontroller.text.trim() : matchingHiringManager.lname,
-                            'email': edithremailcontroller.text.trim().isNotEmpty ? edithremailcontroller.text.trim() : matchingHiringManager.email,
-                            if(matchingHiringManager.phoneNum!.isNotEmpty)
-                            'phone': edithrphonecontroller.text.trim().isNotEmpty ? edithrphonecontroller.text.trim() : matchingHiringManager.phoneNum ?? '',
+                                                                                        EasyLoading.instance
+                                                                                          ..displayDuration = const Duration(milliseconds: 1500)
+                                                                                          ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+                                                                                          ..loadingStyle = EasyLoadingStyle.custom
+                                                                                          ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+                                                                                          ..textColor = Colors.white
+                                                                                          ..fontSize = 16.0
+                                                                                          ..indicatorColor = Colors.white
+                                                                                          ..maskColor = Colors.black.withOpacity(0.5)
+                                                                                          ..userInteractions = false
+                                                                                          ..dismissOnTap = true;
+                                                                                        EasyLoading.showToast(
+                                                                                          "${matchingHiringManager.fname} ${matchingHiringManager.lname} is successfully updated!",
+                                                                                          dismissOnTap: true,
+                                                                                          toastPosition: EasyLoadingToastPosition.top,
+                                                                                          duration: Duration(seconds: 3),
+                                                                                        );
+                                                                                        if (Provider.of<BranchProvider>(context, listen: false).currentTabIndex == 0)
+                                                                                          Provider.of<BranchProvider>(context, listen: false).fetchActiveBranches(loggedInUserId!).then((_) {
+                                                                                            print("Branches fetched successfully.");
+                                                                                          }).catchError((e) {
+                                                                                            print("Error fetching branches: $e");
+                                                                                          });
+                                                                                        else
+                                                                                          Provider.of<BranchProvider>(context, listen: false).fetchArchiveBranches(loggedInUserId!).then((_) {
+                                                                                            print("Branches fetched successfully.");
+                                                                                          }).catchError((e) {
+                                                                                            print("Error fetching branches: $e");
+                                                                                          });
 
-                            'password': edithrnewpasscontroller.text.trim().isNotEmpty ? edithrnewpasscontroller.text.trim() : matchingHiringManager.password,
-                            'last_updated_at': Timestamp.now(),
-                            'last_updated_by': loggedInUserId,
-                          });
+                                                                                        Provider.of<HiringManagerProvider>(context, listen: false).fetchAllHiringManagers().then((_) {
+                                                                                          print("Hiring managers fetched successfully.");
+                                                                                        }).catchError((e) {
+                                                                                          print("Error fetching hiring managers: $e");
+                                                                                        });
+                                                                                        Navigator.pop(context);
+                                                                                        Navigator.pop(context);
 
-                          print("Branch hiring manager updated in branch id: ${matchingHiringManager.branchId}");
-
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(matchingHiringManager.uid)
-                              .update({
-                            'firstName': edithrfnamecontroller.text.trim().isNotEmpty ? edithrfnamecontroller.text.trim() : matchingHiringManager.fname,
-                            'lastName': edithrlnamecontroller.text.trim().isNotEmpty ? edithrlnamecontroller.text.trim() : matchingHiringManager.lname,
-                            'email': edithremailcontroller.text.trim().isNotEmpty ? edithremailcontroller.text.trim() : matchingHiringManager.email,
-                            if(matchingHiringManager.phoneNum!.isNotEmpty)
-                            'phone': edithrphonecontroller.text.trim().isNotEmpty ? edithrphonecontroller.text.trim() : matchingHiringManager.phoneNum ?? '',
-
-                            'password': edithrnewpasscontroller.text.trim().isNotEmpty ? edithrnewpasscontroller.text.trim() : matchingHiringManager.password,
-                            'last_updated_at': Timestamp.now(),
-                            'last_updated_by': loggedInUserId,
-                          });
-
-                           print("user hiring manager updated with id: ${matchingHiringManager.uid}");
-
-                          EasyLoading.instance
-                            ..displayDuration =
-                                const Duration(milliseconds: 1500)
-                            ..indicatorType =
-                                EasyLoadingIndicatorType.fadingCircle
-                            ..loadingStyle = EasyLoadingStyle.custom
-                            ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
-                            ..textColor = Colors.white
-                            ..fontSize = 16.0
-                            ..indicatorColor = Colors.white
-                            ..maskColor = Colors.black.withOpacity(0.5)
-                            ..userInteractions = false
-                            ..dismissOnTap = true;
-                          EasyLoading.showToast(
-                            "${matchingHiringManager.fname} ${matchingHiringManager.lname} is successfully updated!",
-                            dismissOnTap: true,
-                            toastPosition: EasyLoadingToastPosition.top,
-                            duration: Duration(seconds: 3),
-                          );
-if(Provider.of<BranchProvider>(context, listen: false).currentTabIndex == 0)
-                          Provider.of<BranchProvider>(context, listen: false)
-                              .fetchActiveBranches(loggedInUserId!)
-                              .then((_) {
-                            print("Branches fetched successfully.");
-                          }).catchError((e) {
-                            print("Error fetching branches: $e");
-                          });
-                          else
-                          Provider.of<BranchProvider>(context, listen: false)
-                              .fetchArchiveBranches(loggedInUserId!)
-                              .then((_) {
-                            print("Branches fetched successfully.");
-                          }).catchError((e) {
-                            print("Error fetching branches: $e");
-                          });
-
-
-                           Provider.of<HiringManagerProvider>(context, listen: false)
-          .fetchAllHiringManagers()
-          .then((_) {
-        print("Hiring managers fetched successfully.");
-      }).catchError((e) {
-        print("Error fetching hiring managers: $e");
-      });
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-
-                          ControllerManager().searchManagerController.text =
-                              branchNameController.text.trim();
-                        } catch (e) {
-                          print("Error update hiring manager: $e");
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 8),
-                        backgroundColor: const Color(0xFF3b7dff),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Yes, save changes',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  
-                                        },
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 8),
-                                          backgroundColor:
-                                              const Color(0xFF083af8),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'Save Changes',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      );
-                
+                                                                                        ControllerManager().searchManagerController.text = branchNameController.text.trim();
+                                                                                      } catch (e) {
+                                                                                        print("Error update hiring manager: $e");
+                                                                                      }
+                                                                                    },
+                                                                                    style: TextButton.styleFrom(
+                                                                                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                                                                                      backgroundColor: const Color(0xFF3b7dff),
+                                                                                      shape: RoundedRectangleBorder(
+                                                                                        borderRadius: BorderRadius.circular(8),
+                                                                                      ),
+                                                                                    ),
+                                                                                    child: const Text(
+                                                                                      'Yes, save changes',
+                                                                                      style: TextStyle(color: Colors.white),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                                style: TextButton
+                                                                    .styleFrom(
+                                                                  padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          30,
+                                                                      vertical:
+                                                                          8),
+                                                                  backgroundColor:
+                                                                      const Color(
+                                                                          0xFF083af8),
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8),
+                                                                  ),
+                                                                ),
+                                                                child: Text(
+                                                                  'Save Changes',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              );
                                             }
                                           },
                                         ),
@@ -4393,7 +4576,8 @@ if(Provider.of<BranchProvider>(context, listen: false).currentTabIndex == 0)
                                                         children: [
                                                           Icon(Icons.edit,
                                                               color:
-                                                                  Colors.grey,size: 18),
+                                                                  Colors.grey,
+                                                              size: 18),
                                                           SizedBox(width: 8),
                                                           Text('Edit account'),
                                                         ],
@@ -4402,674 +4586,683 @@ if(Provider.of<BranchProvider>(context, listen: false).currentTabIndex == 0)
                                                   ],
                                                   onSelected: (value) {
                                                     if (value == 'edit_staff') {
-                                             var editstafffnamecontroller = TextEditingController();
-                                             var edithstafflnamecontroller = TextEditingController();
-                                             var editstaffemailcontroller = TextEditingController();
-                                             var editstaffoldpasscontroller = TextEditingController();
-                                             var editstaffnewpasscontroller = TextEditingController();
-                                             var editstaffphonecontroller = TextEditingController();
+                                                      var editstafffnamecontroller =
+                                                          TextEditingController();
+                                                      var edithstafflnamecontroller =
+                                                          TextEditingController();
+                                                      var editstaffemailcontroller =
+                                                          TextEditingController();
+                                                      var editstaffoldpasscontroller =
+                                                          TextEditingController();
+                                                      var editstaffnewpasscontroller =
+                                                          TextEditingController();
+                                                      var editstaffphonecontroller =
+                                                          TextEditingController();
 
-                                            
-setState((){
-  editstafffnamecontroller.text = staff.fname ?? '';
-  edithstafflnamecontroller.text = staff.lname ?? '';
-  editstaffemailcontroller.text = staff.email ?? '';
-  editstaffphonecontroller.text = staff.phoneNum ?? '';
-  editstaffoldpasscontroller.text = staff.password ?? '';
-});
-                                             
+                                                      setState(() {
+                                                        editstafffnamecontroller
+                                                                .text =
+                                                            staff.fname ?? '';
+                                                        edithstafflnamecontroller
+                                                                .text =
+                                                            staff.lname ?? '';
+                                                        editstaffemailcontroller
+                                                                .text =
+                                                            staff.email ?? '';
+                                                        editstaffphonecontroller
+                                                                .text =
+                                                            staff.phoneNum ??
+                                                                '';
+                                                        editstaffoldpasscontroller
+                                                                .text =
+                                                            staff.password ??
+                                                                '';
+                                                      });
 
+                                                      showDialog(
+                                                        barrierDismissible:
+                                                            false,
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return StatefulBuilder(
+                                                            builder: (context,
+                                                                setState) {
+                                                              return AlertDialog(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                                content:
+                                                                    SizedBox(
+                                                                  width: 400,
+                                                                  height: 400,
+                                                                  child:
+                                                                      SingleChildScrollView(
+                                                                    child: StatefulBuilder(builder:
+                                                                        (context,
+                                                                            setState) {
+                                                                      return Form(
+                                                                        key:
+                                                                            edithrFieldKey,
+                                                                        child:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.start,
+                                                                          children: [
+                                                                            Text(
+                                                                              "Editing ${staff.fname} ${staff.lname} Account",
+                                                                              style: TextStyle(
+                                                                                fontSize: 20,
+                                                                                color: Color(0xff373030),
+                                                                                fontFamily: 'Galano',
+                                                                                fontWeight: FontWeight.w700,
+                                                                              ),
+                                                                            ),
+                                                                            Gap(15),
+                                                                            Text(
+                                                                              "First Name",
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                color: Color(0xff373030),
+                                                                                fontFamily: 'Galano',
+                                                                                fontWeight: FontWeight.w500,
+                                                                              ),
+                                                                            ),
+                                                                            Gap(10),
+                                                                            TextFormField(
+                                                                              controller: editstafffnamecontroller,
+                                                                              decoration: InputDecoration(
+                                                                                border: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              validator: (value) {
+                                                                                if (value == null || value.isEmpty) {
+                                                                                  return 'First name is required.'; // Retained validator
+                                                                                }
+                                                                                return null;
+                                                                              },
+                                                                            ),
+                                                                            Gap(15),
+                                                                            Text(
+                                                                              "Last Name",
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                color: Color(0xff373030),
+                                                                                fontFamily: 'Galano',
+                                                                                fontWeight: FontWeight.w500,
+                                                                              ),
+                                                                            ),
+                                                                            Gap(10),
+                                                                            TextFormField(
+                                                                              controller: edithstafflnamecontroller,
+                                                                              decoration: InputDecoration(
+                                                                                border: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              validator: (value) {
+                                                                                if (value == null || value.isEmpty) {
+                                                                                  return 'Last name is required.'; // Retained validator
+                                                                                }
+                                                                                return null;
+                                                                              },
+                                                                            ),
+                                                                            Gap(15),
+                                                                            Text(
+                                                                              "Phone Number",
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                color: Color(0xff373030),
+                                                                                fontFamily: 'Galano',
+                                                                                fontWeight: FontWeight.w500,
+                                                                              ),
+                                                                            ),
+                                                                            Gap(10),
+                                                                            TextFormField(
+                                                                              controller: editstaffphonecontroller,
+                                                                              decoration: InputDecoration(
+                                                                                border: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              validator: (value) {
+                                                                                if (value == null || value.isEmpty) {
+                                                                                  return 'Phone number is required.'; // Show error message
+                                                                                }
+                                                                                return null; // No error if valid
+                                                                              },
+                                                                            ),
+                                                                            Gap(15),
+                                                                            Text(
+                                                                              "Work Email Address",
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                color: Color(0xff373030),
+                                                                                fontFamily: 'Galano',
+                                                                                fontWeight: FontWeight.w500,
+                                                                              ),
+                                                                            ),
+                                                                            Gap(10),
+                                                                            TextFormField(
+                                                                              controller: editstaffemailcontroller,
+                                                                              decoration: InputDecoration(
+                                                                                border: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              validator: (value) {
+                                                                                if (value == null || value.isEmpty) {
+                                                                                  return "Email Address is required."; // Show error message
+                                                                                }
+                                                                                if (!EmailValidator.validate(value)) {
+                                                                                  return "Please provide a valid email address."; // Show error message for invalid email
+                                                                                }
+                                                                                return null; // No error if valid
+                                                                              },
+                                                                            ),
+                                                                            Gap(15),
+                                                                            Text(
+                                                                              "Old Password",
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                color: Color(0xff373030),
+                                                                                fontFamily: 'Galano',
+                                                                                fontWeight: FontWeight.w500,
+                                                                              ),
+                                                                            ),
+                                                                            Gap(10),
+                                                                            TextFormField(
+                                                                              controller: editstaffoldpasscontroller,
+                                                                              style: const TextStyle(
+                                                                                fontFamily: 'Galano',
+                                                                              ),
+                                                                              obscureText: isPasswordVisible ? false : true,
+                                                                              readOnly: true,
+                                                                              decoration: InputDecoration(
+                                                                                suffixIcon: IconButton(
+                                                                                  onPressed: () {
+                                                                                    setState(() {
+                                                                                      isPasswordVisible = !isPasswordVisible; // Retain the visibility toggle
+                                                                                    });
+                                                                                  },
+                                                                                  icon: isPasswordVisible ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                                                                                ),
+                                                                                border: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            Gap(15),
+                                                                            Text(
+                                                                              "New Password",
+                                                                              style: TextStyle(
+                                                                                fontSize: 12,
+                                                                                color: Color(0xff373030),
+                                                                                fontFamily: 'Galano',
+                                                                                fontWeight: FontWeight.w500,
+                                                                              ),
+                                                                            ),
+                                                                            Gap(10),
+                                                                            TextFormField(
+                                                                              controller: editstaffnewpasscontroller,
+                                                                              style: const TextStyle(
+                                                                                fontFamily: 'Galano',
+                                                                              ),
+                                                                              obscureText: isConfirmPasswordVisible ? false : true,
+                                                                              decoration: InputDecoration(
+                                                                                suffixIcon: IconButton(
+                                                                                  onPressed: () {
+                                                                                    setState(() {
+                                                                                      isConfirmPasswordVisible = !isConfirmPasswordVisible; // Retain the visibility toggle
+                                                                                    });
+                                                                                  },
+                                                                                  icon: isConfirmPasswordVisible ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                                                                                ),
+                                                                                border: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                enabledBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                                focusedBorder: OutlineInputBorder(
+                                                                                  borderRadius: BorderRadius.circular(8),
+                                                                                  borderSide: BorderSide(
+                                                                                    color: Color(0xFFD1E1FF), // Retained color
+                                                                                    width: 1.5,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              validator: (value) {
+                                                                                if (value!.isNotEmpty && value.length < 8) {
+                                                                                  return 'Password must be at least 8 characters long.';
+                                                                                }
 
-                                                    showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return StatefulBuilder(
-                            builder: (context, setState) {
-                              return AlertDialog(
-                                backgroundColor: Colors.white,
-                                content: SizedBox(
-                                  width: 400,
-                                  height: 400,
-                                  child: SingleChildScrollView(
-                                    child: StatefulBuilder(
-                                        builder: (context, setState) {
-                                      return Form(
-                                        key: edithrFieldKey,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Editing ${staff.fname} ${staff.lname} Account",
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            Gap(15),
-                                            Text(
-                                              "First Name",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-                                            TextFormField(
-                                              controller: editstafffnamecontroller,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                              ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'First name is required.'; // Retained validator
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            Gap(15),
-                                            Text(
-                                              "Last Name",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-                                             TextFormField(
-                                              controller: edithstafflnamecontroller,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide(
-                                                    color: Color(
-                                                        0xFFD1E1FF), // Retained color
-                                                    width: 1.5,
-                                                  ),
-                                                ),
-                                              ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Last name is required.'; // Retained validator
-                                                }
-                                                return null;
-                                              },
-                                            ),  Gap(15),
-                                            Text(
-                                              "Phone Number",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-                                              TextFormField(
-              controller: editstaffphonecontroller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Phone number is required.'; // Show error message
-                }
-                return null; // No error if valid
-              },
-            ),
-          
-                                         Gap(15),
+                                                                                return null; // No error if valid
+                                                                              },
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      );
+                                                                    }),
+                                                                  ),
+                                                                ),
+                                                                actions: <Widget>[
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .end,
+                                                                    children: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          bool
+                                                                              _areFieldsFilled() {
+                                                                            return editstafffnamecontroller.text.isNotEmpty ||
+                                                                                edithstafflnamecontroller.text.isNotEmpty ||
+                                                                                editstaffemailcontroller.text.isNotEmpty ||
+                                                                                editstaffnewpasscontroller.text.isNotEmpty ||
+                                                                                editstaffphonecontroller.text.isNotEmpty;
+                                                                          }
 
-                                            Text(
-                                              "Work Email Address",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
+                                                                          // if (_areFieldsFilled()) {
+                                                                          //   cancelAddingDialog(
+                                                                          //       context, 'hiring manager', 'updating');
+                                                                          // } else {
+                                                                          Navigator.pop(
+                                                                              context);
+                                                                          // }
+                                                                        },
+                                                                        style: TextButton
+                                                                            .styleFrom(
+                                                                          padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                              horizontal: 30,
+                                                                              vertical: 8),
+                                                                          backgroundColor: const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              180,
+                                                                              180,
+                                                                              180),
+                                                                          shape:
+                                                                              RoundedRectangleBorder(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(8),
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            const Text(
+                                                                          'Cancel',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Gap(10),
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          bool
+                                                                              isValid =
+                                                                              edithrFieldKey.currentState!.validate() ?? false;
 
-                                           TextFormField(
-              controller: editstaffemailcontroller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Email Address is required."; // Show error message
-                }
-                if (!EmailValidator.validate(value)) {
-                  return "Please provide a valid email address."; // Show error message for invalid email
-                }
-                return null; // No error if valid
-              },
-            ),
-             Gap(15),
-                                            Text(
-                                              "Old Password",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-            TextFormField(
-              controller: editstaffoldpasscontroller,
-              style: const TextStyle(
-                fontFamily: 'Galano',
-              ),
-              obscureText: isPasswordVisible ? false : true,
-              readOnly: true,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isPasswordVisible =
-                          !isPasswordVisible; // Retain the visibility toggle
-                    });
-                  },
-                  icon: isPasswordVisible
-                      ? const Icon(Icons.visibility)
-                      : const Icon(Icons.visibility_off),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-            ),
-             Gap(15),
-                                            Text(
-                                              "New Password",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff373030),
-                                                fontFamily: 'Galano',
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Gap(10),
-            TextFormField(
-              controller: editstaffnewpasscontroller,
-              style: const TextStyle(
-                fontFamily: 'Galano',
-              ),
-              obscureText: isConfirmPasswordVisible ? false : true,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isConfirmPasswordVisible =
-                          !isConfirmPasswordVisible; // Retain the visibility toggle
-                    });
-                  },
-                  icon: isConfirmPasswordVisible
-                      ? const Icon(Icons.visibility)
-                      : const Icon(Icons.visibility_off),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                    color: Color(0xFFD1E1FF), // Retained color
-                    width: 1.5,
-                  ),
-                ),
-              ),
-              validator: (value) {
-                
-                if (value!.isNotEmpty && value.length < 8) {
-                  return 'Password must be at least 8 characters long.';
-                }
-               
-                return null; // No error if valid
-              },
-            ),
-         
+                                                                          if (!isValid) {
+                                                                            print("Validation failed: One or more fields are invalid.");
+                                                                            return;
+                                                                          }
 
-                                          
-                                            ],
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          bool _areFieldsFilled() {
-                                            return editstafffnamecontroller
-                                                    .text.isNotEmpty ||
-                                                edithstafflnamecontroller
-                                                    .text.isNotEmpty ||
-                                                editstaffemailcontroller
-                                                    .text.isNotEmpty ||
-                                                editstaffnewpasscontroller
-                                                    .text.isNotEmpty ||
-                                                    editstaffphonecontroller.text.isNotEmpty;
-                                          }
+                                                                          showDialog(
+                                                                            context:
+                                                                                context,
+                                                                            barrierDismissible:
+                                                                                false,
+                                                                            builder:
+                                                                                (context) {
+                                                                              return AlertDialog(
+                                                                                shape: const RoundedRectangleBorder(
+                                                                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                                                                ),
+                                                                                content: Container(
+                                                                                  width: MediaQuery.of(context).size.width * 0.4,
+                                                                                  child: Column(
+                                                                                    mainAxisSize: MainAxisSize.min,
+                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        "Confirm Update",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 20,
+                                                                                          fontWeight: FontWeight.bold,
+                                                                                        ),
+                                                                                      ),
+                                                                                      const SizedBox(height: 10),
+                                                                                      Text(
+                                                                                        "Are you sure to update ${staff.fname} ${staff.lname} Account?",
+                                                                                        style: TextStyle(fontSize: 16),
+                                                                                      ),
+                                                                                      const SizedBox(height: 8),
+                                                                                      Text(
+                                                                                        "This will overwrite the current information.",
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 14,
+                                                                                          fontStyle: FontStyle.italic,
+                                                                                          color: Colors.grey.shade600,
+                                                                                        ),
+                                                                                      ),
+                                                                                      const SizedBox(height: 20),
+                                                                                      Row(
+                                                                                        mainAxisAlignment: MainAxisAlignment.end,
+                                                                                        children: [
+                                                                                          TextButton(
+                                                                                            onPressed: () => Navigator.pop(context), // Close the dialog
+                                                                                            style: TextButton.styleFrom(
+                                                                                              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                                                                                              backgroundColor: const Color.fromARGB(255, 180, 180, 180),
+                                                                                              shape: RoundedRectangleBorder(
+                                                                                                borderRadius: BorderRadius.circular(8),
+                                                                                              ),
+                                                                                            ),
+                                                                                            child: const Text(
+                                                                                              'Cancel',
+                                                                                              style: TextStyle(color: Colors.white),
+                                                                                            ),
+                                                                                          ),
+                                                                                          const SizedBox(width: 10),
+                                                                                          TextButton(
+                                                                                            onPressed: () async {
+                                                                                              try {
+                                                                                                // Primary user document update in 'users' collection
+                                                                                                // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                                                                                                //     .collection('users')
+                                                                                                //     .where('email', isEqualTo: staff.email)
+                                                                                                //     .limit(1)
+                                                                                                //     .get();
 
-                                          // if (_areFieldsFilled()) {
-                                          //   cancelAddingDialog(
-                                          //       context, 'hiring manager', 'updating');
-                                          // } else {
-                                            Navigator.pop(context);
-                                          // }
-                                        },
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 8),
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 180, 180, 180),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: const Text(
-                                          'Cancel',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                      Gap(10),
-                                      TextButton(
-                                        onPressed: ()  {
-                                          
-    bool isValid = edithrFieldKey.currentState!.validate() ?? false;
-    
+                                                                                                // if (querySnapshot.docs.isNotEmpty) {
+                                                                                                //   String documentId = querySnapshot.docs.first.id;
+                                                                                                //   await FirebaseFirestore.instance.collection('users').doc(documentId).update({
+                                                                                                //     'firstName': editstafffnamecontroller.text.trim().isNotEmpty
+                                                                                                //         ? editstafffnamecontroller.text.trim()
+                                                                                                //         : staff.fname,
+                                                                                                //     'lastName': edithstafflnamecontroller.text.trim().isNotEmpty
+                                                                                                //         ? edithstafflnamecontroller.text.trim()
+                                                                                                //         : staff.lname,
+                                                                                                //     'email': editstaffemailcontroller.text.trim().isNotEmpty
+                                                                                                //         ? editstaffemailcontroller.text.trim()
+                                                                                                //         : staff.email,
+                                                                                                //     if (staff.phoneNum != null && staff.phoneNum!.isNotEmpty)
+                                                                                                //       'phone': editstaffphonecontroller.text.trim().isNotEmpty
+                                                                                                //           ? editstaffphonecontroller.text.trim()
+                                                                                                //           : staff.phoneNum ?? '',
+                                                                                                //     'password': editstaffnewpasscontroller.text.trim().isNotEmpty
+                                                                                                //         ? editstaffnewpasscontroller.text.trim()
+                                                                                                //         : staff.password,
+                                                                                                //     'last_updated_at': Timestamp.now(),
+                                                                                                //     'last_updated_by': loggedInUserId,
+                                                                                                //   });
+                                                                                                //   print("User updated based on email: ${staff.email}");
+                                                                                                // } else {
+                                                                                                //   print("No user found with email: ${staff.email}");
+                                                                                                // }
 
-    if (!isValid) {
-      print("Validation failed: One or more fields are invalid.");
-      return;
-    }
+                                                                                                // Staff document update in 'branches' collection under specific user
+                                                                                                // QuerySnapshot staffquerySnapshot = await FirebaseFirestore.instance
+                                                                                                //     .collection('users')
+                                                                                                //     .doc(loggedInUserId!)
+                                                                                                //     .collection('branches')
+                                                                                                //     .doc(selectedBranch!.id)
+                                                                                                //     .collection('staffs')
+                                                                                                //     .where('email', isEqualTo: staff.email)
+                                                                                                //     .limit(1)
+                                                                                                //     .get();
+                                                                                                // if (staffquerySnapshot.docs.isNotEmpty) {
+                                                                                                //   String documentId = staffquerySnapshot.docs.first.id;
+                                                                                                //   print(documentId);
+                                                                                                //   final docRef = FirebaseFirestore.instance
+                                                                                                //       .collection('users')
+                                                                                                //       .doc(loggedInUserId)
+                                                                                                //       .collection('branches')
+                                                                                                //       .doc(selectedBranch!.id)
+                                                                                                //       .collection('staff')
+                                                                                                //       .doc(documentId);
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          ),
-          content: Container(
-            width: MediaQuery.of(context).size.width * 0.4,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Confirm Update",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Are you sure to update ${staff.fname} ${staff.lname} Account?",
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "This will overwrite the current information.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.pop(context), // Close the dialog
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 8),
-                        backgroundColor:
-                            const Color.fromARGB(255, 180, 180, 180),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    TextButton(
-               onPressed: () async {
-  try {
-    // Primary user document update in 'users' collection
-    // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-    //     .collection('users')
-    //     .where('email', isEqualTo: staff.email)
-    //     .limit(1)
-    //     .get();
+                                                                                                //   final docSnapshot = await docRef.get();
+                                                                                                //   if (docSnapshot.exists) {
+                                                                                                //     await docRef.update({
+                                                                                                //       'firstName': editstafffnamecontroller.text.trim().isNotEmpty
+                                                                                                //           ? editstafffnamecontroller.text.trim()
+                                                                                                //           : staff.fname,
+                                                                                                //       'lastName': edithstafflnamecontroller.text.trim().isNotEmpty
+                                                                                                //           ? edithstafflnamecontroller.text.trim()
+                                                                                                //           : staff.lname,
+                                                                                                //       'email': editstaffemailcontroller.text.trim().isNotEmpty
+                                                                                                //           ? editstaffemailcontroller.text.trim()
+                                                                                                //           : staff.email,
+                                                                                                //       if (staff.phoneNum != null && staff.phoneNum!.isNotEmpty)
+                                                                                                //         'phone': editstaffphonecontroller.text.trim().isNotEmpty
+                                                                                                //             ? editstaffphonecontroller.text.trim()
+                                                                                                //             : staff.phoneNum ?? '',
+                                                                                                //       'password': editstaffnewpasscontroller.text.trim().isNotEmpty
+                                                                                                //           ? editstaffnewpasscontroller.text.trim()
+                                                                                                //           : staff.password,
+                                                                                                //       'last_updated_at': Timestamp.now(),
+                                                                                                //       'last_updated_by': loggedInUserId,
+                                                                                                //     });
+                                                                                                //     print("Staff document updated in branches collection based on email: ${staff.email}");
+                                                                                                //   } else {
+                                                                                                //     print("No document found with ID: $documentId in the specified path.");
+                                                                                                //   }
+                                                                                                // } else {
+                                                                                                //   print("No staff document found with email: ${staff.email}");
+                                                                                                // }
 
-    // if (querySnapshot.docs.isNotEmpty) {
-    //   String documentId = querySnapshot.docs.first.id;
-    //   await FirebaseFirestore.instance.collection('users').doc(documentId).update({
-    //     'firstName': editstafffnamecontroller.text.trim().isNotEmpty
-    //         ? editstafffnamecontroller.text.trim()
-    //         : staff.fname,
-    //     'lastName': edithstafflnamecontroller.text.trim().isNotEmpty
-    //         ? edithstafflnamecontroller.text.trim()
-    //         : staff.lname,
-    //     'email': editstaffemailcontroller.text.trim().isNotEmpty
-    //         ? editstaffemailcontroller.text.trim()
-    //         : staff.email,
-    //     if (staff.phoneNum != null && staff.phoneNum!.isNotEmpty)
-    //       'phone': editstaffphonecontroller.text.trim().isNotEmpty
-    //           ? editstaffphonecontroller.text.trim()
-    //           : staff.phoneNum ?? '',
-    //     'password': editstaffnewpasscontroller.text.trim().isNotEmpty
-    //         ? editstaffnewpasscontroller.text.trim()
-    //         : staff.password,
-    //     'last_updated_at': Timestamp.now(),
-    //     'last_updated_by': loggedInUserId,
-    //   });
-    //   print("User updated based on email: ${staff.email}");
-    // } else {
-    //   print("No user found with email: ${staff.email}");
-    // }
+                                                                                                // Show success toast
+                                                                                                EasyLoading.instance
+                                                                                                  ..displayDuration = const Duration(milliseconds: 1500)
+                                                                                                  ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+                                                                                                  ..loadingStyle = EasyLoadingStyle.custom
+                                                                                                  ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
+                                                                                                  ..textColor = Colors.white
+                                                                                                  ..fontSize = 16.0
+                                                                                                  ..indicatorColor = Colors.white
+                                                                                                  ..maskColor = Colors.black.withOpacity(0.5)
+                                                                                                  ..userInteractions = false
+                                                                                                  ..dismissOnTap = true;
+                                                                                                EasyLoading.showToast(
+                                                                                                  "${staff.fname} ${staff.lname} is successfully updated!",
+                                                                                                  dismissOnTap: true,
+                                                                                                  toastPosition: EasyLoadingToastPosition.top,
+                                                                                                  duration: Duration(seconds: 3),
+                                                                                                );
 
-    // Staff document update in 'branches' collection under specific user
-    // QuerySnapshot staffquerySnapshot = await FirebaseFirestore.instance
-    //     .collection('users')
-    //     .doc(loggedInUserId!)
-    //     .collection('branches')
-    //     .doc(selectedBranch!.id)
-    //     .collection('staffs')
-    //     .where('email', isEqualTo: staff.email)
-    //     .limit(1)
-    //     .get();
-    // if (staffquerySnapshot.docs.isNotEmpty) {
-    //   String documentId = staffquerySnapshot.docs.first.id;
-    //   print(documentId);
-    //   final docRef = FirebaseFirestore.instance
-    //       .collection('users')
-    //       .doc(loggedInUserId)
-    //       .collection('branches')
-    //       .doc(selectedBranch!.id)
-    //       .collection('staff')
-    //       .doc(documentId);
+                                                                                                // Fetch related data after successful update
+                                                                                                // Provider.of<BranchProvider>(context, listen: false)
+                                                                                                //     .fetchActiveBranches(loggedInUserId!)
+                                                                                                //     .then((_) {
+                                                                                                //   print("Branches fetched successfully.");
+                                                                                                // }).catchError((e) {
+                                                                                                //   print("Error fetching branches: $e");
+                                                                                                // });
 
-    //   final docSnapshot = await docRef.get();
-    //   if (docSnapshot.exists) {
-    //     await docRef.update({
-    //       'firstName': editstafffnamecontroller.text.trim().isNotEmpty
-    //           ? editstafffnamecontroller.text.trim()
-    //           : staff.fname,
-    //       'lastName': edithstafflnamecontroller.text.trim().isNotEmpty
-    //           ? edithstafflnamecontroller.text.trim()
-    //           : staff.lname,
-    //       'email': editstaffemailcontroller.text.trim().isNotEmpty
-    //           ? editstaffemailcontroller.text.trim()
-    //           : staff.email,
-    //       if (staff.phoneNum != null && staff.phoneNum!.isNotEmpty)
-    //         'phone': editstaffphonecontroller.text.trim().isNotEmpty
-    //             ? editstaffphonecontroller.text.trim()
-    //             : staff.phoneNum ?? '',
-    //       'password': editstaffnewpasscontroller.text.trim().isNotEmpty
-    //           ? editstaffnewpasscontroller.text.trim()
-    //           : staff.password,
-    //       'last_updated_at': Timestamp.now(),
-    //       'last_updated_by': loggedInUserId,
-    //     });
-    //     print("Staff document updated in branches collection based on email: ${staff.email}");
-    //   } else {
-    //     print("No document found with ID: $documentId in the specified path.");
-    //   }
-    // } else {
-    //   print("No staff document found with email: ${staff.email}");
-    // }
+                                                                                                // Provider.of<HiringManagerProvider>(context, listen: false)
+                                                                                                //     .fetchAllHiringManagers()
+                                                                                                //     .then((_) {
+                                                                                                //   print("Hiring managers fetched successfully.");
+                                                                                                // }).catchError((e) {
+                                                                                                //   print("Error fetching hiring managers: $e");
+                                                                                                // });
 
-    // Show success toast
-       EasyLoading.instance
-                            ..displayDuration =
-                                const Duration(milliseconds: 1500)
-                            ..indicatorType =
-                                EasyLoadingIndicatorType.fadingCircle
-                            ..loadingStyle = EasyLoadingStyle.custom
-                            ..backgroundColor = Color.fromARGB(255, 31, 150, 61)
-                            ..textColor = Colors.white
-                            ..fontSize = 16.0
-                            ..indicatorColor = Colors.white
-                            ..maskColor = Colors.black.withOpacity(0.5)
-                            ..userInteractions = false
-                            ..dismissOnTap = true;
-    EasyLoading.showToast(
-      "${staff.fname} ${staff.lname} is successfully updated!",
-      dismissOnTap: true,
-      toastPosition: EasyLoadingToastPosition.top,
-      duration: Duration(seconds: 3),
-    );
+                                                                                                // Provider.of<StaffProvider>(context, listen: false)
+                                                                                                //     .fetchStaffByBranch(loggedInUserId!, selectedBranch!.id)
+                                                                                                //     .then((_) {
+                                                                                                //   print("Staff fetched successfully for branch ${selectedBranch!.id}");
+                                                                                                // }).catchError((e) {
+                                                                                                //   print("Error fetching staff: $e");
+                                                                                                // });
 
-    // Fetch related data after successful update
-    // Provider.of<BranchProvider>(context, listen: false)
-    //     .fetchActiveBranches(loggedInUserId!)
-    //     .then((_) {
-    //   print("Branches fetched successfully.");
-    // }).catchError((e) {
-    //   print("Error fetching branches: $e");
-    // });
-
-    // Provider.of<HiringManagerProvider>(context, listen: false)
-    //     .fetchAllHiringManagers()
-    //     .then((_) {
-    //   print("Hiring managers fetched successfully.");
-    // }).catchError((e) {
-    //   print("Error fetching hiring managers: $e");
-    // });
-
-    // Provider.of<StaffProvider>(context, listen: false)
-    //     .fetchStaffByBranch(loggedInUserId!, selectedBranch!.id)
-    //     .then((_) {
-    //   print("Staff fetched successfully for branch ${selectedBranch!.id}");
-    // }).catchError((e) {
-    //   print("Error fetching staff: $e");
-    // });
-
-    Navigator.pop(context);
-    Navigator.pop(context);
-
-  } catch (e) {
-    print("Error updating staff: $e");
-  }
-},
-       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 8),
-                        backgroundColor: const Color(0xFF3b7dff),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Yes, save changes',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  
-                                        },
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 8),
-                                          backgroundColor:
-                                              const Color(0xFF083af8),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'Save Changes',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      );
-                
-                                            }
+                                                                                                Navigator.pop(context);
+                                                                                                Navigator.pop(context);
+                                                                                              } catch (e) {
+                                                                                                print("Error updating staff: $e");
+                                                                                              }
+                                                                                            },
+                                                                                            style: TextButton.styleFrom(
+                                                                                              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                                                                                              backgroundColor: const Color(0xFF3b7dff),
+                                                                                              shape: RoundedRectangleBorder(
+                                                                                                borderRadius: BorderRadius.circular(8),
+                                                                                              ),
+                                                                                            ),
+                                                                                            child: const Text(
+                                                                                              'Yes, save changes',
+                                                                                              style: TextStyle(color: Colors.white),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                              );
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                        style: TextButton
+                                                                            .styleFrom(
+                                                                          padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                              horizontal: 30,
+                                                                              vertical: 8),
+                                                                          backgroundColor:
+                                                                              const Color(0xFF083af8),
+                                                                          shape:
+                                                                              RoundedRectangleBorder(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(8),
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            Text(
+                                                                          'Save Changes',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                      );
+                                                    }
                                                   },
                                                 ),
                                               ),
@@ -5233,10 +5426,12 @@ setState((){
                                           : Tooltip(
                                               message: 'Add new branch',
                                               child: IconButton(
-                                                onPressed: () =>
-                                                    showAddNewBranchDialog(
-                                                        context,
-                                                        loggedInUserId!),
+                                                onPressed: () {
+                                                  debugPrint(
+                                                      "ADD NEW BRANCH CLIICCCCCCCCCCCKEEEEEEEEED!!");
+                                                  showAddNewBranchDialog(
+                                                      context, loggedInUserId!);
+                                                },
                                                 icon: Icon(Icons.add,
                                                     color: Colors.white),
                                                 style: IconButton.styleFrom(
@@ -5936,7 +6131,9 @@ setState((){
                                                                         Icons
                                                                             .edit,
                                                                         color: Colors
-                                                                            .grey, size: 18),
+                                                                            .grey,
+                                                                        size:
+                                                                            18),
                                                                     SizedBox(
                                                                         width:
                                                                             8),
@@ -6196,7 +6393,8 @@ setState((){
                                                                             Row(
                                                                           children: [
                                                                             Icon(Icons.edit,
-                                                                                color: Colors.grey, size: 18),
+                                                                                color: Colors.grey,
+                                                                                size: 18),
                                                                             SizedBox(width: 8),
                                                                             Text('Edit account'),
                                                                           ],
@@ -6512,7 +6710,9 @@ setState((){
                                                                         Icons
                                                                             .edit,
                                                                         color: Colors
-                                                                            .grey, size: 18),
+                                                                            .grey,
+                                                                        size:
+                                                                            18),
                                                                     SizedBox(
                                                                         width:
                                                                             8),
@@ -6772,7 +6972,8 @@ setState((){
                                                                             Row(
                                                                           children: [
                                                                             Icon(Icons.edit,
-                                                                                color: Colors.grey, size: 18),
+                                                                                color: Colors.grey,
+                                                                                size: 18),
                                                                             SizedBox(width: 8),
                                                                             Text('Edit account'),
                                                                           ],

@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/header.dart';
-import 'package:huzzl_web/views/admins/screens/dashboard/components/my_fields.dart';
-import 'package:huzzl_web/views/admins/screens/dashboard/components/storage_details.dart';
-import 'package:huzzl_web/views/admins/screens/jobs/components/industries.dart';
+import 'package:huzzl_web/views/admins/screens/industries/components/industries.dart';
 
 import '../../constants.dart';
 
 class ManageIndustriesScreen extends StatelessWidget {
+  const ManageIndustriesScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
         primary: false,
-        padding: EdgeInsets.all(defaultPadding),
+        padding: const EdgeInsets.all(defaultPadding),
         child: Column(
           children: [
-            Header(
-              name: "Industries",
+            const Header(
+              name: "Manage Industries",
             ),
-            SizedBox(height: defaultPadding),
+            const SizedBox(height: defaultPadding),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -34,7 +34,7 @@ class ManageIndustriesScreen extends StatelessWidget {
                   ),
                 ),
                 if (!Responsive.isMobile(context))
-                  SizedBox(width: defaultPadding),
+                  const SizedBox(width: defaultPadding),
               ],
             )
           ],

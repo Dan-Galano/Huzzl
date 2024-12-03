@@ -1,17 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/admins/constants.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/disable_user_dialog.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/enable_user_dialog.dart';
 import 'package:provider/provider.dart';
 
-class ManageJobseekerrTab extends StatefulWidget {
-  const ManageJobseekerrTab({super.key});
+class ManageJobseekerrTab extends StatelessWidget {
+  ManageJobseekerrTab({super.key});
 
-  @override
-  State<ManageJobseekerrTab> createState() => _ManageJobseekerrTabState();
-}
-
-class _ManageJobseekerrTabState extends State<ManageJobseekerrTab> {
   final TextEditingController searchController = TextEditingController();
 
   @override
@@ -48,7 +46,7 @@ class _ManageJobseekerrTabState extends State<ManageJobseekerrTab> {
                 ],
               ),
               const Gap(20),
-              // StreamBuilder for Recruiter Data
+              // StreamBuilder for Jobseeker Data
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -69,7 +67,7 @@ class _ManageJobseekerrTabState extends State<ManageJobseekerrTab> {
                     }
 
                     if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                      final recruiterDocs = snapshot.data!.docs;
+                      final jobseekerDocs = snapshot.data!.docs;
 
                       return SingleChildScrollView(
                         scrollDirection: Axis.vertical,
@@ -78,58 +76,99 @@ class _ManageJobseekerrTabState extends State<ManageJobseekerrTab> {
                           child: DataTable(
                             columnSpacing: 20,
                             columns: const [
-                              DataColumn(label: Text("Firstname")),
-                              DataColumn(label: Text("Lastname")),
                               DataColumn(label: Text("Role")),
+                              DataColumn(label: Text("First name")),
+                              DataColumn(label: Text("Last name")),
                               DataColumn(label: Text("Email")),
-                              // DataColumn(label: Text("Phone")),
-                              DataColumn(label: Text("Action")),
+                              DataColumn(label: Text("Status")),
+                              DataColumn(label: Text("Actions")),
                             ],
-                            rows: recruiterDocs.map((data) {
-                              final recruiterData =
+                            rows: jobseekerDocs.map((data) {
+                              final jobseekerData =
                                   data.data() as Map<String, dynamic>;
 
                               return DataRow(
                                 cells: [
+                                  DataCell(Row(
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/job-seeker-black.png',
+                                        height: 30,
+                                        width: 30,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: defaultPadding),
+                                        child: Text(
+                                            jobseekerData['role'] == 'jobseeker'
+                                                ? 'Jobseeker'
+                                                : ''),
+                                      ),
+                                    ],
+                                  )),
                                   DataCell(
-                                      Text(recruiterData['firstName'] ?? '')),
+                                      Text(jobseekerData['firstName'] ?? '')),
                                   DataCell(
-                                      Text(recruiterData['lastName'] ?? '')),
-                                  const DataCell(Text("Jobseeker")),
-                                  DataCell(Text(recruiterData['email'] ?? '')),
-                                  // DataCell(Text(recruiterData['phone'] ?? '')),
+                                      Text(jobseekerData['lastName'] ?? '')),
+                                  DataCell(Text(jobseekerData['email'] ?? '')),
                                   DataCell(
-                                    PopupMenuButton<String>(
-                                      onSelected: (value) {
-                                        if (value == 'edit') {
-                                          // Implement edit functionality
-                                        } else if (value == 'archive') {
-                                          // Implement archive functionality
-                                        }
-                                      },
-                                      itemBuilder: (context) => [
-                                        const PopupMenuItem(
-                                          value: 'edit',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.edit,
-                                                  color: Colors.grey),
-                                              SizedBox(width: 8),
-                                              Text('Edit'),
-                                            ],
+                                      Text(jobseekerData['accStatus'] ?? '')),
+                                  // DataCell(Text(jobseekerData['phone'] ?? '')),
+                                  DataCell(
+                                    Row(
+                                      children: [
+                                        if (jobseekerData['accStatus'] !=
+                                            "enabled") ...[
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              showEnableUserDialog(
+                                                  context,
+                                                  jobseekerData['email']!,
+                                                  jobseekerData['uid']!,
+                                                  adminProvider);
+                                            },
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  WidgetStateProperty.all(
+                                                      Colors.blueAccent),
+                                              foregroundColor:
+                                                  WidgetStateProperty.all(
+                                                      Colors.white),
+                                              padding: WidgetStateProperty.all(
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 24,
+                                                    vertical: 12),
+                                              ),
+                                            ),
+                                            child: const Text('Enable'),
                                           ),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: 'archive',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.archive,
-                                                  color: Colors.grey),
-                                              SizedBox(width: 8),
-                                              Text('Archive'),
-                                            ],
+                                        ] else ...[
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              print(jobseekerData['uid']);
+                                              print(jobseekerData['email']);
+                                              showDisableUserDialog(
+                                                  context,
+                                                  jobseekerData['email']!,
+                                                  jobseekerData['uid']!,
+                                                  adminProvider);
+                                            },
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  WidgetStateProperty.all(
+                                                      Colors.redAccent),
+                                              foregroundColor:
+                                                  WidgetStateProperty.all(
+                                                      Colors.white),
+                                              padding: WidgetStateProperty.all(
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 24,
+                                                    vertical: 12),
+                                              ),
+                                            ),
+                                            child: const Text('Disable'),
                                           ),
-                                        ),
+                                        ]
                                       ],
                                     ),
                                   ),
@@ -142,7 +181,7 @@ class _ManageJobseekerrTabState extends State<ManageJobseekerrTab> {
                     } else {
                       return const Center(
                         child: Text(
-                          "No recruiters found.",
+                          "No jobseekers found.",
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       );
