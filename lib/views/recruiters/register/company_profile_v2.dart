@@ -440,29 +440,31 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
             .collection('users')
             .doc(widget.userCredential.user!.uid)
             .collection("company_information")
-            .add({
-          'uid': widget.userCredential.user!.uid,
-          'companyName': _companyName.text.trim().toCapitalCase(),
-          'ceoFirstName': _ceoFirstName.text.trim().toCapitalCase(),
-          'ceoLastName': _ceoLastName.text.trim().toCapitalCase(),
-          'region': selectedRegion ?? 'not specified',
-          'province': selectedProvince ?? 'not specified',
-          'city': selectedCity ?? 'not specified',
-          'barangay': selectedBarangay ?? 'not specified',
-          'industry': _selectedIndustry ?? 'not specified',
-          'locationOtherInformation':
-              houseController.text.trim().toCapitalCase(),
-          'companySize': _selectedSizeOfCompany,
-          'companyDescription': _description.text.trim().toSentenceCase(),
-          'companyWebsite': _companyWebsite.text.isNotEmpty
-              ? _companyWebsite.text.toLowerCase().trim()
-              : 'none',
-          'companyLinks': _socialMediaLinks.text.isNotEmpty
-              ? socialMediaLinks
-              : "not specified",
-          'companyStatus': 'pending',
-          'created_at': DateTime.now(),
-        });
+            .add(
+          {
+            'uid': widget.userCredential.user!.uid,
+            'companyName': _companyName.text.trim().toCapitalCase(),
+            'ceoFirstName': _ceoFirstName.text.trim().toCapitalCase(),
+            'ceoLastName': _ceoLastName.text.trim().toCapitalCase(),
+            'region': selectedRegion ?? 'not specified',
+            'province': selectedProvince ?? 'not specified',
+            'city': selectedCity ?? 'not specified',
+            'barangay': selectedBarangay ?? 'not specified',
+            'industry': _selectedIndustry ?? 'not specified',
+            'locationOtherInformation':
+                houseController.text.trim().toCapitalCase(),
+            'companySize': _selectedSizeOfCompany,
+            'companyDescription': _description.text.trim().toSentenceCase(),
+            'companyWebsite': _companyWebsite.text.isNotEmpty
+                ? _companyWebsite.text.toLowerCase().trim()
+                : 'none',
+            'companyLinks': _socialMediaLinks.text.isNotEmpty
+                ? socialMediaLinks
+                : "not specified",
+            'companyStatus': 'pending',
+            'created_at': DateTime.now(),
+          },
+        );
         String loggedInUserId = widget.userCredential.user!.uid;
         String formattedDateEstablished =
             DateFormat('MMMM d, yyyy').format(DateTime.now());
