@@ -83,14 +83,23 @@ class _JobPayState extends State<JobPay> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Add Pay',
-                  style: TextStyle(
-                    fontFamily: 'Galano',
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xff202855),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Add Pay',
+                      style: TextStyle(
+                        fontFamily: 'Galano',
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff202855),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _submitJobPay(),
+                      child: const Text("Skip"),
+                    ),
+                  ],
                 ),
                 Text(
                   'Please provide the following to complete a job post.',

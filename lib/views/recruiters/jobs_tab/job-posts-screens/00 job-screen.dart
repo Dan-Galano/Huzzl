@@ -217,8 +217,8 @@ class _JobScreensState extends State<JobScreens> {
               numOfPeopleToHire: _numOfPeopleToHire,
               onNumOfPeopleToHireChanged: (value) =>
                   setState(() => _numOfPeopleToHire = value!),
-              onNumPeopleChanged: (value) =>
-                  setState(() => _numPeople = value!),
+              // onNumPeopleChanged: (value) =>
+              //     setState(() => _numPeople = value!),
               onBranchChanged: (value) =>
                   setState(() => _selectedBranch = value!),
               jobDescriptionController: jobDescriptionController,
