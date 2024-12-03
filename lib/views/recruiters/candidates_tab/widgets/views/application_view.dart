@@ -287,7 +287,28 @@ class _ApplicationViewState extends State<ApplicationView> {
                       ),
                     ],
                   )
-                : Text("No uploaded portfolio."),
+                : Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 0.5,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(50.0),
+                        child: Text(
+                          'No portfolio uploaded.',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
             Divider(
               thickness: 2,
               color: Color(0xFFff9800),

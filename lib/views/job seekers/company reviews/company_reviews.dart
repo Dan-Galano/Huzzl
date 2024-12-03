@@ -64,8 +64,9 @@ class _CompanyReviewsState extends State<CompanyReviews> {
 
     setState(() {
       filteredCompanies = companies
-          .where((company) =>
-              company['name'].toLowerCase().contains(query)) // Filter by company name
+          .where((company) => company['name']
+              .toLowerCase()
+              .contains(query)) // Filter by company name
           .toList();
     });
   }
@@ -73,7 +74,7 @@ class _CompanyReviewsState extends State<CompanyReviews> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff8f8f8),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Center(
           child: Container(
@@ -122,7 +123,8 @@ class _CompanyReviewsState extends State<CompanyReviews> {
                     ),
                     SizedBox(width: 10),
                     ElevatedButton(
-                      onPressed: _filterCompanies, // Trigger search when button is pressed
+                      onPressed:
+                          _filterCompanies, // Trigger search when button is pressed
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF0038FF),
                         padding: EdgeInsets.all(20),

@@ -14,7 +14,7 @@ import 'package:huzzl_web/views/job%20seekers/profile/new_profile/models/user-pr
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/providers/portfolio_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/providers/user-profile_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_summary-autobuild.dart';
-import 'package:huzzl_web/views/job%20seekers/profile/new_profile/widgets/setupresume_dialog.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeDialogs/setupresume_dialog.dart';
 import 'package:huzzl_web/widgets/loading_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -22,6 +22,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/open_in_newtab.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/functions/string_formatter.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart' hide PdfDocument;
@@ -78,19 +79,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _extractedText = '';
   String _selectedFileType = '';
+
+  bool hasResume = false;
+  bool isResumeLoading = true;
   @override
   void initState() {
     super.initState();
     _pdfViewerController = PdfViewerController();
 
     // Use addPostFrameCallback to prevent calling setState() during build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      // Call fetchUserProfile only after the build process completes
-      Provider.of<UserProfileProvider>(context, listen: false)
+
+      // Fetch the user profile
+      await Provider.of<UserProfileProvider>(context, listen: false)
           .fetchUserProfile(userProvider.loggedInUserId!);
 
-      _fetchPortfolio();
+      // Fetch the resume status
+      hasResume = await Provider.of<ResumeProvider>(context, listen: false)
+          .getResumeByJobSeekerId(userProvider.loggedInUserId!);
+      isResumeLoading = false;
+      // Fetch the portfolio
+      await _fetchPortfolio();
+
+      // Call setState to reflect the updates in the UI
+      setState(() {});
     });
   }
 
@@ -210,6 +223,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (isSucess == true) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ResumePageSummary2autoBuild(
+            title: 'Review your Huzzl resume',
+            subtitle:
+                "Review and finalize the details of your Huzzl resume before submission.",
             previousPage: () {
               Navigator.pop(context);
             },
@@ -249,6 +265,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (isSucess == true) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ResumePageSummary2autoBuild(
+            title: 'Review your Huzzl resume',
+            subtitle:
+                "Review and finalize the details of your Huzzl resume before submission.",
             previousPage: () {
               Navigator.pop(context);
             },
@@ -284,6 +303,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (isSucess == true) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ResumePageSummary2autoBuild(
+            title: 'Review your Huzzl resume',
+            subtitle:
+                "Review and finalize the details of your Huzzl resume before submission.",
             previousPage: () {
               Navigator.pop(context);
             },
@@ -317,43 +339,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> _generateAndDownloadPdf() async {
-    try {
-      // Capture the widget as an image
-      final Uint8List? imageBytes = await _screenshotController.capture();
-      if (imageBytes == null) {
-        print("Failed to capture screenshot.");
-        return;
-      }
+  // Future<void> _generateAndDownloadPdf() async {
+  //   try {
+  //     // Capture the widget as an image
+  //     final Uint8List? imageBytes = await _screenshotController.capture();
+  //     if (imageBytes == null) {
+  //       print("Failed to capture screenshot.");
+  //       return;
+  //     }
 
-      // Create a PDF document
-      final pdf = pw.Document();
+  //     // Create a PDF document
+  //     final pdf = pw.Document();
 
-      // Add the screenshot image to the PDF
-      final image = pw.MemoryImage(imageBytes);
-      pdf.addPage(
-        pw.Page(
-          build: (pw.Context context) => pw.Center(
-            child: pw.Image(image),
-          ),
-        ),
-      );
+  //     // Add the screenshot image to the PDF
+  //     final image = pw.MemoryImage(imageBytes);
+  //     pdf.addPage(
+  //       pw.Page(
+  //         build: (pw.Context context) => pw.Center(
+  //           child: pw.Image(image),
+  //         ),
+  //       ),
+  //     );
 
-      // Save the PDF to Uint8List
-      final Uint8List pdfBytes = await pdf.save();
+  //     // Save the PDF to Uint8List
+  //     final Uint8List pdfBytes = await pdf.save();
 
-      // Trigger download in Flutter Web
-      final blob = html.Blob([pdfBytes], 'application/pdf');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..target = 'blank'
-        ..download = 'example.pdf'
-        ..click();
-      html.Url.revokeObjectUrl(url);
-    } catch (e) {
-      print("Error generating PDF: $e");
-    }
-  }
+  //     // Trigger download in Flutter Web
+  //     final blob = html.Blob([pdfBytes], 'application/pdf');
+  //     final url = html.Url.createObjectUrlFromBlob(blob);
+  //     final anchor = html.AnchorElement(href: url)
+  //       ..target = 'blank'
+  //       ..download = 'example.pdf'
+  //       ..click();
+  //     html.Url.revokeObjectUrl(url);
+  //   } catch (e) {
+  //     print("Error generating PDF: $e");
+  //   }
+  // }
 
   Future<void> _deletePortFolio() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -428,6 +450,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     // Build the location string based on available fields
     List<String> locationParts = [];
+    if (otherLocation != null && otherLocation.isNotEmpty) {
+      locationParts.add(otherLocation);
+    }
+    if (barangayName != null && barangayName.isNotEmpty) {
+      locationParts.add(barangayName);
+    }
     if (cityName != null && cityName.isNotEmpty) {
       locationParts.add(cityName);
     }
@@ -436,12 +464,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     if (regionName != null && regionName.isNotEmpty) {
       locationParts.add(regionName);
-    }
-    if (barangayName != null && barangayName.isNotEmpty) {
-      locationParts.add(barangayName);
-    }
-    if (otherLocation != null && otherLocation.isNotEmpty) {
-      locationParts.add(otherLocation);
     }
 
     // If there are location parts, join them with commas
@@ -470,422 +492,652 @@ class _ProfileScreenState extends State<ProfileScreen> {
               message: 'Loading, please wait...',
             )
           : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 40),
-                    child: Row(),
-                  ),
-                  Container(
-                    width: 800,
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          title: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: CircleAvatar(
-                                  radius: 70,
-                                  backgroundColor: Colors.grey[700],
-                                  foregroundColor: Colors.white,
-                                  child: userProfile?.firstName != null &&
-                                          userProfile?.lastName != null
-                                      ? Text(
-                                          "${userProfile!.firstName![0]}${userProfile!.lastName![0]}",
-                                          style: TextStyle(
-                                              fontSize: 50,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                      : Icon(
-                                          Icons.person,
-                                          size: 80,
-                                          color: Colors.white,
-                                        ),
-                                ),
-                              ),
-                              const SizedBox(width: 40),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${userProfile?.firstName ?? ''} ${userProfile?.lastName ?? ''}',
-                                    style: const TextStyle(
-                                      fontFamily: 'Galano',
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xff202855),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.call,
-                                        size: 15,
-                                        color: Colors.grey,
-                                      ),
-                                      Gap(10),
-                                      Text(
-                                        userProfile?.phoneNumber ??
-                                            'Phone number not set',
-                                        style: const TextStyle(
-                                          fontFamily: 'Galano',
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.email_rounded,
-                                        size: 15,
-                                        color: Colors.grey,
-                                      ),
-                                      Gap(10),
-                                      Text(
-                                        userProfile?.email ?? 'Email not set',
-                                        style: const TextStyle(
-                                          fontFamily: 'Galano',
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.location_on_rounded,
-                                        size: 15,
-                                        color: Colors.grey,
-                                      ),
-                                      Gap(10),
-                                      Text(
-                                        _getLocationText(
-                                            userProfile?.selectedLocation),
-                                        style: const TextStyle(
-                                          fontFamily: 'Galano',
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: const Divider(
-                            thickness: 2,
-                            color: Color(0xff6297ff),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "Resume",
-                          style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff202855),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton(
-                            onPressed: () => _showSetupResumeDialog(context),
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                side: BorderSide(
-                                    color: Color(0xff202855).withOpacity(0.3)),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 30),
-                            ),
-                            child: Text(
-                              "Build your huzzl resume",
-                              style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontSize: 16,
-                                color: Color(0xff202855),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Portfolio",
-                              style: TextStyle(
-                                fontFamily: 'Galano',
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff202855),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: portfolioFileName.isEmpty
-                                      ? null
-                                      : portfolioFileName == "notset"
-                                          ? null
-                                          : Border.all(
-                                              color: Colors.grey, width: 0.5),
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Center(
-                                child: portfolioFileName.isEmpty
-                                    ? Shimmer.fromColors(
-                                        baseColor: Colors.grey[200]!,
-                                        highlightColor: Colors.grey[100]!,
-                                        child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          padding: const EdgeInsets.all(10.0),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[
-                                                200], // Grey background for the shimmer
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                          ),
-                                          height: 900,
-                                          width: 800,
-                                        ),
-                                      )
-                                    : portfolioFileName == "notset"
-                                        ? SizedBox(
-                                            width: double.infinity,
-                                            child: TextButton(
-                                              onPressed: () async {
-                                                bool isSuccess =
-                                                    await fileUploader
-                                                        .uploadFile(context);
-                                                _fetchPortfolio();
-                                              },
-                                              style: TextButton.styleFrom(
-                                                backgroundColor: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  side: BorderSide(
-                                                      color: Color(0xff202855)
-                                                          .withOpacity(0.3)),
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 30),
-                                              ),
-                                              child: Text(
-                                                "Upload your career portfolio",
+              child: Consumer<ResumeProvider>(
+                  builder: (context, resumeProvider, child) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 40),
+                      child: Row(),
+                    ),
+                    Container(
+                      width: 800,
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: CircleAvatar(
+                                        radius: 70,
+                                        backgroundColor: Colors.grey[700],
+                                        foregroundColor: Colors.white,
+                                        child: userProfile?.firstName != null &&
+                                                userProfile?.lastName != null
+                                            ? Text(
+                                                "${userProfile!.firstName![0].toUpperCase()}${userProfile!.lastName![0].toUpperCase()}",
                                                 style: TextStyle(
-                                                  fontFamily: 'Galano',
-                                                  fontSize: 16,
-                                                  color: Color(0xff202855),
-                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 50,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            : Icon(
+                                                Icons.person,
+                                                size: 80,
+                                                color: Colors.white,
+                                              ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 40),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${userProfile?.firstName!.toLowerCaseTrimmed().toCapitalCase() ?? ''} ${userProfile?.lastName!.toLowerCaseTrimmed().toCapitalCase() ?? ''}',
+                                            style: const TextStyle(
+                                              fontFamily: 'Galano',
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xff202855),
+                                            ),
+                                            maxLines: 3,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.call,
+                                                size: 15,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Flexible(
+                                                child: Text(
+                                                  userProfile?.phoneNumber ??
+                                                      'Phone number not set',
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Galano',
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.visible,
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                        : Padding(
-                                            padding: const EdgeInsets.all(20.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                // ConstrainedBox(
-                                                //   constraints:
-                                                //       const BoxConstraints(
-                                                //     maxHeight: 900,
-                                                //     maxWidth: 800,
-                                                //   ),
-                                                //   child: SfPdfViewer.asset(
-                                                //     'assets/pdf/$portfolioFileName',
-                                                //     controller:
-                                                //         _pdfViewerController,
-                                                //     initialZoomLevel: 1.0,
-                                                //     canShowScrollHead: true,
-                                                //     canShowScrollStatus: true,
-                                                //     onDocumentLoaded: (details) {
-                                                //       print('Document loaded');
-                                                //       print(
-                                                //           'Portfolio Path: assets/pdf/$portfolioFileName');
-                                                //     },
-                                                //     onDocumentLoadFailed:
-                                                //         (details) {
-                                                //       print(
-                                                //           'Portfolio Path: assets/pdf/$portfolioFileName');
-
-                                                //       print(
-                                                //           'Document failed to load');
-                                                //     },
-                                                //   ),
-                                                // ),
-                                                Row(children: [
-                                                  Image.asset(
-                                                    'assets/images/portfolio_icon.png',
-                                                    height: 30,
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.email_rounded,
+                                                size: 15,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Flexible(
+                                                child: Text(
+                                                  userProfile?.email!
+                                                          .toLowerCaseTrimmed() ??
+                                                      'Email not set',
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Galano',
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.grey,
                                                   ),
-                                                  Gap(10),
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on_rounded,
+                                                size: 15,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Flexible(
+                                                child: Text(
+                                                  _getLocationText(userProfile
+                                                      ?.selectedLocation),
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Galano',
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: const Divider(
+                              thickness: 2,
+                              color: Color(0xff6297ff),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            "Resume",
+                            style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff202855),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          isResumeLoading
+                              ? Shimmer.fromColors(
+                                  baseColor: Colors.grey[200]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    padding: const EdgeInsets.all(10.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[
+                                          200], // Grey background for the shimmer
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    height: 80,
+                                    width: double.infinity,
+                                  ),
+                                )
+                              : !hasResume
+                                  ? SizedBox(
+                                      width: double.infinity,
+                                      child: TextButton(
+                                        onPressed: () =>
+                                            _showSetupResumeDialog(context),
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            side: BorderSide(
+                                                color: Color(0xff202855)
+                                                    .withOpacity(0.3)),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 30),
+                                        ),
+                                        child: Text(
+                                          "Build your huzzl resume",
+                                          style: TextStyle(
+                                            fontFamily: 'Galano',
+                                            fontSize: 16,
+                                            color: Color(0xff202855),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.grey, width: 0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(children: [
+                                              Image.asset(
+                                                'assets/images/resume_icon.png',
+                                                height: 60,
+                                              ),
+                                              Gap(20),
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
                                                   Text(
-                                                    portfolioFileName,
+                                                    'Huzzl Resume',
                                                     style: TextStyle(
                                                       fontFamily: 'Galano',
-                                                      fontSize: 16,
+                                                      fontSize: 18,
                                                       color: Color(0xff202855),
                                                       fontWeight:
                                                           FontWeight.w500,
                                                     ),
                                                   ),
-                                                  if (portfolioFileName
-                                                          .isNotEmpty &&
-                                                      portfolioFileName !=
-                                                          "notset") ...[
-                                                    Gap(10),
-                                                    IconButton(
-                                                      icon: Icon(
-                                                        Icons.delete,
-                                                        size: 20,
-                                                        color: const Color
-                                                            .fromARGB(
-                                                            255, 165, 66, 59),
-                                                      ),
-                                                      onPressed: () async {
-                                                        final shouldDelete =
-                                                            await _showDeleteConfirmationDialog(
-                                                                context);
-
-                                                        if (shouldDelete) {
-                                                          _deletePortFolio();
-                                                        }
-                                                      },
+                                                  Gap(3),
+                                                  Text(
+                                                    resumeProvider.updatedAt ??
+                                                        '',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Galano',
+                                                      fontSize: 14,
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.w300,
                                                     ),
-                                                    Gap(5),
-                                                    IconButton(
-                                                      icon: Icon(
-                                                        Icons.edit,
-                                                        size: 20,
-                                                        color: Colors
-                                                            .amber.shade900,
-                                                      ),
-                                                      onPressed: () async {
-                                                        bool isSuccess =
-                                                            await fileUploader
-                                                                .uploadFile(
-                                                                    context);
-                                                        _fetchPortfolio();
-                                                      },
-                                                    )
-                                                  ],
-                                                ]),
-
+                                                  ),
+                                                ],
+                                              ),
+                                            ]),
+                                            Row(
+                                              children: [
                                                 Align(
                                                   alignment:
                                                       Alignment.centerRight,
                                                   child: TextButton(
-                                                    onPressed: () =>
-                                                        openPdfInNewTab(
-                                                            'assets/pdf/$portfolioFileName'),
-                                                    child: Text(
-                                                      "See Portfolio",
-                                                      style: TextStyle(
-                                                        color:
-                                                            Color(0xff202855),
-                                                      ),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .push(
+                                                              MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ResumePageSummary2autoBuild(
+                                                          title:
+                                                              'Your Huzzl Resume',
+                                                          subtitle:
+                                                              "The information displayed here will be visible to potential employers when you apply for jobs. You can update it at any time to keep it current.",
+                                                          inProfile: true,
+                                                          previousPage:
+                                                              () async {
+                                                            WidgetsBinding
+                                                                .instance
+                                                                .addPostFrameCallback(
+                                                                    (_) async {
+                                                              final userProvider =
+                                                                  Provider.of<
+                                                                          UserProvider>(
+                                                                      context,
+                                                                      listen:
+                                                                          false);
+
+                                                              await Provider.of<
+                                                                          UserProfileProvider>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .fetchUserProfile(
+                                                                      userProvider
+                                                                          .loggedInUserId!);
+
+                                                              hasResume = await Provider.of<
+                                                                          ResumeProvider>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .getResumeByJobSeekerId(
+                                                                      userProvider
+                                                                          .loggedInUserId!);
+                                                              isResumeLoading =
+                                                                  false;
+                                                              setState(() {});
+                                                            });
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                        ),
+                                                      ));
+                                                    },
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          "See Resume",
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                                0xff202855),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 5),
+                                                        Icon(
+                                                          Icons
+                                                              .arrow_forward_ios,
+                                                          size: 16,
+                                                          color:
+                                                              Color(0xff202855),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                          ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                          const SizedBox(height: 40),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Portfolio",
+                                style: TextStyle(
+                                  fontFamily: 'Galano',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff202855),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 40),
-                        Text(
-                          "Job preferences",
-                          style: TextStyle(
-                            fontFamily: 'Galano',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff202855),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        PreferenceItem(
-                          iconImage: AssetImage('assets/images/pay_rate.png'),
-                          title: "Pay Rate",
-                          value:
-                              '${userProfile.selectedPayRate!['minimum'].toString()} - ${userProfile.selectedPayRate!['maximum'].toString()} ${userProfile.selectedPayRate!['rate']}' ??
-                                  'Not set',
-                          onTap: () {
-                            _showModal(
+                          const SizedBox(height: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: portfolioFileName.isEmpty
+                                        ? null
+                                        : portfolioFileName == "notset"
+                                            ? null
+                                            : Border.all(
+                                                color: Colors.grey, width: 0.5),
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: Center(
+                                  child: portfolioFileName.isEmpty
+                                      ? Shimmer.fromColors(
+                                          baseColor: Colors.grey[200]!,
+                                          highlightColor: Colors.grey[100]!,
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            padding: const EdgeInsets.all(10.0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[
+                                                  200], // Grey background for the shimmer
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            height: 80,
+                                            width: double.infinity,
+                                          ),
+                                        )
+                                      : portfolioFileName == "notset"
+                                          ? SizedBox(
+                                              width: double.infinity,
+                                              child: TextButton(
+                                                onPressed: () async {
+                                                  bool isSuccess =
+                                                      await fileUploader
+                                                          .uploadFile(context);
+                                                  _fetchPortfolio();
+                                                },
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    side: BorderSide(
+                                                        color: Color(0xff202855)
+                                                            .withOpacity(0.3)),
+                                                  ),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 30),
+                                                ),
+                                                child: Text(
+                                                  "Upload your career portfolio",
+                                                  style: TextStyle(
+                                                    fontFamily: 'Galano',
+                                                    fontSize: 16,
+                                                    color: Color(0xff202855),
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  // ConstrainedBox(
+                                                  //   constraints:
+                                                  //       const BoxConstraints(
+                                                  //     maxHeight: 900,
+                                                  //     maxWidth: 800,
+                                                  //   ),
+                                                  //   child: SfPdfViewer.asset(
+                                                  //     'assets/pdf/$portfolioFileName',
+                                                  //     controller:
+                                                  //         _pdfViewerController,
+                                                  //     initialZoomLevel: 1.0,
+                                                  //     canShowScrollHead: true,
+                                                  //     canShowScrollStatus: true,
+                                                  //     onDocumentLoaded: (details) {
+                                                  //       print('Document loaded');
+                                                  //       print(
+                                                  //           'Portfolio Path: assets/pdf/$portfolioFileName');
+                                                  //     },
+                                                  //     onDocumentLoadFailed:
+                                                  //         (details) {
+                                                  //       print(
+                                                  //           'Portfolio Path: assets/pdf/$portfolioFileName');
+
+                                                  //       print(
+                                                  //           'Document failed to load');
+                                                  //     },
+                                                  //   ),
+                                                  // ),
+                                                  Row(children: [
+                                                    Image.asset(
+                                                      'assets/images/portfolio_icon.png',
+                                                      height: 30,
+                                                    ),
+                                                    Gap(10),
+                                                    Text(
+                                                      portfolioFileName,
+                                                      style: TextStyle(
+                                                        fontFamily: 'Galano',
+                                                        fontSize: 16,
+                                                        color:
+                                                            Color(0xff202855),
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    if (portfolioFileName
+                                                            .isNotEmpty &&
+                                                        portfolioFileName !=
+                                                            "notset") ...[
+                                                      Gap(10),
+                                                      IconButton(
+                                                        icon: Icon(
+                                                          Icons.delete,
+                                                          size: 20,
+                                                          color: const Color
+                                                              .fromARGB(
+                                                              255, 165, 66, 59),
+                                                        ),
+                                                        onPressed: () async {
+                                                          final shouldDelete =
+                                                              await _showDeleteConfirmationDialog(
+                                                                  context);
+
+                                                          if (shouldDelete) {
+                                                            _deletePortFolio();
+                                                          }
+                                                        },
+                                                      ),
+                                                      Gap(5),
+                                                      IconButton(
+                                                        icon: Icon(
+                                                          Icons.edit,
+                                                          size: 20,
+                                                          color: Colors
+                                                              .amber.shade900,
+                                                        ),
+                                                        onPressed: () async {
+                                                          bool isSuccess =
+                                                              await fileUploader
+                                                                  .uploadFile(
+                                                                      context);
+                                                          _fetchPortfolio();
+                                                        },
+                                                      )
+                                                    ],
+                                                  ]),
+
+                                                  Row(
+                                                    children: [
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        child: TextButton(
+                                                          onPressed: () =>
+                                                              openPdfInNewTab(
+                                                                  'assets/pdf/$portfolioFileName'),
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                "See Portfolio",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Color(
+                                                                      0xff202855),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 5),
+                                                              Icon(
+                                                                Icons
+                                                                    .open_in_new_rounded,
+                                                                size: 16,
+                                                                color: Color(
+                                                                    0xff202855),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                          Text(
+                            "Job preferences",
+                            style: TextStyle(
+                              fontFamily: 'Galano',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff202855),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          PreferenceItem(
+                            iconImage: AssetImage('assets/images/pay_rate.png'),
+                            title: "Pay Rate",
+                            value: userProfile.selectedPayRate?['minimum'] ==
+                                        null &&
+                                    userProfile.selectedPayRate?['maximum'] ==
+                                        null
+                                ? 'Pay rate not set'
+                                : userProfile.selectedPayRate?['minimum'] ==
+                                        null
+                                    ? 'maximum of ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}'
+                                    : userProfile.selectedPayRate?['maximum'] ==
+                                            null
+                                        ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
+                                        : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
+                            onTap: () {
+                              _showModal(
                                 context,
                                 "Pay Rate",
-                                '${userProfile.selectedPayRate!['minimum'].toString()} - ${userProfile.selectedPayRate!['maximum'].toString()} ${userProfile.selectedPayRate!['rate']}' ??
-                                    'Not set');
-                          },
-                        ),
-                        PreferenceItem(
-                          iconImage:
-                              AssetImage('assets/images/location_profile.png'),
-                          title: "Location",
-                          value:
-                              _getLocationText(userProfile?.selectedLocation),
-                          onTap: () {
-                            _showModal(
-                                context,
-                                "Location",
-                                _getLocationText(
-                                    userProfile?.selectedLocation));
-                          },
-                        ),
-                        PreferenceItem(
-                          iconImage: AssetImage('assets/images/job_title.png'),
-                          title: "Job Titles",
-                          value: _getJobTitlesText(
-                              userProfile?.currentSelectedJobTitles),
-                          onTap: () {
-                            _showModal(context, "Job Titles",
-                                "Accountant, Developer...");
-                          },
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              top: BorderSide(
-                                  color: Colors.grey.shade300, width: 1),
+                                userProfile.selectedPayRate?['minimum'] ==
+                                            null &&
+                                        userProfile
+                                                .selectedPayRate?['maximum'] ==
+                                            null
+                                    ? 'Pay rate not set'
+                                    : userProfile.selectedPayRate?['minimum'] ==
+                                            null
+                                        ? 'maximum of ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}'
+                                        : userProfile.selectedPayRate?[
+                                                    'maximum'] ==
+                                                null
+                                            ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
+                                            : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
+                              );
+                            },
+                          ),
+                          PreferenceItem(
+                            iconImage: AssetImage(
+                                'assets/images/location_profile.png'),
+                            title: "Location",
+                            value:
+                                _getLocationText(userProfile?.selectedLocation),
+                            onTap: () {
+                              _showModal(
+                                  context,
+                                  "Location",
+                                  _getLocationText(
+                                      userProfile?.selectedLocation));
+                            },
+                          ),
+                          PreferenceItem(
+                            iconImage:
+                                AssetImage('assets/images/job_title.png'),
+                            title: "Job Titles",
+                            value: _getJobTitlesText(
+                                userProfile?.currentSelectedJobTitles),
+                            onTap: () {
+                              _showModal(context, "Job Titles",
+                                  '${_getJobTitlesText(userProfile?.currentSelectedJobTitles)}');
+                            },
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                top: BorderSide(
+                                    color: Colors.grey.shade300, width: 1),
+                              ),
                             ),
                           ),
-                        ),
-                        Gap(100),
-                      ],
+                          Gap(100),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                );
+              }),
             ),
     );
   }
@@ -1044,12 +1296,15 @@ class PreferenceItem extends StatelessWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontFamily: 'Galano',
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
+                Flexible(
+                  child: Text(
+                    value.length > 25 ? value.substring(0, 25) + '...' : value,
+                    style: TextStyle(
+                      fontFamily: 'Galano',
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 20),
