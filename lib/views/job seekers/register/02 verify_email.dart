@@ -82,6 +82,7 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
         'lastName': widget.lname,
         'email': widget.email,
         'phoneNumber': widget.phoneNumber,
+        'accStatus' : 'enabled',
       });
       String uid = widget.userCredential.user!.uid;
       EasyLoading.instance

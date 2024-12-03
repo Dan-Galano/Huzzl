@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/admins/models/company_information.dart';
 import 'package:huzzl_web/views/admins/models/recent_file.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/widgets/loading_dialog.dart';
@@ -16,6 +17,42 @@ class MenuAppController extends ChangeNotifier {
   void controlMenu() {
     if (!_scaffoldKey.currentState!.isDrawerOpen) {
       _scaffoldKey.currentState!.openDrawer();
+    }
+  }
+
+  List<CompanyInformation> _companyInformation = [];
+  List<CompanyInformation> get companyInformation => _companyInformation;
+
+  //Business Documents
+  void fetchBusinessDocuments(String userId) async {
+    try {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection("company_information")
+          .limit(1)
+          .get();
+
+      if (docSnapshot.docs.isNotEmpty) {
+        final data = docSnapshot.docs.first.data();
+        _companyInformation.add(
+          CompanyInformation(
+              uid: data['uid'],
+              companyName: data['companyName'],
+              ceoFirstName: data['ceoFirstName'],
+              ceoLastName: data['ceoLastName'],
+              industry: data['industry'],
+              companyDescription: data['companyDescription'],
+              locationOtherInformation: data['locationOtherInformation'],
+              city: data['city'],
+              region: data['region'],
+              province: data['province'],
+              createdAt: data['created_at'],
+              businessDocuments: data['businessDocuments']),
+        );
+      }
+    } catch (e) {
+      print('Error fetching company information (business documents): $e');
     }
   }
 

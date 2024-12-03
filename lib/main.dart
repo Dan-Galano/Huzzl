@@ -209,6 +209,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
           final user = snapshot.data!;
           final loggedInUserId = user.uid;
 
+          final userProvider = Provider.of<UserProvider>(context);
+          userProvider.setLoggedInUserId(loggedInUserId);
+
 // Fetch the role from Firestore based on the logged-in user's UID
           FirebaseFirestore.instance
               .collection('users')
