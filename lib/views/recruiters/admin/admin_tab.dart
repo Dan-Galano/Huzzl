@@ -122,12 +122,12 @@ class _AdminContentState extends State<AdminContent>
                       ),
                     ),
                     const SizedBox(width: 20),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: TextField(
-                        decoration: searchTextFieldDecoration('Search'),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: MediaQuery.of(context).size.width * 0.4,
+                    //   child: TextField(
+                    //     decoration: searchTextFieldDecoration('Search'),
+                    //   ),
+                    // ),
                     const SizedBox(width: 20),
                     // const Row(
                     //   children: [

@@ -108,12 +108,12 @@ class _JobTabState extends State<JobTab> {
                               ),
                             ),
                             const SizedBox(width: 20),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              child: TextField(
-                                decoration: searchTextFieldDecoration('Search'),
-                              ),
-                            ),
+                            // SizedBox(
+                            //   width: MediaQuery.of(context).size.width * 0.5,
+                            //   child: TextField(
+                            //     decoration: searchTextFieldDecoration('Search'),
+                            //   ),
+                            // ),
                             const Spacer(),
                             ElevatedButton(
                               onPressed: () {
