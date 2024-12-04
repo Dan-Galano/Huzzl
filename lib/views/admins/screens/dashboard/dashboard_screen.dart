@@ -34,7 +34,6 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       const MyFiles(),
                       const SizedBox(height: defaultPadding),
-                      // RecentFiles(),
                       Container(
                         decoration: BoxDecoration(
                             color: secondaryColor,
@@ -57,7 +56,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                       ),
                       //table of subsribed users and their expiration date
-                      SubscribedUsersScreen(),
+                      const SubscribedUsersScreen(),
                       if (Responsive.isMobile(context))
                         const SizedBox(height: defaultPadding),
                       if (Responsive.isMobile(context)) const StorageDetails(),

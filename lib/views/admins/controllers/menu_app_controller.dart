@@ -248,60 +248,67 @@ class MenuAppController extends ChangeNotifier {
   }
 
   //Count recruiters
-  Future<int> recruitersCount() async {
+  int _totalRecruiters = 0;
+  int get totalRecruiters => _totalRecruiters;
+
+  Future<void> recruitersCount() async {
+    print('Counting recruiters');
     try {
       final snapshot = await _firestore
           .collection('users')
           .where('role', isEqualTo: 'recruiter')
           .count()
           .get();
-      return snapshot.count!;
+      _totalRecruiters = snapshot.count!;
+      notifyListeners();
     } catch (e) {
       print('Error counting documents: $e');
-      return 0;
     }
   }
 
   //count job seekers
-  Future<int> jobseekersCount() async {
+  int _totalJobseekers = 0;
+  int get totalJobseekers => _totalJobseekers;
+
+  Future<void> jobseekersCount() async {
+    print('Counting jobseekers');
     try {
       final snapshot = await _firestore
           .collection('users')
           .where('role', isEqualTo: 'jobseeker')
           .count()
           .get();
-      return snapshot.count!;
+      _totalJobseekers = snapshot.count!;
+      notifyListeners();
     } catch (e) {
       print('Error counting documents: $e');
-      return 0;
     }
   }
 
   //job Posts
+  int _totalJobPosts = 0;
+  int get totalJobPosts => _totalJobPosts;
 
-  Future<int> jobPostCount() async {
-    int totalJobPosts = 0;
+  Future<void> jobPostCount() async {
+    print('Counting job posts');
 
     try {
       CollectionReference usersCollection =
           FirebaseFirestore.instance.collection('users');
 
       QuerySnapshot usersSnapshot = await usersCollection.get();
-
+      _totalJobPosts = 0;
       for (QueryDocumentSnapshot userDoc in usersSnapshot.docs) {
         CollectionReference jobPostsCollection =
             usersCollection.doc(userDoc.id).collection('job_posts');
 
         QuerySnapshot jobPostsSnapshot = await jobPostsCollection.get();
-
-        totalJobPosts += jobPostsSnapshot.docs.length;
+        _totalJobPosts += jobPostsSnapshot.docs.length;
+        notifyListeners();
       }
     } catch (e) {
       print("Error counting job posts: $e");
-      return 0;
     }
-
-    return totalJobPosts;
   }
 
   List<RecentUser> _recentUsers = [];
