@@ -63,7 +63,7 @@ class MenuAppController extends ChangeNotifier {
 
       for (var companyDoc in companyInfoSnapshot.docs) {
         final data = companyDoc.data();
-        print("Fetching in pending_docs_screen");
+        print("Fetching in company_information");
         // Map Firestore document to CompanyInformation model
         _companyInformation.add(CompanyInformation(
           uid: data['uid'],

@@ -45,27 +45,27 @@ class _RecentFilesState extends State<RecentFiles> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Row
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Recent Users",
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: TextField(
-                      controller: searchController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Search",
-                      ),
-                    ),
-                  ),
-                  const Gap(10),
+                  // SizedBox(
+                  //   width: MediaQuery.of(context).size.width * 0.6,
+                  //   child: TextField(
+                  //     controller: searchController,
+                  //     decoration: const InputDecoration(
+                  //       border: OutlineInputBorder(),
+                  //       hintText: "Search",
+                  //     ),
+                  //   ),
+                  // ),
+                  Gap(10),
                 ],
               ),
               const Gap(20),

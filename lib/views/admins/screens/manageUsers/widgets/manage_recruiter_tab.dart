@@ -22,29 +22,29 @@ class ManageRecruiterTab extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Recruiter",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: TextField(
-                      controller: searchController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Search",
-                      ),
-                    ),
-                  ),
-                  const Gap(10),
-                ],
-              ),
+              // const Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text(
+              //       "Recruiter",
+              //       style: TextStyle(
+              //         fontSize: 25,
+              //         fontWeight: FontWeight.w600,
+              //       ),
+              //     ),
+              // SizedBox(
+              //   width: MediaQuery.of(context).size.width * 0.6,
+              //   child: TextField(
+              //     controller: searchController,
+              //     decoration: const InputDecoration(
+              //       border: OutlineInputBorder(),
+              //       hintText: "Search",
+              //     ),
+              //   ),
+              // ),
+              // Gap(10),
+              // ],
+              // ),
               const Gap(20),
               // StreamBuilder for Jobseeker Data
               StreamBuilder<QuerySnapshot>(
