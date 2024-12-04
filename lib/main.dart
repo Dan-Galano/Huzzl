@@ -12,6 +12,7 @@ import 'package:huzzl_web/views/job%20seekers/apply/application_prov.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/review_details.dart';
 import 'package:huzzl_web/views/job%20seekers/controller/jobseeker_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/home/provider/jobdetails_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/autobuild_resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/location_provider.dart';
@@ -54,6 +55,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => AutoBuildResumeProvider()),
         ChangeNotifierProvider(create: (context) => PortfolioProvider()),
         ChangeNotifierProvider(create: (context) => UserProfileProvider()),
+        ChangeNotifierProvider(create: (context) => JobDetailsProvider()),
         ChangeNotifierProvider(
           create: (context) {
             final hiringManagerProvider = HiringManagerProvider();

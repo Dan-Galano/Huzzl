@@ -103,7 +103,6 @@ class _EditJobDetailsState extends State<EditJobDetails> {
           text: widget.appDeadlineAns == 'Yes'
               ? DateFormat.yMMMd().format(widget.appDeadlineDate)
               : 'No Deadline');
-
   final TextEditingController updatesController =
       TextEditingController(text: 'huzzle@gmail.com'); // change this
   late TextEditingController preScreeningController = TextEditingController(
@@ -339,7 +338,7 @@ class _EditJobDetailsState extends State<EditJobDetails> {
               fontFamily: 'Galano',
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: Color.fromARGB(255, 29, 29, 29),
+              color: Colors.grey,
             ),
             decoration: const InputDecoration(
               border: OutlineInputBorder(),

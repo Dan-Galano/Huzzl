@@ -133,8 +133,29 @@ class JobProviderCandidate extends ChangeNotifier {
   ];
   List<Candidate> get candidates => _candidates;
 
+
+ Future<String> fetchCurrentApplicationNotes(String userId, String jobPostId, String candidateId) async {
+    try {
+      final document = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('job_posts')
+          .doc(jobPostId)
+          .collection('candidates')
+          .doc(candidateId)
+          .get();
+
+      if (document.exists) {
+        return document.data()?['applicationNotes'] ?? ''; // Return the notes, default to empty if not found
+      }
+    } catch (e) {
+      print('Error fetching application notes: $e');
+    }
+    return ''; // Return an empty string if there's an error
+  }
+
 // Fetch candidates from Firebase Firestore
-  Future<void> fetchCandidate(String jobPostId) async {
+  Future<void> fetchCandidates(String jobPostId) async {
     try {
       // Reference to the Firestore collection where candidates are stored
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -151,20 +172,19 @@ class JobProviderCandidate extends ChangeNotifier {
       // Loop through each document and map it to a Candidate object
       for (var doc in querySnapshot.docs) {
         _candidates.add(Candidate(
-          id: doc.id,
-          name: "${doc['firstName']} ${doc['lastName']}",
-          email: doc['email'],
-          profession: doc['jobTitle'],
-          companyAppliedTo: doc['jobTitle'],
-          jobPostId: doc['jobPostId'],
-          applicationDate: (doc['applicationDate'] as Timestamp).toDate(),
-          dateLastInterviewed: (doc['applicationDate'] as Timestamp).toDate(),
-          interviewCount: 0,
-          dateRejected: (doc['applicationDate'] as Timestamp).toDate(),
-          status: doc['status'],
-          jobApplicationDocId: doc['jobApplicationDocId'],
-          applicationNotes: doc['applicationNotes'] ?? '',
-        ));
+            id: doc.id,
+            name: "${doc['firstName']} ${doc['lastName']}",
+            email: doc['email'],
+            profession: doc['jobTitle'],
+            companyAppliedTo: doc['jobTitle'],
+            jobPostId: doc['jobPostId'],
+            applicationDate: (doc['applicationDate'] as Timestamp).toDate(),
+            dateLastInterviewed: (doc['applicationDate'] as Timestamp).toDate(),
+            interviewCount: 0,
+            dateRejected: (doc['applicationDate'] as Timestamp).toDate(),
+            status: doc['status'],
+            jobApplicationDocId: doc['jobApplicationDocId'],
+            applicationNotes: doc['applicationNotes']));
       }
       notifyListeners();
       print("List post: ${_candidates}");

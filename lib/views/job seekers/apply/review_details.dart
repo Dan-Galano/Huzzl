@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/application_prov.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/question_fr_recruiter.dart';
-import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
-import 'package:huzzl_web/views/job%20seekers/profile/01%20profile.dart';
-import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +34,6 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
   // Function to fetch user details from Firestore
   Future<void> fetchUserDetails(String uid) async {
     try {
-      // Assuming you're storing user details in a 'users' collection
       DocumentSnapshot userDoc =
           await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
@@ -47,11 +44,9 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
         _emailController.text = userDoc['email'] ?? '';
         _addressController.text =
             '${userDoc['location']['barangay']}, ${userDoc['location']['city']}, ${userDoc['location']['province']}, ${userDoc['location']['region']} ${userDoc['location']['otherLocation'] ?? ''}';
-
         _phoneController.text = userDoc['phoneNumber'] ?? '';
       }
     } catch (e) {
-      // Handle any errors (e.g., network issues)
       print('Error fetching user details: $e');
     }
   }
@@ -60,6 +55,17 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
   void initState() {
     super.initState();
     fetchUserDetails(widget.uid); // Fetch user details when the screen loads
+  }
+
+  bool _areFieldsFilled() {
+    // Check if all required fields are filled
+    if (_fullNameController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty ||
+        _addressController.text.trim().isEmpty ||
+        _phoneController.text.trim().isEmpty) {
+      return false; // If any field is empty
+    }
+    return true; // All fields are filled
   }
 
   @override
@@ -74,8 +80,7 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
               width: 860,
               child: IconButtonback(
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => JobseekerMainScreen(uid: widget.uid)));
+                  Navigator.pop(context);
                 },
                 iconImage: const AssetImage('assets/images/backbutton.png'),
               ),
@@ -262,16 +267,9 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
                       ),
                       prefixIcon: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset(
-                              'assets/images/phflag.png',
-                              width: 30,
-                            ),
-                            SizedBox(width: 8),
-                            // Text('+63', style: TextStyle(fontSize: 16)),
-                          ],
+                        child: Image.asset(
+                          'assets/images/phflag.png',
+                          width: 30,
                         ),
                       ),
                       prefixIconConstraints: BoxConstraints(
@@ -297,53 +295,58 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
                       Gap(10),
                       ElevatedButton(
                         onPressed: () {
-                          // final applicationProvider =
-                          //     Provider.of<ApplicationProvider>(context,
-                          //         listen: false);
-                          // applicationProvider.saveReviewDetails(context);
-                          // final saveToRec = Provider.of<ApplicationProvider>(
-                          //     context,
-                          //     listen: false);
-                          // saveToRec.saveReviewDetailsInRec(context);
-                          // Navigator.pushReplacement(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (_) => QuestionFromRecScreen(
-                          //               uid: widget.uid,
-                          //             )));
-                          try {
-                            // Set the values from the text controllers into the ApplicationProvider
-                            final applicationProvider =
-                                Provider.of<ApplicationProvider>(context,
-                                    listen: false);
-                            applicationProvider.fullName =
-                                _fullNameController.text;
-                            applicationProvider.email = _emailController.text;
-                            applicationProvider.address =
-                                _addressController.text;
-                            applicationProvider.phoneNumber =
-                                _phoneController.text;
+                          // Check if all fields are filled
+                          if (_areFieldsFilled()) {
+                            try {
+                              // Set the values from the text controllers into the ApplicationProvider
+                              final applicationProvider =
+                                  Provider.of<ApplicationProvider>(context,
+                                      listen: false);
+                              applicationProvider.fullName =
+                                  _fullNameController.text;
+                              applicationProvider.email = _emailController.text;
+                              applicationProvider.address =
+                                  _addressController.text;
+                              applicationProvider.phoneNumber =
+                                  _phoneController.text;
 
-                            // Now, call the save functions
-                            // applicationProvider.saveReviewDetails(
-                            //     context, widget.jobId, widget.recruiterId, widget.jobTitle);
-                            // applicationProvider.saveReviewDetailsInRec(context);
-
-                            // If saving is successful, navigate to the next screen
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => QuestionFromRecScreen(
-                                  uid: widget.uid,
-                                  jobId: widget.jobId,
-                                  recruiterId: widget.recruiterId,
-                                  jobTitle: widget.jobTitle,
+                              // Navigate to the next screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => QuestionFromRecScreen(
+                                    uid: widget.uid,
+                                    jobId: widget.jobId,
+                                    recruiterId: widget.recruiterId,
+                                    jobTitle: widget.jobTitle,
+                                  ),
                                 ),
-                              ),
+                              );
+                            } catch (e) {
+                              print("Error: $e");
+                            }
+                          } else {
+                            // If fields are not filled, show an error message
+                            EasyLoading.instance
+                              ..displayDuration =
+                                  const Duration(milliseconds: 1500)
+                              ..indicatorType =
+                                  EasyLoadingIndicatorType.fadingCircle
+                              ..loadingStyle = EasyLoadingStyle.custom
+                              ..backgroundColor = const Color(0xFfd74a4a)
+                              ..textColor = Colors.white
+                              ..fontSize = 16.0
+                              ..indicatorColor = Colors.white
+                              ..maskColor = Colors.black.withOpacity(0.5)
+                              ..userInteractions = false
+                              ..dismissOnTap = true;
+                            EasyLoading.showToast(
+                              "⚠︎ All are required.",
+                              dismissOnTap: true,
+                              toastPosition: EasyLoadingToastPosition.top,
+                              duration: Duration(seconds: 3),
+                              // maskType: EasyLoadingMaskType.black,
                             );
-                          } catch (e) {
-                            // Handle error (e.g., show a Snackbar or dialog)
-                            print("Error: $e");
                           }
                         },
                         style: ElevatedButton.styleFrom(

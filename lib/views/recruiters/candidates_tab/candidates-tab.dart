@@ -51,7 +51,7 @@ class _BuildCandidatesContentState extends State<BuildCandidatesContent>
   }
 
   void fetch() async {
-    await _jobProvider.fetchCandidate(widget.jobPostId);
+    await _jobProvider.fetchCandidates(widget.jobPostId);
   }
 
   @override

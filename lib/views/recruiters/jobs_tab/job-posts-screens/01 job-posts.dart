@@ -200,7 +200,8 @@ class _JobPostsState extends State<JobPosts> {
         onSuggestionSelected: (Branch branch) {
           _dropdownSearchFieldController.text = branch.branchName;
           selectedBranch = branch;
-          widget.onBranchChanged(selectedBranch!.branchName);
+          widget.onBranchChanged(
+              "${selectedBranch!.house} ${selectedBranch!.barangay}, ${selectedBranch!.city}, ${selectedBranch!.zip}, ${selectedBranch!.province}, ${selectedBranch!.region}");
         },
         suggestionsBoxController: suggestionBoxController,
         validator: (value) => value == null ? 'Please select branch' : null,

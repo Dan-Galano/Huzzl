@@ -5,67 +5,46 @@ import 'package:huzzl_web/views/chat/models/message.dart';
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth = FirebaseAuth.instance;
-Stream<List<Map<String, dynamic>>> getUserStream() {
+
+
+
+ Stream<List<Map<String, dynamic>>> getUserStream() {
+  final currentUserID = _auth.currentUser?.uid;
+
   return _firestore
-      .collection('users')
-      .where('role', whereIn: ['jobseeker', 'recruiter']) // Filter by role
+      .collection('chat_rooms')
+      .where('participants', arrayContains: currentUserID)
       .snapshots()
-      .map((snapshot) {
-        return snapshot.docs
-            .map((doc) {
-              final data = doc.data() as Map<String, dynamic>;
+      .asyncMap((chatRoomsSnapshot) async {
+    List<Map<String, dynamic>> userList = [];
 
-              // Ensure non-null fields
-              return {
-                'uid': doc.id,
-                'firstName': data['firstName'] ?? 'Huzzl',
-                'lastName': data['lastName'] ?? 'User',
-                'email': data['email'] ?? 'huzzluser@gmail.com',
-                'role': data['role'],
-              };
-            })
-            .toList();
-      });
+    for (var chatRoomDoc in chatRoomsSnapshot.docs) {
+      final chatRoomData = chatRoomDoc.data();
+      final chatRoomId = chatRoomDoc.id;
+
+      // Get the other participant's ID (i.e., the recruiter)
+      final List<dynamic> participants = chatRoomData['participants'];
+      final otherUserId =
+          participants.firstWhere((id) => id != currentUserID, orElse: () => null);
+
+      if (otherUserId == null) continue; // Skip if no valid other participant is found
+
+      // Fetch the other participant's user data from the users collection
+      final userDoc = await _firestore.collection('users').doc(otherUserId).get();
+      if (!userDoc.exists) continue; // Skip if the user doesn't exist
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+
+      // Add last message and timestamp from the chat room document
+      userData['last_msg'] = chatRoomData['last_msg'] ?? '';
+      userData['last_time'] = chatRoomData['last_time'] ?? null;
+
+      userList.add(userData);
+    }
+
+    return userList;
+  });
 }
-
-
-//  Stream<List<Map<String, dynamic>>> getUserStream() {
-//   final currentUserID = _auth.currentUser?.uid;
-
-//   return _firestore
-//       .collection('chat_rooms')
-//       .where('participants', arrayContains: currentUserID)
-//       .snapshots()
-//       .asyncMap((chatRoomsSnapshot) async {
-//     List<Map<String, dynamic>> userList = [];
-
-//     for (var chatRoomDoc in chatRoomsSnapshot.docs) {
-//       final chatRoomData = chatRoomDoc.data();
-//       final chatRoomId = chatRoomDoc.id;
-
-//       // Get the other participant's ID (i.e., the recruiter)
-//       final List<dynamic> participants = chatRoomData['participants'];
-//       final otherUserId =
-//           participants.firstWhere((id) => id != currentUserID, orElse: () => null);
-
-//       if (otherUserId == null) continue; // Skip if no valid other participant is found
-
-//       // Fetch the other participant's user data from the users collection
-//       final userDoc = await _firestore.collection('users').doc(otherUserId).get();
-//       if (!userDoc.exists) continue; // Skip if the user doesn't exist
-
-//       final userData = userDoc.data() as Map<String, dynamic>;
-
-//       // Add last message and timestamp from the chat room document
-//       userData['last_msg'] = chatRoomData['last_msg'] ?? '';
-//       userData['last_time'] = chatRoomData['last_time'] ?? null;
-
-//       userList.add(userData);
-//     }
-
-//     return userList;
-//   });
-// }
 
   String _getChatRoomId(String otherUserId) {
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
@@ -110,3 +89,28 @@ Stream<List<Map<String, dynamic>>> getUserStream() {
         .snapshots();
   }
 }
+
+
+
+// Stream<List<Map<String, dynamic>>> getUserStream() {
+//   return _firestore
+//       .collection('users')
+//       .where('role', whereIn: ['jobseeker', 'recruiter']) // Filter by role
+//       .snapshots()
+//       .map((snapshot) {
+//         return snapshot.docs
+//             .map((doc) {
+//               final data = doc.data() as Map<String, dynamic>;
+
+//               // Ensure non-null fields
+//               return {
+//                 'uid': doc.id,
+//                 'firstName': data['firstName'] ?? 'Huzzl',
+//                 'lastName': data['lastName'] ?? 'User',
+//                 'email': data['email'] ?? 'huzzluser@gmail.com',
+//                 'role': data['role'],
+//               };
+//             })
+//             .toList();
+//       });
+// }

@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/subscription/add_cart.dart';
+import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -68,65 +70,81 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 210, bottom: 20, top: 50),
-            child: Text(
-              "Membership Plans",
-              style: TextStyle(
-                fontFamily: 'Galano',
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-              ),
-            ),
-          ),
-          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 200),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: MembershipCard(
-                    title: "Basic",
-                    price: "Free",
-                    description: [
-                      "Access essential job postings",
-                      "Limited communication tools",
-                      "Manage up to 5 active applications",
-                      "Basic analytics on application status",
-                      "Limited talent discovery",
-                    ],
-                    highlight: isSubscribe
-                        ? "Back to basic plan"
-                        : "This is your current plan",
-                    color: Color(0xff3B7DFF),
-                    textColor: Colors.white,
-                    buttonColor: Colors.white,
-                    borderColor: Colors.transparent,
-                    isButtonDisabled: true,
+                Gap(100),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButtonback(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    iconImage: const AssetImage('assets/images/backbutton.png'),
                   ),
                 ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: MembershipCard(
-                    title: "Plus",
-                    price: "\₱499 per month*",
-                    description: [
-                      "Includes everything in Basic and:",
-                      "Unlimited access to job postings",
-                      "Priority talent discovery and recommendations",
-                      "Advanced analytics and reports",
-                      "Integration with Huzzl AI tools for job matching",
-                      "Exclusive discounts on partner services",
-                    ],
-                    highlight: isSubscribe
-                        ? "This is your current plan"
-                        : "Upgrade to Plus",
-                    color: Colors.white,
-                    textColor: Color(0xffFD7206),
-                    buttonColor: isSubscribe
-                        ? Color.fromARGB(255, 255, 180, 122)
-                        : Color(0xffFD7206),
-                    borderColor: Color(0xffFD7206),
-                    // isButtonDisabled: isSubscribe ? true : false,
+                Gap(50),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Membership Plans",
+                    style: TextStyle(
+                      fontFamily: 'Galano',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                    ),
                   ),
+                ),
+                Gap(50),
+                Row(
+                  children: [
+                    Expanded(
+                      child: MembershipCard(
+                        title: "Basic",
+                        price: "Free",
+                        description: [
+                          "Access essential job postings",
+                          "Limited communication tools",
+                          "Manage up to 5 active applications",
+                          "Basic analytics on application status",
+                          "Limited talent discovery",
+                        ],
+                        highlight: isSubscribe
+                            ? "Back to basic plan"
+                            : "This is your current plan",
+                        color: Color(0xff3B7DFF),
+                        textColor: Colors.white,
+                        buttonColor: Colors.white,
+                        borderColor: Colors.transparent,
+                        isButtonDisabled: true,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: MembershipCard(
+                        title: "Plus",
+                        price: "\₱499 per month*",
+                        description: [
+                          "Includes everything in Basic and:",
+                          "Unlimited access to job postings",
+                          "Priority talent discovery and recommendations",
+                          "Advanced analytics and reports",
+                          "Integration with Huzzl AI tools for job matching",
+                          "Exclusive discounts on partner services",
+                        ],
+                        highlight: isSubscribe
+                            ? "This is your current plan"
+                            : "Upgrade to Plus",
+                        color: Colors.white,
+                        textColor: Color(0xffFD7206),
+                        buttonColor: isSubscribe
+                            ? Color.fromARGB(255, 255, 180, 122)
+                            : Color(0xffFD7206),
+                        borderColor: Color(0xffFD7206),
+                        // isButtonDisabled: isSubscribe ? true : false,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

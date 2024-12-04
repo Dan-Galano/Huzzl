@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
 
 class JobProvider with ChangeNotifier {
-  List<Map<String, String>> _jobs = [];
-  List<Map<String, String>> _defaultJobs = [];
-  List<Map<String, String>> _searchJobs = [];
+  List<Map<String, dynamic>> _jobs = [];
+  List<Map<String, dynamic>> _defaultJobs = [];
+  List<Map<String, dynamic>> _searchJobs = [];
   // List<String> _selectedJobTitles = [];
   bool _hasResults = true;
   bool _isLoading = false;
   String? _recWhoPostTheJob;
   String? _jobPostId;
 
-  List<Map<String, String>> get jobs => _jobs;
-  List<Map<String, String>> get searchJobs => _searchJobs;
+  List<Map<String, dynamic>> get jobs => _jobs;
+  List<Map<String, dynamic>> get searchJobs => _searchJobs;
   bool get hasResults => _hasResults;
   bool get isLoading => _isLoading;
 
@@ -57,11 +57,10 @@ class JobProvider with ChangeNotifier {
       _isLoading = false;
       return;
     }
-    
 
     try {
       // Fetch job data from various sources
-      List<Map<String, String>> huzzlJobs = await fetchAllJobPosts();
+      List<Map<String, dynamic>> huzzlJobs = await fetchAllJobPosts();
       // String jobstreetHtmlContent = await fetchJobStreetData(searchQuery);
       // List<Map<String, String>> jobstreetJobs =
       //     parseJobStreetData(jobstreetHtmlContent);
@@ -82,7 +81,7 @@ class JobProvider with ChangeNotifier {
           parsePhilJobNetData(philJobNetHtmlContent);
 
       // Combine all jobs from all sources
-      List<Map<String, String>> allJobs = [
+      List<Map<String, dynamic>> allJobs = [
         ...huzzlJobs,
         // ...linkedInJobs,
         ...onlineJobsJobs,
@@ -99,7 +98,6 @@ class JobProvider with ChangeNotifier {
               .addAll(allJobs); // Save default jobs for later restoration
         }
       } else {
-        
         _searchJobs.addAll(allJobs.where((job) {
           final titleMatch =
               job['title']?.toLowerCase().contains(searchQuery.toLowerCase()) ??
@@ -134,7 +132,7 @@ class JobProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Map<String, String>>> fetchAllJobPosts() async {
+  Future<List<Map<String, dynamic>>> fetchAllJobPosts() async {
     try {
       // Step 1: Fetch all users where 'role' is 'recruiter'
       QuerySnapshot usersSnapshot = await FirebaseFirestore.instance
@@ -143,7 +141,7 @@ class JobProvider with ChangeNotifier {
           .get();
 
       // Prepare a list to hold all the fetched job posts
-      List<Map<String, String>> fetchedJobs = [];
+      List<Map<String, dynamic>> fetchedJobs = [];
 
       // Step 2: Loop through each recruiter user
       for (var userDoc in usersSnapshot.docs) {
@@ -158,6 +156,7 @@ class JobProvider with ChangeNotifier {
         for (var doc in jobPostsSnapshot.docs) {
           // Access the job post data
           Map<String, dynamic> jobPost = doc.data() as Map<String, dynamic>;
+          List? responsibilities = jobPost['responsibilities'];
 
           String? title = jobPost['jobTitle'] as String?;
           String? description = jobPost['jobDescription'] as String?;
@@ -174,9 +173,8 @@ class JobProvider with ChangeNotifier {
           String userUid = userDoc.id;
 
           if (title != null && location != null) {
-            String tags = skills!.isNotEmpty
-                ? skills.join(', ')
-                : 'No tags available';
+            String tags =
+                skills!.isNotEmpty ? skills.join(', ') : 'No tags available';
 
             fetchedJobs.add({
               'uid': jobPostUid, // Job post UID
@@ -189,6 +187,7 @@ class JobProvider with ChangeNotifier {
               'salary': salary ?? 'Salary not provided',
               'proxyLink': 'no proxy link',
               'website': 'assets/images/huzzl_logo_ulo.png',
+              'responsibilities':responsibilities,
             });
           }
         }
@@ -202,10 +201,10 @@ class JobProvider with ChangeNotifier {
   }
 }
 
-void shuffleJobsWithoutTwoConsecutive(List<Map<String, String>> jobs) {
+void shuffleJobsWithoutTwoConsecutive(List<Map<String, dynamic>> jobs) {
   final random = Random();
   jobs.shuffle(random);
-  List<Map<String, String>> result = [];
+  List<Map<String, dynamic>> result = [];
 
   while (jobs.isNotEmpty) {
     bool found = false;
@@ -225,7 +224,7 @@ void shuffleJobsWithoutTwoConsecutive(List<Map<String, String>> jobs) {
   jobs.addAll(result);
 }
 
-bool mapEquals(Map<String, String> map1, Map<String, String> map2) {
+bool mapEquals(Map<String, dynamic> map1, Map<String, dynamic> map2) {
   if (map1.length != map2.length) return false;
   for (var key in map1.keys) {
     if (map1[key] != map2[key]) return false;

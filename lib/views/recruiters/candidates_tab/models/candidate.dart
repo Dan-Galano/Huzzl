@@ -12,7 +12,7 @@ class Candidate {
   String status;
   String? jobApplicationDocId;
   List<String>? preScreenQuestion;
-  String? applicationNotes;
+  String applicationNotes;
 
   Candidate({
     required this.id,
@@ -28,7 +28,7 @@ class Candidate {
     required this.status,
     this.jobApplicationDocId,
     this.preScreenQuestion,
-    this.applicationNotes,
+    this.applicationNotes='',
   });
 
   Candidate copyWith({

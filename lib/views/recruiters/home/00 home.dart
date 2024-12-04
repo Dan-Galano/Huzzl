@@ -259,7 +259,8 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
         );
       case 3:
         if (userData!['subscriptionType'] == "basic") {
-          debugPrint("Hindi pwede sa interview: ${userData!['subscriptionType']}");
+          debugPrint(
+              "Hindi pwede sa interview: ${userData!['subscriptionType']}");
 
           return MembershipPlansPage();
         }
@@ -431,13 +432,14 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                             ),
                           ),
                           PopupMenuItem(
-                            value: 'close_account',
+                            value: 'subscription_screen',
                             child: Row(
                               children: [
-                                Icon(Icons.cancel, color: Color(0xff373030)),
+                                Icon(Icons.subscriptions,
+                                    color: Color(0xff373030)),
                                 SizedBox(width: 8),
                                 Text(
-                                  'Close Account',
+                                  'Subscription Plan',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xff373030),
@@ -448,14 +450,13 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                             ),
                           ),
                           PopupMenuItem(
-                            value: 'subscription_screen',
+                            value: 'close_account',
                             child: Row(
                               children: [
-                                Icon(Icons.subscriptions,
-                                    color: Color(0xff373030)),
+                                Icon(Icons.cancel, color: Color(0xff373030)),
                                 SizedBox(width: 8),
                                 Text(
-                                  'Subscription Plan',
+                                  'Close Account',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xff373030),

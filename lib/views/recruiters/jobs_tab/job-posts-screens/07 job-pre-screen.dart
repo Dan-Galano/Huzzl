@@ -6,6 +6,7 @@ class JobPreScreenApplicants extends StatefulWidget {
   final VoidCallback previousPage;
   final VoidCallback cancel;
   List<String> prescreenQuestions;
+
   JobPreScreenApplicants(
       {super.key,
       required this.nextPage,
@@ -20,12 +21,10 @@ class JobPreScreenApplicants extends StatefulWidget {
 class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
-  // final List<String> _questions = [];
 
   void _addQuestion() {
     final inputText = _controller.text.trim();
     if (inputText.isNotEmpty) {
-      // Split the input by semicolon and trim each question
       final questions = inputText
           .split(';')
           .map((e) => e.trim())
@@ -33,7 +32,6 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
           .toList();
 
       setState(() {
-        // Add the new questions to the list
         widget.prescreenQuestions.addAll(questions);
         _controller.clear();
       });
@@ -47,14 +45,12 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
   }
 
   void _submitJobPreScreen() {
-    // if (_formKey.currentState!.validate()) {
     widget.nextPage();
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SingleChildScrollView(
       child: Column(
         children: [
           Gap(40),
@@ -82,7 +78,6 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                   const SizedBox(height: 20),
                   Container(
                     alignment: Alignment.centerLeft,
-                    height: 400,
                     width: 630,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +92,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                           ),
                         ),
                         const Text(
-                          'Write your own question to ask applicants.',
+                          'Write your own questions to ask applicants.',
                           style: TextStyle(
                             fontSize: 16,
                           ),
@@ -147,14 +142,16 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 15),
-                        Expanded(
+                        const SizedBox(height: 20),
+                        // List view for questions with dynamic space
+                        Container(
+                          height: 300, // Adjust height as needed
                           child: ListView.builder(
                             itemCount: widget.prescreenQuestions.length,
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 3),
+                                    const EdgeInsets.symmetric(vertical: 10),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     border: Border.all(
@@ -183,6 +180,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                       ],
                     ),
                   ),
+                  Gap(20), // Increased space before buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -192,7 +190,7 @@ class _JobPreScreenApplicantsState extends State<JobPreScreenApplicants> {
                             'Cancel',
                             style: TextStyle(color: Color(0xffFE9703)),
                           )),
-                      Gap(10),
+                      Gap(15),
                       ElevatedButton(
                         onPressed: () => _submitJobPreScreen(),
                         style: ElevatedButton.styleFrom(

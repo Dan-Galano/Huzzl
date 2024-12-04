@@ -86,7 +86,8 @@ class ApplicationProvider with ChangeNotifier {
         'dateRejected': null,
         'jobTitle': jobTitle,
         'jobApplicationDocId': jobApplicationDocId,
-        'preScreenAnswer': preScreenAnswer
+        'preScreenAnswer': preScreenAnswer,
+        'applicationNotes': '',
       });
 
       print("Jobseeker applied data put to the databaseeee!");

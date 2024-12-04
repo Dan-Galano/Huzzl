@@ -31,11 +31,57 @@ class _ApplicationScreenState extends State<ApplicationScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late TextEditingController _notesController;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(length: 2, vsync: this);
+
+    _tabController.addListener(() {
+      setState(() {});
+    });
+    _notesController = TextEditingController(); // Initialize empty controller
+
+    _fetchCandidateData();
+  }
+
+  Future<void> _fetchCandidateData() async {
+    final jobCandidateProvider =
+        Provider.of<JobProviderCandidate>(context, listen: false);
+    final userId =
+        Provider.of<UserProvider>(context, listen: false).loggedInUserId!;
+    final jobPostId = jobCandidateProvider
+            .findDataOfCandidate(widget.candidateId)
+            ?.jobPostId ??
+        '';
+    final candidateId = widget.candidateId;
+
+    if (userId.isNotEmpty && jobPostId.isNotEmpty && candidateId.isNotEmpty) {
+      final notes = await jobCandidateProvider.fetchCurrentApplicationNotes(
+          userId, jobPostId, candidateId);
+      setState(() {
+        _notesController.text =
+            notes; // Set the fetched notes into the controller
+        _isLoading = false; // Data has been loaded
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose(); // Dispose the controller
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _launchEmail() async {
+    var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
+
     final Uri emailUri = Uri(
       scheme: 'mailto',
-      path: 'eleanorpena@gmail.com',
+      path: jobCandidateProvider.findDataOfCandidate(widget.candidateId)!.email,
     );
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
@@ -45,40 +91,13 @@ class _ApplicationScreenState extends State<ApplicationScreen>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (_notesController.text.isEmpty) {
-      final jobCandidateProvider =
-          Provider.of<JobProviderCandidate>(context, listen: false);
-      final candidateData =
-          jobCandidateProvider.findDataOfCandidate(widget.candidateId);
-
-      // Safely set the initial text
-      final String initialNotes = candidateData?.applicationNotes ?? '';
-      _notesController = TextEditingController(text: initialNotes);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _notesController = TextEditingController();
-    _tabController = TabController(length: 2, vsync: this);
-
-    _tabController.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: Text("Loading...")),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
     DateTime applicationDate = jobCandidateProvider
         .findDataOfCandidate(widget.candidateId)!
@@ -394,6 +413,9 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                             controller: _notesController,
                             maxLines: 20,
                             decoration: const InputDecoration(
+                              hintText:
+                                  "Add your comments or feedback here. Consider the applicant's qualifications, experience, and overall fit for the role.",
+                              hintStyle: TextStyle(color: Colors.grey),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10),
