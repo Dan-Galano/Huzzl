@@ -54,7 +54,22 @@ class _RecruiterNotifScreenState extends State<RecruiterNotifScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            const Gap(50),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              label: const Text(
+                "Back",
+                style:
+                    TextStyle(color: Color(0xFFff9800), fontFamily: 'Galano'),
+              ),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Color(0xFFff9800),
+              ),
+            ),
+            const Gap(30),
             const Text(
               'Notifications',
               style: TextStyle(
