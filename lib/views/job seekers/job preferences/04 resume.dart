@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/autobuild_resume_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/widgets/resume_option.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
@@ -381,6 +382,7 @@ class _ResumePageState extends State<ResumePage> {
                         'icon': Icons.edit,
                         'label': 'Fill up huzzl resume manually',
                         'onPressed': (BuildContext context) {
+                          Provider.of<ResumeProvider>(context, listen: false).resetProviderExceptContactInfo();
                           widget.nextPage();
                           print("Fill up manually");
                         },

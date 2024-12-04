@@ -30,38 +30,37 @@ class ResumeProvider with ChangeNotifier {
   List<EducationEntry>? get education => educationEntries;
   List<ExperienceEntry>? get experience => experienceEntries;
 
- Future<void> removeResume(String userId) async {
-  try {
-    // Reference to the user's resume collection
-    final resumeCollection = FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('resume');
+  Future<void> removeResume(String userId) async {
+    try {
+      // Reference to the user's resume collection
+      final resumeCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('resume');
 
-    // Delete all documents in the resume collection
-    final querySnapshot = await resumeCollection.get();
-    for (var doc in querySnapshot.docs) {
-      await doc.reference.delete();
+      // Delete all documents in the resume collection
+      final querySnapshot = await resumeCollection.get();
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      // Reset local fields to null
+      updatedAt = null;
+      fname = null;
+      lname = null;
+      pnumber = null;
+      email = null;
+      locationData = null;
+      objective = null;
+      selectedSkills = null;
+      educationEntries = null;
+      experienceEntries = null;
+      notifyListeners();
+      print("Resume removed successfully and local fields reset.");
+    } catch (e) {
+      print("Error removing resume: $e");
     }
-
-    // Reset local fields to null
-    updatedAt = null;
-    fname = null;
-    lname = null;
-    pnumber = null;
-    email = null;
-    locationData = null;
-    objective = null;
-    selectedSkills = null;
-    educationEntries = null;
-    experienceEntries = null;
-notifyListeners();
-    print("Resume removed successfully and local fields reset.");
-  } catch (e) {
-    print("Error removing resume: $e");
   }
-}
-
 
   //get resume using uid
   Future<bool> getResumeByJobSeekerId(String jobSeekerId) async {
@@ -207,6 +206,18 @@ notifyListeners();
     notifyListeners();
   }
 
+    void resetProviderExceptContactInfo() {
+    updatedAt = null;
+   
+    objective = null;
+    selectedSkills = null;
+    educationEntries = null;
+    experienceEntries = null;
+
+    notifyListeners();
+  }
+
+
   Future<void> fetchAndSetResumeDetails(String userId) async {
     try {
       final docSnapshot = await FirebaseFirestore.instance
@@ -287,6 +298,87 @@ notifyListeners();
     }
   }
 
+  Future<void> deleteEducationEntry(
+      String userId, EducationEntry entryToDelete, bool isInitialSetup) async {
+    try {
+      // Remove the education entry from the local list
+      educationEntries?.remove(entryToDelete);
 
+      // Notify listeners to update the UI
+      notifyListeners();
+      if (isInitialSetup == true) {
+        return;
+      }
+      // Reference to the user's resume collection
+      final resumeCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('resume');
 
+      // Fetch the resume document
+      final querySnapshot = await resumeCollection.get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final resumeDoc = querySnapshot.docs.first;
+
+        // Update the 'education' field by removing the entry
+        List<Map<String, dynamic>> updatedEducation = [];
+        for (var educationMap in resumeDoc['education']) {
+          if (educationMap['degree'] != entryToDelete.degree ||
+              educationMap['institutionName'] !=
+                  entryToDelete.institutionName) {
+            updatedEducation.add(educationMap);
+          }
+        }
+
+        // Update the Firestore document by setting the updated education list
+        await resumeCollection.doc(resumeDoc.id).update(
+            {'education': updatedEducation, 'updatedAt': DateTime.now()});
+// getResumeByJobSeekerId(userId);
+        print('Education entry deleted successfully from Firestore!');
+      } else {
+        print('No resume document found for user: $userId');
+      }
+    } catch (e) {
+      print('Error deleting education entry: $e');
+    }
+  }
+
+  Future<void> deleteExperienceEntry(
+      String userId, ExperienceEntry entryToDelete, bool isInitialSetup) async {
+    try {
+      experienceEntries?.remove(entryToDelete);
+
+      notifyListeners();
+      if (isInitialSetup == true) {
+        return;
+      }
+      final resumeCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('resume');
+
+      final querySnapshot = await resumeCollection.get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final resumeDoc = querySnapshot.docs.first;
+
+        List<Map<String, dynamic>> updatedExperience = [];
+        for (var experienceMap in resumeDoc['experience']) {
+          if (experienceMap['jobTitle'] != entryToDelete.jobTitle ||
+              experienceMap['companyName'] != entryToDelete.companyName) {
+            updatedExperience.add(experienceMap);
+          }
+        }
+
+        await resumeCollection.doc(resumeDoc.id).update(
+            {'experience': updatedExperience, 'updatedAt': DateTime.now()});
+        print('Experience entry deleted successfully from Firestore!');
+      } else {
+        print('No resume document found for user: $userId');
+      }
+    } catch (e) {
+      print('Error deleting experience entry: $e');
+    }
+  }
 }

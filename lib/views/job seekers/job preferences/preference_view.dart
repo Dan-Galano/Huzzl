@@ -16,6 +16,7 @@ import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_objective
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_skills.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_education.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/resume_summary.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_summary-autobuild.dart';
 import 'package:huzzl_web/views/job%20seekers/register/03%20congrats.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,7 @@ void main() {
 }
 
 class PreferenceViewPage extends StatefulWidget {
-  final String userUid; 
+  final String userUid;
   const PreferenceViewPage({super.key, required this.userUid});
 
   @override
@@ -90,13 +91,12 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
   }
 
   void jumpToPage(int pageNumber) {
-  if (pageNumber >= 1 && pageNumber <= totalLength) {
-    _pageController.jumpToPage(pageNumber);
-  } else {
-    print('Invalid page number: $pageNumber');
+    if (pageNumber >= 1 && pageNumber <= totalLength) {
+      _pageController.jumpToPage(pageNumber);
+    } else {
+      print('Invalid page number: $pageNumber');
+    }
   }
-}
-
 
   @override
   void initState() {
@@ -161,9 +161,9 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   noOfPages: noOfPages,
                 ),
                 ResumePage(
-                   jumpToPage: (pageNumber) {
-     jumpToPage(pageNumber);
-  },
+                  jumpToPage: (pageNumber) {
+                    jumpToPage(pageNumber);
+                  },
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {
@@ -235,7 +235,14 @@ class _PreferenceViewPageState extends State<PreferenceViewPage> {
                   noOfPages: noOfPages,
                   noOfResumePages: noOfResumePages,
                 ),
-                ResumePageSummary(
+                ResumePageSummary2autoBuild(
+                  isSetupInRegistration: true,
+                  uid: widget.userUid,
+                  title: "Review your Huzzl resume",
+                  subtitle:
+                      "Review and finalize the details of your Huzzl resume before submission.",
+                  isInitialSetup: true,
+                  isManualInitialSetup: true,
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {

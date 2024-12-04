@@ -2,45 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-manager-staff-model.dart';
 
-// class HiringManagerProvider extends ChangeNotifier {
-//   HiringManager? _hiringManager; // Store the current hiring manager
-
-//   HiringManager? get hiringManager => _hiringManager;
-
-//   // Temporary method to set a hiring manager manually (for testing)
-//   void setHiringManager(HiringManager manager) {
-//     _hiringManager = manager;
-//     notifyListeners();
-//   }
-
-//   // Existing method to fetch hiring manager associated with a specific branch
-//   Future<void> fetchHiringManagerByBranch(String branchId) async {
-//     try {
-//       final snapshot = await FirebaseFirestore.instance
-//           .collection('hiring_managers')
-//           .where('branchId', isEqualTo: branchId)
-//           .get();
-
-//       if (snapshot.docs.isNotEmpty) {
-//         final data = snapshot.docs.first.data(); // Assuming only one hiring manager per branch
-//         _hiringManager = HiringManager(
-//           fname: data['fname'],
-//           lname: data['lname'],
-//           email: data['email'],
-//           phoneNum: data['phoneNum'],
-//           branchId: data['branchId'],
-//         );
-//       } else {
-//         _hiringManager = null; // No hiring manager found for the branch
-//       }
-
-//       notifyListeners(); // Notify listeners that the hiring manager has changed
-//     } catch (e) {
-//       print("Error fetching hiring manager: $e");
-//     }
-//   }
-// }
-
 class HiringManagerProvider extends ChangeNotifier {
   List<HiringManager> _hiringManagers = []; // Store all hiring managers
 

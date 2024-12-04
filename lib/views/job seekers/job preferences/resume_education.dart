@@ -490,6 +490,8 @@ class _ResumePageEducationState extends State<ResumePageEducation> {
                           },
                         ),
                       ),
+                  
+                  
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

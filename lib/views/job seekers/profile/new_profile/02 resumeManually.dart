@@ -10,6 +10,7 @@ import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPa
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_experience2.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_objective2.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_skills2.dart';
+import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_summary-autobuild.dart';
 import 'package:huzzl_web/views/job%20seekers/profile/new_profile/resumeManualPages/resume_summary2.dart';
 import 'package:huzzl_web/widgets/navbar/navbar_login_registration.dart';
 import 'package:provider/provider.dart';
@@ -180,7 +181,13 @@ class _ResumeManuallyPageViewState extends State<ResumeManuallyPageView> {
                   noOfPages: noOfPages,
                   noOfResumePages: noOfResumePages,
                 ),
-                ResumePageSummary2(
+                ResumePageSummary2autoBuild(
+                  uid: widget.userUid,
+                  title: "Review your Huzzl resume",
+                  subtitle:
+                      "Review and finalize the details of your Huzzl resume before submission.",
+                  isInitialSetup: true,
+                  isManualInitialSetup: true,
                   nextPage: _nextPage,
                   previousPage: _previousPage,
                   onSaveResumeSetup: (cresume) {

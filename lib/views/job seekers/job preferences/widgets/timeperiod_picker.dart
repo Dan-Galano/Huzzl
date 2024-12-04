@@ -44,7 +44,7 @@ class TimePeriodPicker extends StatelessWidget {
         // Month Dropdown
         Expanded(
           child: DropdownButtonFormField<String>(
-            value: selectedMonth, // Set the current selected value
+            value: months.contains(selectedMonth) ? selectedMonth : null,
             hint: Text("Select Month"),
             onChanged: onMonthChanged,
             validator: validatorMonth, // Add validator for month
@@ -84,7 +84,7 @@ class TimePeriodPicker extends StatelessWidget {
         // Year Dropdown
         Expanded(
           child: DropdownButtonFormField<int>(
-            value: selectedYear, // Set the current selected value
+            value: years.contains(selectedYear) ? selectedYear : null,
             hint: Text("Select Year"),
             onChanged: onYearChanged,
             validator: validatorYear, // Add validator for year
