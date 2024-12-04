@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart' as prefix;
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:intl/intl.dart';
+import 'package:emailjs/emailjs.dart' as emailjs;
 
 class JobProviderCandidate extends ChangeNotifier {
   final List<Candidate> _candidates = [
@@ -719,5 +719,82 @@ Please review their profile and application to assess their suitability for your
     debugPrint("Fetch all candidates in all job posts within this recruiter");
 
     return candidatesForCalendar;
+  }
+
+  //PUSH NOTIFICATION INTO GMAIL
+  void sendEmailNotification(
+      String jobPostId, String jobseekerId, String typeOfNotif,
+      {String? message}
+      // String notifTitle,
+      // String message,
+      ) async {
+    try {
+      DocumentSnapshot jobSeekerSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(jobseekerId)
+          .get();
+
+      DocumentSnapshot jobPostSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(getCurrentUserId())
+          .collection('job_posts')
+          .doc(jobPostId)
+          .get();
+
+      if (jobSeekerSnapshot.exists && jobPostSnapshot.exists) {
+        // Extract data from the fetched job post
+        Map<String, dynamic> jobseekerData =
+            jobSeekerSnapshot.data() as Map<String, dynamic>;
+
+        Map<String, dynamic> jobPostData =
+            jobPostSnapshot.data() as Map<String, dynamic>;
+
+        String notifMessage = '';
+
+        String name =
+            "${jobseekerData['firstName']} ${jobseekerData['lastName']}";
+
+        if (typeOfNotif == "Shortlisted") {
+          notifMessage =
+              "We are pleased to inform you that your application for the position of ${jobPostData['jobTitle']} on ${jobPostData['applicationDeadline']} has been shortlisted. Your qualifications and experience align well with what we are looking for, and we are excited to move forward with your application. Our team will be in touch soon with the next steps in the selection process. Thank you for your interest in joining our company, and we wish you the best of luck.";
+        } else if (typeOfNotif == "Rejected") {
+          if (message!.isEmpty) {
+            notifMessage = "No name";
+          } else {
+            notifMessage = message;
+          }
+        } else if (typeOfNotif == "Hired") {
+          if (message!.isEmpty) {
+            notifMessage = "No name";
+          } else {
+            notifMessage = message;
+          }
+        }
+
+        await emailjs.send(
+          'service_stnt6vf',
+          'template_ntgp3sj',
+          {
+            'to_email': '${jobseekerData["email"]}',
+            'to_name': name,
+            'from_name': 'HUZZL',
+            'message': notifMessage,
+          },
+          const emailjs.Options(
+              publicKey: '8AFjOEJFOSq0vgWdZ',
+              privateKey: 'ucuViYA-GNRIC_KxDsOuG',
+              limitRate: const emailjs.LimitRate(
+                id: 'app',
+                throttle: 10000,
+              )),
+        );
+        print('SUCCESS!');
+      }
+    } catch (error) {
+      if (error is emailjs.EmailJSResponseStatus) {
+        print('ERROR... $error');
+      }
+      print(error.toString());
+    }
   }
 }

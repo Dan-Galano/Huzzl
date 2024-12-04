@@ -75,6 +75,8 @@ void showRejectConfirmationDialog(BuildContext context, String jobPostId,
                         "You have been Rejected",
                         message,
                       );
+
+                      jobCandidateProvider.sendEmailNotification(jobPostId, candidateId, "Rejected", message: message);
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },

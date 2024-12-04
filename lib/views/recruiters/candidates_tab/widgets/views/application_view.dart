@@ -21,7 +21,7 @@ class ApplicationView extends StatefulWidget {
 }
 
 class _ApplicationViewState extends State<ApplicationView> {
-  List<String> skills = [];
+  List<dynamic> skills = [];
   List<dynamic> preScreenQuestion = [];
   List<dynamic> preScreenAnswer = [];
 
@@ -57,17 +57,20 @@ class _ApplicationViewState extends State<ApplicationView> {
 
       if (jobPostDoc.exists) {
         var jobPostData = jobPostDoc.data();
-        String skillsString = jobPostData?['skills'] ?? '';
+        // String skillsString = jobPostData?['skills'] ?? '';
         // String preScreenQuestionString =
         //     jobPostData?['preScreenQuestions'] ?? '';
 
         setState(() {
           preScreenQuestion = jobPostData?['preScreenQuestions'] ?? [];
-          skills = skillsString.split(', ').where((e) => e.isNotEmpty).toList();
+          skills = jobPostData?['skills'] ?? [];
+          // skills = skillsString.split(', ').where((e) => e.isNotEmpty).toList();
           // preScreenQuestion = preScreenQuestionString
           //     .split(RegExp(r',\s*(?=[A-Z])'))
           //     .where((e) => e.isNotEmpty)
           //     .toList();
+
+          debugPrint("Skills: ${skills[0]}");
         });
       } else {
         print('No job post found');

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 
 class AddCardModal extends StatefulWidget {
   @override
@@ -11,45 +12,88 @@ class _AddCardModalState extends State<AddCardModal> {
   String selectedPaymentMethod = "Gcash";
 
   // Function to upgrade subscription from Basic to Premium
-  Future<void> upgradeToPremium() async {
+  Future<void> upgradeToPremium(BuildContext context) async {
     try {
-      // Get the current user ID
       String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
       if (userId.isEmpty) {
-        // Handle the case where there is no current user (e.g., user not logged in)
         print('No user is logged in');
         return;
       }
 
-      // Fetch the user's current subscription type from the database
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+
+      await Future.delayed(Duration(seconds: 2));
+
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
           .get();
 
-      // Check if the user is currently on a Basic subscription
       String currentSubscription = userSnapshot['subscriptionType'];
 
       if (currentSubscription == 'basic') {
-        // Upgrade the user to Premium
-        await FirebaseFirestore.instance.collection('users').doc(userId).update({
-          'subscriptionType': 'premium',  // Update subscription type to Premium
+        await Future.delayed(Duration(seconds: 2));
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .update({
+          'subscriptionType': 'premium',
         });
 
-        // Optionally notify the user of the successful upgrade
-        print('User $userId has been successfully upgraded to Premium.');
-        // congratsModel(context);
+        Navigator.of(context).pop(); // Dismiss the loading dialog
+
+        // Show a success message
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Upgrade Successful'),
+              content: Text('You have been successfully upgraded to Premium!'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       } else {
-        // If the user is already on Premium, handle accordingly
+        Navigator.of(context).pop(); // Dismiss the loading dialog
         print('User $userId is already on Premium.');
       }
     } catch (e) {
-      // Handle any errors (e.g., network or Firestore errors)
+      Navigator.of(context)
+          .pop(); // Dismiss the loading dialog in case of error
       print('Error upgrading to Premium: $e');
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Upgrade Failed'),
+            content: Text('An error occurred while upgrading to Premium.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -340,8 +384,9 @@ class _AddCardModalState extends State<AddCardModal> {
                 child: TextButton(
                   onPressed: () async {
                     // Upgrade the user's subscription when the button is pressed
-                    await upgradeToPremium();
+                    await upgradeToPremium(context);
                     congratsModel(context);
+
                     // Navigator.pop(context); // Close the modal after upgrade
                     // Navigator.pop(context); // Close the modal after upgrade
                   },
@@ -386,7 +431,7 @@ void congratsModel(BuildContext context) {
             Text(
               "Congratulations!",
               style: TextStyle(
-                fontFamily: 'Galano',  // Use your custom font if desired
+                fontFamily: 'Galano', // Use your custom font if desired
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -405,12 +450,20 @@ void congratsModel(BuildContext context) {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);  // Close the dialog
-                Navigator.pop(context);  // Close the dialog
+                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context); // Close the dialog
+
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return RecruiterHomeScreen();
+                    },
+                  ),
+                );
                 // Optionally, navigate to another screen or perform an action here
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xffFD7206),  // Customize color if needed
+                backgroundColor: Color(0xffFD7206), // Customize color if needed
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

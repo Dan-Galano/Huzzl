@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/subscription/add_cart.dart';
 
@@ -15,7 +17,49 @@ import 'package:huzzl_web/views/recruiters/subscription/add_cart.dart';
 //   }
 // }
 
-class MembershipPlansPage extends StatelessWidget {
+class MembershipPlansPage extends StatefulWidget {
+  @override
+  State<MembershipPlansPage> createState() => _MembershipPlansPageState();
+}
+
+class _MembershipPlansPageState extends State<MembershipPlansPage> {
+  bool isSubscribe = false;
+
+  Future<void> fetchSubscriptionStatus() async {
+    try {
+      var recruiterId = FirebaseAuth.instance.currentUser!.uid;
+
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(recruiterId)
+          .get();
+
+      if (snapshot.exists) {
+        String subscriptionType = snapshot['subscriptionType'];
+        if (subscriptionType == "premium") {
+          setState(() {
+            isSubscribe = true;
+          });
+        }
+        print('Subscription Type: $subscriptionType');
+      } else {
+        print('User document does not exist.');
+      }
+    } catch (e) {
+      print('Error fetching subscription status: $e');
+    }
+  }
+
+  void getStatus() async {
+    await fetchSubscriptionStatus();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getStatus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +93,9 @@ class MembershipPlansPage extends StatelessWidget {
                       "Basic analytics on application status",
                       "Limited talent discovery",
                     ],
-                    highlight: "This is your current plan",
+                    highlight: isSubscribe
+                        ? "Back to basic plan"
+                        : "This is your current plan",
                     color: Color(0xff3B7DFF),
                     textColor: Colors.white,
                     buttonColor: Colors.white,
@@ -70,11 +116,16 @@ class MembershipPlansPage extends StatelessWidget {
                       "Integration with Huzzl AI tools for job matching",
                       "Exclusive discounts on partner services",
                     ],
-                    highlight: "Upgrade to Plus",
+                    highlight: isSubscribe
+                        ? "This is your current plan"
+                        : "Upgrade to Plus",
                     color: Colors.white,
                     textColor: Color(0xffFD7206),
-                    buttonColor: Color(0xffFD7206),
+                    buttonColor: isSubscribe
+                        ? Color.fromARGB(255, 255, 180, 122)
+                        : Color(0xffFD7206),
                     borderColor: Color(0xffFD7206),
+                    // isButtonDisabled: isSubscribe ? true : false,
                   ),
                 ),
               ],

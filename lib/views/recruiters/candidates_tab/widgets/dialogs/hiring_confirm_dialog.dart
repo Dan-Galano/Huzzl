@@ -84,6 +84,10 @@ $generatedHiringMessage
 """,
                           );
 
+                          jobCandidateProvider.sendEmailNotification(
+                              candidate.jobPostId, candidate.id, "Hired",
+                              message: generatedHiringMessage);
+
                           Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         },
