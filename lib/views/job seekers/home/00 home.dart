@@ -8,9 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_widgets.dart';
 import 'package:huzzl_web/views/job%20seekers/home/job_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/03b%20%20jobtitle_chip.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_model.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
+import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_model.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -38,7 +41,6 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
   bool isSearching = false;
   List<String> selectedJobTitles = [];
   var locationController = TextEditingController();
-  // List<String> selectedJobTitles = []; // Tracks selected job titles
 
   List<String> datePostedOptions = [
     'Last 24 hours',
@@ -102,21 +104,15 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
 
   void onFilterClicked() {
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
-    // final searchedWord = _searchController.text.trim().toLowerCase();
-    String searchedWord = "";
-    if (jobProvider.selectedJobTitles.length == 1) {
-      searchedWord = jobProvider.selectedJobTitles[0].trim().toLowerCase();
-    }
-    if (searchedWord.isNotEmpty) {
-      jobProvider.loadJobs(searchedWord);
-    }
-    if (jobProvider.jobs.isEmpty) {
-      jobProvider.loadJobs(searchedWord);
-    }
-    // setState(() {
-    //   jobProvider.jobs.shuffle(Random());
-    // });
-    print("---UID:----- ${widget.uid}");
+
+    String combinedSearchQuery = jobProvider.selectedJobTitles
+        .map((title) => title.trim().toLowerCase())
+        .join(' ');
+
+    jobProvider.loadJobs(combinedSearchQuery);
+
+    print("Filtering by platform: ${jobProvider.selectedPlatform}");
+    print("Filtering by locations: ${jobProvider.selectedLocations}");
   }
 
   void clearSearch() {
@@ -127,6 +123,25 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
     setState(() {
       isSearching = false; // Reset searching state
     });
+  }
+
+  void onClearFilterClicked() {
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+
+    // Clear filters
+    jobProvider.selectedPlatform = 'all'; // Reset platform to 'all'
+    jobProvider.selectedLocations = []; // Clear selected locations
+    jobProvider.selectedJobTitles = []; // Clear selected job titles
+
+    // Reset any search or filter-related data
+    jobProvider.restoreDefaultJobs(); // Restore default job list
+
+    // Update the UI
+    setState(() {
+      _dropdownSearchFieldController.clear(); // Clear the location input field
+    });
+
+    print("All filters have been cleared.");
   }
 
   List<String> selectedLocations = []; // Store selected locations
@@ -173,48 +188,59 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                 },
               ),
             ),
-
-            // "Add" button: only shows if there's text in the field
             if (_dropdownSearchFieldController.text.isNotEmpty &&
-                selectedLocations.length < 3)
+                Provider.of<JobProvider>(context, listen: false)
+                        .selectedLocations
+                        .length <
+                    3)
               IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
                   String location = _dropdownSearchFieldController.text.trim();
-
-                  if (location.isNotEmpty &&
-                      !selectedLocations.any((selected) =>
-                          selected.toLowerCase() == location.toLowerCase())) {
-                    setState(() {
-                      selectedLocations
-                          .add(location); // Add location to selected list
-                    });
+                  if (location.isNotEmpty) {
+                    final jobProvider =
+                        Provider.of<JobProvider>(context, listen: false);
+                    if (!jobProvider.selectedLocations.any((selected) =>
+                        selected.toLowerCase() == location.toLowerCase())) {
+                      jobProvider.selectedLocations = [
+                        ...jobProvider.selectedLocations,
+                        location,
+                      ];
+                    }
+                    _dropdownSearchFieldController.clear();
                   }
-
-                  // Clear the input field after adding
-                  _dropdownSearchFieldController.clear();
                 },
               ),
           ],
         ),
         SizedBox(height: 10),
         // Display selected locations as chips
-        Wrap(
-          spacing: 8.0,
-          children: selectedLocations.map((location) {
-            return Chip(
-              label: Text(location),
-              onDeleted: () {
-                setState(() {
-                  selectedLocations
-                      .remove(location); // Remove from selected list
-                });
-              },
+        Consumer<JobProvider>(
+          builder: (context, jobProvider, child) {
+            return Wrap(
+              spacing: 8.0,
+              children: jobProvider.selectedLocations.map((location) {
+                return Chip(
+                  label: Text(location),
+                  onDeleted: () {
+                    jobProvider.selectedLocations = jobProvider
+                        .selectedLocations
+                        .where((selected) => selected != location)
+                        .toList();
+                  },
+                );
+              }).toList(),
             );
-          }).toList(),
+          },
         ),
       ],
     );
+  }
+
+  void _removeJobTitle(String title) {
+    setState(() {
+      selectedJobTitles.remove(title);
+    });
   }
 
   @override
@@ -523,12 +549,17 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                     ),
                                   ],
                                   maxSelections: 3,
-                                  preSelectedItems: selectedJobTitles,
+                                  preSelectedItems:
+                                      jobProvider.selectedJobTitles,
                                   onSelectionChanged: (selectedItems) {
                                     setState(() {
-                                      selectedJobTitles = selectedItems;
+                                      selectedJobTitles =
+                                          selectedItems; // Update local state
                                     });
-                                    print('Selected items: ${selectedItems}');
+                                    print("--SELECTED ITEM-- ${selectedItems}");
+                                    Provider.of<JobProvider>(context,
+                                            listen: false)
+                                        .selectedJobTitles = selectedItems;
                                   },
                                 ),
                               ),
@@ -537,7 +568,12 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                         },
                       ),
                       SizedBox(height: 20),
-                      Text("Selected Titles: ${selectedJobTitles.join(', ')}"),
+                      SelectedJobTitlesWrap(
+                        selectedJobTitles: selectedJobTitles,
+                        onRemoveJobTitle: _removeJobTitle,
+                      ),
+                      // Text(
+                      //     "Selected Titles: ${jobProvider.selectedJobTitles.join(', ')}"),
                       Gap(20),
                       // Location field
                       Text(
@@ -551,7 +587,7 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                       buildAddLocation(setState),
                       Gap(16),
 
-                      // Salary range
+                      // Platform
                       Text(
                         'Platform',
                         style: TextStyle(
@@ -561,7 +597,8 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                       ),
                       Gap(8),
                       DropdownButtonFormField<String>(
-                        value: 'all',
+                        value:
+                            Provider.of<JobProvider>(context).selectedPlatform,
                         items: [
                           DropdownMenuItem(
                               value: 'all', child: Text('All platforms')),
@@ -574,15 +611,15 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                       height: 30),
                                 ],
                               )),
-                          DropdownMenuItem(
-                              value: 'jobstreet',
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                      'assets/images/jobstreet-logo.png',
-                                      height: 30),
-                                ],
-                              )),
+                          // DropdownMenuItem(
+                          //     value: 'jobstreet',
+                          //     child: Row(
+                          //       children: [
+                          //         Image.asset(
+                          //             'assets/images/jobstreet-logo.png',
+                          //             height: 30),
+                          //       ],
+                          //     )),
                           DropdownMenuItem(
                               value: 'kalibrr',
                               child: Row(
@@ -601,22 +638,22 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                 ],
                               )),
                           DropdownMenuItem(
-                            value: 'philjobnet',
-                            child: Row(
-                              children: [
-                                Image.asset('assets/images/philjobnet-logo.png',
-                                    height: 30),
-                              ],
-                            ),
-                          ),
+                              value: 'philjobnet',
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                      'assets/images/philjobnet-logo.png',
+                                      height: 30),
+                                ],
+                              )),
                         ],
                         onChanged: (value) {
-                          setState(() {
-                            // _selectedRate = value;
-                          });
+                          if (value != null) {
+                            Provider.of<JobProvider>(context, listen: false)
+                                .selectedPlatform = value;
+                          }
                         },
                         decoration: InputDecoration(
-                          // labelText: 'Select date posted',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
@@ -634,17 +671,31 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                           ),
                         ),
                       ),
+
                       SizedBox(height: 50),
                       Row(
                         children: [
                           Expanded(
                             child: BlueFilledCircleButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                print("--filter button clicked--");
+                                onFilterClicked();
+                              },
                               text: 'Filter jobs',
                             ),
                           ),
                         ],
                       ),
+                      // Gap(10),
+                      // Expanded(
+                      //   child: BlueFilledCircleButton(
+                      //     onPressed: () {
+                      //       print("-- clear filter button clicked--");
+                      //       onClearFilterClicked();
+                      //     },
+                      //     text: 'Clear filter',
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
