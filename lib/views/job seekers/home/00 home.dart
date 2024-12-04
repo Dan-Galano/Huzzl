@@ -138,9 +138,11 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
 
     // Update the UI
     setState(() {
+      selectedJobTitles.clear();
       _dropdownSearchFieldController.clear(); // Clear the location input field
     });
 
+    jobProvider.loadJobs();
     print("All filters have been cleared.");
   }
 
@@ -686,15 +688,19 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                           ),
                         ],
                       ),
-                      // Gap(10),
+                      Gap(10),
                       // Expanded(
-                      //   child: BlueFilledCircleButton(
-                      //     onPressed: () {
-                      //       print("-- clear filter button clicked--");
-                      //       onClearFilterClicked();
-                      //     },
-                      //     text: 'Clear filter',
-                      //   ),
+                      //   child: TextButton(
+                      //       onPressed: () {
+                      //         print("-- clear filter button clicked--");
+                      //         onClearFilterClicked();
+                      //       },
+                      //       child: Text(
+                      //         'Clear filter',
+                      //         style: TextStyle(
+                      //             color: Colors.grey.shade600,
+                      //             fontWeight: FontWeight.w600),
+                      //       )),
                       // ),
                     ],
                   ),

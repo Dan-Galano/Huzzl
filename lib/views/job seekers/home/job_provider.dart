@@ -106,6 +106,7 @@ class JobProvider with ChangeNotifier {
       if (_selectedPlatform != 'all') {
         allJobs = allJobs.where((job) {
           final source = job['website']?.toLowerCase() ?? '';
+          print("DONEEEEEEEEE PASSED HERE");
           return source.contains(_selectedPlatform);
         }).toList();
       }
