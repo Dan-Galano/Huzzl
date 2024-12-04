@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/responsive_sizes.dart';
 import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/logic/date-converter.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/register/mainHiringManager_provider.dart';
@@ -508,7 +509,12 @@ class _CompanyProfileRecruiterState extends State<CompanyProfileRecruiter> {
           'created_at': Timestamp.now(),
           'accStatus': 'enabled'
         });
-
+        // Provider.of<HiringManagerProvider>(context, listen: false)
+        //     .fetchAllHiringManagers()
+        //     .then((_) {
+        //   print(
+        //       "HEREEEEEEEEEEEEEEEEEEEE: Hiring managers fetched successfully.");
+        // });
         await uploadFiles(context);
 
         Navigator.of(context).push(

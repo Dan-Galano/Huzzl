@@ -1080,26 +1080,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : userProfile.selectedPayRate?['maximum'] == null
               ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
               : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
-  onTap: () {
-    showDialog(
-      context: context,
-      builder: (context) => PayRateDialog(
-        initialRate: userProfile.selectedPayRate?['rate'] ?? 'per hour',
-        initialMin: userProfile.selectedPayRate?['minimum'] ?? '',
-        initialMax: userProfile.selectedPayRate?['maximum'] ?? '',
-        onSave: (rate, min, max) {
-          // Save the updated pay rate data
-          setState(() {
-            userProfile.selectedPayRate = {
-              'rate': rate,
-              'minimum': min,
-              'maximum': max,
-            };
-          });
-        },
-      ),
-    );
-  },
+onTap: () {
+  showDialog(
+    context: context,
+    builder: (context) => PayRateDialog(
+      initialRate: userProfile.selectedPayRate?['rate'] ?? 'per hour',
+      initialMin: userProfile.selectedPayRate?['minimum']?.toString() ?? '',
+      initialMax: userProfile.selectedPayRate?['maximum']?.toString() ?? '',
+      onSave: (rate, min, max) {
+        // Update pay rate in Firestore
+        UserProfileProvider provider =
+            Provider.of<UserProfileProvider>(context, listen: false);
+        provider.updatePayRate(userProfile.uid!, rate, min, max);
+      },
+    ),
+  );
+},
+
 ),
 
                        PreferenceItem(
@@ -1118,11 +1115,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'otherLocation': userProfile.selectedLocation?['otherLocation'] ?? '',
         },
         onSave: (location) {
-          // Save the updated location data
-          setState(() {
-            userProfile.selectedLocation = location;
-          });
-        },
+  // Update location in Firestore
+  UserProfileProvider provider = Provider.of<UserProfileProvider>(context, listen: false);
+  provider.updateLocation(userProfile.uid!, location);
+},
+
       ),
     );
   },
@@ -1137,12 +1134,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => JobTitlesDialog(
         initialJobTitles: userProfile.currentSelectedJobTitles ?? [],
-        onSave: (jobTitles) {
-          // Save the updated job titles data
-          setState(() {
-            userProfile.currentSelectedJobTitles = jobTitles;
-          });
-        },
+       onSave: (jobTitles) {
+  // Update job titles in Firestore
+  UserProfileProvider provider = Provider.of<UserProfileProvider>(context, listen: false);
+  provider.updateJobTitles(userProfile.uid!, jobTitles);
+},
+
       ),
     );
   },

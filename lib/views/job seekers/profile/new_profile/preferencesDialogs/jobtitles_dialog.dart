@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/03b%20%20jobtitle_chip.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:huzzl_web/widgets/dropdown/DropdownWithCheckboxes.dart';
 
 class JobTitlesDialog extends StatefulWidget {
@@ -27,41 +29,44 @@ class _JobTitlesDialogState extends State<JobTitlesDialog> {
       builder: (context, setState) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.symmetric(horizontal: 350, vertical: 200),
+          insetPadding: EdgeInsets.symmetric(horizontal: 350, vertical: 50),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Container(
               padding: EdgeInsets.all(30),
               color: Colors.white,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'What kind of jobs are you looking for?',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'This helps us match you with relevant jobs.',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Select up to 3 classifications.',
-                    style: TextStyle(fontSize: 15, color: Color(0xff929292)),
-                  ),
-                  SizedBox(height: 20),
-                  SelectedJobTitlesWrap(
-                    selectedJobTitles: selectedJobTitles,
-                    onRemoveJobTitle: (jobTitle) {
-                      setState(() {
-                        selectedJobTitles.remove(jobTitle);
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  DropdownWithCheckboxes(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'What kind of jobs are you looking for?',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'This helps us match you with relevant jobs.',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Select up to 3 classifications.',
+                      style: TextStyle(fontSize: 15, color: Color(0xff929292)),
+                    ),
+                    SizedBox(height: 20),
+                    SelectedJobTitlesWrap(
+                      selectedJobTitles: selectedJobTitles,
+                      onRemoveJobTitle: (jobTitle) {
+                        setState(() {
+                          selectedJobTitles.remove(jobTitle);
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    DropdownWithCheckboxes(
                       sections: [
                         DropdownSection(
                           title: 'Accounting and Finance',
@@ -317,36 +322,38 @@ class _JobTitlesDialogState extends State<JobTitlesDialog> {
                           ],
                         ),
                       ],
-                   
-                    maxSelections: 3,
-                    preSelectedItems: widget.initialJobTitles,
-                    onSelectionChanged: (selectedItems) {
-                      setState(() {
-                        selectedJobTitles = selectedItems;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Cancel"),
-                      ),
-                      SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          widget.onSave(selectedJobTitles);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Save"),
-                      ),
-                    ],
-                  ),
-                ],
+                      maxSelections: 3,
+                      preSelectedItems: widget.initialJobTitles,
+                      onSelectionChanged: (selectedItems) {
+                        setState(() {
+                          selectedJobTitles = selectedItems;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Cancel"),
+                        ),
+                        SizedBox(width: 10),
+                        BlueFilledCircleButton(
+                          width: 100,
+                          onPressed: () {
+                            widget.onSave(selectedJobTitles);
+                            Navigator.of(context).pop();
+                          },
+                          text: "Save",
+                        ),
+                      ],
+                    ),
+                    Gap(20),
+                  ],
+                ),
               ),
             ),
           ),

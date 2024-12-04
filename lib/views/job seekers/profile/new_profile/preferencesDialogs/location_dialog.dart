@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 
 class LocationDialog extends StatefulWidget {
   final Map<String, String> initialLocation;
@@ -87,19 +89,19 @@ class _LocationDialogState extends State<LocationDialog> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Cancel"),
-                      ),
-                      SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
+                  SizedBox(height: 30),   Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Cancel"),
+                        ),
+                        SizedBox(width: 10),
+                        BlueFilledCircleButton(
+                          width: 100,
+                          onPressed: () {
                           widget.onSave({
                             'regionName': regionController.text,
                             'provinceName': provinceController.text,
@@ -107,12 +109,14 @@ class _LocationDialogState extends State<LocationDialog> {
                             'barangayName': barangayController.text,
                             'otherLocation': otherLocationController.text,
                           });
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Save"),
-                      ),
-                    ],
-                  ),
+                            Navigator.of(context).pop();
+                          },
+                          text: "Save",
+                        ),
+                      ],
+                    ),
+                    Gap(20),
+                
                 ],
               ),
             ),
