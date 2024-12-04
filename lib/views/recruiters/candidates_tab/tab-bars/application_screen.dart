@@ -1,11 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/application_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/resume_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/shorlist_confirmation_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/rejection_dialog.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/tabbar_inside.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,6 +30,7 @@ class ApplicationScreen extends StatefulWidget {
 class _ApplicationScreenState extends State<ApplicationScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late TextEditingController _notesController;
 
   void _launchEmail() async {
     final Uri emailUri = Uri(
@@ -39,8 +45,25 @@ class _ApplicationScreenState extends State<ApplicationScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_notesController.text.isEmpty) {
+      final jobCandidateProvider =
+          Provider.of<JobProviderCandidate>(context, listen: false);
+      final candidateData =
+          jobCandidateProvider.findDataOfCandidate(widget.candidateId);
+
+      // Safely set the initial text
+      final String initialNotes = candidateData?.applicationNotes ?? '';
+      _notesController = TextEditingController(text: initialNotes);
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
+    _notesController = TextEditingController();
     _tabController = TabController(length: 2, vsync: this);
 
     _tabController.addListener(() {
@@ -264,32 +287,32 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                     ),
                                   ),
                                   const Gap(30),
-                                  // TextButton(
-                                  //   onPressed: () {},
-                                  //   style: TextButton.styleFrom(
-                                  //     padding: const EdgeInsets.symmetric(
-                                  //         horizontal: 54, vertical: 8),
-                                  //     backgroundColor: const Color(0xFF3b7dff),
-                                  //     shape: RoundedRectangleBorder(
-                                  //       borderRadius: BorderRadius.circular(8),
-                                  //     ),
-                                  //   ),
-                                  //   child: Row(
-                                  //     children: [
-                                  //       Image.asset(
-                                  //         "assets/images/msg-white-icon.png",
-                                  //         width: 14,
-                                  //       ),
-                                  //       const Gap(10),
-                                  //       const Text(
-                                  //         'Message',
-                                  //         style: TextStyle(
-                                  //           color: Colors.white,
-                                  //         ),
-                                  //       ),
-                                  //     ],
-                                  //   ),
-                                  // ),
+                                  TextButton(
+                                    onPressed: () {},
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 54, vertical: 8),
+                                      backgroundColor: const Color(0xFF3b7dff),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          "assets/images/msg-white-icon.png",
+                                          width: 14,
+                                        ),
+                                        const Gap(10),
+                                        const Text(
+                                          'Message',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -365,13 +388,10 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                         ),
                         const Gap(20),
                         Container(
-                          height: 430,
+                          height: 530,
                           width: double.infinity,
                           child: TextField(
-                            controller: TextEditingController(
-                              text:
-                                  "Strong communication and problem-solving skills stand out.",
-                            ),
+                            controller: _notesController,
                             maxLines: 20,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(
@@ -380,7 +400,101 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                 ),
                               ),
                             ),
+                            onChanged: (value) {
+                              // Optional: Update state if needed to reflect changes dynamically
+                            },
                           ),
+                        ),
+                        Gap(20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BlueFilledCircleButton(
+                                onPressed: () async {
+                                  final String userId =
+                                      Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .loggedInUserId!;
+                                  final String jobPostId = jobCandidateProvider
+                                      .findDataOfCandidate(widget.candidateId)!
+                                      .jobPostId!;
+                                  final String candidateId = widget.candidateId;
+
+                                  // Debugging: Check the values before saving
+                                  print("User ID: $userId");
+                                  print("Job Post ID: $jobPostId");
+                                  print("Candidate ID: $candidateId");
+                                  print("Notes: ${_notesController.text}");
+
+                                  try {
+                                    // Construct the Firestore document path
+                                    await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(userId)
+                                        .collection('job_posts')
+                                        .doc(jobPostId)
+                                        .collection('candidates')
+                                        .doc(candidateId)
+                                        .set({
+                                      'applicationNotes': _notesController.text
+                                          .trim(), //but when i do this fpr debugging, it saves this. so the prob is in controller
+                                    }, SetOptions(merge: true));
+
+                                    // Provide feedback
+                                    EasyLoading.instance
+                                      ..displayDuration =
+                                          const Duration(milliseconds: 1500)
+                                      ..indicatorType =
+                                          EasyLoadingIndicatorType.fadingCircle
+                                      ..loadingStyle = EasyLoadingStyle.custom
+                                      ..backgroundColor =
+                                          const Color.fromARGB(255, 38, 135, 57)
+                                      ..textColor = Colors.white
+                                      ..fontSize = 16.0
+                                      ..indicatorColor = Colors.white
+                                      ..maskColor =
+                                          Colors.black.withOpacity(0.5)
+                                      ..userInteractions = false
+                                      ..dismissOnTap = true;
+                                    EasyLoading.showToast(
+                                      "✓ Notes saved.",
+                                      dismissOnTap: true,
+                                      toastPosition:
+                                          EasyLoadingToastPosition.top,
+                                      duration: Duration(seconds: 3),
+                                    );
+                                  } catch (e) {
+                                    // Handle errors
+                                    print("Error saving notes: $e");
+                                    EasyLoading.instance
+                                      ..displayDuration =
+                                          const Duration(milliseconds: 1500)
+                                      ..indicatorType =
+                                          EasyLoadingIndicatorType.fadingCircle
+                                      ..loadingStyle = EasyLoadingStyle.custom
+                                      ..backgroundColor =
+                                          const Color(0xFfd74a4a)
+                                      ..textColor = Colors.white
+                                      ..fontSize = 16.0
+                                      ..indicatorColor = Colors.white
+                                      ..maskColor =
+                                          Colors.black.withOpacity(0.5)
+                                      ..userInteractions = false
+                                      ..dismissOnTap = true;
+                                    EasyLoading.showToast(
+                                      "⚠︎ Failed to save notes",
+                                      dismissOnTap: true,
+                                      toastPosition:
+                                          EasyLoadingToastPosition.top,
+                                      duration: Duration(seconds: 3),
+                                      // maskType: EasyLoadingMaskType.black,
+                                    );
+                                  }
+                                },
+                                text: "Save Notes",
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

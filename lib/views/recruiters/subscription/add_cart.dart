@@ -407,6 +407,7 @@ void congratsModel(BuildContext context) {
               onPressed: () {
                 Navigator.pop(context);  // Close the dialog
                 Navigator.pop(context);  // Close the dialog
+                
                 // Optionally, navigate to another screen or perform an action here
               },
               style: ElevatedButton.styleFrom(

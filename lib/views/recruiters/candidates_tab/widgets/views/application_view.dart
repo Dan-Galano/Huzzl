@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/open_in_newtab.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class ApplicationView extends StatefulWidget {
@@ -21,7 +22,7 @@ class ApplicationView extends StatefulWidget {
 }
 
 class _ApplicationViewState extends State<ApplicationView> {
-  List<String> skills = [];
+  List<dynamic> skills = [];
   List<dynamic> preScreenQuestion = [];
   List<dynamic> preScreenAnswer = [];
 
@@ -57,13 +58,13 @@ class _ApplicationViewState extends State<ApplicationView> {
 
       if (jobPostDoc.exists) {
         var jobPostData = jobPostDoc.data();
-        String skillsString = jobPostData?['skills'] ?? '';
+        // String skillsString = jobPostData?['skills'] ?? '';
         // String preScreenQuestionString =
         //     jobPostData?['preScreenQuestions'] ?? '';
 
         setState(() {
           preScreenQuestion = jobPostData?['preScreenQuestions'] ?? [];
-          skills = skillsString.split(', ').where((e) => e.isNotEmpty).toList();
+          // skills = skillsString.split(', ').where((e) => e.isNotEmpty).toList();
           // preScreenQuestion = preScreenQuestionString
           //     .split(RegExp(r',\s*(?=[A-Z])'))
           //     .where((e) => e.isNotEmpty)
@@ -224,29 +225,29 @@ class _ApplicationViewState extends State<ApplicationView> {
               color: Colors.grey,
               height: 40,
             ),
-            Text(
-              "Required Skills for the Job",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF202855),
-              ),
-            ),
-            Gap(20),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: skills
-                  .map((skill) => Chip(
-                        label: Text(skill),
-                      ))
-                  .toList(),
-            ),
-            Divider(
-              thickness: 1,
-              color: Colors.grey,
-              height: 40,
-            ),
+            // Text(
+            //   "Required Skills for the Job",
+            //   style: TextStyle(
+            //     fontWeight: FontWeight.bold,
+            //     fontSize: 18,
+            //     color: Color(0xFF202855),
+            //   ),
+            // ),
+            // Gap(20),
+            // Wrap(
+            //   spacing: 8.0,
+            //   runSpacing: 8.0,
+            //   children: skills
+            //       .map((skill) => Chip(
+            //             label: Text(skill),
+            //           ))
+            //       .toList(),
+            // ),
+            // Divider(
+            //   thickness: 1,
+            //   color: Colors.grey,
+            //   height: 40,
+            // ),
             Text(
               "Portfolio",
               style: TextStyle(
@@ -264,6 +265,8 @@ class _ApplicationViewState extends State<ApplicationView> {
                         onPressed: () {
                           // Replace with your function to open the PDF
                           print("Open PDF");
+
+                          openPdfInNewTab('assets/pdf/$portfolioPath');
                         },
                         child: Text(
                           "Open Portfolio in New Tab",

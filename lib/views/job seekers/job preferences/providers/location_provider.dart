@@ -12,11 +12,24 @@ class LocationProvider extends ChangeNotifier {
   String? selectedCityName;
   String? selectedBarangayName;
   TextEditingController otherLocationController = TextEditingController();
-
+ 
   List regions = [];
   List provinces = [];
   List cities = [];
   List barangays = [];
+
+    void resetLocationProvider() {
+   selectedRegion = null;
+selectedProvince = null;
+selectedCity = null;
+selectedBarangay = null;
+selectedRegionName = null;
+selectedProvinceName = null;
+selectedCityName = null;
+selectedBarangayName = null;
+otherLocationController.clear();
+    notifyListeners();
+  }
 
   // Fetch regions from API
   Future<void> fetchRegions() async {

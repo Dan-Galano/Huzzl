@@ -163,6 +163,7 @@ class JobProviderCandidate extends ChangeNotifier {
           dateRejected: (doc['applicationDate'] as Timestamp).toDate(),
           status: doc['status'],
           jobApplicationDocId: doc['jobApplicationDocId'],
+          applicationNotes: doc['applicationNotes'] ?? '',
         ));
       }
       notifyListeners();

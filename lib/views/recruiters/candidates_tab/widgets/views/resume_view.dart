@@ -341,7 +341,7 @@ class _ResumeViewState extends State<ResumeView> {
                                       ),
                                     )
                                   : Container(
-                                      width: MediaQuery.of(context).size.width,
+                                      width: 600,
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                           color: Colors.grey,

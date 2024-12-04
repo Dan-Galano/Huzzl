@@ -81,8 +81,8 @@ class _RecruiterRegistrationScreenState
       final hiringManEmail = _hiringManEmailController.text;
 
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _hiringManEmailController.text, // is this the email na gagamitin for LOGIN?? or yung company email
-          password: _passwordController.text,
+          email: _hiringManEmailController.text.trim(), // is this the email na gagamitin for LOGIN?? or yung company email
+          password: _passwordController.text.trim(),
         );
       await FirebaseFirestore.instance.collection('recruiters').doc(userCredential.user!.uid).set({
         'companyName': companyName,

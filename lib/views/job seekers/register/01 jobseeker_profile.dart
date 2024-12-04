@@ -51,8 +51,8 @@ class _JobSeekerProfileScreenState extends State<JobSeekerProfileScreen> {
       try {
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
         );
 
         setState(() {

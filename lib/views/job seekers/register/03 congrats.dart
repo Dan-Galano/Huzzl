@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/user-provider.dart';
 import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/appstate.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/location_provider.dart';
+import 'package:huzzl_web/views/job%20seekers/job%20preferences/providers/resume_provider.dart';
 import 'package:huzzl_web/views/job%20seekers/main_screen.dart';
 import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_boxbutton.dart';
 import 'package:huzzl_web/widgets/loading_dialog.dart';
@@ -139,7 +141,11 @@ class _JobSeekerCongratulationsPageState extends State<JobSeekerCongratulationsP
                         SizedBox(
                           width: 170,
                           child: ElevatedButton(
-                            onPressed: widget.goToJobPref,
+                            onPressed:  (){
+                              
+                          Provider.of<LocationProvider>(context, listen: false).resetLocationProvider();
+                          Provider.of<ResumeProvider>(context, listen: false).resetProviderExceptContactInfo();
+                              widget.goToJobPref();},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF0038FF),
                               padding: EdgeInsets.all(20),

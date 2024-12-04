@@ -12,6 +12,7 @@ class Candidate {
   String status;
   String? jobApplicationDocId;
   List<String>? preScreenQuestion;
+  String? applicationNotes;
 
   Candidate({
     required this.id,
@@ -27,6 +28,7 @@ class Candidate {
     required this.status,
     this.jobApplicationDocId,
     this.preScreenQuestion,
+    this.applicationNotes,
   });
 
   Candidate copyWith({
@@ -43,6 +45,7 @@ class Candidate {
     int? interviewCount,
     String? jobApplicationDocId,
     List<String>? preScreenQuestion,
+    String? applicationNotes,
   }) {
     return Candidate(
       id: id ?? this.id,
@@ -58,6 +61,7 @@ class Candidate {
       interviewCount: interviewCount ?? this.interviewCount,
       jobApplicationDocId: jobApplicationDocId  ?? this.jobApplicationDocId,
       preScreenQuestion: preScreenQuestion ?? this.preScreenQuestion,
+      applicationNotes: applicationNotes ?? this.applicationNotes,
     );
   }
 }

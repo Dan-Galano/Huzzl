@@ -102,7 +102,7 @@ void showCompanyDetailsModal(BuildContext context, CompanyInformation company) {
                         style: const TextStyle(color: Colors.black87),
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.download,
+                        icon: const Icon(Icons.open_in_new_rounded,
                             color: Colors.orangeAccent),
                         onPressed: () {
                           // Handle document download
