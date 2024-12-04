@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class EditJobDetails extends StatefulWidget {
   final VoidCallback submitForm;
@@ -162,6 +164,17 @@ class _EditJobDetailsState extends State<EditJobDetails> {
         'jobPostID': docRef.id,
       }).then((_) {
         print('Job post added successfully with ID: ${docRef.id}');
+
+        // Log the activity
+        final provider =
+            Provider.of<JobProviderCandidate>(context, listen: false);
+        provider.activityLogs(
+          userName:
+              '${widget.userData['hiringManagerFirstName']} ${widget.userData['hiringManagerLastName']}',
+          action: 'Created Job Post',
+          message:
+              'Successfully posted a job titled "${jobTitleControllerTemp.text}".',
+        );
 
         // Update or increment the jobPostCount field in the user's document
         FirebaseFirestore.instance
