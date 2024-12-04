@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/recruiters/admin/admin_tab.dart';
+import 'package:huzzl_web/views/recruiters/audit_log/audit_log.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab%20og/branches.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/managers-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
@@ -432,6 +433,41 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                             ),
                           ),
                           PopupMenuItem(
+                            value: 'close_account',
+                            child: Row(
+                              children: [
+                                Icon(Icons.cancel, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Close Account',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'audit_log',
+                            child: Row(
+                              children: [
+                                Icon(Icons.format_list_bulleted,
+                                    color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Audit Logs',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
                             value: 'subscription_screen',
                             child: Row(
                               children: [
@@ -499,6 +535,20 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                               },
                             );
                             break;
+                          case 'audit_log':
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: AuditLogTable(),
+                                );
+                              },
+                            );
+                            break;
+
                           case 'logout':
                             showLogoutDialog(context);
                             break;

@@ -818,4 +818,64 @@ Please review their profile and application to assess their suitability for your
       print(error.toString());
     }
   }
+
+  //Activity logs
+  Future<void> activityLogs({
+    required String action,
+    required String message,
+    required String userName,
+  }) async {
+    try {
+      final userId = getCurrentUserId();
+      // Get the current date and time
+      DateTime now = DateTime.now();
+      String formattedDate =
+          "${now.month}/${now.day}/${now.year} at ${now.hour}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}";
+
+      // Prepare the activity log data
+      Map<String, dynamic> logData = {
+        "date": formattedDate,
+        "user": userName,
+        "action": action,
+        "message": message,
+      };
+
+      // Reference to the Firestore collection
+      CollectionReference activityLogCollection =
+          FirebaseFirestore.instance.collection('users').doc(userId).collection('activityLogs');
+
+      // Add the log to Firestore
+      await activityLogCollection.add(logData);
+
+      print("Activity log added successfully.");
+    } catch (e) {
+      print("Error adding activity log: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivityLogs() async {
+    try {
+      // Query the user's activityLogs subcollection
+      final userId = getCurrentUserId();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('activityLogs')
+          .orderBy('date', descending: true) // Order by date (most recent first)
+          .get();
+
+      // Map the results into a list of maps
+      List<Map<String, dynamic>> activityLogs = snapshot.docs
+          .map((doc) => {
+                "id": doc.id,
+                ...doc.data() as Map<String, dynamic>,
+              })
+          .toList();
+
+      return activityLogs;
+    } catch (e) {
+      print("Error fetching activity logs: $e");
+      return [];
+    }
+  }
 }
