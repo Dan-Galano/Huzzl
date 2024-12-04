@@ -13,6 +13,7 @@ class CompanyInformation {
   String province;
   Timestamp createdAt;
   List<String> businessDocuments;
+  String companyStatus;
 
   CompanyInformation({
     required this.uid,
@@ -27,5 +28,6 @@ class CompanyInformation {
     required this.province,
     required this.createdAt,
     required this.businessDocuments,
+    required this.companyStatus,
   });
 }

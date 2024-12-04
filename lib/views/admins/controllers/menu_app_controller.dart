@@ -48,7 +48,9 @@ class MenuAppController extends ChangeNotifier {
               region: data['region'],
               province: data['province'],
               createdAt: data['created_at'],
-              businessDocuments: data['businessDocuments']),
+              businessDocuments: data['businessDocuments'],
+              companyStatus: data['companyStatus'],
+              ),
         );
       }
     } catch (e) {
@@ -56,7 +58,26 @@ class MenuAppController extends ChangeNotifier {
     }
   }
 
-  //HERE -> new code
+  Future<void> updateCompanyStatus(String companyId, String newStatus) async {
+  try {
+    // Reference to the Firestore collection
+    CollectionReference companies =
+        FirebaseFirestore.instance.collection('users');
+
+    // Update the companyStatus field
+    await companies.doc(companyId)
+          .collection("company_information")
+          .doc()
+          .update({
+      'companyStatus': newStatus, // Set the new status
+    });
+
+    print("Company status updated to: $newStatus");
+  } catch (e) {
+    print("Error updating company status: $e");
+    // Handle the error (e.g., show a snackbar or alert)
+  }
+}
 
   int _sideMenuIndex = 0;
   int get sideMenuIndex => _sideMenuIndex;

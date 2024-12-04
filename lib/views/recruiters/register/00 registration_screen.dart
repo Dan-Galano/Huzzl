@@ -99,6 +99,7 @@ class _RecruiterRegistrationScreenState
         'howHeardAbtUs': howHeardAbtUs,
         'phoneNumber': phoneNumber,
         'hiringManEmail': hiringManEmail,
+        'companyStatus': 'pending'
       });
 
       // ScaffoldMessenger.of(context).showSnackBar(

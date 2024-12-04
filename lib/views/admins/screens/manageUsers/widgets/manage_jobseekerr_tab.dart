@@ -106,13 +106,10 @@ class ManageJobseekerrTab extends StatelessWidget {
                                       ),
                                     ],
                                   )),
-                                  DataCell(
-                                      Text(jobseekerData['firstName'] ?? '')),
-                                  DataCell(
-                                      Text(jobseekerData['lastName'] ?? '')),
+                                  DataCell(Text(jobseekerData['firstName'] ?? '')),
+                                  DataCell(Text(jobseekerData['lastName'] ?? '')),
                                   DataCell(Text(jobseekerData['email'] ?? '')),
-                                  DataCell(
-                                      Text(jobseekerData['accStatus'] ?? '')),
+                                  DataCell(Text(jobseekerData['accStatus'] ?? '')),
                                   // DataCell(Text(jobseekerData['phone'] ?? '')),
                                   DataCell(
                                     Row(
