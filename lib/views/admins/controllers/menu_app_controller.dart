@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/models/company_information.dart';
 import 'package:huzzl_web/views/admins/models/recent_file.dart';
+import 'package:huzzl_web/views/admins/models/subscriber.dart';
 import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/widgets/loading_dialog.dart';
 
@@ -17,6 +18,64 @@ class MenuAppController extends ChangeNotifier {
   void controlMenu() {
     if (!_scaffoldKey.currentState!.isDrawerOpen) {
       _scaffoldKey.currentState!.openDrawer();
+    }
+  }
+
+  List<Subscriber> _subscribers = [];
+  List<Subscriber> get subscribers => _subscribers;
+
+  Future<void> fetchSubscribers() async {
+    try {
+      var subscribersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('subscriptionType', isEqualTo: 'premium')
+          .get();
+
+      _subscribers = subscribersSnapshot.docs.map(
+        (doc) {
+          return Subscriber(
+            uid: doc['uid'],
+            hiringManagerFirstName: doc['hiringManagerFirstName'],
+            hiringManagerLastName: doc['hiringManagerLastName'],
+            phone: doc['phone'],
+            dateSubscribed: doc['dateSubscribed'],
+            jobPostsCount: doc['jobPostsCount'],
+          );
+        },
+      ).toList();
+      print("Successfully fetched users (subscribers) !!!");
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching users (subscribers): $e");
+    }
+  }
+
+  Future<Map<int, int>> fetchSubscribersByMonth() async {
+    try {
+      var subscribersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('subscriptionType', isEqualTo: 'premium')
+          .get();
+
+      Map<int, int> subscribersByMonth = {};
+
+      for (var doc in subscribersSnapshot.docs) {
+        Timestamp timestamp = doc['dateSubscribed'];
+        DateTime dateSubscribed = timestamp.toDate();
+        int month = dateSubscribed.month;
+
+        // Increment the count for the month
+        if (subscribersByMonth.containsKey(month)) {
+          subscribersByMonth[month] = subscribersByMonth[month]! + 1;
+        } else {
+          subscribersByMonth[month] = 1;
+        }
+      }
+
+      return subscribersByMonth;
+    } catch (e) {
+      print("Error fetching users (subscribers): $e");
+      return {};
     }
   }
 

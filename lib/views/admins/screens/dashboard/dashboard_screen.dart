@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/line_chart.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/my_fields.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/components/subscribed_users_table.dart';
 
 import '../../constants.dart';
 import 'components/header.dart';
@@ -39,7 +40,7 @@ class DashboardScreen extends StatelessWidget {
                             color: secondaryColor,
                             borderRadius: BorderRadius.circular(20)),
                         child: const Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(8.0),
                           child: Column(
                             children: [
                               Gap(20),
@@ -50,10 +51,13 @@ class DashboardScreen extends StatelessWidget {
                                 ),
                               ),
                               LineChartSample2(),
+                              Gap(20),
                             ],
                           ),
                         ),
                       ),
+                      //table of subsribed users and their expiration date
+                      SubscribedUsersScreen(),
                       if (Responsive.isMobile(context))
                         const SizedBox(height: defaultPadding),
                       if (Responsive.isMobile(context)) const StorageDetails(),

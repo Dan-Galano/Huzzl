@@ -36,7 +36,7 @@ class ManageIndustriesScreen extends StatelessWidget {
                 if (!Responsive.isMobile(context))
                   const SizedBox(width: defaultPadding),
               ],
-            )
+            ),
           ],
         ),
       ),

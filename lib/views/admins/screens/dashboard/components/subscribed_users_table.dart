@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
-import 'package:huzzl_web/views/admins/screens/business_documents/components/view_documents_modal.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/components/edit_subscriber_modal.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart'; // Import the model
 
-class DeniedDocumentsScreen extends StatelessWidget {
-  const DeniedDocumentsScreen({super.key});
+class SubscribedUsersScreen extends StatelessWidget {
+  const SubscribedUsersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<MenuAppController>(
       builder: (context, provider, child) {
-        if (provider.deniedCompanies.isEmpty) {
+        if (provider.subscribers.isEmpty) {
           return const Center(
             child: Text(
-              "No company information found.",
+              "No subscribed users found.",
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           );
@@ -27,26 +27,29 @@ class DeniedDocumentsScreen extends StatelessWidget {
             child: DataTable(
               columnSpacing: defaultPadding,
               columns: const [
-                DataColumn(label: Text("Company")),
-                DataColumn(label: Text("City")),
-                DataColumn(label: Text("Date Uploaded")),
-                DataColumn(label: Text("Actions")),
+                DataColumn(label: Text("User ID")),
+                DataColumn(label: Text("First Name")),
+                DataColumn(label: Text("Last Name")),
+                DataColumn(label: Text("Date Subscribed")),
+                DataColumn(label: Text("Expiration Date")),
+                DataColumn(label: Text("Actions")), //can edit the date (?)
               ],
-              rows: provider.deniedCompanies.map((company) {
+              rows: provider.subscribers.map((company) {
                 return DataRow(cells: [
-                  DataCell(Text(company.companyName)),
-                  DataCell(Text(company.city)),
-                  DataCell(Text(DateFormat('MM/dd/yyy')
-                      .format(company.createdAt.toDate()))),
+                  DataCell(Text(company.uid)),
+                  DataCell(Text(company.hiringManagerFirstName)),
+                  DataCell(Text(company.hiringManagerLastName)),
+                  DataCell(Text(DateFormat('MM/dd/yyyy')
+                      .format(company.dateSubscribed.toDate()))),
+                  DataCell(Text(DateFormat('MM/dd/yyyy').format(company
+                      .dateSubscribed
+                      .toDate()
+                      .add(const Duration(days: 30))))),
                   DataCell(
                     ElevatedButton(
                       onPressed: () {
-                        // Implement view document logic
-                        print(company.uid);
-                        print(company.companyId);
-                        print(company.companyStatus);
-
-                        showCompanyDetailsModal(context, company, provider);
+                        //Show modal that will edit the subscription date
+                        showEditSubscriptionModal(context, company, provider);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
@@ -56,7 +59,7 @@ class DeniedDocumentsScreen extends StatelessWidget {
                           vertical: 12,
                         ),
                       ),
-                      child: const Text('View Documents'),
+                      child: const Text('Edit Subscription'),
                     ),
                   ),
                 ]);
