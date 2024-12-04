@@ -109,8 +109,8 @@ class _MyFormModalState extends State<MyFormModal> {
         await FirebaseAuth.instance.signOut(); // Sign out the sub-admin
         // Sign the recruiter back in with stored credentials
         await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: widget.recruiterEmail,
-          password: widget.recruiterPassword,
+          email: widget.recruiterEmail.trim(),
+          password: widget.recruiterPassword.trim(),
         );
         //Store in database (sub-admin) sub collection
         FirebaseFirestore.instance

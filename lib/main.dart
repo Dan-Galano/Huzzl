@@ -223,7 +223,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
               final role = data?['role'] ??
                   'admin'; // Default to 'admin' if role is not found
 
-              if (role != 'admin') {
+              if (role == 'jobseeker') {
                 // Perform the code block for non-admin users
                 final resumeProvider =
                     Provider.of<ResumeProvider>(context, listen: false);
@@ -315,6 +315,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   return RecruiterHomeScreen();
                 } else if (userType == 'admin') {
                   return MainScreen();
+                } else if (userType == 'hiringManager') {
+                  return RecruiterHomeScreen();
                 } else {
                   return LoginRegister();
                 }

@@ -851,9 +851,11 @@ class _JobPostsState extends State<JobPosts> {
                     if (value.isNotEmpty) {
                       final intValue = int.tryParse(value);
                       if (intValue != null && intValue >= 1) {
-                        widget.numOfPeopleToHire = intValue.toString(); // Update value
+                        widget.numOfPeopleToHire =
+                            intValue.toString(); // Update value
                         widget.onNumOfPeopleToHireChanged(value);
-                        debugPrint('Number of people: ${widget.numOfPeopleToHire}');
+                        debugPrint(
+                            'Number of people: ${widget.numOfPeopleToHire}');
                       } else {
                         debugPrint('Value must be at least 1.');
                       }

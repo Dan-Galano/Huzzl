@@ -108,9 +108,10 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
       // Create user with email and password
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _email.text,
-        password: _password.text,
+        email: _email.text.trim(),
+        password: _password.text.trim(),
       );
+      
       _firestore.collection('users').doc(userCredential.user!.uid).set(
         {
           'uid': userCredential.user!.uid,

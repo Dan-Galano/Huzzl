@@ -69,28 +69,30 @@ class _RecentFilesState extends State<RecentFiles> {
                 ],
               ),
               const Gap(20),
-              SingleChildScrollView(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: DataTable(
-                    columnSpacing: defaultPadding,
-                    columns: const [
-                      // DataColumn(
-                      //   label: Text("UID"),
-                      // ),
-                      DataColumn(label: Text("Role")),
-                      DataColumn(label: Text("First name")),
-                      DataColumn(label: Text("Last name")),
-                      DataColumn(label: Text("Email")),
-                      DataColumn(label: Text("Status")),
-                      DataColumn(label: Text("Actions")),
-                    ],
-                    rows: List.generate(
-                      menuAppController.recentUsers.length,
-                      (index) => recentUsers(
-                          menuAppController.recentUsers[index],
-                          context,
-                          menuAppController),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: DataTable(
+                      columnSpacing: defaultPadding,
+                      columns: const [
+                        // DataColumn(
+                        //   label: Text("UID"),
+                        // ),
+                        DataColumn(label: Text("Role")),
+                        DataColumn(label: Text("First name")),
+                        DataColumn(label: Text("Last name")),
+                        DataColumn(label: Text("Email")),
+                        DataColumn(label: Text("Status")),
+                        DataColumn(label: Text("Actions")),
+                      ],
+                      rows: List.generate(
+                        menuAppController.recentUsers.length,
+                        (index) => recentUsers(
+                            menuAppController.recentUsers[index],
+                            context,
+                            menuAppController),
+                      ),
                     ),
                   ),
                 ),

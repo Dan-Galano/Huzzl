@@ -134,7 +134,10 @@ class _OpenJobCardState extends State<OpenJobCard> {
                   textLists(widget.jobPostedBy!),
                   blueTextList('${widget.numberOfApplicants} applied'),
                   textLists(widget.jobPostedAt!),
-                  textLists(getTimeLeftUntilDeadline(widget.jobDeadline!)),
+                  textLists(widget.jobDeadline != null &&
+                          widget.jobDeadline != 'No Deadline'
+                      ? getTimeLeftUntilDeadline(widget.jobDeadline!)
+                      : 'No Deadline'),
 
                   IconButton(
                     onPressed: () async {

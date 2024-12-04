@@ -20,64 +20,95 @@ class MenuAppController extends ChangeNotifier {
     }
   }
 
-  List<CompanyInformation> _companyInformation = [];
+  final List<CompanyInformation> _companyInformation = [];
   List<CompanyInformation> get companyInformation => _companyInformation;
 
+  //get pending companies
+  List<CompanyInformation> get pendingCompanies {
+    return _companyInformation
+        .where((company) => company.companyStatus == 'pending')
+        .toList();
+  }
+
+  //get approved companies
+  List<CompanyInformation> get approvedCompanies {
+    return _companyInformation
+        .where((company) => company.companyStatus == 'approved')
+        .toList();
+  }
+
+  //get denied companies
+  List<CompanyInformation> get deniedCompanies {
+    return _companyInformation
+        .where((company) => company.companyStatus == 'denied')
+        .toList();
+  }
+
   //Business Documents
-  void fetchBusinessDocuments(String userId) async {
-    try {
-      final docSnapshot = await FirebaseFirestore.instance
+  Future<void> fetchCompanyInformation() async {
+    _companyInformation.clear();
+    var usersSnapshot =
+        await FirebaseFirestore.instance.collection('users').get();
+
+    for (var userDoc in usersSnapshot.docs) {
+      final userId = userDoc.id;
+
+      // Fetch company information sub-collection
+      final companyInfoSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection("company_information")
-          .limit(1)
+          .collection('company_information')
+          // .where('companyStatus', isEqualTo: 'pending')
           .get();
 
-      if (docSnapshot.docs.isNotEmpty) {
-        final data = docSnapshot.docs.first.data();
-        _companyInformation.add(
-          CompanyInformation(
-              uid: data['uid'],
-              companyName: data['companyName'],
-              ceoFirstName: data['ceoFirstName'],
-              ceoLastName: data['ceoLastName'],
-              industry: data['industry'],
-              companyDescription: data['companyDescription'],
-              locationOtherInformation: data['locationOtherInformation'],
-              city: data['city'],
-              region: data['region'],
-              province: data['province'],
-              createdAt: data['created_at'],
-              businessDocuments: data['businessDocuments'],
-              companyStatus: data['companyStatus'],
-              ),
-        );
+      for (var companyDoc in companyInfoSnapshot.docs) {
+        final data = companyDoc.data();
+        print("Fetching in pending_docs_screen");
+        // Map Firestore document to CompanyInformation model
+        _companyInformation.add(CompanyInformation(
+          uid: data['uid'],
+          companyId: companyDoc.id,
+          companyName: data['companyName'] ?? 'N/A',
+          ceoFirstName: data['ceoFirstName'] ?? 'N/A',
+          ceoLastName: data['ceoLastName'] ?? 'N/A',
+          industry: data['industry'] ?? 'N/A',
+          companyDescription: data['companyDescription'] ?? 'N/A',
+          locationOtherInformation: data['locationOtherInformation'] ?? 'N/A',
+          city: data['city'] ?? 'N/A',
+          region: data['region'] ?? 'N/A',
+          province: data['province'] ?? 'N/A',
+          createdAt: data['created_at'],
+          businessDocuments: List<String>.from(data['businessDocuments'] ?? []),
+          companyStatus: data['companyStatus'] ?? 'N/A',
+        ));
       }
-    } catch (e) {
-      print('Error fetching company information (business documents): $e');
+      notifyListeners();
     }
   }
 
-  Future<void> updateCompanyStatus(String companyId, String newStatus) async {
-  try {
-    // Reference to the Firestore collection
-    CollectionReference companies =
-        FirebaseFirestore.instance.collection('users');
+  Future<void> updateCompanyStatus(
+      String uid, String companyId, String newStatus) async {
+    try {
+      // Reference to the Firestore collection
+      CollectionReference companies =
+          FirebaseFirestore.instance.collection('users');
 
-    // Update the companyStatus field
-    await companies.doc(companyId)
+      // Update the companyStatus field
+      await companies
+          .doc(uid)
           .collection("company_information")
-          .doc()
+          .doc(companyId)
           .update({
-      'companyStatus': newStatus, // Set the new status
-    });
-
-    print("Company status updated to: $newStatus");
-  } catch (e) {
-    print("Error updating company status: $e");
-    // Handle the error (e.g., show a snackbar or alert)
+        'companyStatus': newStatus, // Set the new status
+      });
+      notifyListeners();
+      await fetchCompanyInformation();
+      print("Company status updated to: $newStatus");
+    } catch (e) {
+      print("Error updating company status: $e");
+      // Handle the error (e.g., show a snackbar or alert)
+    }
   }
-}
 
   int _sideMenuIndex = 0;
   int get sideMenuIndex => _sideMenuIndex;

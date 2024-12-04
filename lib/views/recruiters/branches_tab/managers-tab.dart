@@ -515,7 +515,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
       String password = hrPasswordController.text.trim();
 
       final userdocRef =
-          await FirebaseFirestore.instance.collection('users').add({
+          await FirebaseFirestore.instance.collection('users').doc(email).set({
         'firstName': hrFnameController.text.trim(),
         'lastName': hrLnameController.text.trim(),
         'phone': hrPhoneController.text.trim(),
@@ -528,7 +528,7 @@ class BuildManagersTabContentState extends State<BuildManagersTabContent>
       });
 
       print(
-          "User created (${userdocRef.id}) with branch ID: ${docRef.id} and role: hiringManager");
+          "User created ($email) with branch ID: ${docRef.id} and role: hiringManager");
       EasyLoading.instance
         ..displayDuration = const Duration(milliseconds: 1500)
         ..indicatorType = EasyLoadingIndicatorType.fadingCircle
