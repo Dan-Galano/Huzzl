@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/models/company_information.dart';
-import 'package:provider/provider.dart';
+import 'package:huzzl_web/views/recruiters/branches_tab/widgets/open_in_newtab.dart';
 
 void showCompanyDetailsModal(BuildContext context, CompanyInformation company,
     MenuAppController provider) {
@@ -110,6 +110,7 @@ void showCompanyDetailsModal(BuildContext context, CompanyInformation company,
                         onPressed: () {
                           // Handle document download
                           print("Downloading: $doc");
+                          openPdfInNewTab('assets/pdf/$doc');
                         },
                       ),
                     ),
