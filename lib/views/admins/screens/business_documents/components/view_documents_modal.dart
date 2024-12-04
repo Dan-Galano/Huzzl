@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/models/company_information.dart';
+import 'package:provider/provider.dart';
 
-void showCompanyDetailsModal(BuildContext context, CompanyInformation company) {
+void showCompanyDetailsModal(BuildContext context, CompanyInformation company,
+    MenuAppController provider) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -50,9 +53,9 @@ void showCompanyDetailsModal(BuildContext context, CompanyInformation company) {
                 const SizedBox(height: 8.0),
 
                 // Description
-                Text(
+                const Text(
                   "Description:",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueAccent,
@@ -65,9 +68,9 @@ void showCompanyDetailsModal(BuildContext context, CompanyInformation company) {
                 const SizedBox(height: 12.0),
 
                 // Location
-                Text(
+                const Text(
                   "Location:",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.blueAccent,
@@ -131,47 +134,52 @@ void showCompanyDetailsModal(BuildContext context, CompanyInformation company) {
                     const Gap(10),
 
                     // "Deny" Button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                    if (company.companyStatus != 'denied')
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 12.0,
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 12.0,
-                        ),
+                        onPressed: () async {
+                          await provider.updateCompanyStatus(
+                              company.uid, company.companyId, 'denied');
+                          print("Denied");
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Deny"),
                       ),
-                      onPressed: () {
-                        // Handle deny action
-                        print("Denied");
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Deny"),
-                    ),
                     const Gap(10),
 
                     // "Approve" Button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                    if (company.companyStatus != 'approved')
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 12.0,
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 12.0,
-                        ),
+                        onPressed: () async {
+                          // Handle approve action
+                          await provider.updateCompanyStatus(
+                              company.uid, company.companyId, 'approved');
+                          print("Approved");
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Approve"),
                       ),
-                      onPressed: () {
-                        // Handle approve action
-                        print("Approved");
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("Approve"),
-                    ),
                   ],
                 ),
               ],

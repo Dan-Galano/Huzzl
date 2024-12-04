@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CompanyInformation {
   String uid;
+  String companyId;
   String companyName;
   String ceoFirstName;
   String ceoLastName;
@@ -17,6 +18,7 @@ class CompanyInformation {
 
   CompanyInformation({
     required this.uid,
+    required this.companyId,
     required this.companyName,
     required this.ceoFirstName,
     required this.ceoLastName,
