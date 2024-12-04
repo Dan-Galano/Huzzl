@@ -24,6 +24,7 @@ class _MainScreenState extends State<MainScreen> {
     final menuController =
         Provider.of<MenuAppController>(context, listen: false);
     menuController.fetchRecentUsers();
+    menuController.fetchCompanyInformation();
     print('Fetched users in admin (main_screen.dart)');
   }
 
