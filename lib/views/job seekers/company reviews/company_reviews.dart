@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/company%20reviews/comp_profile_view.dart';
 
 class CompanyReviews extends StatefulWidget {
   const CompanyReviews({super.key});
@@ -25,6 +26,64 @@ class _CompanyReviewsState extends State<CompanyReviews> {
     fetchRecruiterCompanies();
   }
 
+  // Future<void> fetchRecruiterCompanies() async {
+  //   try {
+  //     QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .where('role', isEqualTo: 'recruiter')
+  //         .get();
+
+  //     List<Map<String, dynamic>> fetchedCompanies = [];
+  //     Set<String> addedCompanyNames = {}; // Set to track added company names
+
+  //     for (var userDoc in userSnapshot.docs) {
+  //       QuerySnapshot companySnapshot =
+  //           await userDoc.reference.collection('company_information').get();
+
+  //       for (var companyDoc in companySnapshot.docs) {
+  //         String companyName = companyDoc['companyName'] ?? 'Unknown Company';
+  //         String companyDesc =
+  //             companyDoc['companyDescription'] ?? 'Unknown Company';
+  //         String ceoName = (companyDoc['ceoFirstName'] ?? 'Unknown Company') +
+  //             " " +
+  //             (companyDoc['ceoLastName'] ?? 'Unknown Company');
+  //         String headquarters = (companyDoc['province'] ?? 'Unknown Company') +
+  //             ", \n" +
+  //             (companyDoc['region'] ?? 'Unknown Company');
+  //         String industry = companyDoc['industry'] ?? 'Unknown Industry';
+  //         String compSize = companyDoc['companySize'] ?? 'Unknown Industry';
+  //         String compWebsite =
+  //             companyDoc['companyWebsite'] ?? 'Unknown Industry';
+
+  //         // Check if company name is already added
+  //         if (!addedCompanyNames.contains(companyName)) {
+  //           fetchedCompanies.add({
+  //             'name': companyName,
+  //             'description': companyDesc,
+  //             'ceoName': ceoName,
+  //             'headquarters': headquarters,
+  //             'industry': industry,
+  //             'compSize': compSize,
+  //             'compWebsite': compWebsite,
+  //             'logo': Icons.business, // Update with a dynamic logo if available
+  //             'rating': 4.5,
+  //           });
+  //           addedCompanyNames.add(companyName); // Mark the company as added
+  //         }
+  //       }
+  //     }
+
+  //     if (mounted) {
+  //       setState(() {
+  //         companies = fetchedCompanies;
+  //         filteredCompanies = companies; // Initialize with all companies
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching companies: $e');
+  //   }
+  // }
+
   Future<void> fetchRecruiterCompanies() async {
     try {
       QuerySnapshot userSnapshot = await FirebaseFirestore.instance
@@ -33,17 +92,44 @@ class _CompanyReviewsState extends State<CompanyReviews> {
           .get();
 
       List<Map<String, dynamic>> fetchedCompanies = [];
+      Set<String> addedCompanyNames = {}; // Set to track added company names
 
       for (var userDoc in userSnapshot.docs) {
         QuerySnapshot companySnapshot =
             await userDoc.reference.collection('company_information').get();
 
         for (var companyDoc in companySnapshot.docs) {
-          fetchedCompanies.add({
-            'name': companyDoc['companyName'] ?? 'Unknown Company',
-            'logo': Icons.business, // Update with a dynamic logo if available
-            'rating': 4.5,
-          });
+          String companyUID = companyDoc.id; // Get the company document ID
+          String companyName = companyDoc['companyName'] ?? 'Unknown Company';
+          String companyDesc =
+              companyDoc['companyDescription'] ?? 'Unknown Company';
+          String ceoName = (companyDoc['ceoFirstName'] ?? 'Unknown Company') +
+              " " +
+              (companyDoc['ceoLastName'] ?? 'Unknown Company');
+          String headquarters = (companyDoc['province'] ?? 'Unknown Company') +
+              ", \n" +
+              (companyDoc['region'] ?? 'Unknown Company');
+          String industry = companyDoc['industry'] ?? 'Unknown Industry';
+          String compSize = companyDoc['companySize'] ?? 'Unknown Industry';
+          String compWebsite =
+              companyDoc['companyWebsite'] ?? 'Unknown Industry';
+
+          // Check if company name is already added
+          if (!addedCompanyNames.contains(companyName)) {
+            fetchedCompanies.add({
+              'uid': companyUID, // Include the company UID
+              'name': companyName,
+              'description': companyDesc,
+              'ceoName': ceoName,
+              'headquarters': headquarters,
+              'industry': industry,
+              'compSize': compSize,
+              'compWebsite': compWebsite,
+              'logo': Icons.business, // Update with a dynamic logo if available
+              'rating': 4.5,
+            });
+            addedCompanyNames.add(companyName); // Mark the company as added
+          }
         }
       }
 
@@ -64,8 +150,9 @@ class _CompanyReviewsState extends State<CompanyReviews> {
 
     setState(() {
       filteredCompanies = companies
-          .where((company) =>
-              company['name'].toLowerCase().contains(query)) // Filter by company name
+          .where((company) => company['name']
+              .toLowerCase()
+              .contains(query)) // Filter by company name
           .toList();
     });
   }
@@ -122,7 +209,8 @@ class _CompanyReviewsState extends State<CompanyReviews> {
                     ),
                     SizedBox(width: 10),
                     ElevatedButton(
-                      onPressed: _filterCompanies, // Trigger search when button is pressed
+                      onPressed:
+                          _filterCompanies, // Trigger search when button is pressed
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF0038FF),
                         padding: EdgeInsets.all(20),
@@ -165,63 +253,78 @@ class _CompanyReviewsState extends State<CompanyReviews> {
                   itemCount: filteredCompanies.length,
                   itemBuilder: (context, index) {
                     var company = filteredCompanies[index];
-                    return Card(
-                      color: Colors.white,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            Icon(
-                              company['logo'],
-                              size: 40,
-                              color: Color(0xFFFE9703),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    company['name'],
-                                    style: TextStyle(
-                                      fontFamily: 'Galano',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        company['rating'].toString(),
-                                        style: TextStyle(
-                                          fontFamily: 'Galano',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      Gap(10),
-                                      Row(
-                                        children: List.generate(5, (starIndex) {
-                                          return Icon(
-                                            Icons.star,
-                                            size: 18,
-                                            color: starIndex < company['rating']
-                                                ? Colors.amber
-                                                : Colors.grey,
-                                          );
-                                        }),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                    return GestureDetector(
+                      onTap: () {
+                        // Add your action here, e.g., navigate to another screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AboutPage(
+                                selectedComp:
+                                    company), // pass the selected company
+                          ),
+                        );
+                      },
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                company['logo'],
+                                size: 40,
+                                color: Color(0xFFFE9703),
                               ),
-                            ),
-                          ],
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      company['name'],
+                                      style: TextStyle(
+                                        fontFamily: 'Galano',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          company['rating'].toString(),
+                                          style: TextStyle(
+                                            fontFamily: 'Galano',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        Gap(10),
+                                        Row(
+                                          children:
+                                              List.generate(5, (starIndex) {
+                                            return Icon(
+                                              Icons.star,
+                                              size: 18,
+                                              color:
+                                                  starIndex < company['rating']
+                                                      ? Colors.amber
+                                                      : Colors.grey,
+                                            );
+                                          }),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

@@ -588,15 +588,15 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                       height: 30),
                                 ],
                               )),
-                          DropdownMenuItem(
-                              value: 'jobstreet',
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                      'assets/images/jobstreet-logo.png',
-                                      height: 30),
-                                ],
-                              )),
+                          // DropdownMenuItem(
+                          //     value: 'jobstreet',
+                          //     child: Row(
+                          //       children: [
+                          //         Image.asset(
+                          //             'assets/images/jobstreet-logo.png',
+                          //             height: 30),
+                          //       ],
+                          //     )),
                           DropdownMenuItem(
                               value: 'kalibrr',
                               child: Row(
@@ -605,15 +605,15 @@ class _JobSeekerHomeScreenState extends State<JobSeekerHomeScreen>
                                       height: 30),
                                 ],
                               )),
-                          DropdownMenuItem(
-                              value: 'onlinejobsph',
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                      'assets/images/onlinejobsph-logo.png',
-                                      height: 30),
-                                ],
-                              )),
+                          // DropdownMenuItem(
+                          //     value: 'onlinejobsph',
+                          //     child: Row(
+                          //       children: [
+                          //         Image.asset(
+                          //             'assets/images/onlinejobsph-logo.png',
+                          //             height: 30),
+                          //       ],
+                          //     )),
                           DropdownMenuItem(
                               value: 'philjobnet',
                               child: Row(
