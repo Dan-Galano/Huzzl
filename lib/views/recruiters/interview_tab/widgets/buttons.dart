@@ -55,7 +55,7 @@ class StartInterviewButton extends StatelessWidget {
           onPressed == null ? Colors.grey : const Color(0xff3B7DFF),
         ),
         // Optionally, set the elevation or other properties if needed
-        elevation: WidgetStateProperty.all(4),
+        elevation: WidgetStateProperty.all(0),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

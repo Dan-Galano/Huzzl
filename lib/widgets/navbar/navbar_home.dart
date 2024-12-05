@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/job%20seekers/notification/notif_screen.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
@@ -65,7 +66,12 @@ class _NavBarHomeState extends State<NavBarHome> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChatHomePage()));
+                  },
                   icon: Image.asset(
                     'assets/images/message-icon.png',
                     width: 20,

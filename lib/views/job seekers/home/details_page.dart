@@ -395,23 +395,23 @@ class _JobPostAppState extends State<JobPostApp> {
                                 width: 300,
                               ),
                               SizedBox(height: 10),
-                              OrangeIconButton(
-                                onPressed: () async {
-                                  showSavingModal();
-                                  debugPrint(
-                                      "Details: ${widget.jobPostUid} ${widget.jobTitle}");
-                                  await applicationProvider.saveJobs(
-                                      context,
-                                      widget.jobPostUid,
-                                      widget.recUid,
-                                      widget.jobTitle,
-                                      widget.userUid);
-                                  Navigator.pop(context);
-                                },
-                                imagePath: 'assets/images/heart.png',
-                                text: "Save Job",
-                                width: 300,
-                              ),
+                              // OrangeIconButton(
+                              //   onPressed: () async {
+                              //     showSavingModal();
+                              //     debugPrint(
+                              //         "Details: ${widget.jobPostUid} ${widget.jobTitle}");
+                              //     await applicationProvider.saveJobs(
+                              //         context,
+                              //         widget.jobPostUid,
+                              //         widget.recUid,
+                              //         widget.jobTitle,
+                              //         widget.userUid);
+                              //     Navigator.pop(context);
+                              //   },
+                              //   imagePath: 'assets/images/heart.png',
+                              //   text: "Save Job",
+                              //   width: 300,
+                              // ),
                               // SizedBox(height: 20),
                               // Text(
                               //   'About Client',

@@ -11,7 +11,7 @@ Widget buildInterviewsContent() {
   return StatefulBuilder(
     builder: (context, setState) {
       TabController _tabController =
-          TabController(length: 6, vsync: Scaffold.of(context));
+          TabController(length: 4, vsync: Scaffold.of(context));
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -35,13 +35,13 @@ Widget buildInterviewsContent() {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(width: spacing),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      child: TextField(
-                        decoration: searchTextFieldDecoration('Search'),
-                      ),
-                    ),
+                    // SizedBox(width: spacing),
+                    // SizedBox(
+                    //   width: MediaQuery.of(context).size.width * 0.5,
+                    //   child: TextField(
+                    //     decoration: searchTextFieldDecoration('Search'),
+                    //   ),
+                    // ),
                   ],
                 );
               },
@@ -70,8 +70,8 @@ Widget buildInterviewsContent() {
                 Tab(text: 'Upcoming'),
                 Tab(text: 'Pending'),
                 Tab(text: 'Past'),
-                Tab(text: 'Rescheduled'),
-                Tab(text: 'Missed'),
+                // Tab(text: 'Rescheduled'),
+                // Tab(text: 'Missed'),
               ],
             ),
             Expanded(
@@ -79,13 +79,13 @@ Widget buildInterviewsContent() {
                 controller: _tabController,
                 children: [
                   // Active Tab Content
-                  TodayView(),
+                  TodayView(), 
                   // Archive Tab Content
                   UpcomingView(),
                   PendingView(),
                   PastView(),
-                  RescheduledView(),
-                  MissedView(),
+                  // RescheduledView(),
+                  // MissedView(),
                 ],
               ),
             ),

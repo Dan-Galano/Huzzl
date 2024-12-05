@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/application_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/resume_view.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/dialogs/shorlist_confirmation_dialog.dart';
@@ -307,7 +308,18 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                   ),
                                   const Gap(30),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () { 
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChatHomePage(
+                                            candidate: jobCandidateProvider
+                                                .findDataOfCandidate(widget
+                                                    .candidateId)!, // Pass the candidate to ChatHomePage
+                                          ),
+                                        ),
+                                      );
+                                    },
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 54, vertical: 8),
@@ -520,6 +532,8 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                         ),
                       ],
                     ),
+                  
+                  
                   ),
                 ),
               ),

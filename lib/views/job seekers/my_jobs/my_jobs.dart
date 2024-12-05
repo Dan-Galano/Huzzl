@@ -12,19 +12,20 @@ class MyJobsView extends StatefulWidget {
   State<MyJobsView> createState() => _MyJobsViewState();
 }
 
-class _MyJobsViewState extends State<MyJobsView> with SingleTickerProviderStateMixin {
+class _MyJobsViewState extends State<MyJobsView>
+    with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    TabController _tabController =
-          TabController(length: 4, vsync: this);
+    TabController _tabController = TabController(length: 4, vsync: this);
 
     return Scaffold(
-       body: Column(
+      body: Column(
         children: [
           //==================================== Content ====================================
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1),
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.1),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -53,51 +54,52 @@ class _MyJobsViewState extends State<MyJobsView> with SingleTickerProviderStateM
                   ),
                   const Gap(10),
                   TabBar(
-              tabAlignment: TabAlignment.start,
-              isScrollable: true,
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.orange,
-              labelStyle: const TextStyle(
-                fontSize: 14, // Font size of the selected tab
-                fontWeight: FontWeight.bold, // Font weight of the selected tab
-                fontFamily: 'Galano', // Use your custom font
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 12, // Font size of the unselected tabs
-                fontWeight:
-                    FontWeight.normal, // Font weight of the unselected tabs
-                fontFamily: 'Galano', // Use your custom font
-              ),
-              tabs: const [
-                Tab(text: 'Saved'),
-                Tab(text: 'Applied'),
-                Tab(text: 'Interviews'),
-                Tab(text: 'Archived'),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Saved Tab Content
-                  SavedView(),
-                  // Applied Tab Content
-                  AppliedView(),
-                  // Interviews Tab Content
-                  InterviewsView(),
-                  // Archived Tab Content
-                  ArchivedView(),
-                ],
-              ),
-            ),
+                    tabAlignment: TabAlignment.start,
+                    isScrollable: true,
+                    controller: _tabController,
+                    labelColor: Colors.black,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: Colors.orange,
+                    labelStyle: const TextStyle(
+                      fontSize: 14, // Font size of the selected tab
+                      fontWeight:
+                          FontWeight.bold, // Font weight of the selected tab
+                      fontFamily: 'Galano', // Use your custom font
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontSize: 12, // Font size of the unselected tabs
+                      fontWeight: FontWeight
+                          .normal, // Font weight of the unselected tabs
+                      fontFamily: 'Galano', // Use your custom font
+                    ),
+                    tabs: const [
+                      // Tab(text: 'Saved'),
+                      Tab(text: 'Applied'),
+                      Tab(text: 'Interviews'),
+                      // Tab(text: 'Archived'),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Saved Tab Content
+                        // SavedView(),
+                        // Applied Tab Content
+                        AppliedView(),
+                        // Interviews Tab Content
+                        InterviewsView(),
+                        // Archived Tab Content
+                        // ArchivedView(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ],
-       ),
+      ),
     );
   }
 }

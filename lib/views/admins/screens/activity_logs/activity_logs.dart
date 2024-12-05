@@ -15,7 +15,7 @@ class ActivityLogsScreen extends StatelessWidget {
         child: Column(
           children: [
             const Header(
-              name: "Activity Logs",
+              name: "Audit Logs",
             ),
             const SizedBox(height: defaultPadding),
             Row(

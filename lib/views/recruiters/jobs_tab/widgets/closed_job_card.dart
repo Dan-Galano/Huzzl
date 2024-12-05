@@ -32,7 +32,7 @@ class ClosedJobCard extends StatefulWidget {
 class _ClosedJobCardState extends State<ClosedJobCard> {
   @override
   Widget build(BuildContext context) {
-    var jobPost = Provider.of<JobProviderCandidate>(context);
+    var jobProvider = Provider.of<JobProviderCandidate>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -63,12 +63,12 @@ class _ClosedJobCardState extends State<ClosedJobCard> {
                       ),
                     ),
                     // SizedBox(height: 4),
-                    Text(
-                      '${widget.jobDeadline}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
+                    // Text(
+                    //   'Deadline: ${widget.jobDeadline}',
+                    //   style: const TextStyle(
+                    //     fontSize: 14,
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -81,7 +81,7 @@ class _ClosedJobCardState extends State<ClosedJobCard> {
                 textLists(widget.jobType!),
                 textLists(widget.jobPostedBy!),
                 blueTextList('${widget.numberOfApplicants} applied'),
-                textLists("Nov 2, 2024"),
+                textLists(widget.jobPostedAt!),
                 IconButton(
                   onPressed: () async {
                     final RenderBox button =
@@ -103,32 +103,37 @@ class _ClosedJobCardState extends State<ClosedJobCard> {
                       ),
                       items: [
                         const PopupMenuItem(
-                          value: 'view',
+                          value: 'open',
                           child: Row(
                             children: [
-                              Icon(Icons.view_comfy_rounded,
+                              Icon(Icons.play_circle_outline,
                                   color: Colors.grey),
                               SizedBox(width: 8),
-                              Text('View'),
+                              Text('Re-open'),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_note_outlined,
-                                  color: Colors.grey),
-                              SizedBox(width: 8),
-                              Text('Edit'),
-                            ],
-                          ),
-                        ),
+                        // const PopupMenuItem(
+                        //   value: 'edit',
+                        //   child: Row(
+                        //     children: [
+                        //       Icon(Icons.edit_note_outlined,
+                        //           color: Colors.grey),
+                        //       SizedBox(width: 8),
+                        //       Text('Edit'),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ).then((value) {
                       // if (value == 'move_back_for_review') {
                       //   moveBackToReviewDialog(context);
                       // }
+
+                      if (value == "open") {
+                        jobProvider.reOpenJobPost(
+                            widget.user.uid, widget.jobPostID!);
+                      } 
                     });
                   },
                   icon: Image.asset(

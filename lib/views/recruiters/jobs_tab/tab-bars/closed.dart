@@ -32,7 +32,7 @@ class _ClosedJobsState extends State<ClosedJobs> {
                 headersList("Job type"),
                 headersList("Posted by"),
                 headersList("Total applicants"),
-                headersList("Date closed"),
+                headersList("Date posted"),
                 const Gap(65),
               ],
             ),
@@ -164,16 +164,15 @@ class _ClosedJobsState extends State<ClosedJobs> {
                             // print(jobPostId);
                           },
                           child: ClosedJobCard(
-                            jobTitle: jobPostIndividualData["jobTitle"],
-                            jobType: jobPostIndividualData['jobType'],
-                            jobDeadline:
-                                jobPostIndividualData['applicationDeadline'],
-                            jobPostedAt: jobPostIndividualData['posted_at'],
-                            jobPostID: jobPostIndividualData['jobPostID'], 
-                            jobPostedBy: jobPostIndividualData['posted_by'],
-                            numberOfApplicants: numberOfApplicants,
-                            user : widget.user
-                          ),
+                              jobTitle: jobPostIndividualData["jobTitle"],
+                              jobType: jobPostIndividualData['jobType'],
+                              jobDeadline:
+                                  jobPostIndividualData['applicationDeadline'],
+                              jobPostedAt: jobPostIndividualData['posted_at'],
+                              jobPostID: jobPostIndividualData['jobPostID'],
+                              jobPostedBy: jobPostIndividualData['posted_by'],
+                              numberOfApplicants: numberOfApplicants,
+                              user: widget.user),
                         );
                       },
                     );

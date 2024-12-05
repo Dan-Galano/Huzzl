@@ -48,95 +48,93 @@ class _AuditLogTableState extends State<AuditLogTable> {
       return matchesUser && matchesAction;
     }).toList();
 
-    return Scaffold(
-      body: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.only(top: 50, right: 300, left: 300),
-        child: Column(
-          children: [
-            // Header Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Color(0xFF181818)),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(30)),
+      padding: const EdgeInsets.all(50),
+      child: Column(
+        children: [
+          // Header Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.close, color: Color(0xFF181818)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Filters Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const Text(
+                "Audit Logs",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF181818),
+                  fontFamily: 'Galano',
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
+              ),
+              const Spacer(),
 
-            // Filters Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text(
-                  "Audit Log",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF181818),
-                    fontFamily: 'Galano',
-                  ),
-                ),
-                const Spacer(),
+              // User Dropdown
+              _buildDropdown(
+                label: "Select User",
+                value: selectedUser,
+                items: logs.map((log) => log['user']).toSet().cast<String>(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedUser = value;
+                  });
+                },
+              ),
 
-                // User Dropdown
-                _buildDropdown(
-                  label: "Select User",
-                  value: selectedUser,
-                  items: logs.map((log) => log['user']).toSet().cast<String>(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedUser = value;
-                    });
-                  },
-                ),
+              const SizedBox(width: 10),
 
-                const SizedBox(width: 10),
+              // Action Dropdown
+              _buildDropdown(
+                label: "Select Action",
+                value: selectedAction,
+                items: logs.map((log) => log['action']).toSet().cast<String>(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedAction = value;
+                  });
+                },
+              ),
+            ],
+          ),
 
-                // Action Dropdown
-                _buildDropdown(
-                  label: "Select Action",
-                  value: selectedAction,
-                  items:
-                      logs.map((log) => log['action']).toSet().cast<String>(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedAction = value;
-                    });
-                  },
-                ),
-              ],
-            ),
+          const SizedBox(height: 40),
 
-            const SizedBox(height: 16),
+          // Table Headers
+          _buildTableHeaders(),
 
-            // Table Headers
-            _buildTableHeaders(),
+          // Divider
+          const Divider(
+            color: Color.fromARGB(255, 167, 167, 167),
+            thickness: 1,
+          ),
 
-            // Divider
-            const Divider(
-              color: Color.fromARGB(255, 167, 167, 167),
-              thickness: 1,
-            ),
-
-            // Logs Table or Empty State
-            Expanded(
-              child: logs.isEmpty
-                  ? const Center(
-                      child: Text(
-                        "No logs available.",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    )
-                  : _buildLogsTable(filteredLogs),
-            ),
-          ],
-        ),
+          // Logs Table or Empty State
+          Expanded(
+            child: logs.isEmpty
+                ? const Center(
+                    child: Text(
+                      "No logs available.",
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  )
+                : _buildLogsTable(filteredLogs),
+          ),
+        ],
       ),
     );
   }

@@ -79,7 +79,6 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (context) => AppState()),
         ChangeNotifierProvider(create: (context) => MenuAppController()),
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => JobseekerProvider()),
         ChangeNotifierProvider(
           create: (context) {
