@@ -94,6 +94,7 @@ class _AddCardModalState extends State<AddCardModal> {
       );
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {

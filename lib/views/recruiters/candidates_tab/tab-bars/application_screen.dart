@@ -308,7 +308,7 @@ class _ApplicationScreenState extends State<ApplicationScreen>
                                   ),
                                   const Gap(30),
                                   TextButton(
-                                    onPressed: () {
+                                    onPressed: () { 
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(

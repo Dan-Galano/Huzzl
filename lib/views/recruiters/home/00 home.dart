@@ -22,6 +22,7 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_cand
 import 'package:huzzl_web/views/recruiters/jobs_tab/job-posts-screens/00%20job-screen.dart';
 import 'package:huzzl_web/views/recruiters/managers_tab/manager-tab.dart';
 import 'package:huzzl_web/views/recruiters/notification/notif_screen_recruiter.dart';
+import 'package:huzzl_web/views/recruiters/profile/recruiter_profile.dart';
 import 'package:huzzl_web/views/recruiters/subscription/basic_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -415,31 +416,33 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                           overlay.size.height - position.dy,
                         ),
                         items: const [
+                          // PopupMenuItem(
+                          //   value: 'view_profile',
+                          //   child: Row(
+                          //     children: [
+                          //       Icon(Icons.person, color: Color(0xff373030)),
+                          //       SizedBox(width: 8),
+                          //       Text(
+                          //         'Profile',
+                          //         style: TextStyle(
+                          //           fontSize: 14,
+                          //           color: Color(0xff373030),
+                          //           fontFamily: 'Galano',
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
+
                           PopupMenuItem(
-                            value: 'view_profile',
+                            value: 'subscription_screen',
                             child: Row(
                               children: [
-                                Icon(Icons.person, color: Color(0xff373030)),
+                                Icon(Icons.subscriptions,
+                                    color: Color(0xff373030)),
                                 SizedBox(width: 8),
                                 Text(
-                                  'Profile',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xff373030),
-                                    fontFamily: 'Galano',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 'close_account',
-                            child: Row(
-                              children: [
-                                Icon(Icons.cancel, color: Color(0xff373030)),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Close Account',
+                                  'Subscription Plan',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xff373030),
@@ -458,24 +461,6 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                                 SizedBox(width: 8),
                                 Text(
                                   'Audit Logs',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xff373030),
-                                    fontFamily: 'Galano',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 'subscription_screen',
-                            child: Row(
-                              children: [
-                                Icon(Icons.subscriptions,
-                                    color: Color(0xff373030)),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Subscription Plan',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xff373030),
@@ -526,6 +511,9 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                       ).then((value) {
                         switch (value) {
                           case 'view_profile':
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => RecruiterProfilePage(),
+                            ));
                             break;
                           case 'close_account':
                             showDialog(
@@ -540,8 +528,10 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return Dialog(
+                                  insetPadding: EdgeInsets.symmetric(
+                                      horizontal: 300, vertical: 200),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
                                   child: AuditLogTable(),
                                 );
