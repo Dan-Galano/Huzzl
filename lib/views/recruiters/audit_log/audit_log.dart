@@ -24,6 +24,8 @@ class _AuditLogTableState extends State<AuditLogTable> {
   void initState() {
     super.initState();
     _jobProvider = Provider.of<JobProviderCandidate>(context, listen: false);
+
+    fetchLogs();
   }
 
   void fetchLogs() async {

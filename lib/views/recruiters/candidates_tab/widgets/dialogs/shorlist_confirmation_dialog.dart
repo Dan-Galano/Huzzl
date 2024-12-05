@@ -81,6 +81,10 @@ void showShortlistConfirmationDialog(BuildContext context, String jobPostId,
                           jobCandidateProvider.sendEmailNotification(
                               jobPostId, candidateId, "Shortlisted");
 
+                          jobCandidateProvider.activityLogs(
+                              action: "Shortlisted a applicant",
+                              message: "Successfully shortlisted applicant.");
+
                           Navigator.pop(context);
                         },
                         style: TextButton.styleFrom(

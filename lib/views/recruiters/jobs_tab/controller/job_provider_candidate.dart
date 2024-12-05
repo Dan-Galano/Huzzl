@@ -133,8 +133,8 @@ class JobProviderCandidate extends ChangeNotifier {
   ];
   List<Candidate> get candidates => _candidates;
 
-
- Future<String> fetchCurrentApplicationNotes(String userId, String jobPostId, String candidateId) async {
+  Future<String> fetchCurrentApplicationNotes(
+      String userId, String jobPostId, String candidateId) async {
     try {
       final document = await FirebaseFirestore.instance
           .collection('users')
@@ -146,7 +146,8 @@ class JobProviderCandidate extends ChangeNotifier {
           .get();
 
       if (document.exists) {
-        return document.data()?['applicationNotes'] ?? ''; // Return the notes, default to empty if not found
+        return document.data()?['applicationNotes'] ??
+            ''; // Return the notes, default to empty if not found
       }
     } catch (e) {
       print('Error fetching application notes: $e');
@@ -790,6 +791,12 @@ Please review their profile and application to assess their suitability for your
           } else {
             notifMessage = message;
           }
+        }else if(typeOfNotif == "Interview"){
+          if (message!.isEmpty) {
+            notifMessage = "No name";
+          } else {
+            notifMessage = message;
+          }
         }
 
         await emailjs.send(
@@ -823,10 +830,26 @@ Please review their profile and application to assess their suitability for your
   Future<void> activityLogs({
     required String action,
     required String message,
-    required String userName,
   }) async {
     try {
       final userId = getCurrentUserId();
+
+      // Fetch the user's first and last name from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (!userDoc.exists) {
+        throw Exception("User document not found for userId: $userId");
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      String firstName = userData['hiringManagerFirstName'] ?? "Unknown";
+      String lastName = userData['hiringManagerLastName'] ?? "User";
+
+      String userName = "$firstName $lastName";
+
       // Get the current date and time
       DateTime now = DateTime.now();
       String formattedDate =
@@ -841,8 +864,10 @@ Please review their profile and application to assess their suitability for your
       };
 
       // Reference to the Firestore collection
-      CollectionReference activityLogCollection =
-          FirebaseFirestore.instance.collection('users').doc(userId).collection('activityLogs');
+      CollectionReference activityLogCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('activityLogs');
 
       // Add the log to Firestore
       await activityLogCollection.add(logData);
@@ -861,7 +886,8 @@ Please review their profile and application to assess their suitability for your
           .collection('users')
           .doc(userId)
           .collection('activityLogs')
-          .orderBy('date', descending: true) // Order by date (most recent first)
+          .orderBy('date',
+              descending: true) // Order by date (most recent first)
           .get();
 
       // Map the results into a list of maps

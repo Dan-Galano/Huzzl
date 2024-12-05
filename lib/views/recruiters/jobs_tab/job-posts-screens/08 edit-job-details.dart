@@ -115,6 +115,13 @@ class _EditJobDetailsState extends State<EditJobDetails> {
   //Get current date
   String formattedCurrentDate = DateFormat.yMMMd().format(DateTime.now());
 
+  late JobProviderCandidate _jobProvider;
+  @override
+  void initState() {
+    super.initState();
+    _jobProvider = Provider.of<JobProviderCandidate>(context, listen: false);
+  }
+
   void _submitJobPost() {
     // Submit the job post form
     widget.submitForm();
@@ -166,11 +173,8 @@ class _EditJobDetailsState extends State<EditJobDetails> {
         print('Job post added successfully with ID: ${docRef.id}');
 
         // Log the activity
-        final provider =
-            Provider.of<JobProviderCandidate>(context, listen: false);
-        provider.activityLogs(
-          userName:
-              '${widget.userData['hiringManagerFirstName']} ${widget.userData['hiringManagerLastName']}',
+
+        _jobProvider.activityLogs(
           action: 'Created Job Post',
           message:
               'Successfully posted a job titled "${jobTitleControllerTemp.text}".',

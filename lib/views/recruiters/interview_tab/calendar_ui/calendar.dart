@@ -107,32 +107,63 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
   }
 
   void saveInterviewToDB(InterviewEvent e) {
-    //Aside from adding it to local list, add it also into the firebase
-    print(
-        "Interview event details: ${e.applicant} ${e.date} ${e.interviewers}");
-    // setState(() {
-    //   events.add(e);
-    // });
+    // Helper function to convert TimeOfDay to DateTime
+    DateTime _convertTimeOfDayToDateTime(TimeOfDay time) {
+      final now = DateTime.now();
+      return DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    }
 
+    // Format the date
+    final DateFormat dateFormat =
+        DateFormat('MMMM d, y'); // Example: December 5, 2024
+    final String formattedDate = dateFormat.format(e.date!);
+
+    // Format start time and end time
+    final DateFormat timeFormat = DateFormat('h:mma');
+    final String formattedStartTime = timeFormat
+        .format(_convertTimeOfDayToDateTime(e.startTime!))
+        .toLowerCase();
+    final String formattedEndTime = timeFormat
+        .format(_convertTimeOfDayToDateTime(e.endTime!))
+        .toLowerCase();
+
+    // Print interview event details
+    print(
+        "Interview event details: ${e.applicant} $formattedDate ${e.interviewers}");
+
+    // Call job provider and interview provider methods
     _jobProviderCandidate.forInterviewCandidate(selectedApplicant!.id);
 
     _interviewProvider.saveInterview(
       e,
-      // widget.candidateId,
       selectedApplicant!.id,
-      // widget.candidate!.jobPostId,
       selectedApplicant!.jobPostId,
-      // widget.candidate.id,
       selectedApplicant!.id,
       selectedApplicant!.jobApplicationDocId!,
       selectedApplicant!.profession,
     );
+
+    // Push notification to jobseeker
     _jobProviderCandidate.pushNotificationToJobseeker(
       selectedApplicant!.jobPostId,
       selectedApplicant!.id,
       'You have been scheduled for Interview: ${e.title}',
-      "${e.notes} The date of your interview is ${e.date}. Starts in ${e.startTime}, end in ${e.endTime}.",
+      "${e.notes} The date of your interview is $formattedDate. Starts at $formattedStartTime, ends at $formattedEndTime.",
     );
+
+    // Send email notification to jobseeker
+    _jobProviderCandidate.sendEmailNotification(
+        selectedApplicant!.jobPostId, selectedApplicant!.id, "Interview",
+        message:
+            "Your interview for the ${selectedApplicant!.profession} position is scheduled. ${e.notes} The date of your interview is $formattedDate. Starts at $formattedStartTime, ends at $formattedEndTime.");
+
+    // Log the activity
+    _jobProviderCandidate.activityLogs(
+      action: "Scheduled an interview",
+      message: "Successfully scheduled an interview.",
+    );
+
+    // Reset the schedule interviewer form and navigate back
     resetScheduleInterviewerForm();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
