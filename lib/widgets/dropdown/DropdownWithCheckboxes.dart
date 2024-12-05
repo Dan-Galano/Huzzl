@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class DropdownSection {
   final String title;
@@ -45,12 +46,22 @@ class _DropdownWithCheckboxesState extends State<DropdownWithCheckboxes> {
         if (_selectedItems.length < widget.maxSelections) {
           _selectedItems.add(item);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  Text('You can select up to ${widget.maxSelections} items.'),
-              duration: Duration(seconds: 2),
-            ),
+          EasyLoading.instance
+            ..displayDuration = const Duration(milliseconds: 1500)
+            ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+            ..loadingStyle = EasyLoadingStyle.custom
+            ..backgroundColor = const Color(0xFfd74a4a)
+            ..textColor = Colors.white
+            ..fontSize = 16.0
+            ..indicatorColor = Colors.white
+            ..maskColor = Colors.black.withOpacity(0.5)
+            ..userInteractions = false
+            ..dismissOnTap = true;
+          EasyLoading.showToast(
+            "⚠︎ You can select up to ${widget.maxSelections} classifications only.",
+            dismissOnTap: true,
+            toastPosition: EasyLoadingToastPosition.top,
+            duration: Duration(seconds: 3),
           );
         }
       } else {

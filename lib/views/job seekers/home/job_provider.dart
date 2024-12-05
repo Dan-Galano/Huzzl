@@ -23,14 +23,28 @@ class JobProvider with ChangeNotifier {
 
   // List<String> get selectedJobTitles => _selectedJobTitles;
   List<String> _selectedJobTitles = [];
+  String _selectedPlatform = 'all';
+  List<String> _selectedLocations = [];
 
   // Getter
   List<String> get selectedJobTitles => _selectedJobTitles;
+  String get selectedPlatform => _selectedPlatform;
+  List<String> get selectedLocations => _selectedLocations;
 
   // Setter
   set selectedJobTitles(List<String> value) {
     _selectedJobTitles = value;
     notifyListeners(); // Notify listeners about the change
+  }
+
+  set selectedPlatform(String platform) {
+    _selectedPlatform = platform;
+    notifyListeners();
+  }
+
+  set selectedLocations(List<String> locations) {
+    _selectedLocations = locations;
+    notifyListeners();
   }
 
   bool isValidSearchQuery(String query) {
@@ -43,14 +57,12 @@ class JobProvider with ChangeNotifier {
     _hasResults = true;
     notifyListeners();
 
-    // Clear previous job results to prevent duplication
     if (searchQuery.isNotEmpty) {
       _searchJobs.clear();
     } else {
-      _jobs.clear(); // Clear all jobs when no search query
+      _jobs.clear();
     }
 
-    // Check for invalid search input
     if (searchQuery.isNotEmpty && !isValidSearchQuery(searchQuery)) {
       _hasResults = false;
       notifyListeners();
@@ -90,25 +102,38 @@ class JobProvider with ChangeNotifier {
         ...philJobNetJobs,
       ];
 
-      // Add jobs based on the search query
-      if (searchQuery.isEmpty) {
+      // Filter jobs by platform
+      if (_selectedPlatform != 'all') {
+        allJobs = allJobs.where((job) {
+          final source = job['website']?.toLowerCase() ?? '';
+          print("DONEEEEEEEEE PASSED HERE");
+          return source.contains(_selectedPlatform);
+        }).toList();
+      }
+
+      // Filter jobs by locations
+      if (_selectedLocations.isNotEmpty) {
+        allJobs = allJobs.where((job) {
+          final jobLocation = job['location']?.toLowerCase() ?? '';
+          return _selectedLocations.any((selectedLocation) =>
+              jobLocation.contains(selectedLocation.toLowerCase()));
+        }).toList();
+      }
+
+      // Filter jobs by search query
+      if (searchQuery.isNotEmpty) {
+        List<String> keywords = searchQuery.split(' ');
+        _searchJobs.addAll(allJobs.where((job) {
+          final jobTitle = job['title']?.toLowerCase() ?? '';
+          final jobDescription = job['description']?.toLowerCase() ?? '';
+          return keywords.any((keyword) =>
+              jobTitle.contains(keyword) || jobDescription.contains(keyword));
+        }).toList());
+      } else {
         _jobs.addAll(allJobs);
         if (_defaultJobs.isEmpty) {
-          _defaultJobs
-              .addAll(allJobs); // Save default jobs for later restoration
+          _defaultJobs.addAll(allJobs);
         }
-      } else {
-        _searchJobs.addAll(allJobs.where((job) {
-          final titleMatch =
-              job['title']?.toLowerCase().contains(searchQuery.toLowerCase()) ??
-                  false;
-          final descriptionMatch = job['description']
-                  ?.toLowerCase()
-                  .contains(searchQuery.toLowerCase()) ??
-              false;
-          return titleMatch ||
-              descriptionMatch; // Match by title or description
-        }).toList());
       }
 
       _hasResults = _jobs.isNotEmpty || _searchJobs.isNotEmpty;
@@ -126,7 +151,7 @@ class JobProvider with ChangeNotifier {
 
   void restoreDefaultJobs() {
     _jobs = List.from(_defaultJobs);
-    shuffleJobsWithoutTwoConsecutive(_jobs);
+    // shuffleJobsWithoutTwoConsecutive(_jobs);
 
     _hasResults = _jobs.isNotEmpty;
     notifyListeners();
@@ -187,7 +212,7 @@ class JobProvider with ChangeNotifier {
               'salary': salary ?? 'Salary not provided',
               'proxyLink': 'no proxy link',
               'website': 'assets/images/huzzl_logo_ulo.png',
-              'responsibilities':responsibilities,
+              'responsibilities': responsibilities,
             });
           }
         }
