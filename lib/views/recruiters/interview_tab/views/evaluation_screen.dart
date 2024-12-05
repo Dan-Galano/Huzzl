@@ -28,12 +28,12 @@ class _EvaluationScreenState extends State<EvaluationScreen> {
         Criteria(
           title: "Clarity & Articulation",
           comment: "Ability to speak clearly and organize thoughts.",
-          maxPoints: 10,
+          maxPoints: 5,
         ),
         Criteria(
           title: "Listening & Response Quality",
           comment: "Active listening and appropriate responses.",
-          maxPoints: 10,
+          maxPoints: 5,
         ),
       ],
     ),

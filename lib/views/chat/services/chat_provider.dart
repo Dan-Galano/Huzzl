@@ -1,113 +1,110 @@
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
-class ChatProvider extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Map<String, Map<String, dynamic>> _chatRoomsData = {};
 
-  // Getter to access last messages for all chatrooms
-  Map<String, Map<String, dynamic>> get chatRoomsData => _chatRoomsData;
+// class ChatProvider extends ChangeNotifier {
+//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+//   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> loadChatRooms() async {
-    final String currentUserID = _auth.currentUser!.uid;
+//   Map<String, Map<String, dynamic>> _chatRoomsData = {};
+//   String? _emailFilter;
 
-    final chatRoomsSnapshot = await _firestore
-        .collection('chat_rooms')
-        .where('participants',
-            arrayContains: currentUserID) // filter by current user's chatrooms
-        .get();
+//   Map<String, Map<String, dynamic>> get chatRoomsData => _chatRoomsData;
 
-    _chatRoomsData.clear();
+//   void setEmailFilter(String? email) {
+//     _emailFilter = email;
+//     loadChatRooms(); // Refresh chat rooms based on new filter
+//   }
 
-    for (var doc in chatRoomsSnapshot.docs) {
-      final data = doc.data();
-      final lastMsg = data['last_msg'] ?? '';
-      final lastTime = data['last_time'] ?? Timestamp.now();
-      final chatRoomID = doc.id;
+//   Future<void> loadChatRooms() async {
+//     final String currentUserID = _auth.currentUser!.uid;
 
-      _chatRoomsData[chatRoomID] = {
-        'last_msg': lastMsg,
-        'last_time': lastTime,
-      };
-    }
+//     Query query = _firestore
+//         .collection('chat_rooms')
+//         .where('participants', arrayContains: currentUserID);
 
-    notifyListeners();
-  }
+//     final chatRoomsSnapshot = await query.get();
 
-  // Method to send a message and update last message info
-  Future<void> sendMessageOG(String receiverID, String message) async {
-    final String currentUserID = _auth.currentUser!.uid;
-    final String currentUserEmail = _auth.currentUser!.email!;
-    final Timestamp timestamp = Timestamp.now();
+//     _chatRoomsData.clear();
 
-    // Message model (optional) can be added to keep the data structure clean
-    final newMessage = {
-      'senderID': currentUserID,
-      'senderEmail': currentUserEmail,
-      'receiverID': receiverID,
-      'message': message,
-      'timestamp': timestamp,
-    };
+//     for (var doc in chatRoomsSnapshot.docs) {
+//       final data = doc.data();
+//       final lastMsg = data['last_msg'] ?? '';
+//       final lastTime = data['last_time'] ?? Timestamp.now();
+//       final chatRoomID = doc.id;
 
-    // Sort IDs to create chat room ID
-    List<String> ids = [currentUserID, receiverID];
-    ids.sort();
-    String chatRoomID = ids.join('_');
+//       // Filter by email if filter is set
+//       if (_emailFilter != null) {
+//         final otherUserId = (data['participants'] as List<dynamic>)
+//             .firstWhere((id) => id != currentUserID, orElse: () => null);
+//         if (otherUserId == null) continue;
 
-    // Add the message to Firestore
-    await _firestore
-        .collection("chat_rooms")
-        .doc(chatRoomID)
-        .collection("messages")
-        .add(newMessage);
+//         final userDoc =
+//             await _firestore.collection('users').doc(otherUserId).get();
+//         if (!userDoc.exists) continue;
 
-    // Update last message and timestamp in the chat room
-    await _firestore.collection("chat_rooms").doc(chatRoomID).set(
-      {'last_msg': message, 'last_time': timestamp},
-      SetOptions(merge: true),
-    );
+//         final userEmail = userDoc.data()?['email'] ?? '';
+//         if (userEmail.toLowerCase() != _emailFilter!.toLowerCase()) {
+//           continue; // Skip if email doesn't match filter
+//         }
+//       }
 
-    notifyListeners();
-  }
+//       _chatRoomsData[chatRoomID] = {
+//         'last_msg': lastMsg,
+//         'last_time': lastTime,
+//       };
+//     }
 
-  Future<void> sendMessage(String receiverID, String message) async {
-    final String currentUserID = _auth.currentUser!.uid;
-    final Timestamp timestamp = Timestamp.now();
+//     notifyListeners();
+//   }
+// }
 
-    // Sort IDs to create chat room ID
-    List<String> ids = [currentUserID, receiverID];
-    ids.sort();
-    String chatRoomID = ids.join('_');
 
-    // Add the message to Firestore
-    final newMessage = {
-      'senderID': currentUserID,
-      'receiverID': receiverID,
-      'message': message,
-      'timestamp': timestamp,
-    };
 
-    await _firestore
-        .collection("chat_rooms")
-        .doc(chatRoomID)
-        .collection("messages")
-        .add(newMessage);
 
-    // Update the last message and timestamp in Firestore
-    await _firestore.collection("chat_rooms").doc(chatRoomID).set(
-      {'last_msg': message, 'last_time': timestamp},
-      SetOptions(merge: true),
-    );
 
-    // Update the last message and timestamp in the provider
-    _chatRoomsData[chatRoomID] = {
-      'last_msg': message,
-      'last_time': timestamp,
-    };
 
-    notifyListeners();
-  }
-}
+
+
+
+
+
+
+
+// class ChatProvider extends ChangeNotifier {
+//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+//   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+//   Map<String, Map<String, dynamic>> _chatRoomsData = {};
+
+//   Map<String, Map<String, dynamic>> get chatRoomsData => _chatRoomsData;
+
+//   Future<void> loadChatRooms() async {
+//     final String currentUserID = _auth.currentUser!.uid;
+
+//     final chatRoomsSnapshot = await _firestore
+//         .collection('chat_rooms')
+//         .where('participants',
+//             arrayContains: currentUserID) 
+//         .get();
+
+//     _chatRoomsData.clear();
+
+//     for (var doc in chatRoomsSnapshot.docs) {
+//       final data = doc.data();
+//       final lastMsg = data['last_msg'] ?? '';
+//       final lastTime = data['last_time'] ?? Timestamp.now();
+//       final chatRoomID = doc.id;
+
+//       _chatRoomsData[chatRoomID] = {
+//         'last_msg': lastMsg,
+//         'last_time': lastTime,
+//       };
+//     }
+
+//     notifyListeners();
+//   }
+
+// }

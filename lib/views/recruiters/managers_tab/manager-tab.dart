@@ -274,10 +274,10 @@ Widget buildManagersContent(
                           // CompanyAdminsActive(
                           //   userData: userData,
                           //   user: user,
-                        // ),
-                        Center(
-                          child: Text("Active"),
-                        ),
+                          // ),
+                          Center(
+                            child: Text("Active"),
+                          ),
                           // Archive Tab Content
                           Center(
                             child: Text("Archive"),

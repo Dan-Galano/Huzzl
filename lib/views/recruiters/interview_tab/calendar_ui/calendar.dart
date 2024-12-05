@@ -40,7 +40,7 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
     'Daniel Morgan',
   ];
 
-  final List<String> interviewTypes = ['Online', 'F2F'];
+  final List<String> interviewTypes = ['Online'];
   List<String> selectedInterviewers = [];
   Candidate? selectedApplicant;
   String? selectedType;
@@ -475,15 +475,15 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Interview Type',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   children: [
+                    //     Text(
+                    //       'Interview Type',
+                    //       style: TextStyle(fontSize: 12),
+                    //     ),
+                    //   ],
+                    // ),
                     Row(
                       children: [
                         Expanded(
@@ -1513,54 +1513,54 @@ class _InterviewCalendarState extends State<InterviewCalendar> {
                                                         ),
                                                       ),
                                                     ),
-                                                    Visibility(
-                                                      visible: selectedDate
-                                                          .isAfter(DateTime
-                                                                  .now()
-                                                              .subtract(
-                                                                  Duration(
-                                                                      days:
-                                                                          1))),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          Tooltip(
-                                                            message:
-                                                                "Edit Details",
-                                                            child: IconButton(
-                                                              onPressed: () {
-                                                                // Handle edit details action
-                                                              },
-                                                              icon: Icon(
-                                                                Icons.edit,
-                                                                color: Color(
-                                                                    0xFffd7206),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                              width:
-                                                                  5), // Gap replaced by SizedBox
-                                                          Tooltip(
-                                                            message:
-                                                                "Reschedule",
-                                                            child: IconButton(
-                                                              onPressed: () {
-                                                                // Handle reschedule action
-                                                              },
-                                                              icon: Icon(
-                                                                Icons
-                                                                    .event_rounded,
-                                                                color: Color(
-                                                                    0xFffd7206),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
+                                                    // Visibility(
+                                                    //   visible: selectedDate
+                                                    //       .isAfter(DateTime
+                                                    //               .now()
+                                                    //           .subtract(
+                                                    //               Duration(
+                                                    //                   days:
+                                                    //                       1))),
+                                                    //   child: Row(
+                                                    //     mainAxisAlignment:
+                                                    //         MainAxisAlignment
+                                                    //             .end,
+                                                    //     children: [
+                                                    //       Tooltip(
+                                                    //         message:
+                                                    //             "Edit Details",
+                                                    //         child: IconButton(
+                                                    //           onPressed: () {
+                                                    //             // Handle edit details action
+                                                    //           },
+                                                    //           icon: Icon(
+                                                    //             Icons.edit,
+                                                    //             color: Color(
+                                                    //                 0xFffd7206),
+                                                    //           ),
+                                                    //         ),
+                                                    //       ),
+                                                    //       SizedBox(
+                                                    //           width:
+                                                    //               5), // Gap replaced by SizedBox
+                                                    //       Tooltip(
+                                                    //         message:
+                                                    //             "Reschedule",
+                                                    //         child: IconButton(
+                                                    //           onPressed: () {
+                                                    //             // Handle reschedule action
+                                                    //           },
+                                                    //           icon: Icon(
+                                                    //             Icons
+                                                    //                 .event_rounded,
+                                                    //             color: Color(
+                                                    //                 0xFffd7206),
+                                                    //           ),
+                                                    //         ),
+                                                    //       ),
+                                                    //     ],
+                                                    //   ),
+                                                    // ),
                                                   ],
                                                 ),
                                                 SizedBox(

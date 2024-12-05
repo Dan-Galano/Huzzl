@@ -12,10 +12,7 @@ import 'package:provider/provider.dart';
 class InterviewTile extends StatefulWidget {
   final InterviewEvent interview;
 
-  InterviewTile({
-    super.key,
-    required this.interview
-  });
+  InterviewTile({super.key, required this.interview});
 
   @override
   State<InterviewTile> createState() => _InterviewTileState();
@@ -146,80 +143,81 @@ class _InterviewTileState extends State<InterviewTile>
                     children: [
                       if (widget.interview.type == 'Online') ...[
                         StartInterviewButton(
-                          startTime:
-                              widget.interview.startTime!,
+                          startTime: widget.interview.startTime!,
                           endTime: widget.interview.endTime!,
                           onPressed: () {
                             // interviewProvider.updateInterviewStatus(widget.interview);
                             // debugPrint("Interview Status Changeee to Starteeeddd");
-                            interviewProvider.startInterviewFunction(context, 'recruiter', e: widget.interview);
+                            interviewProvider.startInterviewFunction(
+                                context, 'recruiter',
+                                e: widget.interview);
                             debugPrint("Video call started.....");
                           },
                         ),
                         const Gap(10),
                       ],
-                      ...[
-                        MarkAsDoneButton(
-                          onPressed: () => showMarkAsDoneDialog(context),
-                          // onPressed: (){},
-                        ),
-                      ],
+                      // ...[
+                      //   MarkAsDoneButton(
+                      //     onPressed: () => showMarkAsDoneDialog(context),
+                      //     // onPressed: (){},
+                      //   ),
+                      // ],
                     ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () async {
-                    final RenderBox button =
-                        context.findRenderObject() as RenderBox;
-                    final RenderBox overlay = Overlay.of(context)
-                        .context
-                        .findRenderObject() as RenderBox;
+                // IconButton(
+                //   onPressed: () async {
+                //     final RenderBox button =
+                //         context.findRenderObject() as RenderBox;
+                //     final RenderBox overlay = Overlay.of(context)
+                //         .context
+                //         .findRenderObject() as RenderBox;
 
-                    final position =
-                        button.localToGlobal(Offset.zero, ancestor: overlay);
+                //     final position =
+                //         button.localToGlobal(Offset.zero, ancestor: overlay);
 
-                    await showMenu(
-                      context: context,
-                      position: RelativeRect.fromLTRB(
-                        position.dx,
-                        position.dy,
-                        overlay.size.width - position.dx - button.size.width,
-                        overlay.size.height - position.dy,
-                      ),
-                      items: [
-                        const PopupMenuItem(
-                          value: 'view_applicant_details',
-                          child: Row(
-                            children: [
-                              Icon(Icons.file_open_outlined,
-                                  color: Colors.grey),
-                              SizedBox(width: 8),
-                              Text('View applicant\'s details'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'reschedule_interview',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_calendar_outlined,
-                                  color: Colors.grey),
-                              SizedBox(width: 8),
-                              Text('Reschedule interview'),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ).then((value) {
-                      if (value == 'view_applicant_details') {
-                        showApplicationNotesViewDialog(context, this);
-                      } else if (value == 'reschedule_interview') {
-                        showRescheduleInterviewDialog(context);
-                      }
-                    });
-                  },
-                  icon: const Icon(Icons.more_vert),
-                ),
+                //     await showMenu(
+                //       context: context,
+                //       position: RelativeRect.fromLTRB(
+                //         position.dx,
+                //         position.dy,
+                //         overlay.size.width - position.dx - button.size.width,
+                //         overlay.size.height - position.dy,
+                //       ),
+                //       items: [
+                //         const PopupMenuItem(
+                //           value: 'view_applicant_details',
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.file_open_outlined,
+                //                   color: Colors.grey),
+                //               SizedBox(width: 8),
+                //               Text('View applicant\'s details'),
+                //             ],
+                //           ),
+                //         ),
+                //         const PopupMenuItem(
+                //           value: 'reschedule_interview',
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.edit_calendar_outlined,
+                //                   color: Colors.grey),
+                //               SizedBox(width: 8),
+                //               Text('Reschedule interview'),
+                //             ],
+                //           ),
+                //         ),
+                //       ],
+                //     ).then((value) {
+                //       if (value == 'view_applicant_details') {
+                //         showApplicationNotesViewDialog(context, this);
+                //       } else if (value == 'reschedule_interview') {
+                //         showRescheduleInterviewDialog(context);
+                //       }
+                //     });
+                //   },
+                //   icon: const Icon(Icons.more_vert),
+                // ),
               ],
             ),
           ),

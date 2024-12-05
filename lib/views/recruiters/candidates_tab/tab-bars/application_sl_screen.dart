@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/user-provider.dart';
+import 'package:huzzl_web/views/chat/screens/chat_home.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/widgets/customDropdown.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/widgets/views/application_view.dart';
@@ -15,6 +18,7 @@ import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/applicant_m
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/interview_model.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
+import 'package:huzzl_web/widgets/buttons/blue/bluefilled_circlebutton.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -39,11 +43,15 @@ class SlApplicationScreen extends StatefulWidget {
 class _SlApplicationScreenState extends State<SlApplicationScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late TextEditingController _notesController;
+  bool _isLoading = true;
 
   void _launchEmail() async {
+    var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
+
     final Uri emailUri = Uri(
       scheme: 'mailto',
-      path: 'eleanorpena@gmail.com',
+      path: jobCandidateProvider.findDataOfCandidate(widget.candidateId)!.email,
     );
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
@@ -75,7 +83,33 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
     getRecruiterName();
     // _interviewProvider.fetchInterviews(widget.candidateId, widget.candidate!.jobPostId);
 
+    _notesController = TextEditingController(); // Initialize empty controller
+
+    _fetchCandidateData();
+
     print("SANA MERON: ${widget.candidateId}, ${widget.candidate!.jobPostId}");
+  }
+
+  Future<void> _fetchCandidateData() async {
+    final jobCandidateProvider =
+        Provider.of<JobProviderCandidate>(context, listen: false);
+    final userId =
+        Provider.of<UserProvider>(context, listen: false).loggedInUserId!;
+    final jobPostId = jobCandidateProvider
+            .findDataOfCandidate(widget.candidateId)
+            ?.jobPostId ??
+        '';
+    final candidateId = widget.candidateId;
+
+    if (userId.isNotEmpty && jobPostId.isNotEmpty && candidateId.isNotEmpty) {
+      final notes = await jobCandidateProvider.fetchCurrentApplicationNotes(
+          userId, jobPostId, candidateId);
+      setState(() {
+        _notesController.text =
+            notes; // Set the fetched notes into the controller
+        _isLoading = false; // Data has been loaded
+      });
+    }
   }
 
   void getRecruiterName() async {
@@ -88,6 +122,7 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
 
   @override
   void dispose() {
+    _notesController.dispose(); // Dispose the controller
     _tabController.dispose();
     super.dispose();
   }
@@ -200,7 +235,7 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
     'Daniel Morgan',
   ];
 
-  final List<String> interviewTypes = ['Online', 'F2F'];
+  final List<String> interviewTypes = ['Online'];
   List<String> selectedInterviewers = [];
   Applicant? selectedApplicant;
   String? selectedType;
@@ -644,15 +679,15 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                       ),
                     ),
                     SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Interview Type',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   children: [
+                    //     Text(
+                    //       'Interview Type',
+                    //       style: TextStyle(fontSize: 12),
+                    //     ),
+                    //   ],
+                    // ),
                     Row(
                       children: [
                         Expanded(
@@ -1234,6 +1269,12 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: Text("Loading...")),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     var jobCandidateProvider = Provider.of<JobProviderCandidate>(context);
     DateTime applicationDate = jobCandidateProvider
         .findDataOfCandidate(widget.candidateId)!
@@ -1432,7 +1473,18 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                   ),
                                   const Gap(30),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      // Navigate to ChatHomePage and pass the Candidate object
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChatHomePage(
+                                            candidate: widget
+                                                .candidate, // Pass the candidate to ChatHomePage
+                                          ),
+                                        ),
+                                      );
+                                    },
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 65, vertical: 8),
@@ -1460,11 +1512,6 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                                   Gap(10),
                                   TextButton(
                                     onPressed: () {
-                                      // final homeState =
-                                      //     context.findAncestorStateOfType<
-                                      //         RecruiterHomeScreenState>();
-                                      // homeState!.changeDestination(4);
-
                                       _scheduleInterview(DateTime.now());
                                     },
                                     style: TextButton.styleFrom(
@@ -1567,21 +1614,116 @@ class _SlApplicationScreenState extends State<SlApplicationScreen>
                         ),
                         const Gap(20),
                         Container(
-                          height: 430,
+                          height: 530,
                           width: double.infinity,
                           child: TextField(
-                            controller: TextEditingController(
-                              text: "Ok naman siya",
-                            ),
+                            controller: _notesController,
                             maxLines: 20,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
+                              hintText:
+                                  "Add your comments or feedback here. Consider the applicant's qualifications, experience, and overall fit for the role.",
+                              hintStyle: TextStyle(color: Colors.grey),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10),
                                 ),
                               ),
                             ),
+                            onChanged: (value) {
+                              // Optional: Update state if needed to reflect changes dynamically
+                            },
                           ),
+                        ),
+                        Gap(20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BlueFilledCircleButton(
+                                onPressed: () async {
+                                  final String userId =
+                                      Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .loggedInUserId!;
+                                  final String jobPostId = jobCandidateProvider
+                                      .findDataOfCandidate(widget.candidateId)!
+                                      .jobPostId!;
+                                  final String candidateId = widget.candidateId;
+
+                                  // Debugging: Check the values before saving
+                                  print("User ID: $userId");
+                                  print("Job Post ID: $jobPostId");
+                                  print("Candidate ID: $candidateId");
+                                  print("Notes: ${_notesController.text}");
+
+                                  try {
+                                    // Construct the Firestore document path
+                                    await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(userId)
+                                        .collection('job_posts')
+                                        .doc(jobPostId)
+                                        .collection('candidates')
+                                        .doc(candidateId)
+                                        .set({
+                                      'applicationNotes': _notesController.text
+                                          .trim(), //but when i do this fpr debugging, it saves this. so the prob is in controller
+                                    }, SetOptions(merge: true));
+
+                                    // Provide feedback
+                                    EasyLoading.instance
+                                      ..displayDuration =
+                                          const Duration(milliseconds: 1500)
+                                      ..indicatorType =
+                                          EasyLoadingIndicatorType.fadingCircle
+                                      ..loadingStyle = EasyLoadingStyle.custom
+                                      ..backgroundColor =
+                                          const Color.fromARGB(255, 38, 135, 57)
+                                      ..textColor = Colors.white
+                                      ..fontSize = 16.0
+                                      ..indicatorColor = Colors.white
+                                      ..maskColor =
+                                          Colors.black.withOpacity(0.5)
+                                      ..userInteractions = false
+                                      ..dismissOnTap = true;
+                                    EasyLoading.showToast(
+                                      "✓ Notes saved.",
+                                      dismissOnTap: true,
+                                      toastPosition:
+                                          EasyLoadingToastPosition.top,
+                                      duration: Duration(seconds: 3),
+                                    );
+                                  } catch (e) {
+                                    // Handle errors
+                                    print("Error saving notes: $e");
+                                    EasyLoading.instance
+                                      ..displayDuration =
+                                          const Duration(milliseconds: 1500)
+                                      ..indicatorType =
+                                          EasyLoadingIndicatorType.fadingCircle
+                                      ..loadingStyle = EasyLoadingStyle.custom
+                                      ..backgroundColor =
+                                          const Color(0xFfd74a4a)
+                                      ..textColor = Colors.white
+                                      ..fontSize = 16.0
+                                      ..indicatorColor = Colors.white
+                                      ..maskColor =
+                                          Colors.black.withOpacity(0.5)
+                                      ..userInteractions = false
+                                      ..dismissOnTap = true;
+                                    EasyLoading.showToast(
+                                      "⚠︎ Failed to save notes",
+                                      dismissOnTap: true,
+                                      toastPosition:
+                                          EasyLoadingToastPosition.top,
+                                      duration: Duration(seconds: 3),
+                                      // maskType: EasyLoadingMaskType.black,
+                                    );
+                                  }
+                                },
+                                text: "Save Notes",
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

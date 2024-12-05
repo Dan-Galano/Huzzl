@@ -81,13 +81,13 @@ class _PausedJobCardState extends State<PausedJobCard> {
                         ),
                       ),
                       // SizedBox(height: 4),
-                      Text(
-                        'Paused on ${widget.jobDeadline}', //need pa palitan ng paused date talaga. currently: jobDeadline
-                        style: const TextStyle(
-                          // fontWeight: FontWeight.,
-                          fontSize: 14,
-                        ),
-                      ),
+                      // Text(
+                      //   'Paused on ${widget.jobDeadline}', //need pa palitan ng paused date talaga. currently: jobDeadline
+                      //   style: const TextStyle(
+                      //     // fontWeight: FontWeight.,
+                      //     fontSize: 14,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
@@ -127,7 +127,7 @@ class _PausedJobCardState extends State<PausedJobCard> {
                             value: 'Re-open',
                             child: Row(
                               children: [
-                                Icon(Icons.pause_circle_outline,
+                                Icon(Icons.play_circle_outline,
                                     color: Colors.grey),
                                 SizedBox(width: 8),
                                 Text('Re-open'),
@@ -145,17 +145,17 @@ class _PausedJobCardState extends State<PausedJobCard> {
                               ],
                             ),
                           ),
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit_note_outlined,
-                                    color: Colors.grey),
-                                SizedBox(width: 8),
-                                Text('Edit'),
-                              ],
-                            ),
-                          ),
+                          // const PopupMenuItem(
+                          //   value: 'edit',
+                          //   child: Row(
+                          //     children: [
+                          //       Icon(Icons.edit_note_outlined,
+                          //           color: Colors.grey),
+                          //       SizedBox(width: 8),
+                          //       Text('Edit'),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
                       ).then((value) {
                         // if (value == 'move_back_for_review') {

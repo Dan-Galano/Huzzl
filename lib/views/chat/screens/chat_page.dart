@@ -39,12 +39,10 @@ class _ChatPageState extends State<ChatPage> {
   FocusNode myFocusNode = FocusNode();
 
   final ScrollController _scrollController = ScrollController();
-  late final ChatProvider _chatProvider;
 
   @override
   void initState() {
     super.initState();
-    _chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     resetUnreadCount();
     myFocusNode.addListener(() {
@@ -88,19 +86,22 @@ class _ChatPageState extends State<ChatPage> {
               CircleAvatar(
                 radius: widget.sizeInfo.isDesktop ? 25 : 15,
                 backgroundColor: Color(0xFFff9800).withOpacity(0.3),
-                // child: (widget.userData["hiringManagerFirstName"]?.isNotEmpty ==
-                child: (widget.userData["firstName"]?.isNotEmpty ==
-                            true ||
-                        // widget.userData["hiringManagerLastName"]?.isNotEmpty ==
-                        widget.userData["lastName"]?.isNotEmpty ==
-                            true)
+                child: ((widget.userData["firstName"]?.isNotEmpty == true &&
+                            widget.userData["lastName"]?.isNotEmpty == true) ||
+                        (widget.userData["hiringManagerFirstName"]
+                                    ?.isNotEmpty ==
+                                true &&
+                            widget.userData["hiringManagerLastName"]
+                                    ?.isNotEmpty ==
+                                true))
                     ? Text(
-                        // "${(widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
-                        "${(widget.userData["firstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? '').toUpperCase()[0]}",
+                        // Check for first name/last name or hiring manager's first and last name
+                        "${(widget.userData["firstName"] ?? widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
                         style: TextStyle(
-                            color: Color(0xFFfd7206),
-                            fontSize: widget.sizeInfo.isDesktop ? 16 : 12,
-                            fontWeight: FontWeight.w700),
+                          color: Color(0xFFfd7206),
+                          fontSize: widget.sizeInfo.isDesktop ? 16 : 12,
+                          fontWeight: FontWeight.w700,
+                        ),
                       )
                     : Icon(
                         Icons.person,
@@ -109,15 +110,31 @@ class _ChatPageState extends State<ChatPage> {
                       ),
               ),
               Gap(15),
-              Text(
-                  // "${(widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["hiringManagerLastName"] ?? '')}",
-                  "${(widget.userData["firstName"] ?? '')} ${(widget.userData["lastName"] ?? '')}",
-                  style: TextStyle(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    // Display full name with fallback to hiring manager name if necessary
+                    "${(widget.userData["firstName"] ?? widget.userData["hiringManagerFirstName"] ?? '')} ${(widget.userData["lastName"] ?? widget.userData["hiringManagerLastName"] ?? '')}",
+                    style: TextStyle(
                       fontSize: widget.sizeInfo.isDesktop ? 16 : 14,
-                      fontWeight: FontWeight.bold)),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    // Display full name with fallback to hiring manager name if necessary
+                    "${widget.userData["email"]}",
+                    style: TextStyle(
+                        fontSize: widget.sizeInfo.isDesktop ? 12 : 10,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey),
+                  ),
+                ],
+              ),
               Gap(20),
             ],
           ),
+          Gap(30),
           Expanded(child: _buildMessageList(widget.sizeInfo)),
           buildUserInput()
         ],
@@ -159,7 +176,7 @@ class _ChatPageState extends State<ChatPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         height: 50,
-                        width: MediaQuery.of(context).size.width * 0.2,
+                        width: MediaQuery.of(context).size.width * 0.1,
                       ),
                     ),
                   ],
@@ -180,8 +197,8 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         height: 80,
                         width: sizeInfo.isDesktop
-                            ? MediaQuery.of(context).size.width * 0.60
-                            : MediaQuery.of(context).size.width * 0.40,
+                            ? MediaQuery.of(context).size.width * 0.30
+                            : MediaQuery.of(context).size.width * 0.20,
                       ),
                     ),
                   ],
@@ -207,7 +224,7 @@ class _ChatPageState extends State<ChatPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         height: 50,
-                        width: MediaQuery.of(context).size.width * 0.40,
+                        width: MediaQuery.of(context).size.width * 0.10,
                       ),
                     ),
                   ],
@@ -280,7 +297,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         height: 100,
                         width: sizeInfo.isDesktop
-                            ? MediaQuery.of(context).size.width * 0.60
+                            ? MediaQuery.of(context).size.width * 0.20
                             : MediaQuery.of(context).size.width * 0.40,
                       ),
                     ),
@@ -333,16 +350,21 @@ class _ChatPageState extends State<ChatPage> {
     return Row(
       mainAxisAlignment:
           isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (!isCurrentUser) ...[
           CircleAvatar(
-            radius: 15,
+            radius: 18,
             backgroundColor: Colors.grey,
-            child: (widget.userData["firstName"]?.isNotEmpty == true ||
-                    widget.userData["lastName"]?.isNotEmpty == true)
+            child: ((widget.userData["firstName"]?.isNotEmpty == true &&
+                        widget.userData["lastName"]?.isNotEmpty == true) ||
+                    (widget.userData["hiringManagerFirstName"]?.isNotEmpty ==
+                            true &&
+                        widget.userData["hiringManagerLastName"]?.isNotEmpty ==
+                            true))
                 ? Text(
-                    "${(widget.userData["firstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? '').toUpperCase()[0]}",
+                    // Check for first name/last name or hiring manager's first and last name
+                    "${(widget.userData["firstName"] ?? widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
                     style: TextStyle(color: Colors.white),
                   )
                 : Icon(
@@ -377,7 +399,7 @@ class _ChatPageState extends State<ChatPage> {
           textInputAction: TextInputAction.send,
           decoration: inputTextFieldDecoration(1, "Type a message..."),
           onSubmitted: (value) {
-            _chatProvider.sendMessage(
+            _chatService.sendMessage(
                 widget.receiverID, _messageController.text);
             _messageController.clear();
             scrollDown();
@@ -385,7 +407,7 @@ class _ChatPageState extends State<ChatPage> {
         )),
         IconButton(
             onPressed: () {
-              _chatProvider.sendMessage(
+              _chatService.sendMessage(
                   widget.receiverID, _messageController.text);
               _messageController.clear();
               scrollDown();

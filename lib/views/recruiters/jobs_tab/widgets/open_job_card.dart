@@ -114,7 +114,7 @@ class _OpenJobCardState extends State<OpenJobCard> {
                       ),
                       // SizedBox(height: 4),
                       Text(
-                        '${widget.jobDeadline}',
+                        'Deadline: ${widget.jobDeadline}',
                         style: const TextStyle(
                           // fontWeight: FontWeight.,
                           fontSize: 14,
@@ -181,17 +181,17 @@ class _OpenJobCardState extends State<OpenJobCard> {
                               ],
                             ),
                           ),
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit_note_outlined,
-                                    color: Colors.grey),
-                                SizedBox(width: 8),
-                                Text('Edit'),
-                              ],
-                            ),
-                          ),
+                          // const PopupMenuItem(
+                          //   value: 'edit',
+                          //   child: Row(
+                          //     children: [
+                          //       Icon(Icons.edit_note_outlined,
+                          //           color: Colors.grey),
+                          //       SizedBox(width: 8),
+                          //       Text('Edit'),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
                       ).then((value) {
                         // if (value == 'move_back_for_review') {
@@ -210,6 +210,8 @@ class _OpenJobCardState extends State<OpenJobCard> {
                     icon: Image.asset(
                         'assets/images/three-dot-icon-data-table.png'),
                   ),
+               
+               
                 ],
               ),
             ],
