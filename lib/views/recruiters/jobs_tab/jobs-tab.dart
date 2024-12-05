@@ -16,6 +16,7 @@ class JobTab extends StatefulWidget {
   final User user;
   final int initialIndex;
   final Map<String, dynamic> userData;
+  final String companyStatus;
   const JobTab({
     super.key,
     required this.candidates,
@@ -24,6 +25,7 @@ class JobTab extends StatefulWidget {
     required this.user,
     required this.initialIndex,
     required this.userData,
+    required this.companyStatus,
   });
 
   @override
@@ -69,6 +71,39 @@ class _JobTabState extends State<JobTab> {
     } catch (e) {
       print("Error fetching job count: $e");
     }
+  }
+
+  void pendingModal() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        // Show the modal dialog
+        return const SizedBox(
+          width: 200,
+          child: AlertDialog(
+            content: Padding(
+              padding: EdgeInsets.all(50.0),
+              child: Row(
+                children: [
+                  Text(
+                    "Please wait for the approval of your business documents",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // Add a 2-second delay before closing the dialog
+    // Future.delayed(const Duration(seconds: 2), () {
+    //   Navigator.of(context).pop(); // Close the dialog
+    // });
   }
 
   @override
@@ -118,12 +153,20 @@ class _JobTabState extends State<JobTab> {
                             ElevatedButton(
                               onPressed: () {
                                 // widget.postJob
+                                if (widget.companyStatus == "pending") {
+                                  debugPrint(
+                                      "Company status: ${widget.companyStatus}");
+                                  pendingModal();
+                                  // Navigator.pop(context);
+                                  return;
+                                }
                                 final subscriptionType =
                                     widget.userData['subscriptionType'];
                                 final jobPostsCount =
                                     widget.userData['jobPostsCount'] ?? 0;
 
-                                    debugPrint("$subscriptionType ${jobPostsCount.toString()}");
+                                debugPrint(
+                                    "$subscriptionType ${jobPostsCount.toString()}");
 
                                 if (subscriptionType == 'basic' &&
                                     jobPostsCount >= 2) {

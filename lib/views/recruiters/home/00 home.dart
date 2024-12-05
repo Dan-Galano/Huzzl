@@ -257,6 +257,7 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
           user: user!,
           userData: userData!,
           initialIndex: _jobTabInitialIndex,
+          companyStatus : companyData!['companyStatus'],
         );
       case 3:
         if (userData!['subscriptionType'] == "basic") {
