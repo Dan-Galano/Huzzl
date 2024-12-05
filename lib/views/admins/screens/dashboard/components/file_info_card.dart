@@ -24,41 +24,52 @@ class _FileInfoCardState extends State<FileInfoCard> {
   late MenuAppController adminProvider;
 
   //will show
-  int? count;
+  int count = 0;
 
   @override
   void initState() {
     super.initState();
     adminProvider = Provider.of<MenuAppController>(context, listen: false);
-    // getCounterFunction();
+    getCounterFunction();
   }
-  
 
-  // void getCounterFunction() async{
-  //   counterRecruiter = await adminProvider.recruitersCount();
-  //   counterJobPosting = await adminProvider.jobPostCount();
-  //   counterJobseeker = await adminProvider.jobseekersCount();
+  Future<void> getCounterFunction() async {
+    print('Get Counter Function');
+    counterJobseeker = adminProvider.totalJobseekers;
 
-  //   if(widget.info.title == "Recruiter"){
-  //     setState(() {
-  //       count = counterRecruiter;
-  //     });
-  //   }else if (widget.info.title == "Job-seeker"){
-  //     setState(() {
-  //       count = counterJobseeker;
-  //     });
-  //   }else {
-  //     setState(() {
-  //       count = counterJobPosting;
-  //     });
-  //   }
-
-  // }
+    if (widget.info.title == "Recruiter") {
+      //FETCH_DISABLER
+      await adminProvider.recruitersCount();
+      counterRecruiter = adminProvider.totalRecruiters;
+      setState(() {
+        print("RECRUITERS BABY: $counterRecruiter");
+        count = counterRecruiter;
+      });
+    } else if (widget.info.title == "Job-seeker") {
+      //FETCH_DISABLER
+      await adminProvider.jobseekersCount();
+      counterJobseeker = adminProvider.totalJobseekers;
+      setState(() {
+        print("JOP POSTS BABY: $counterJobseeker");
+        count = counterJobseeker;
+      });
+    } else {
+      //FETCH_DISABLER
+      await adminProvider.jobPostCount();
+      counterJobPosting = adminProvider.totalJobPosts;
+      setState(() {
+        print("JOP POSTS BABY: $counterJobPosting");
+        count = counterJobPosting;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if(count == null){
-      return const Center(child: CircularProgressIndicator(),);
+    if (count <= 0) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
@@ -86,7 +97,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                     //     info.color ?? Colors.black, BlendMode.srcIn),
                     ),
               ),
-              const Icon(Icons.more_vert, color: Colors.black)
+              // const Icon(Icons.more_vert, color: Colors.black)
             ],
           ),
           Text(
@@ -102,7 +113,9 @@ class _FileInfoCardState extends State<FileInfoCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                widget.info.title! == "Job Post" ? "$count Posts" : "$count Users",
+                widget.info.title! == "Job Post"
+                    ? "$count Posts"
+                    : "$count Users",
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall!

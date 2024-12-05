@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/widgets/buttons/blue/bluefilled_boxbutton.dart';
+import 'package:provider/provider.dart';
 
 class MyFormModal extends StatefulWidget {
   final User user;
@@ -27,6 +29,13 @@ class _MyFormModalState extends State<MyFormModal> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
+
+  late JobProviderCandidate _jobCandidate;
+  @override
+  void initState() {
+    super.initState();
+    _jobCandidate = Provider.of<JobProviderCandidate>(context, listen: false);
+  }
 
   // String _email = '';
   // String _password = '';
@@ -125,7 +134,7 @@ class _MyFormModalState extends State<MyFormModal> {
           "subAdminPhoneNumber": _phoneNumber.text,
           "permissions": subAdminPermission,
           "assigned_by": widget.user.uid,
-          'status' : 'active',
+          'status': 'active',
           "created_at": DateTime.now(),
         });
         // Check if the user creation was successful
@@ -166,6 +175,10 @@ class _MyFormModalState extends State<MyFormModal> {
         } else {
           print('User creation failed!');
         }
+
+        _jobCandidate.activityLogs(
+            action: "Added sub-admin",
+            message: "Successfully added sub-admin.");
 
         Navigator.of(context).pop();
         Navigator.of(context).pop();

@@ -133,8 +133,8 @@ class JobProviderCandidate extends ChangeNotifier {
   ];
   List<Candidate> get candidates => _candidates;
 
-
- Future<String> fetchCurrentApplicationNotes(String userId, String jobPostId, String candidateId) async {
+  Future<String> fetchCurrentApplicationNotes(
+      String userId, String jobPostId, String candidateId) async {
     try {
       final document = await FirebaseFirestore.instance
           .collection('users')
@@ -146,7 +146,8 @@ class JobProviderCandidate extends ChangeNotifier {
           .get();
 
       if (document.exists) {
-        return document.data()?['applicationNotes'] ?? ''; // Return the notes, default to empty if not found
+        return document.data()?['applicationNotes'] ??
+            ''; // Return the notes, default to empty if not found
       }
     } catch (e) {
       print('Error fetching application notes: $e');
@@ -790,6 +791,12 @@ Please review their profile and application to assess their suitability for your
           } else {
             notifMessage = message;
           }
+        }else if(typeOfNotif == "Interview"){
+          if (message!.isEmpty) {
+            notifMessage = "No name";
+          } else {
+            notifMessage = message;
+          }
         }
 
         await emailjs.send(
@@ -816,6 +823,85 @@ Please review their profile and application to assess their suitability for your
         print('ERROR... $error');
       }
       print(error.toString());
+    }
+  }
+
+  //Activity logs
+  Future<void> activityLogs({
+    required String action,
+    required String message,
+  }) async {
+    try {
+      final userId = getCurrentUserId();
+
+      // Fetch the user's first and last name from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (!userDoc.exists) {
+        throw Exception("User document not found for userId: $userId");
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      String firstName = userData['hiringManagerFirstName'] ?? "Unknown";
+      String lastName = userData['hiringManagerLastName'] ?? "User";
+
+      String userName = "$firstName $lastName";
+
+      // Get the current date and time
+      DateTime now = DateTime.now();
+      String formattedDate =
+          "${now.month}/${now.day}/${now.year} at ${now.hour}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}";
+
+      // Prepare the activity log data
+      Map<String, dynamic> logData = {
+        "date": formattedDate,
+        "user": userName,
+        "action": action,
+        "message": message,
+      };
+
+      // Reference to the Firestore collection
+      CollectionReference activityLogCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('activityLogs');
+
+      // Add the log to Firestore
+      await activityLogCollection.add(logData);
+
+      print("Activity log added successfully.");
+    } catch (e) {
+      print("Error adding activity log: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivityLogs() async {
+    try {
+      // Query the user's activityLogs subcollection
+      final userId = getCurrentUserId();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('activityLogs')
+          .orderBy('date',
+              descending: true) // Order by date (most recent first)
+          .get();
+
+      // Map the results into a list of maps
+      List<Map<String, dynamic>> activityLogs = snapshot.docs
+          .map((doc) => {
+                "id": doc.id,
+                ...doc.data() as Map<String, dynamic>,
+              })
+          .toList();
+
+      return activityLogs;
+    } catch (e) {
+      print("Error fetching activity logs: $e");
+      return [];
     }
   }
 }

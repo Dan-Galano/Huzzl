@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -14,166 +15,141 @@ class _LineChartSample2State extends State<LineChartSample2> {
     Colors.blueAccent,
   ];
 
+  Map<int, int> subscribersByMonth = {};
+  bool isLoading = true;
   bool showAvg = false;
 
   @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    subscribersByMonth = await fetchSubscribersByMonth();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<Map<int, int>> fetchSubscribersByMonth() async {
+    try {
+      var subscribersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('subscriptionType', isEqualTo: 'premium')
+          .get();
+
+      Map<int, int> subscribersByMonth = {};
+
+      for (var doc in subscribersSnapshot.docs) {
+        Timestamp timestamp = doc['dateSubscribed'];
+        DateTime dateSubscribed = timestamp.toDate();
+        int month = dateSubscribed.month;
+
+        // Increment the count for the month
+        if (subscribersByMonth.containsKey(month)) {
+          subscribersByMonth[month] = subscribersByMonth[month]! + 1;
+        } else {
+          subscribersByMonth[month] = 1;
+        }
+      }
+
+      return subscribersByMonth;
+    } catch (e) {
+      print("Error fetching users (subscribers): $e");
+      return {};
+    }
+  }
+
+  double calculateAverage() {
+    if (subscribersByMonth.isEmpty) return 0.0;
+
+    int totalSubscribers = subscribersByMonth.values.fold(0, (a, b) => a + b);
+    return totalSubscribers / subscribersByMonth.length;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AspectRatio(
-          aspectRatio: 1.70,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              right: 18,
-              left: 12,
-              top: 24,
-              bottom: 12,
-            ),
-            child: LineChart(
-              showAvg ? avgData() : mainData(),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'avg',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg ? Colors.black.withOpacity(0.5) : Colors.black,
+    return isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Stack(
+            children: <Widget>[
+              AspectRatio(
+                aspectRatio: 1.70,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 18,
+                    left: 12,
+                    top: 24,
+                    bottom: 12,
+                  ),
+                  child: LineChart(showAvg ? avgData() : mainData()),
+                ),
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    Widget text;
-    switch (value.toInt()) {
-      case 1:
-        text = const Text('JAN', style: style);
-        break;
-      case 2:
-        text = const Text('FEB', style: style);
-        break;
-      case 3:
-        text = const Text('MAR', style: style);
-        break;
-      case 4:
-        text = const Text('APR', style: style);
-        break;
-      case 5:
-        text = const Text('MAY', style: style);
-        break;
-      case 6:
-        text = const Text('JUN', style: style);
-        break;
-      case 7:
-        text = const Text('JUL', style: style);
-        break;
-      case 8:
-        text = const Text('AUG', style: style);
-        break;
-      case 9:
-        text = const Text('SEP', style: style);
-        break;
-      case 10:
-        text = const Text('OCT', style: style);
-        break;
-      case 11:
-        text = const Text('NOV', style: style);
-        break;
-      case 12:
-        text = const Text('DEC', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
-    }
-
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: text,
-    );
-  }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '5';
-        break;
-      case 3:
-        text = '10';
-        break;
-      case 5:
-        text = '15';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
+              Positioned(
+                top: 10,
+                right: 10,
+                child: SizedBox(
+                  width: 60,
+                  height: 34,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showAvg = !showAvg;
+                      });
+                    },
+                    child: Text(
+                      'avg',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: showAvg
+                            ? Colors.black.withOpacity(0.5)
+                            : Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 
   LineChartData mainData() {
+    List<FlSpot> spots = subscribersByMonth.entries
+        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.toDouble()))
+        .toList();
+
+    int maxCount = subscribersByMonth.values.isNotEmpty
+        ? subscribersByMonth.values.reduce((a, b) => a > b ? a : b)
+        : 1;
+
     return LineChartData(
-      gridData: FlGridData(
+      gridData: const FlGridData(
         show: true,
         drawVerticalLine: true,
         horizontalInterval: 1,
-        verticalInterval: 1,
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Colors.blue,
-            strokeWidth: 1,
-          );
-        },
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Colors.blue,
-            strokeWidth: 1,
-          );
-        },
       ),
       titlesData: FlTitlesData(
         show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 30,
             interval: 1,
-            getTitlesWidget: bottomTitleWidgets,
+            getTitlesWidget: (value, meta) => bottomTitleWidgets(value),
           ),
         ),
-        leftTitles: AxisTitles(
+        leftTitles: const AxisTitles(
+          axisNameWidget: Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Text(
+              "Subscribers",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
           sideTitles: SideTitles(
             showTitles: true,
             interval: 1,
-            getTitlesWidget: leftTitleWidgets,
             reservedSize: 42,
           ),
         ),
@@ -182,29 +158,29 @@ class _LineChartSample2State extends State<LineChartSample2> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 0,
+      minX: 1,
       maxX: 12,
       minY: 0,
-      maxY: 6,
+      maxY: maxCount.toDouble(),
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 0.3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(12, 5),
-          ],
+          spots: spots,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
           ),
           barWidth: 5,
           isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
+          dotData: FlDotData(
+            show: true,
+            getDotPainter: (spot, percent, bar, index) {
+              return FlDotCirclePainter(
+                radius: 4,
+                color: Colors.blue,
+                strokeWidth: 1,
+                strokeColor: Colors.white,
+              );
+            },
           ),
           belowBarData: BarAreaData(
             show: true,
@@ -220,99 +196,93 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   LineChartData avgData() {
+    double avg = calculateAverage();
     return LineChartData(
-      lineTouchData: const LineTouchData(enabled: false),
-      gridData: FlGridData(
+      gridData: const FlGridData(
         show: true,
         drawHorizontalLine: true,
-        verticalInterval: 1,
         horizontalInterval: 1,
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
       ),
       titlesData: FlTitlesData(
         show: true,
         bottomTitles: AxisTitles(
+          axisNameWidget: const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text(
+              "Month",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 30,
-            getTitlesWidget: bottomTitleWidgets,
             interval: 1,
+            getTitlesWidget: (value, meta) => bottomTitleWidgets(value),
           ),
         ),
-        leftTitles: AxisTitles(
+        leftTitles: const AxisTitles(
+          axisNameWidget: Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Text(
+              "Subscribers",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
           sideTitles: SideTitles(
             showTitles: true,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
             interval: 1,
+            reservedSize: 42,
           ),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
         ),
       ),
       borderData: FlBorderData(
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 0,
+      minX: 1,
       maxX: 12,
       minY: 0,
-      maxY: 6,
+      maxY: avg + 1, // Adjusting to give space for the average line
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(12, 3.44),
-          ],
+          spots: List.generate(
+            12,
+            (index) => FlSpot(index + 1.0, avg),
+          ),
           isCurved: true,
           gradient: LinearGradient(
-            colors: [
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-            ],
+            colors: gradientColors,
           ),
-          barWidth: 5,
+          barWidth: 3,
           isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withOpacity(0.1),
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withOpacity(0.1),
-              ],
-            ),
-          ),
+          dotData: const FlDotData(show: false),
+          belowBarData: BarAreaData(show: false),
         ),
       ],
     );
+  }
+
+  Widget bottomTitleWidgets(double value) {
+    const style = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+    const months = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC'
+    ];
+
+    if (value >= 1 && value <= 12) {
+      return Text(months[value.toInt() - 1], style: style);
+    } else {
+      return const Text('');
+    }
   }
 }

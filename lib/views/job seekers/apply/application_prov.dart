@@ -224,4 +224,48 @@ class ApplicationProvider with ChangeNotifier {
   //     debugPrint("Error in fetching the job post details: ${e.toString()}");
   //   }
   // }
+
+  Future<void> saveJobs(BuildContext context, String jobId, String recruiterId,
+      String jobTitle, String jobseekerId) async {
+    try {
+      // Fetch jobseeker data from Firestore
+      var jobSeekerData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(jobseekerId)
+          .get();
+
+      if (!jobSeekerData.exists) {
+        throw 'Jobseeker data not found for ID: $jobseekerId';
+      }
+
+      // Extract fields from the fetched document
+      String fname = jobSeekerData['firstName'] ?? 'Unknown';
+      String lname = jobSeekerData['lastName'] ?? 'Unknown';
+      String email = jobSeekerData['email'] ?? 'No email';
+      String phoneNumber = jobSeekerData['phoneNumber'] ?? 'No phone number';
+
+      // Save the job information to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(jobseekerId) // Use jobseekerId here instead of undefined uid
+          .collection('save_jobs')
+          .add({
+        'firstName': fname,
+        'lastName': lname,
+        'email': email,
+        'phoneNumber': phoneNumber,
+        'saveDate': DateTime.now(),
+        'jobPostId': jobId,
+        'recruiterId': recruiterId,
+        'jobTitle': jobTitle,
+        'preScreenAnswer': null,
+      });
+
+      print("Jobseeker saved jobs successfully.");
+    } catch (e) {
+      print('Error saving jobs: $e');
+      throw Exception(
+          'Error saving jobs: $e'); // Throw a more specific exception
+    }
+  }
 }

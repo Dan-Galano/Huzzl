@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/screens/business_documents/components/view_documents_modal.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart'; // Import the model
@@ -35,7 +36,8 @@ class PendingDocumentsScreen extends StatelessWidget {
                 return DataRow(cells: [
                   DataCell(Text(company.companyName)),
                   DataCell(Text(company.city)),
-                  DataCell(Text(company.createdAt.toDate().toString())),
+                  DataCell(Text(DateFormat('MM/dd/yyy')
+                      .format(company.createdAt.toDate()))),
                   DataCell(
                     ElevatedButton(
                       onPressed: () {

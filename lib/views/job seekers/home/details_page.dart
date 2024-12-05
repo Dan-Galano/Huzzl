@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/apply/application_prov.dart';
 import 'package:huzzl_web/views/job%20seekers/apply/review_details.dart';
 import 'package:huzzl_web/views/job%20seekers/home/provider/jobdetails_provider.dart';
 import 'package:huzzl_web/widgets/buttons/blue/darkblue_boxbutton.dart';
@@ -65,6 +66,7 @@ class _JobPostAppState extends State<JobPostApp> {
 
   @override
   Widget build(BuildContext context) {
+    var applicationProvider = Provider.of<ApplicationProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -394,7 +396,18 @@ class _JobPostAppState extends State<JobPostApp> {
                               ),
                               SizedBox(height: 10),
                               OrangeIconButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  showSavingModal();
+                                  debugPrint(
+                                      "Details: ${widget.jobPostUid} ${widget.jobTitle}");
+                                  await applicationProvider.saveJobs(
+                                      context,
+                                      widget.jobPostUid,
+                                      widget.recUid,
+                                      widget.jobTitle,
+                                      widget.userUid);
+                                  Navigator.pop(context);
+                                },
                                 imagePath: 'assets/images/heart.png',
                                 text: "Save Job",
                                 width: 300,
@@ -466,6 +479,29 @@ class _JobPostAppState extends State<JobPostApp> {
           ),
         ],
       ),
+    );
+  }
+
+  void showSavingModal() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const SizedBox(
+          height: 100,
+          width: 200,
+          child: AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(
+                  width: 10,
+                ),
+                Text("Saving jobs ..."),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

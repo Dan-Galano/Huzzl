@@ -30,27 +30,36 @@ class _ChartState extends State<Chart> {
   void initState() {
     super.initState();
     adminProvider = Provider.of<MenuAppController>(context, listen: false);
-    // getCounterFunction();
+    getCounterFunction();
   }
 
-  // void getCounterFunction() async {
-  //   counterRecruiter = await adminProvider.recruitersCount();
-  //   counterJobPosting = await adminProvider.jobPostCount();
-  //   counterJobseeker = await adminProvider.jobseekersCount();
+  Future<void> getCounterFunction() async {
+    //FETCH_DISABLER
+    await adminProvider.recruitersCount();
+    await adminProvider.jobPostCount();
+    await adminProvider.jobseekersCount();
 
-  //   setState(() {
-  //     recruiterCount = counterRecruiter.toDouble();
-  //     jobseekerCount = counterJobseeker.toDouble();
-  //     jobPostingCount = counterJobPosting.toDouble();
+    counterRecruiter = adminProvider.totalRecruiters;
+    counterJobPosting = adminProvider.totalJobPosts;
+    counterJobseeker = adminProvider.totalJobseekers;
 
-  //     totalUsage = counterRecruiter + counterJobPosting + counterJobseeker;
-  //   });
-  // }
+    setState(() {
+      recruiterCount = counterRecruiter.toDouble();
+      jobseekerCount = counterJobseeker.toDouble();
+      jobPostingCount = counterJobPosting.toDouble();
+
+      totalUsage = counterRecruiter + counterJobPosting + counterJobseeker;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (recruiterCount == null || jobseekerCount == null || jobPostingCount == null) {
-      return const Center(child: CircularProgressIndicator(),);
+    if (recruiterCount == null ||
+        jobseekerCount == null ||
+        jobPostingCount == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     return SizedBox(
       height: 200,
@@ -70,7 +79,7 @@ class _ChartState extends State<Chart> {
               children: [
                 SizedBox(height: defaultPadding),
                 Text(
-                  recruiterCount != null ? "$totalUsage" : "0", 
+                  recruiterCount != null ? "$totalUsage" : "0",
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
