@@ -251,7 +251,7 @@ class _ResumePageSummary2autoBuildState
           build: (pw.Context context) => pw.Center(
             child: pw.Image(
               image,
-              width: PdfPageFormat.legal.width * 98,
+              width: PdfPageFormat.legal.width * 95,
               height: PdfPageFormat.legal.height * 0.95,
             ),
           ),
