@@ -117,7 +117,8 @@ class _SignUpRecruiterState extends State<SignUpRecruiter> {
           'uid': userCredential.user!.uid,
           'email': _email.text,
           'created_at': Timestamp.now(),
-          'accStatus': 'enabled'
+          'accStatus': 'enabled',
+          'dateSubscribed': 'none',
         },
         SetOptions(merge: true),
       );

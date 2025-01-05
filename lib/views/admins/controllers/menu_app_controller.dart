@@ -29,7 +29,8 @@ class MenuAppController extends ChangeNotifier {
       var subscribersSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('subscriptionType', isEqualTo: 'premium')
-          .get();
+          .where('role', isEqualTo: 'recruiter')
+          .get(); 
 
       _subscribers = subscribersSnapshot.docs.map(
         (doc) {
@@ -44,6 +45,7 @@ class MenuAppController extends ChangeNotifier {
         },
       ).toList();
       print("Successfully fetched users (subscribers) !!!");
+      print("NUMBER OF SUBS: ${_subscribers.length}");
       notifyListeners();
     } catch (e) {
       print("Error fetching users (subscribers): $e");
