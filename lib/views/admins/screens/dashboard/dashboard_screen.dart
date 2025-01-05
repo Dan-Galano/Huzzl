@@ -4,7 +4,6 @@ import 'package:huzzl_web/views/admins/responsive.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/line_chart.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/my_fields.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/subscribed_users_table.dart';
-
 import '../../constants.dart';
 import 'components/header.dart';
 

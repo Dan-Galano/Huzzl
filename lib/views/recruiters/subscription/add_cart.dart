@@ -49,6 +49,7 @@ class _AddCardModalState extends State<AddCardModal> {
             .doc(userId)
             .update({
           'subscriptionType': 'premium',
+          'dateSubscribed': DateTime.now(),
         });
 
         Navigator.of(context).pop(); // Dismiss the loading dialog
