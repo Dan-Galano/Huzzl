@@ -86,48 +86,55 @@ class _LineChartSample2State extends State<LineChartSample2> {
                   child: LineChart(showAvg ? avgData() : mainData()),
                 ),
               ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: SizedBox(
-                  width: 60,
-                  height: 34,
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        showAvg = !showAvg;
-                      });
-                    },
-                    child: Text(
-                      'avg',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: showAvg
-                            ? Colors.black.withOpacity(0.5)
-                            : Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: -15,
+              //   right: -10,
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: SizedBox(
+              //       width: 60,
+              //       height: 34,
+              //       child: TextButton(
+              //         onPressed: () {
+              //           setState(() {
+              //             showAvg = !showAvg;
+              //           });
+              //         },
+              //         child: Text(
+              //           'avg',
+              //           style: TextStyle(
+              //             fontSize: 12,
+              //             color: showAvg
+              //                 ? Colors.black.withOpacity(0.5)
+              //                 : Colors.black,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           );
   }
 
   LineChartData mainData() {
     List<FlSpot> spots = subscribersByMonth.entries
-        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.toDouble()))
+        .map((entry) =>
+            FlSpot(entry.key.toDouble(), (entry.value * 499).toDouble()))
         .toList();
 
-    int maxCount = subscribersByMonth.values.isNotEmpty
-        ? subscribersByMonth.values.reduce((a, b) => a > b ? a : b)
-        : 1;
+    var maxRevenue = subscribersByMonth.values.isNotEmpty
+        ? subscribersByMonth.values
+            .map((count) => count * 499)
+            .reduce((a, b) => a > b ? a : b)
+        : 499.0;
 
     return LineChartData(
-      gridData: const FlGridData(
+      gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: 1,
+        horizontalInterval: maxRevenue / 5, // Adjust to reduce grid lines
+        verticalInterval: 1,
       ),
       titlesData: FlTitlesData(
         show: true,
@@ -139,18 +146,33 @@ class _LineChartSample2State extends State<LineChartSample2> {
             getTitlesWidget: (value, meta) => bottomTitleWidgets(value),
           ),
         ),
-        leftTitles: const AxisTitles(
-          axisNameWidget: Padding(
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          axisNameWidget: const Padding(
             padding: EdgeInsets.only(right: 8.0),
             child: Text(
-              "Subscribers",
+              "Revenue (PHP)",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 1,
             reservedSize: 42,
+            interval:
+                maxRevenue / 5, // Increase interval for less frequent labels
+            getTitlesWidget: (value, meta) {
+              return Text('₱${value.toInt()}',
+                  style: const TextStyle(fontSize: 12));
+            },
           ),
         ),
       ),
@@ -161,7 +183,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       minX: 1,
       maxX: 12,
       minY: 0,
-      maxY: maxCount.toDouble(),
+      maxY: maxRevenue.toDouble(),
       lineBarsData: [
         LineChartBarData(
           spots: spots,
@@ -218,6 +240,16 @@ class _LineChartSample2State extends State<LineChartSample2> {
             reservedSize: 30,
             interval: 1,
             getTitlesWidget: (value, meta) => bottomTitleWidgets(value),
+          ),
+        ),
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
           ),
         ),
         leftTitles: const AxisTitles(

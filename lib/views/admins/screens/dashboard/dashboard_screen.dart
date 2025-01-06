@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/responsive.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/components/bar_chart.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/components/bar_chart_2.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/line_chart.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/my_fields.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/subscribed_users_table.dart';
@@ -43,12 +45,14 @@ class DashboardScreen extends StatelessWidget {
                             children: [
                               Gap(20),
                               Text(
-                                'Subscribed Users',
+                                'Subscriptions 2024',
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
                               ),
                               LineChartSample2(),
+                              // BarChartSample2(),
+                              // BarChartSample8(),
                               Gap(20),
                             ],
                           ),
