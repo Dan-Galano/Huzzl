@@ -52,6 +52,17 @@ class _AddCardModalState extends State<AddCardModal> {
           'dateSubscribed': DateTime.now(),
         });
 
+        await FirebaseFirestore.instance
+            .collection('subscribers')
+            .add({
+          'uid': userId,
+          'fname': userSnapshot['hiringManagerFirstName'],
+          'lname': userSnapshot['hiringManagerLastName'],
+          'dateSubscribed': DateTime.now(),
+          'jobPostsCount': userSnapshot['jobPostsCount'],
+          'phone': userSnapshot['phone'],
+        });
+
         Navigator.of(context).pop(); // Dismiss the loading dialog
 
         // Show a success message

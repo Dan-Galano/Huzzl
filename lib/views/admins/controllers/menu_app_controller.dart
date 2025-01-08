@@ -21,6 +21,35 @@ class MenuAppController extends ChangeNotifier {
     }
   }
 
+  List<Subscriber> _allSubscriptions = [];
+  List<Subscriber> get allSubscriptions => _allSubscriptions;
+  Future<void> fetchAllSubscriptions() async {
+    try {
+      var subscribersSnapshot = await FirebaseFirestore.instance
+          .collection('subscribers')
+          .orderBy('dateSubscribed')
+          .get();
+
+      _allSubscriptions = subscribersSnapshot.docs.map(
+        (doc) {
+          return Subscriber(
+            uid: doc['uid'],
+            hiringManagerFirstName: doc['fname'],
+            hiringManagerLastName: doc['lname'],
+            phone: doc['phone'],
+            dateSubscribed: doc['dateSubscribed'],
+            jobPostsCount: doc['jobPostsCount'],
+          );
+        },
+      ).toList();
+      print("Successfully fetched all subscription");
+      print("NUMBER OF SUBS: ${_subscribers.length}");
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching all subscription: $e");
+    }
+  }
+
   List<Subscriber> _subscribers = [];
   List<Subscriber> get subscribers => _subscribers;
 
@@ -52,6 +81,39 @@ class MenuAppController extends ChangeNotifier {
       print("Error fetching users (subscribers): $e");
     }
   }
+
+  List<Subscriber> _basicSubscribers = [];
+  List<Subscriber> get basicSubscribers => _basicSubscribers;
+
+  Future<void> fetchBasicSubscribers() async {
+    try {
+      var subscribersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('subscriptionType', isEqualTo: 'basic')
+          .where('role', isEqualTo: 'recruiter')
+          .orderBy('dateSubscribed')
+          .get();
+
+      _basicSubscribers = subscribersSnapshot.docs.map(
+        (doc) {
+          return Subscriber(
+            uid: doc['uid'],
+            hiringManagerFirstName: doc['hiringManagerFirstName'],
+            hiringManagerLastName: doc['hiringManagerLastName'],
+            phone: doc['phone'],
+            dateSubscribed: doc['dateSubscribed'] ?? 'N/A',
+            jobPostsCount: doc['jobPostsCount'],
+          );
+        },
+      ).toList();
+      print("Successfully fetched basic users (subscribers) !!!");
+      print("NUMBER OF SUBS: ${_subscribers.length}");
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching basic users (subscribers): $e");
+    }
+  }
+
 
   Future<Map<int, int>> fetchSubscribersByMonth() async {
     try {
@@ -331,6 +393,7 @@ class MenuAppController extends ChangeNotifier {
 
       QuerySnapshot querySnapshot = await usersCollection
           .where('role', whereIn: ['jobseeker', 'recruiter'])
+          .orderBy('created_at', descending: true)
           .limit(10)
           .get();
 

@@ -35,8 +35,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
   Future<Map<int, int>> fetchSubscribersByMonth() async {
     try {
       var subscribersSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('subscriptionType', isEqualTo: 'premium')
+          .collection('subscribers')
           .orderBy('dateSubscribed')
           .get();
 
@@ -136,7 +135,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: maxRevenue / 5, // Adjust to reduce grid lines
+        horizontalInterval: maxRevenue / 5,
         verticalInterval: 1,
       ),
       titlesData: FlTitlesData(
@@ -150,30 +149,22 @@ class _LineChartSample2State extends State<LineChartSample2> {
           ),
         ),
         topTitles: const AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: false,
-          ),
+          sideTitles: SideTitles(showTitles: false),
         ),
         rightTitles: const AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: false,
-          ),
+          sideTitles: SideTitles(showTitles: false),
         ),
         leftTitles: AxisTitles(
-          axisNameWidget: const Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Text(
-              "Revenue (PHP)",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+          axisNameWidget: const Text(
+            "Revenue (PHP)",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 42,
-            interval:
-                maxRevenue / 5, // Increase interval for less frequent labels
+            reservedSize: 80,
+            interval: maxRevenue / 5,
             getTitlesWidget: (value, meta) {
-              return Text('₱${value.toInt()}',
+              return Text('₱${value.toStringAsFixed(2)}',
                   style: const TextStyle(fontSize: 12));
             },
           ),
@@ -191,9 +182,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         LineChartBarData(
           spots: spots,
           isCurved: true,
-          gradient: LinearGradient(
-            colors: gradientColors,
-          ),
+          gradient: LinearGradient(colors: gradientColors),
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: FlDotData(
@@ -217,6 +206,21 @@ class _LineChartSample2State extends State<LineChartSample2> {
           ),
         ),
       ],
+      lineTouchData: LineTouchData(
+        touchTooltipData: LineTouchTooltipData(
+          // too: Colors.black.withOpacity(0.8),
+          tooltipRoundedRadius: 8,
+          getTooltipItems: (touchedSpots) {
+            return touchedSpots.map((spot) {
+              return LineTooltipItem(
+                '₱${spot.y.toStringAsFixed(2)}',
+                const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w400),
+              );
+            }).toList();
+          },
+        ),
+      ),
     );
   }
 

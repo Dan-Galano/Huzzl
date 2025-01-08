@@ -16,7 +16,7 @@ class MyFiles extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Huzzl Job Board & Aggreagtor",
+          "Huzzl Job Board & Aggregator",
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: defaultPadding),

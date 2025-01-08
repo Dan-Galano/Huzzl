@@ -226,12 +226,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
               final role = data?['role'] ??
                   'admin'; // Default to 'admin' if role is not found
 
-                  if (role=='recruiter'){
-                    final compProvider = Provider.of<CompanyProfileProvider>(context, listen: false);
-                      compProvider.fetchCompanyDetails(user.uid);
-                      // compProvider.fetchAllReviews(user.uid);
-
-                  }
+              if (role == 'recruiter') {
+                final compProvider =
+                    Provider.of<CompanyProfileProvider>(context, listen: false);
+                compProvider.fetchCompanyDetails(user.uid);
+                // compProvider.fetchAllReviews(user.uid);
+              }
 
               if (role == 'jobseeker') {
                 // Perform the code block for non-admin users
@@ -322,6 +322,28 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 if (userType == 'jobseeker') {
                   return JobseekerMainScreen(uid: uid);
                 } else if (userType == 'recruiter') {
+                  if (userData['subscriptionType'] == 'premium') {
+                    print("DATE SUBBED: ${userData['dateSubscribed']
+                        .toDate()
+                        .add(const Duration(days: 30)).isBefore(DateTime.now())}");
+                    if (userData['dateSubscribed']
+                        .toDate()
+                        .add(const Duration(days: 30))
+                        .isBefore(DateTime.now())) {
+                      try {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(uid)
+                            .update({
+                          'subscriptionType': 'basic',
+                        });
+                        print(
+                            'Subscription due date has passed. Subscription type updated to basic');
+                      } catch (e) {
+                        print('Error updating subscription type: $e');
+                      }
+                    }
+                  }
                   return RecruiterHomeScreen();
                 } else if (userType == 'admin') {
                   return MainScreen();

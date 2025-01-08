@@ -32,6 +32,7 @@ class SubscribedUsersScreen extends StatelessWidget {
                 DataColumn(label: Text("User ID")),
                 DataColumn(label: Text("First Name")),
                 DataColumn(label: Text("Last Name")),
+                DataColumn(label: Text("Phone")),
                 DataColumn(label: Text("Date Subscribed")),
                 // DataColumn(label: Text("Expiration Date")),
                 DataColumn(label: Text("Actions")), //can edit the date (?)
@@ -41,12 +42,9 @@ class SubscribedUsersScreen extends StatelessWidget {
                   DataCell(Text(company.uid)),
                   DataCell(Text(company.hiringManagerFirstName)),
                   DataCell(Text(company.hiringManagerLastName)),
-                  DataCell(Text(DateFormat('MM/dd/yyyy')
+                  DataCell(Text(company.phone)),
+                  DataCell(Text(DateFormat('MMM dd, yyyy')
                       .format(company.dateSubscribed.toDate()))),
-                  // DataCell(Text(DateFormat('MM/dd/yyyy').format(company
-                  //     .dateSubscribed
-                  //     .toDate()
-                  //     .add(const Duration(days: 30))))),
                   DataCell(
                     Row(
                       children: [
@@ -67,22 +65,6 @@ class SubscribedUsersScreen extends StatelessWidget {
                           child: const Icon(Icons.edit),
                         ),
                         const Gap(5),
-                        ElevatedButton(
-                          onPressed: () {
-                            //Show modal that will edit the subscription date
-                            showDeleteSubscriberModal(
-                                context, company, provider);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xfff44336),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                          ),
-                          child: const Icon(Icons.delete),
-                        ),
                       ],
                     ),
                   ),

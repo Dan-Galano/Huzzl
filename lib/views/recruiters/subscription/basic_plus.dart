@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/subscription/add_cart.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 import 'package:intl/intl.dart';
@@ -113,7 +116,7 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
                           "Limited talent discovery",
                         ],
                         highlight: isSubscribe
-                            ? "Back to basic plan"
+                            ? "Default plan"
                             : "This is your current plan",
                         color: Color(0xff3B7DFF),
                         textColor: Colors.white,
@@ -136,8 +139,8 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
                           "Exclusive discounts on partner services",
                         ],
                         highlight: isSubscribe
-                            ? "This is your current plan"
-                            : "Upgrade to Plus",
+                            ? "Cancel subscription"
+                            : "Upgrade to plus",
                         color: Colors.white,
                         textColor: Color(0xffFD7206),
                         buttonColor: isSubscribe
@@ -157,7 +160,7 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              'Must pay on or before ${DateFormat('MM/dd').format(dateSubscribed.toDate())}',
+                              'Must pay on or before ${DateFormat('MMM dd, yyyy').format(dateSubscribed.toDate().add(Duration(days: 30)))}',
                               style: const TextStyle(
                                 color: Color(0xffFD7206),
                                 fontWeight: FontWeight.w400,
@@ -271,10 +274,126 @@ class MembershipCard extends StatelessWidget {
               onPressed: isButtonDisabled
                   ? null
                   : () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AddCardModal(),
-                      );
+                      if (highlight == "Cancel subscription") {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Cancel Subscription"),
+                            content: const Text(
+                                "Are you sure you want to cancel your subscription?"),
+                            actions: [
+                              TextButton(
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all(
+                                    Colors.white,
+                                  ),
+                                  foregroundColor: WidgetStateProperty.all(
+                                    const Color(0xff3B7DFF),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("No"),
+                              ),
+                              TextButton(
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all(
+                                    Colors.redAccent,
+                                  ),
+                                  foregroundColor: WidgetStateProperty.all(
+                                    Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  try {
+                                    var recruiterId =
+                                        FirebaseAuth.instance.currentUser!.uid;
+
+                                    FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(recruiterId)
+                                        .update({
+                                      'subscriptionType': 'basic',
+                                    });
+
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          title: const Text(
+                                              'Subscription Canceled'),
+                                          content: const Text(
+                                              'Your subscription has been canceled. We hope to see you again soon!'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: const Color(
+                                                    0xffFD7206), // Customize color if needed
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 12,
+                                                        horizontal: 24),
+                                              ),
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return const RecruiterHomeScreen();
+                                        },
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    print('Error canceling subscription: $e');
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text(
+                                              'Error canceling subscription'),
+                                          content: Text(
+                                              'An error occurred while canceling your subscription: $e'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Yes"),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AddCardModal(),
+                        );
+                      }
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isButtonDisabled

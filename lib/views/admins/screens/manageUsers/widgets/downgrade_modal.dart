@@ -57,14 +57,14 @@ void showDowngradeModal(
                   ..displayDuration = const Duration(milliseconds: 1500)
                   ..indicatorType = EasyLoadingIndicatorType.fadingCircle
                   ..loadingStyle = EasyLoadingStyle.custom
-                  ..backgroundColor = const Color.fromARGB(255, 31, 150, 61)
+                  ..backgroundColor = const Color(0xFfd74a4a)
                   ..textColor = Colors.white
                   ..fontSize = 16.0
                   ..indicatorColor = Colors.white
                   ..maskColor = Colors.black.withOpacity(0.5)
                   ..userInteractions = false
                   ..dismissOnTap = true;
-                EasyLoading.showSuccess('Subscription upgraded to premium!');
+                EasyLoading.showSuccess('Subscription changed back to basic!');
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
