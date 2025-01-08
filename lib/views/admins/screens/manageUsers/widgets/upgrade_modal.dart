@@ -46,7 +46,7 @@ void showUpgradeModal(
                     .doc(subscriber.uid)
                     .update({
                   'subscriptionType': 'premium',
-                  'dateSubscribed': DateTime.now(),
+                  // 'dateSubscribed': DateTime.now(),
                 });
 
                 // Refresh local data

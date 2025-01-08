@@ -30,6 +30,7 @@ class MenuAppController extends ChangeNotifier {
           .collection('users')
           .where('subscriptionType', isEqualTo: 'premium')
           .where('role', isEqualTo: 'recruiter')
+          .orderBy('dateSubscribed')
           .get();
 
       _subscribers = subscribersSnapshot.docs.map(
@@ -258,7 +259,7 @@ class MenuAppController extends ChangeNotifier {
     try {
       final snapshot = await _firestore
           .collection('users')
-          .where('role', isEqualTo: 'recruiter')
+          .where('role', isEqualTo:   'recruiter')
           .count()
           .get();
       _totalRecruiters = snapshot.count!;
@@ -350,6 +351,7 @@ class MenuAppController extends ChangeNotifier {
           status: doc['accStatus'],
           subscriptionType:
               doc['role'] == 'recruiter' ? doc['subscriptionType'] : 'N/A',
+          dateSubscribed: doc['role'] == 'recruiter' ? doc['dateSubscribed'] : Timestamp(0, 0),
         );
       }).toList();
 

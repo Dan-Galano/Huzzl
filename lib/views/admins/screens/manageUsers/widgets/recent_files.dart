@@ -6,6 +6,7 @@ import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/disable_user_di
 import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/enable_user_dialog.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/downgrade_modal.dart';
 import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/upgrade_modal.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
@@ -86,6 +87,7 @@ class _RecentFilesState extends State<RecentFiles> {
                         DataColumn(label: Text("Last name")),
                         DataColumn(label: Text("Email")),
                         DataColumn(label: Text("Subscription")),
+                        DataColumn(label: Text("Expiration")),
                         DataColumn(label: Text("Status")),
                         DataColumn(label: Text("Actions")),
                       ],
@@ -169,6 +171,14 @@ DataRow recentUsers(
           ]
         ],
       )), // Default text if null
+      if (fileInfo.subscriptionType == 'premium') ...[
+        DataCell(Text(DateFormat('MM/dd/yyyy').format(
+            fileInfo.dateSubscribed!.toDate().add(const Duration(days: 30))))),
+      ] else if (fileInfo.subscriptionType == 'basic') ...[
+        const DataCell(Text('N/A')),
+      ] else ...[
+        const DataCell(Text('N/A')),
+      ],
       DataCell(Text(fileInfo.status ?? 'No status')), // Default text if null
       DataCell(
         Row(

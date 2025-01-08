@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/subscription/add_cart.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
+import 'package:intl/intl.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -26,6 +27,7 @@ class MembershipPlansPage extends StatefulWidget {
 
 class _MembershipPlansPageState extends State<MembershipPlansPage> {
   bool isSubscribe = false;
+  Timestamp dateSubscribed = Timestamp.now();
 
   Future<void> fetchSubscriptionStatus() async {
     try {
@@ -41,6 +43,7 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
         if (subscriptionType == "premium") {
           setState(() {
             isSubscribe = true;
+            dateSubscribed = snapshot['dateSubscribed'];
           });
         }
         print('Subscription Type: $subscriptionType');
@@ -83,8 +86,8 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
                     iconImage: const AssetImage('assets/images/backbutton.png'),
                   ),
                 ),
-                Gap(50),
-                Align(
+                const Gap(50),
+                const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Membership Plans",
@@ -95,14 +98,14 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
                     ),
                   ),
                 ),
-                Gap(50),
+                const Gap(50),
                 Row(
                   children: [
                     Expanded(
                       child: MembershipCard(
                         title: "Basic",
                         price: "Free",
-                        description: [
+                        description: const [
                           "Access essential job postings",
                           "Limited communication tools",
                           "Manage up to 5 active applications",
@@ -124,7 +127,7 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
                       child: MembershipCard(
                         title: "Plus",
                         price: "\₱499 per month*",
-                        description: [
+                        description: const [
                           "Includes everything in Basic and:",
                           "Unlimited access to job postings",
                           "Priority talent discovery and recommendations",
@@ -146,6 +149,24 @@ class _MembershipPlansPageState extends State<MembershipPlansPage> {
                     ),
                   ],
                 ),
+                const Gap(10),
+                isSubscribe
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Must pay on or before ${DateFormat('MM/dd').format(dateSubscribed.toDate())}',
+                              style: const TextStyle(
+                                color: Color(0xffFD7206),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const Gap(0)
               ],
             ),
           ),

@@ -5,6 +5,7 @@ import 'package:huzzl_web/views/admins/constants.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/disable_user_dialog.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/enable_user_dialog.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ManageRecruiterTab extends StatelessWidget {
@@ -81,6 +82,7 @@ class ManageRecruiterTab extends StatelessWidget {
                               DataColumn(label: Text("Last name")),
                               DataColumn(label: Text("Email")),
                               DataColumn(label: Text("Subscription")),
+                              DataColumn(label: Text("Expiration Date")),
                               DataColumn(label: Text("Status")),
                               DataColumn(label: Text("Actions")),
                             ],
@@ -114,7 +116,19 @@ class ManageRecruiterTab extends StatelessWidget {
                                       jobseekerData['hiringManagerLastName'] ??
                                           '')),
                                   DataCell(Text(jobseekerData['email'] ?? '')),
-                                  DataCell(Text(jobseekerData['subscriptionType'] ?? '')),
+                                  DataCell(Text(
+                                      jobseekerData['subscriptionType'] ?? '')),
+                                  if (jobseekerData['subscriptionType'] ==
+                                      'premium') ...[
+                                    DataCell(Text(DateFormat('MM/dd/yyyy')
+                                        .format(jobseekerData['dateSubscribed']
+                                            .toDate()
+                                            .add(const Duration(days: 30))))),
+                                  ] else if (jobseekerData[
+                                          'subscriptionType'] ==
+                                      'basic') ...[
+                                    const DataCell(Text('N/A')),
+                                  ],
                                   DataCell(
                                       Text(jobseekerData['accStatus'] ?? '')),
                                   // DataCell(Text(jobseekerData['phone'] ?? '')),
