@@ -30,9 +30,73 @@ class ClosedJobCard extends StatefulWidget {
 }
 
 class _ClosedJobCardState extends State<ClosedJobCard> {
+  var newApplicantGoal = TextEditingController();
+
+  late JobProviderCandidate _jobProvider;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _jobProvider = Provider.of<JobProviderCandidate>(context, listen: false);
+  }
+
+  void showAddNewApplicantGoal(int numberOfApplicants) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Target Applicant"),
+          content: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Enter new target applicant:"),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: newApplicantGoal,
+                  decoration: const InputDecoration(
+                    labelText: "Target Applicant",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (newApplicantGoal.text == null ||
+                    newApplicantGoal.text.isEmpty) {
+                  debugPrint("The new applicant goal is empty!");
+                  return;
+                }
+
+                String newGoal = newApplicantGoal.text;
+                _jobProvider.updateNewApplicantGoal(newGoal, widget.jobPostID!);
+                _jobProvider.reOpenJobPost(widget.user.uid, widget.jobPostID!);
+
+                Navigator.pop(context);
+              },
+              child: const Text("Save Changes"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var jobProvider = Provider.of<JobProviderCandidate>(context);
+    // var jobProvider = Provider.of<JobProviderCandidate>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -131,9 +195,8 @@ class _ClosedJobCardState extends State<ClosedJobCard> {
                       // }
 
                       if (value == "open") {
-                        jobProvider.reOpenJobPost(
-                            widget.user.uid, widget.jobPostID!);
-                      } 
+                        showAddNewApplicantGoal(widget.numberOfApplicants);
+                      }
                     });
                   },
                   icon: Image.asset(

@@ -9,128 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:emailjs/emailjs.dart' as emailjs;
 
 class JobProviderCandidate extends ChangeNotifier {
-  final List<Candidate> _candidates = [
-    // Candidate(
-    //   id: '1',
-    //   name: 'Allen James Alvaro',
-    //   profession: "Architect",
-    //   jobPostId: "FXZd9yEXNPFpKfwXQ401",
-    //   companyAppliedTo: "Alvaro Co.",
-    //   applicationDate: DateTime.now(),
-    //   status: "For Review",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 0,
-    // ),
-    // Candidate(
-    //   id: '2',
-    //   name: 'Patrick John Tomas',
-    //   jobPostId: "FXZd9yEXNPFpKfwXQ401",
-    //   profession: "Mechanical Engineer",
-    //   companyAppliedTo: "EcoShpere Enterprises",
-    //   applicationDate: DateTime.now(),
-    //   status: "For Review",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 0,
-    // ),
-    // Candidate(
-    //   id: '3',
-    //   name: 'Monica Ave',
-    //   profession: "Data Scientist",
-    //   jobPostId: "FXZd9yEXNPFpKfwXQ401",
-    //   companyAppliedTo: "Pinnacle Dynamics",
-    //   applicationDate: DateTime.now(),
-    //   status: "Shortlisted",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 0,
-    // ),
-    // Candidate(
-    //   id: '4',
-    //   name: 'John Luna',
-    //   jobPostId: "INPFHCDYGbCNBfu6fePe",
-    //   profession: "Digital Marketing Specialist",
-    //   companyAppliedTo: "CoreVision Analytics",
-    //   applicationDate: DateTime.now(),
-    //   status: "Contacted",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 0,
-    // ),
-    // Candidate(
-    //   id: '5',
-    //   name: 'Liora Artanez',
-    //   profession: "Journalist",
-    //   jobPostId: "INPFHCDYGbCNBfu6fePe",
-    //   companyAppliedTo: "NovaVista Consulting",
-    //   applicationDate: DateTime.now(),
-    //   status: "Contacted",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 2,
-    // ),
-    // Candidate(
-    //   id: '6',
-    //   name: 'Selara Nyverne',
-    //   profession: "Graphic Designer",
-    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-    //   companyAppliedTo: "BrightTrail Ventures",
-    //   applicationDate: DateTime.now(),
-    //   status: "Shortlisted",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 1,
-    // ),
-    // Candidate(
-    //   id: '7',
-    //   name: 'Jake Gyllenhaal',
-    //   profession: "Electrician",
-    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-    //   companyAppliedTo: "Halo",
-    //   applicationDate: DateTime.now(),
-    //   status: "For Review",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 1,
-    // ),
-    // Candidate(
-    //   id: '8',
-    //   name: 'John Mayer',
-    //   profession: "Guitarist",
-    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-    //   companyAppliedTo: "Gravity",
-    //   applicationDate: DateTime.now(),
-    //   status: "Contacted",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 1,
-    // ),
-    // Candidate(
-    //   id: '9',
-    //   name: 'Mike Portnoy',
-    //   profession: "Psychologist",
-    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-    //   companyAppliedTo: "EcoFusion Technologies",
-    //   applicationDate: DateTime.now(),
-    //   status: "Hired",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 1,
-    // ),
-    // Candidate(
-    //   id: '10',
-    //   name: 'Jame Belmoro',
-    //   profession: "Producer",
-    //   jobPostId: "Bg4V4DXlBUO8xB0rEWSn",
-    //   companyAppliedTo: "Zenith Entertainment Studios",
-    //   applicationDate: DateTime.now(),
-    //   status: "For Review",
-    //   dateLastInterviewed: DateTime.now(),
-    //   dateRejected: DateTime.now(),
-    //   interviewCount: 1,
-    // ),
-  ];
+  final List<Candidate> _candidates = [];
   List<Candidate> get candidates => _candidates;
 
   Future<String> fetchCurrentApplicationNotes(
@@ -259,6 +138,9 @@ class JobProviderCandidate extends ChangeNotifier {
         "status": "closed",
       });
       print("Sub-collection document updated successfully!");
+
+      countJobPosts();
+
       notifyListeners();
     } catch (e) {
       print("Error updating sub-collection document: $e");
@@ -276,6 +158,9 @@ class JobProviderCandidate extends ChangeNotifier {
         "status": "paused",
       });
       print("Sub-collection document updated successfully!");
+
+      countJobPosts();
+
       notifyListeners();
     } catch (e) {
       print("Error updating sub-collection document: $e");
@@ -293,6 +178,9 @@ class JobProviderCandidate extends ChangeNotifier {
         "status": "open",
       });
       print("Sub-collection document updated successfully!");
+
+      countJobPosts();
+
       notifyListeners();
     } catch (e) {
       print("Error updating sub-collection document: $e");
@@ -791,7 +679,7 @@ Please review their profile and application to assess their suitability for your
           } else {
             notifMessage = message;
           }
-        }else if(typeOfNotif == "Interview"){
+        } else if (typeOfNotif == "Interview") {
           if (message!.isEmpty) {
             notifMessage = "No name";
           } else {
@@ -902,6 +790,96 @@ Please review their profile and application to assess their suitability for your
     } catch (e) {
       print("Error fetching activity logs: $e");
       return [];
+    }
+  }
+
+  //Job Status Counts (Open, Pause, Close)
+  int _openJobsCount = 0;
+  int _pausedJobsCount = 0;
+  int _closedJobsCount = 0;
+
+  int get openJobsCount => _openJobsCount;
+  int get pausedJobsCount => _pausedJobsCount;
+  int get closedJobsCount => _closedJobsCount;
+
+  Future<void> countJobPosts() async {
+    try {
+      QuerySnapshot jobPostsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(getCurrentUserId())
+          .collection('job_posts')
+          .get();
+
+      final jobPostsData = jobPostsSnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      // Get the current date
+      final currentDate = DateTime.now();
+      final DateFormat formatter = DateFormat('MMM d, yyyy'); // Date format
+
+      // Separate jobs based on their status and deadline
+      final openJobs = jobPostsData.where((jobPost) {
+        final deadlineString = jobPost['applicationDeadline'];
+        try {
+          final deadlineDate = formatter.parse(deadlineString);
+          return jobPost['status'] == 'open' &&
+              deadlineDate.isAfter(currentDate);
+        } catch (e) {
+          print("Error parsing date for openJobs: $e");
+          return false; // Exclude jobs with invalid or missing dates
+        }
+      }).toList();
+
+      final pausedJobs = jobPostsData.where((jobPost) {
+        final deadlineString = jobPost['applicationDeadline'];
+        try {
+          final deadlineDate = formatter.parse(deadlineString);
+          return jobPost['status'] == 'paused' &&
+              deadlineDate.isAfter(currentDate);
+        } catch (e) {
+          print("Error parsing date for pausedJobs: $e");
+          return false; // Exclude jobs with invalid or missing dates
+        }
+      }).toList();
+
+      final closedJobs = jobPostsData.where((jobPost) {
+        final deadlineString = jobPost['applicationDeadline'];
+        try {
+          final deadlineDate = formatter.parse(deadlineString);
+          return jobPost['status'] == 'closed' ||
+              deadlineDate.isBefore(currentDate);
+        } catch (e) {
+          print("Error parsing date for closedJobs: $e");
+          return true; // Count jobs with invalid or missing dates as closed
+        }
+      }).toList();
+
+      // Update the counts in the state
+      _openJobsCount = openJobs.length;
+      _pausedJobsCount = pausedJobs.length;
+      _closedJobsCount = closedJobs.length;
+
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching job count: $e");
+    }
+  }
+
+  Future<void> updateNewApplicantGoal(String newGoal, String jobPostID) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(getCurrentUserId())
+          .collection('job_posts')
+          .doc(jobPostID)
+          .update({
+        'numberOfPeopleToHire': newGoal,
+      });
+
+      debugPrint("Updated successfully!");
+    } catch (e) {
+      debugPrint("Error in updating the numberOfApplicantToHire: $e");
     }
   }
 }

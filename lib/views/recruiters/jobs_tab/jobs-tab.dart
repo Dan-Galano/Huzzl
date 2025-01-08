@@ -3,12 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab%20og/widgets/textfield_decorations.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/closed.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/open.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/paused.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/jobfilterrow.dart';
 import 'package:huzzl_web/views/recruiters/subscription/basic_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class JobTab extends StatefulWidget {
   final VoidCallback postJob;
@@ -34,77 +36,25 @@ class JobTab extends StatefulWidget {
 }
 
 class _JobTabState extends State<JobTab> {
-  int _openJobsCount = 0;
-  int _pausedJobsCount = 0;
-  int _closedJobsCount = 0;
+  late JobProviderCandidate jobProvider;
 
   @override
   void initState() {
     super.initState();
-    _countJobPosts();
+    // Initialize jobProvider
+    jobProvider = Provider.of<JobProviderCandidate>(context, listen: false);
+
+    // Start counting job posts
+    _countJobPostsPerStatus();
   }
 
-  Future<void> _countJobPosts() async {
+  Future<void> _countJobPostsPerStatus() async {
     try {
-      QuerySnapshot jobPostsSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.user.uid)
-          .collection('job_posts')
-          .get();
-
-      final jobPostsData = jobPostsSnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-
-      // Get the current date
-      final currentDate = DateTime.now();
-      final DateFormat formatter = DateFormat('MMM d, yyyy'); // Date format
-
-      // Separate jobs based on their status and deadline
-      final openJobs = jobPostsData.where((jobPost) {
-        final deadlineString = jobPost['applicationDeadline'];
-        try {
-          final deadlineDate = formatter.parse(deadlineString);
-          return jobPost['status'] == 'open' &&
-              deadlineDate.isAfter(currentDate);
-        } catch (e) {
-          print("Error parsing date for openJobs: $e");
-          return false; // Exclude jobs with invalid or missing dates
-        }
-      }).toList();
-
-      final pausedJobs = jobPostsData.where((jobPost) {
-        final deadlineString = jobPost['applicationDeadline'];
-        try {
-          final deadlineDate = formatter.parse(deadlineString);
-          return jobPost['status'] == 'paused' &&
-              deadlineDate.isAfter(currentDate);
-        } catch (e) {
-          print("Error parsing date for pausedJobs: $e");
-          return false; // Exclude jobs with invalid or missing dates
-        }
-      }).toList();
-
-      final closedJobs = jobPostsData.where((jobPost) {
-        final deadlineString = jobPost['applicationDeadline'];
-        try {
-          final deadlineDate = formatter.parse(deadlineString);
-          return jobPost['status'] == 'closed' ||
-              deadlineDate.isBefore(currentDate);
-        } catch (e) {
-          print("Error parsing date for closedJobs: $e");
-          return true; // Count jobs with invalid or missing dates as closed
-        }
-      }).toList();
-
-      // Update the counts in the state
-      setState(() {
-        _openJobsCount = openJobs.length;
-        _pausedJobsCount = pausedJobs.length;
-        _closedJobsCount = closedJobs.length;
-      });
+      await jobProvider.countJobPosts();
+      // Add additional logic if necessary (e.g., update UI)
     } catch (e) {
-      print("Error fetching job count: $e");
+      // Handle error, e.g., log or show a message
+      debugPrint("Error counting job posts: $e");
     }
   }
 
@@ -258,9 +208,9 @@ class _JobTabState extends State<JobTab> {
                         fontFamily: 'Galano',
                       ),
                       tabs: [
-                        Tab(text: '$_openJobsCount Open'),
-                        Tab(text: '$_pausedJobsCount Paused'),
-                        Tab(text: '$_closedJobsCount Closed'),
+                        Tab(text: '${jobProvider.openJobsCount} Open'),
+                        Tab(text: '${jobProvider.pausedJobsCount} Paused'),
+                        Tab(text: '${jobProvider.closedJobsCount} Closed'),
                       ],
                     ),
                     Expanded(
