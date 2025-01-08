@@ -6,12 +6,7 @@ import 'package:huzzl_web/views/recruiters/company_profile/tabs/about_tab.dart';
 import 'package:huzzl_web/views/recruiters/company_profile/tabs/reviews_tab.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: AboutPage(),
-  ));
-}
+
 
 class AboutPage extends StatefulWidget {
   @override
@@ -19,8 +14,6 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
-  final String description =
-      'This is a brief description about the company and its mission. It highlights the key values, goals, and services offered.';
   late TabController _tabController;
 
   @override
@@ -32,9 +25,6 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-      ),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -47,7 +37,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                   Gap(30),
                   CompanyProfileTabBar(tabController: _tabController),
                   Container(
-                    height: 600, // Set a fixed height to the TabBarView for scrolling
+                    height: 600, 
                     child: TabBarView(
                       controller: _tabController,
                       children: [

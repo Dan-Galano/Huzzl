@@ -11,6 +11,8 @@ import 'package:huzzl_web/views/recruiters/candidates_tab/candidates-tab.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_screen.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/tab-bars/application_sl_screen.dart';
+import 'package:huzzl_web/views/recruiters/company_profile/company_Profile.dart';
+import 'package:huzzl_web/views/recruiters/company_profile/providers/companyProfileProvider.dart';
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/closeAccount.dart';
 import 'package:huzzl_web/views/recruiters/home/PopupMenuItem/logout.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/calendar_ui/calendar.dart';
@@ -417,23 +419,23 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                           overlay.size.height - position.dy,
                         ),
                         items: const [
-                          // PopupMenuItem(
-                          //   value: 'view_profile',
-                          //   child: Row(
-                          //     children: [
-                          //       Icon(Icons.person, color: Color(0xff373030)),
-                          //       SizedBox(width: 8),
-                          //       Text(
-                          //         'Profile',
-                          //         style: TextStyle(
-                          //           fontSize: 14,
-                          //           color: Color(0xff373030),
-                          //           fontFamily: 'Galano',
-                          //         ),
-                          //       ),
-                          //     ],
-                          //   ),
-                          // ),
+                          PopupMenuItem(
+                            value: 'view_profile',
+                            child: Row(
+                              children: [
+                                Icon(Icons.person, color: Color(0xff373030)),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Profile',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xff373030),
+                                    fontFamily: 'Galano',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
 
                           PopupMenuItem(
                             value: 'subscription_screen',
@@ -511,10 +513,16 @@ class RecruiterHomeScreenState extends State<RecruiterHomeScreen> {
                         ),
                       ).then((value) {
                         switch (value) {
-                          case 'view_profile':
+                          case 'view_profile': {
+
+                            final compProvider = Provider.of<CompanyProfileProvider>(context, listen: false);
+                      // compProvider.fetchCompanyDetails(user!.uid);
+                      compProvider.fetchAllReviews(user!.uid);
                             Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => RecruiterProfilePage(),
+                              builder: (context) => AboutPage(),
                             ));
+
+                          }
                             break;
                           case 'close_account':
                             showDialog(

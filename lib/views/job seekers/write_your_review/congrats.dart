@@ -4,16 +4,16 @@ import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_boxbutton.dart';
 class ReviewCongratulationPage extends StatelessWidget {
   final VoidCallback goBack;
 
-  ReviewCongratulationPage({super.key, required this.goBack}); 
+  ReviewCongratulationPage({super.key, required this.goBack});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white, 
+      color: Colors.white,
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 150.0),
+            padding: const EdgeInsets.only(top: 250.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +31,7 @@ class ReviewCongratulationPage extends StatelessWidget {
                       color: Color(0xff373030),
                       fontFamily: 'Galano',
                       fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.none, 
+                      decoration: TextDecoration.none,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -42,7 +42,7 @@ class ReviewCongratulationPage extends StatelessWidget {
                       color: Color(0xff373030),
                       fontFamily: 'Galano',
                       fontWeight: FontWeight.w400,
-                      decoration: TextDecoration.none, 
+                      decoration: TextDecoration.none,
                     ),
                   ),
                   const SizedBox(height: 30),

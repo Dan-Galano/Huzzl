@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/write_your_review/tell_us_about_you.dart';
 
+// DITO YUNG COMPANY REVIEW AT PROFILE GUYS
 void main(){
   runApp(MaterialApp (debugShowCheckedModeBanner: false, home: WriteReviewPage()));
 }
