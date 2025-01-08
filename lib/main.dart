@@ -226,12 +226,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
               final role = data?['role'] ??
                   'admin'; // Default to 'admin' if role is not found
 
-                  if (role=='recruiter'){
-                    final compProvider = Provider.of<CompanyProfileProvider>(context, listen: false);
-                      compProvider.fetchCompanyDetails(user.uid);
-                      // compProvider.fetchAllReviews(user.uid);
-
-                  }
+              if (role == 'recruiter') {
+                final compProvider =
+                    Provider.of<CompanyProfileProvider>(context, listen: false);
+                compProvider.fetchCompanyDetails(user.uid);
+                // compProvider.fetchAllReviews(user.uid);
+              }
 
               if (role == 'jobseeker') {
                 // Perform the code block for non-admin users

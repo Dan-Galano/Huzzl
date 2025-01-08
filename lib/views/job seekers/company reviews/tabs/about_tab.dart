@@ -5,7 +5,7 @@ import 'package:huzzl_web/views/recruiters/company_profile/jobcards.dart';
 import 'package:huzzl_web/views/recruiters/company_profile/providers/companyProfileProvider.dart';
 import 'package:provider/provider.dart';
 
-class AboutTab extends StatelessWidget {
+class AboutTabJobSeeker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<CompanyProfileProvider>(

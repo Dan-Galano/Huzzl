@@ -4,7 +4,7 @@ import 'package:huzzl_web/views/recruiters/company_profile/providers/companyProf
 import 'package:provider/provider.dart';
 import 'dart:html' as html;
 
-class CompanyDetails extends StatelessWidget {
+class CompanyDetailsJobSeeker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<CompanyProfileProvider>(
