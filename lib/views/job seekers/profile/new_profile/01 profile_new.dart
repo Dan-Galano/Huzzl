@@ -78,7 +78,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String portfolioFileName = '';
   final ScreenshotController _screenshotController = ScreenshotController();
 
-
   String _extractedText = '';
   String _selectedFileType = '';
 
@@ -990,7 +989,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         ),
                                                         onPressed: () async {
                                                           final shouldDelete =
-                                                              await _showDeleteConfirmationDialog( 
+                                                              await _showDeleteConfirmationDialog(
                                                                   context);
 
                                                           if (shouldDelete) {
@@ -1001,7 +1000,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       Gap(5),
                                                       IconButton(
                                                         icon: Icon(
-                                                          Icons.edit,
+                                                          Icons.rotate_left,
                                                           size: 20,
                                                           color: Colors
                                                               .amber.shade900,
@@ -1069,82 +1068,118 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                        PreferenceItem(
-  iconImage: AssetImage('assets/images/pay_rate.png'),
-  title: "Pay Rate",
-  value: userProfile.selectedPayRate?['minimum'] == null &&
-          userProfile.selectedPayRate?['maximum'] == null
-      ? 'Pay rate not set'
-      : userProfile.selectedPayRate?['minimum'] == null
-          ? 'maximum of ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}'
-          : userProfile.selectedPayRate?['maximum'] == null
-              ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
-              : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
-onTap: () {
-  showDialog(
-    context: context,
-    builder: (context) => PayRateDialog(
-      initialRate: userProfile.selectedPayRate?['rate'] ?? 'per hour',
-      initialMin: userProfile.selectedPayRate?['minimum']?.toString() ?? '',
-      initialMax: userProfile.selectedPayRate?['maximum']?.toString() ?? '',
-      onSave: (rate, min, max) {
-        // Update pay rate in Firestore
-        UserProfileProvider provider =
-            Provider.of<UserProfileProvider>(context, listen: false);
-        provider.updatePayRate(userProfile.uid!, rate, min, max);
-      },
-    ),
-  );
-},
-
-),
-
-                       PreferenceItem(
-  iconImage: AssetImage('assets/images/location_profile.png'),
-  title: "Location",
-  value: _getLocationText(userProfile?.selectedLocation),
-  onTap: () {
-    showDialog(
-      context: context,
-      builder: (context) => LocationDialog(
-        initialLocation: {
-          'regionName': userProfile.selectedLocation?['regionName'] ?? '',
-          'provinceName': userProfile.selectedLocation?['provinceName'] ?? '',
-          'cityName': userProfile.selectedLocation?['cityName'] ?? '',
-          'barangayName': userProfile.selectedLocation?['barangayName'] ?? '',
-          'otherLocation': userProfile.selectedLocation?['otherLocation'] ?? '',
-        },
-        onSave: (location) {
-  // Update location in Firestore
-  UserProfileProvider provider = Provider.of<UserProfileProvider>(context, listen: false);
-  provider.updateLocation(userProfile.uid!, location);
-},
-
-      ),
-    );
-  },
-),
-
-                        PreferenceItem(
-  iconImage: AssetImage('assets/images/job_title.png'),
-  title: "Job Titles",
-  value: _getJobTitlesText(userProfile?.currentSelectedJobTitles),
-  onTap: () {
-    showDialog(
-      context: context,
-      builder: (context) => JobTitlesDialog(
-        initialJobTitles: userProfile.currentSelectedJobTitles ?? [],
-       onSave: (jobTitles) {
-  // Update job titles in Firestore
-  UserProfileProvider provider = Provider.of<UserProfileProvider>(context, listen: false);
-  provider.updateJobTitles(userProfile.uid!, jobTitles);
-},
-
-      ),
-    );
-  },
-),
-
+                          PreferenceItem(
+                            iconImage: AssetImage('assets/images/pay_rate.png'),
+                            title: "Pay Rate",
+                            value: userProfile.selectedPayRate?['minimum'] ==
+                                        null &&
+                                    userProfile.selectedPayRate?['maximum'] ==
+                                        null
+                                ? 'Pay rate not set'
+                                : userProfile.selectedPayRate?['minimum'] ==
+                                        null
+                                    ? 'maximum of ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}'
+                                    : userProfile.selectedPayRate?['maximum'] ==
+                                            null
+                                        ? 'minimum of ${userProfile.selectedPayRate!['minimum']} ${userProfile.selectedPayRate!['rate']}'
+                                        : '${userProfile.selectedPayRate!['minimum']} - ${userProfile.selectedPayRate!['maximum']} ${userProfile.selectedPayRate!['rate']}',
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => PayRateDialog(
+                                  initialRate:
+                                      userProfile.selectedPayRate?['rate'] ??
+                                          'per hour',
+                                  initialMin: userProfile
+                                          .selectedPayRate?['minimum']
+                                          ?.toString() ??
+                                      '',
+                                  initialMax: userProfile
+                                          .selectedPayRate?['maximum']
+                                          ?.toString() ??
+                                      '',
+                                  onSave: (rate, min, max) {
+                                    // Update pay rate in Firestore
+                                    UserProfileProvider provider =
+                                        Provider.of<UserProfileProvider>(
+                                            context,
+                                            listen: false);
+                                    provider.updatePayRate(
+                                        userProfile.uid!, rate, min, max);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          PreferenceItem(
+                            iconImage: AssetImage(
+                                'assets/images/location_profile.png'),
+                            title: "Location",
+                            value:
+                                _getLocationText(userProfile?.selectedLocation),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => LocationDialog(
+                                  initialLocation: {
+                                    'regionName': userProfile
+                                            .selectedLocation?['regionName'] ??
+                                        '',
+                                    'provinceName':
+                                        userProfile.selectedLocation?[
+                                                'provinceName'] ??
+                                            '',
+                                    'cityName': userProfile
+                                            .selectedLocation?['cityName'] ??
+                                        '',
+                                    'barangayName':
+                                        userProfile.selectedLocation?[
+                                                'barangayName'] ??
+                                            '',
+                                    'otherLocation':
+                                        userProfile.selectedLocation?[
+                                                'otherLocation'] ??
+                                            '',
+                                  },
+                                  onSave: (location) {
+                                    // Update location in Firestore
+                                    UserProfileProvider provider =
+                                        Provider.of<UserProfileProvider>(
+                                            context,
+                                            listen: false);
+                                    provider.updateLocation(
+                                        userProfile.uid!, location);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          PreferenceItem(
+                            iconImage:
+                                AssetImage('assets/images/job_title.png'),
+                            title: "Job Titles",
+                            value: _getJobTitlesText(
+                                userProfile?.currentSelectedJobTitles),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => JobTitlesDialog(
+                                  initialJobTitles:
+                                      userProfile.currentSelectedJobTitles ??
+                                          [],
+                                  onSave: (jobTitles) {
+                                    // Update job titles in Firestore
+                                    UserProfileProvider provider =
+                                        Provider.of<UserProfileProvider>(
+                                            context,
+                                            listen: false);
+                                    provider.updateJobTitles(
+                                        userProfile.uid!, jobTitles);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
                           Container(
                             decoration: BoxDecoration(
                               border: Border(
@@ -1272,8 +1307,6 @@ onTap: () {
   //     },
   //   );
   // }
-
-
 }
 
 class PreferenceItem extends StatelessWidget {

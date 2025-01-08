@@ -1,48 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/recruiters/company_profile/providers/companyProfileProvider.dart';
+import 'package:provider/provider.dart';
+import 'dart:html' as html;
 
 class CompanyDetails extends StatelessWidget {
-  final String ceo = 'Dan Galiano';
-  final String headquarters = 'Urdaneta';
-  final String industry = 'Technology';
-  final String size = "It's just me";
-  final String websiteLink = 'huzzl.com';
-
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start, 
-      children: [
-        CompanyInfo(
-          iconImage: AssetImage('assets/images/CEO.png'),
-          label: 'CEO',
-          value: ceo,
-        ),
-        SizedBox(width: 20),
-        CompanyInfo(
-          iconImage: AssetImage('assets/images/headquarters.png'),
-          label: 'Headquarters',
-          value: headquarters,
-        ),
-        SizedBox(width: 40),
-        CompanyInfo(
-          iconImage: AssetImage('assets/images/industry.png'),
-          label: 'Industry',
-          value: industry,
-        ),
-        SizedBox(width: 40),
-        CompanyInfo(
-          iconImage: AssetImage('assets/images/size.png'),
-          label: 'Size',
-          value: size,
-        ),
-        SizedBox(width: 35),
-        CompanyInfo(
-          iconImage: AssetImage('assets/images/link.png'),
-          label: 'Website Link',
-          value: websiteLink,
-        ),
-      ],
-    );
+    return Consumer<CompanyProfileProvider>(
+        builder: (context, provider, child) {
+      return Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CompanyInfo(
+                iconImage: AssetImage('assets/images/CEO.png'),
+                label: 'CEO',
+                value: '${provider.ceoFirstName} ${provider.ceoLastName}',
+              ),
+              CompanyInfo(
+                iconImage: AssetImage('assets/images/size.png'),
+                label: 'Size',
+                value: provider.companySize,
+              ),CompanyInfo(
+                iconImage: AssetImage('assets/images/link.png'),
+                label: 'Website Link',
+                value: provider.companyWebsite.isNotEmpty
+                    ? provider.companyWebsite
+                    : 'No Website provided.',
+                isLink: true,
+              ),
+            ],
+          ),
+          Gap(40),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CompanyInfo(
+                iconImage: AssetImage('assets/images/headquarters.png'),
+                label: 'Headquarters',
+                value:
+                    '${provider.city} ${provider.city}, ${provider.city}, ${provider.province == '' || provider.province.isEmpty ? provider.region : provider.province + ', ' + provider.region}',
+              ),
+              CompanyInfo(
+                iconImage: AssetImage('assets/images/industry.png'),
+                label: 'Industry',
+                value: provider.industry,
+              ),
+              
+            ],
+          ),
+        ],
+      );
+    });
   }
 }
 
@@ -50,52 +63,82 @@ class CompanyInfo extends StatelessWidget {
   final ImageProvider iconImage;
   final String label;
   final String value;
+  final bool isLink;
 
   CompanyInfo(
-      {required this.iconImage, required this.label, required this.value});
+      {required this.iconImage,
+      required this.label,
+      required this.value,
+      this.isLink = false});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: Image(
-            image: iconImage,
-            height: 20,
-            width: 20,
+    return Container(
+      constraints: BoxConstraints(minWidth: 100, maxWidth: 250),
+      margin: EdgeInsets.only(right: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: Image(
+              image: iconImage,
+              height: 20,
+              width: 20,
+            ),
           ),
-        ),
-        SizedBox(height: 50),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  color: Color(0xff202855),
-                  fontSize: 16,
-                  fontFamily: 'Galano',
-                  fontWeight: FontWeight.bold,
+          SizedBox(width: 10),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: Color(0xff202855),
+                    fontSize: 16,
+                    fontFamily: 'Galano',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  fontFamily: 'Galano',
-                  color: Color(0xff6D6D6D),
-                ),
-              ),
-            ],
+                SizedBox(height: 2),
+                isLink
+                    ? GestureDetector(
+                        onTap: () {
+                          final String url = value.startsWith('http://') ||
+                                  value.startsWith('https://')
+                              ? value
+                              : 'https://$value';
+                          html.window.open(url, '_blank');
+                        },
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            fontFamily: 'Galano',
+                            color: Colors.blue,
+                          ),
+                          maxLines: 23,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      )
+                    : Text(
+                        value,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          fontFamily: 'Galano',
+                          color: Color(0xff6D6D6D),
+                        ),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/components/edit_subscriber_modal.dart';
+import 'package:huzzl_web/views/admins/screens/dashboard/components/remove_subscriber_modal.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -46,20 +48,42 @@ class SubscribedUsersScreen extends StatelessWidget {
                       .toDate()
                       .add(const Duration(days: 30))))),
                   DataCell(
-                    ElevatedButton(
-                      onPressed: () {
-                        //Show modal that will edit the subscription date
-                        showEditSubscriptionModal(context, company, provider);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            //Show modal that will edit the subscription date
+                            showEditSubscriptionModal(
+                                context, company, provider);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xffff9800),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                          ),
+                          child: const Icon(Icons.edit),
                         ),
-                      ),
-                      child: const Text('Edit Subscription'),
+                        const Gap(5),
+                        ElevatedButton(
+                          onPressed: () {
+                            //Show modal that will edit the subscription date
+                            showDeleteSubscriberModal(
+                                context, company, provider);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xfff44336),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                          ),
+                          child: const Icon(Icons.delete),
+                        ),
+                      ],
                     ),
                   ),
                 ]);

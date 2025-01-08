@@ -27,6 +27,7 @@ import 'package:huzzl_web/views/login/login_register.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/branch-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/hiringmanager-provider.dart';
 import 'package:huzzl_web/views/recruiters/branches_tab/staff-provider.dart';
+import 'package:huzzl_web/views/recruiters/company_profile/providers/companyProfileProvider.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/interview_tab/controller/interview_provider.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
@@ -45,6 +46,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => CompanyProfileProvider()),
         ChangeNotifierProvider(create: (context) => JobProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => BranchProvider()),
@@ -223,6 +225,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
               final data = userDoc.data();
               final role = data?['role'] ??
                   'admin'; // Default to 'admin' if role is not found
+
+                  if (role=='recruiter'){
+                    final compProvider = Provider.of<CompanyProfileProvider>(context, listen: false);
+                      compProvider.fetchCompanyDetails(user.uid);
+                      // compProvider.fetchAllReviews(user.uid);
+
+                  }
 
               if (role == 'jobseeker') {
                 // Perform the code block for non-admin users

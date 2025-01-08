@@ -4,6 +4,8 @@ import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/models/recent_file.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/disable_user_dialog.dart';
 import 'package:huzzl_web/views/admins/screens/dashboard/dialogs/enable_user_dialog.dart';
+import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/downgrade_modal.dart';
+import 'package:huzzl_web/views/admins/screens/manageUsers/widgets/upgrade_modal.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
@@ -83,6 +85,7 @@ class _RecentFilesState extends State<RecentFiles> {
                         DataColumn(label: Text("First name")),
                         DataColumn(label: Text("Last name")),
                         DataColumn(label: Text("Email")),
+                        DataColumn(label: Text("Subscription")),
                         DataColumn(label: Text("Status")),
                         DataColumn(label: Text("Actions")),
                       ],
@@ -130,6 +133,42 @@ DataRow recentUsers(
       DataCell(Text(fileInfo.fname ?? 'No name')), // Default text if null
       DataCell(Text(fileInfo.lname ?? 'No name')), // Default text if null
       DataCell(Text(fileInfo.email ?? 'No email')), // Default text if null
+      DataCell(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(fileInfo.subscriptionType ?? 'No subscription type'),
+          const Gap(5),
+          if (fileInfo.subscriptionType == 'basic') ...[
+            IconButton(
+              iconSize: 20,
+              style: const ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.white),
+                foregroundColor: WidgetStatePropertyAll(Colors.blueAccent),
+              ),
+              icon: const Icon(
+                  Icons.arrow_upward_rounded), // Using arrow_upward for upgrade
+              onPressed: () {
+                showUpgradeModal(context, fileInfo, controller);
+              },
+              tooltip: 'Upgrade to premium',
+            ),
+          ] else if (fileInfo.subscriptionType == 'premium') ...[
+            IconButton(
+              iconSize: 20,
+              style: const ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.white),
+                foregroundColor: WidgetStatePropertyAll(Colors.redAccent),
+              ),
+              icon: const Icon(Icons
+                  .arrow_downward_rounded), // Using arrow_upward for upgrade
+              onPressed: () {
+                showDowngradeModal(context, fileInfo, controller);
+              },
+              tooltip: 'Change to basic',
+            ),
+          ]
+        ],
+      )), // Default text if null
       DataCell(Text(fileInfo.status ?? 'No status')), // Default text if null
       DataCell(
         Row(

@@ -80,6 +80,7 @@ class ManageRecruiterTab extends StatelessWidget {
                               DataColumn(label: Text("First name")),
                               DataColumn(label: Text("Last name")),
                               DataColumn(label: Text("Email")),
+                              DataColumn(label: Text("Subscription")),
                               DataColumn(label: Text("Status")),
                               DataColumn(label: Text("Actions")),
                             ],
@@ -113,6 +114,7 @@ class ManageRecruiterTab extends StatelessWidget {
                                       jobseekerData['hiringManagerLastName'] ??
                                           '')),
                                   DataCell(Text(jobseekerData['email'] ?? '')),
+                                  DataCell(Text(jobseekerData['subscriptionType'] ?? '')),
                                   DataCell(
                                       Text(jobseekerData['accStatus'] ?? '')),
                                   // DataCell(Text(jobseekerData['phone'] ?? '')),

@@ -160,7 +160,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () => Navigator.pop(context),
                             style: OutlinedButton.styleFrom(
                               side:
                                   BorderSide(color: Color(0xFF0038FF),width: 1.5), // Blue border
