@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
+import 'package:huzzl_web/views/recruiters/jobs_tab/controller/job_provider_candidate.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/open_job_card.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class OpenJobs extends StatefulWidget {
@@ -22,6 +24,7 @@ class _OpenJobsState extends State<OpenJobs> {
 
   @override
   Widget build(BuildContext context) {
+    var jobProvider = Provider.of<JobProviderCandidate>(context);
     return Column(
       children: [
         const Gap(5),
@@ -122,7 +125,9 @@ class _OpenJobsState extends State<OpenJobs> {
 
                     // Count the number of applicants for this job
                     final int numberOfApplicants = widget.candidates
-                        .where((candidate) => candidate.jobPostId == jobPostID)
+                        .where((candidate) =>
+                            candidate.jobPostId == jobPostID &&
+                            candidate.status == "Hired")
                         .length;
 
                     try {
@@ -137,6 +142,7 @@ class _OpenJobsState extends State<OpenJobs> {
                             .collection('job_posts')
                             .doc(jobPostID)
                             .update({'status': 'closed'}).then((_) {
+                          jobProvider.countJobPosts();
                           print('Job post $jobPostID status updated to close.');
                         }).catchError((error) {
                           print('Failed to update status: $error');

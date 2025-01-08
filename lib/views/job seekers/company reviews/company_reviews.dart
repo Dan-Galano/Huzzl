@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gap/gap.dart';
+import 'package:huzzl_web/views/job%20seekers/company%20reviews/company_view.dart';
+import 'package:huzzl_web/views/recruiters/company_profile/providers/companyProfileProvider.dart';
+import 'package:provider/provider.dart';
 
 class CompanyReviews extends StatefulWidget {
   const CompanyReviews({super.key});
@@ -34,15 +37,28 @@ class _CompanyReviewsState extends State<CompanyReviews> {
 
       List<Map<String, dynamic>> fetchedCompanies = [];
 
+      final compProvider =
+          Provider.of<CompanyProfileProvider>(context, listen: false);
       for (var userDoc in userSnapshot.docs) {
         QuerySnapshot companySnapshot =
             await userDoc.reference.collection('company_information').get();
 
+        // Fetch reviews for the recruiter
+        await compProvider.fetchAllReviews(userDoc.id);
+
         for (var companyDoc in companySnapshot.docs) {
+          double rating = 0;
+
+          // Check if there are reviews and set the rating accordingly
+          if (compProvider.reviews.isNotEmpty) {
+            rating = compProvider.reviewStarsAverage;
+          }
+
           fetchedCompanies.add({
+            'recruiterId': userDoc.id,
             'name': companyDoc['companyName'] ?? 'Unknown Company',
             'logo': Icons.business, // Update with a dynamic logo if available
-            'rating': 4.5,
+            'rating': rating, // Set rating to 0 if no reviews
           });
         }
       }
@@ -146,7 +162,7 @@ class _CompanyReviewsState extends State<CompanyReviews> {
                 ),
                 Gap(30),
                 Text(
-                  "Popular Companies",
+                  "All Huzzl Companies",
                   style: TextStyle(
                     fontSize: 20,
                     fontFamily: 'Galano',
@@ -167,63 +183,73 @@ class _CompanyReviewsState extends State<CompanyReviews> {
                   itemCount: filteredCompanies.length,
                   itemBuilder: (context, index) {
                     var company = filteredCompanies[index];
-                    return Card(
-                      color: Colors.white,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            Icon(
-                              company['logo'],
-                              size: 40,
-                              color: Color(0xFFFE9703),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    company['name'],
-                                    style: TextStyle(
-                                      fontFamily: 'Galano',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        company['rating'].toString(),
-                                        style: TextStyle(
-                                          fontFamily: 'Galano',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      Gap(10),
-                                      Row(
-                                        children: List.generate(5, (starIndex) {
-                                          return Icon(
-                                            Icons.star,
-                                            size: 18,
-                                            color: starIndex < company['rating']
-                                                ? Colors.amber
-                                                : Colors.grey,
-                                          );
-                                        }),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                    return GestureDetector(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => CompanyViewScreen(
+                          recruiterId: company['recruiterId'],
+                        ),
+                      )),
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                company['logo'],
+                                size: 40,
+                                color: Color(0xFFFE9703),
                               ),
-                            ),
-                          ],
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      company['name'],
+                                      style: TextStyle(
+                                        fontFamily: 'Galano',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          company['rating'].toStringAsFixed(2),
+                                          style: TextStyle(
+                                            fontFamily: 'Galano',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        Gap(10),
+                                        Row(
+                                          children: List.generate(5, (index) {
+                                            int flooredStars =
+                                                company['rating'].floor();
+
+                                            return Icon(
+                                              Icons.star,
+                                              color: index < flooredStars
+                                                  ? Colors.amber
+                                                  : Colors.grey,
+                                              size: 16,
+                                            );
+                                          }),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

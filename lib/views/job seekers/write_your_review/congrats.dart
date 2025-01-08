@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:huzzl_web/views/job%20seekers/company%20reviews/company_view.dart';
 import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_boxbutton.dart';
 
 class ReviewCongratulationPage extends StatelessWidget {
-  final VoidCallback goBack;
+  final String recruiterId;
 
-  ReviewCongratulationPage({super.key, required this.goBack});
+  ReviewCongratulationPage({super.key, required this.recruiterId});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,10 @@ class ReviewCongratulationPage extends StatelessWidget {
                   SizedBox(
                     width: 430,
                     child: BlueOutlinedBoxButton(
-                      onPressed: goBack,
+                      onPressed: (){
+                        
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CompanyViewScreen(recruiterId: recruiterId),));
+                      },
                       text: 'Continue',
                     ),
                   ),

@@ -6,8 +6,6 @@ import 'package:huzzl_web/views/recruiters/company_profile/tabs/about_tab.dart';
 import 'package:huzzl_web/views/recruiters/company_profile/tabs/reviews_tab.dart';
 import 'package:huzzl_web/widgets/buttons/orange/iconbutton_back.dart';
 
-
-
 class AboutPage extends StatefulWidget {
   @override
   State<AboutPage> createState() => _AboutPageState();
@@ -37,7 +35,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                   Gap(30),
                   CompanyProfileTabBar(tabController: _tabController),
                   Container(
-                    height: 600, 
+                    height: 600,
                     child: TabBarView(
                       controller: _tabController,
                       children: [
@@ -49,7 +47,7 @@ class _AboutPageState extends State<AboutPage> with TickerProviderStateMixin {
                 ],
               ),
             ),
-          ), 
+          ),
           Positioned(
             top: 16.0,
             left: 200.0,
