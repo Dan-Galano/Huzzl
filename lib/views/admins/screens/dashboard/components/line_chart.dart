@@ -75,7 +75,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         : Stack(
             children: <Widget>[
               AspectRatio(
-                aspectRatio: 1.70,
+                aspectRatio: 2.20,
                 child: Padding(
                   padding: const EdgeInsets.only(
                     right: 18,

@@ -30,7 +30,7 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
-
+  
   // Function to fetch user details from Firestore
   Future<void> fetchUserDetails(String uid) async {
     try {
@@ -43,7 +43,7 @@ class _ReviewDetailsScreenState extends State<ReviewDetailsScreen> {
             (userDoc['firstName'] ?? '') + " " + (userDoc['lastName'] ?? '');
         _emailController.text = userDoc['email'] ?? '';
         _addressController.text =
-            '${userDoc['location']['barangay']}, ${userDoc['location']['city']}, ${userDoc['location']['province']}, ${userDoc['location']['region']} ${userDoc['location']['otherLocation'] ?? ''}';
+            '${userDoc['selectedLocation']['barangayName']}, ${userDoc['selectedLocation']['cityName']}, ${userDoc['selectedLocation']['provinceName']}, ${userDoc['selectedLocation']['regionName']} ${userDoc['selectedLocation']['otherLocation'] ?? ''}';
         _phoneController.text = userDoc['phoneNumber'] ?? '';
       }
     } catch (e) {
