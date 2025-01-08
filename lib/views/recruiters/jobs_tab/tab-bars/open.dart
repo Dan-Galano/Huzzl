@@ -18,6 +18,8 @@ class OpenJobs extends StatefulWidget {
 }
 
 class _OpenJobsState extends State<OpenJobs> {
+  final currentDate = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -46,7 +48,7 @@ class _OpenJobsState extends State<OpenJobs> {
                 .collection('users')
                 .doc(widget.user.uid)
                 .collection('job_posts')
-                .snapshots(),
+                .snapshots(), // Fetch all job posts
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Column(
@@ -103,19 +105,56 @@ class _OpenJobsState extends State<OpenJobs> {
                     ],
                   );
                 } else {
-                  // Job posts are available, show the job posts
+                  final currentDate = DateTime.now(); // Get the current date
+                  final DateFormat formatter = DateFormat(
+                      'MMM d, yyyy'); // Define the expected date format
+
+                  // Parse and filter job posts based on the applicationDeadline and numberOfPeopleToHire
                   final jobPostsData = snapshot.data!.docs
                       .map((doc) => doc.data() as Map<String, dynamic>)
-                      .toList();
+                      .where((jobPost) {
+                    // Parse the deadline and get the job's current number of applicants
+                    final deadlineString = jobPost['applicationDeadline'];
+                    final int numberOfPeopleToHire =
+                        int.parse(jobPost['numberOfPeopleToHire'] ?? 0);
+                    final String jobPostID = jobPost['jobPostID'];
+                    final String status = jobPost['status'] ?? 'open';
 
-                  //Display only open jobs
-                  final openJobs = jobPostsData
-                      .where(
-                        (jobPost) => jobPost.containsValue('open'),
-                      )
-                      .toList();
+                    // Count the number of applicants for this job
+                    final int numberOfApplicants = widget.candidates
+                        .where((candidate) => candidate.jobPostId == jobPostID)
+                        .length;
 
-                  if (openJobs.isEmpty) {
+                    try {
+                      final deadlineDate = formatter.parse(deadlineString);
+
+                      // If job post reaches its hiring goal, update its status to 'close'
+                      if (numberOfApplicants >= numberOfPeopleToHire &&
+                          status != 'closed') {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(widget.user.uid)
+                            .collection('job_posts')
+                            .doc(jobPostID)
+                            .update({'status': 'closed'}).then((_) {
+                          print('Job post $jobPostID status updated to close.');
+                        }).catchError((error) {
+                          print('Failed to update status: $error');
+                        });
+                        return false; // Exclude this job post since it's now closed
+                      }
+
+                      // Filter for jobs with a valid future deadline and not closed
+                      return deadlineDate.isAfter(currentDate) &&
+                          numberOfApplicants < numberOfPeopleToHire &&
+                          status != 'closed';
+                    } catch (e) {
+                      print("Error parsing date: $e");
+                      return false; // Exclude invalid dates
+                    }
+                  }).toList();
+
+                  if (jobPostsData.isEmpty) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -135,14 +174,14 @@ class _OpenJobsState extends State<OpenJobs> {
                     );
                   } else {
                     return ListView.builder(
-                      itemCount: openJobs.length,
+                      itemCount: jobPostsData.length,
                       itemBuilder: (context, index) {
                         Map<String, dynamic> jobPostIndividualData =
-                            openJobs[index];
+                            jobPostsData[index];
                         final DocumentSnapshot jobPostDoc =
                             snapshot.data!.docs[index];
                         final String jobPostId = jobPostDoc.id; // Job Post ID
-                        //Cinocompare dito if yung jobPostId ni candidate is same sa id na clinick ni user na job post
+
                         final int numberOfApplicants = widget.candidates
                             .where(
                               (candidate) =>
@@ -151,6 +190,7 @@ class _OpenJobsState extends State<OpenJobs> {
                             )
                             .toList()
                             .length;
+
                         return GestureDetector(
                           onTap: () {
                             print(
@@ -164,7 +204,6 @@ class _OpenJobsState extends State<OpenJobs> {
                               0,
                               0,
                             );
-                            // print(jobPostId);
                           },
                           child: OpenJobCard(
                             jobTitle: jobPostIndividualData["jobTitle"],
