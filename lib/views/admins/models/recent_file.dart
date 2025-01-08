@@ -1,7 +1,10 @@
-class RecentUser {
-  final String? uid, icon, role, fname, lname, email, status, subscriptionType;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  RecentUser({this.uid, this.icon, this.role, this.email, this.fname, this.lname, this.status, this.subscriptionType});
+class RecentUser {
+  final String? uid, icon, role, fname, lname, email, status, subscriptionType; 
+  final Timestamp? dateSubscribed;
+
+  RecentUser({this.uid, this.icon, this.role, this.email, this.fname, this.lname, this.status, this.subscriptionType, this.dateSubscribed});
 }
 
 // List demoRecentFiles = [

@@ -50,6 +50,7 @@ void showDeleteSubscriberModal(
 
                 // Refresh local data
                 await provider.fetchSubscribers();
+                await provider.fetchRecentUsers();
 
                 // Close modal
                 Navigator.pop(context);

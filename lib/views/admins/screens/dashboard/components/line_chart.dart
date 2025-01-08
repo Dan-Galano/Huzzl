@@ -37,6 +37,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       var subscribersSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('subscriptionType', isEqualTo: 'premium')
+          .orderBy('dateSubscribed')
           .get();
 
       Map<int, int> subscribersByMonth = {};
@@ -44,6 +45,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
       for (var doc in subscribersSnapshot.docs) {
         Timestamp timestamp = doc['dateSubscribed'];
         DateTime dateSubscribed = timestamp.toDate();
+        print(
+            "PRINT FETCHED DATE BABY (${DateTime.now().millisecond}): $dateSubscribed");
         int month = dateSubscribed.month;
 
         // Increment the count for the month

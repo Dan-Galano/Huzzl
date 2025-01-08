@@ -33,7 +33,7 @@ class SubscribedUsersScreen extends StatelessWidget {
                 DataColumn(label: Text("First Name")),
                 DataColumn(label: Text("Last Name")),
                 DataColumn(label: Text("Date Subscribed")),
-                DataColumn(label: Text("Expiration Date")),
+                // DataColumn(label: Text("Expiration Date")),
                 DataColumn(label: Text("Actions")), //can edit the date (?)
               ],
               rows: provider.subscribers.map((company) {
@@ -43,10 +43,10 @@ class SubscribedUsersScreen extends StatelessWidget {
                   DataCell(Text(company.hiringManagerLastName)),
                   DataCell(Text(DateFormat('MM/dd/yyyy')
                       .format(company.dateSubscribed.toDate()))),
-                  DataCell(Text(DateFormat('MM/dd/yyyy').format(company
-                      .dateSubscribed
-                      .toDate()
-                      .add(const Duration(days: 30))))),
+                  // DataCell(Text(DateFormat('MM/dd/yyyy').format(company
+                  //     .dateSubscribed
+                  //     .toDate()
+                  //     .add(const Duration(days: 30))))),
                   DataCell(
                     Row(
                       children: [
