@@ -30,7 +30,7 @@ class MenuAppController extends ChangeNotifier {
           .collection('users')
           .where('subscriptionType', isEqualTo: 'premium')
           .where('role', isEqualTo: 'recruiter')
-          .get(); 
+          .get();
 
       _subscribers = subscribersSnapshot.docs.map(
         (doc) {
@@ -348,6 +348,8 @@ class MenuAppController extends ChangeNotifier {
               : "${doc['lastName']}",
           role: doc['role'] == 'recruiter' ? 'Recruiter' : 'Jobseeker',
           status: doc['accStatus'],
+          subscriptionType:
+              doc['role'] == 'recruiter' ? doc['subscriptionType'] : 'N/A',
         );
       }).toList();
 
@@ -382,6 +384,8 @@ class MenuAppController extends ChangeNotifier {
               : "${doc['lastName']}",
           role: doc['role'] == 'recruiter' ? 'Recruiter' : 'Jobseeker',
           status: doc['accStatus'],
+          subscriptionType:
+              doc['role'] == 'recruiter' ? doc['subscriptionType'] : 'N/A',
         );
       }).toList();
       print('--------------- FETCHED ALL RECRUITERS -----------------');
