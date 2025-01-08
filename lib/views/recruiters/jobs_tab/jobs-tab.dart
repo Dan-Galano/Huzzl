@@ -8,6 +8,7 @@ import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/open.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/tab-bars/paused.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/jobfilterrow.dart';
 import 'package:huzzl_web/views/recruiters/subscription/basic_plus.dart';
+import 'package:intl/intl.dart';
 
 class JobTab extends StatefulWidget {
   final VoidCallback postJob;
@@ -55,14 +56,48 @@ class _JobTabState extends State<JobTab> {
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
 
-      final openJobs =
-          jobPostsData.where((jobPost) => jobPost['status'] == 'open').toList();
-      final pausedJobs = jobPostsData
-          .where((jobPost) => jobPost['status'] == 'paused')
-          .toList();
-      final closedJobs = jobPostsData
-          .where((jobPost) => jobPost['status'] == 'closed')
-          .toList();
+      // Get the current date
+      final currentDate = DateTime.now();
+      final DateFormat formatter = DateFormat('MMM d, yyyy'); // Date format
+
+      // Separate jobs based on their status and deadline
+      final openJobs = jobPostsData.where((jobPost) {
+        final deadlineString = jobPost['applicationDeadline'];
+        try {
+          final deadlineDate = formatter.parse(deadlineString);
+          return jobPost['status'] == 'open' &&
+              deadlineDate.isAfter(currentDate);
+        } catch (e) {
+          print("Error parsing date for openJobs: $e");
+          return false; // Exclude jobs with invalid or missing dates
+        }
+      }).toList();
+
+      final pausedJobs = jobPostsData.where((jobPost) {
+        final deadlineString = jobPost['applicationDeadline'];
+        try {
+          final deadlineDate = formatter.parse(deadlineString);
+          return jobPost['status'] == 'paused' &&
+              deadlineDate.isAfter(currentDate);
+        } catch (e) {
+          print("Error parsing date for pausedJobs: $e");
+          return false; // Exclude jobs with invalid or missing dates
+        }
+      }).toList();
+
+      final closedJobs = jobPostsData.where((jobPost) {
+        final deadlineString = jobPost['applicationDeadline'];
+        try {
+          final deadlineDate = formatter.parse(deadlineString);
+          return jobPost['status'] == 'closed' ||
+              deadlineDate.isBefore(currentDate);
+        } catch (e) {
+          print("Error parsing date for closedJobs: $e");
+          return true; // Count jobs with invalid or missing dates as closed
+        }
+      }).toList();
+
+      // Update the counts in the state
       setState(() {
         _openJobsCount = openJobs.length;
         _pausedJobsCount = pausedJobs.length;

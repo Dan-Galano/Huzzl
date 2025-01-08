@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/recruiters/candidates_tab/models/candidate.dart';
 import 'package:huzzl_web/views/recruiters/home/00%20home.dart';
 import 'package:huzzl_web/views/recruiters/jobs_tab/widgets/closed_job_card.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ClosedJobs extends StatefulWidget {
@@ -79,10 +80,8 @@ class _ClosedJobsState extends State<ClosedJobs> {
                 return Center(child: Text('Error: ${snapshot.error}'));
               }
 
-              // Handle the real-time update of job posts
               if (snapshot.hasData) {
                 if (snapshot.data!.docs.isEmpty) {
-                  // No job posts, show the empty message
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -101,17 +100,29 @@ class _ClosedJobsState extends State<ClosedJobs> {
                     ],
                   );
                 } else {
-                  // Job posts are available, show the job posts
+                  // Filter closed jobs
                   final jobPostsData = snapshot.data!.docs
                       .map((doc) => doc.data() as Map<String, dynamic>)
                       .toList();
 
-                  final openJobs = jobPostsData
-                      .where(
-                        (jobPost) => jobPost.containsValue('closed'),
-                      )
-                      .toList();
-                  if (openJobs.isEmpty) {
+                  // Current date and formatter for deadline comparison
+                  final currentDate = DateTime.now();
+                  final DateFormat formatter = DateFormat('MMM d, yyyy');
+
+                  // Fetch jobs classified as closed
+                  final closedJobs = jobPostsData.where((jobPost) {
+                    final deadlineString = jobPost['applicationDeadline'];
+                    try {
+                      final deadlineDate = formatter.parse(deadlineString);
+                      return jobPost['status'] == 'closed' ||
+                          deadlineDate.isBefore(currentDate);
+                    } catch (e) {
+                      print("Error parsing date for closedJobs: $e");
+                      return true; // Include jobs with invalid or missing deadlines as closed
+                    }
+                  }).toList();
+
+                  if (closedJobs.isEmpty) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -131,14 +142,14 @@ class _ClosedJobsState extends State<ClosedJobs> {
                     );
                   } else {
                     return ListView.builder(
-                      itemCount: openJobs.length,
+                      itemCount: closedJobs.length,
                       itemBuilder: (context, index) {
                         Map<String, dynamic> jobPostIndividualData =
-                            openJobs[index];
+                            closedJobs[index];
                         final DocumentSnapshot jobPostDoc =
                             snapshot.data!.docs[index];
                         final String jobPostId = jobPostDoc.id; // Job Post ID
-                        //Display only open jobs
+
                         final int numberOfApplicants = widget.candidates
                             .where(
                               (candidate) =>
@@ -150,29 +161,19 @@ class _ClosedJobsState extends State<ClosedJobs> {
 
                         return GestureDetector(
                           onTap: () {
-                            // print(
-                            //     "TAPPED BOSS: ${jobPostIndividualData['jobPostID']} ${jobPostIndividualData['jobTitle']}");
-                            // final homeState = context.findAncestorStateOfType<
-                            //     RecruiterHomeScreenState>();
-                            // homeState?.toggleCandidatesScreen(
-                            //   true,
-                            //   jobPostIndividualData['jobPostID'],
-                            //   jobPostIndividualData["jobTitle"],
-                            //   0,
-                            //   1,
-                            // );
-                            // print(jobPostId);
+                            // Add logic for tap action if needed
                           },
                           child: ClosedJobCard(
-                              jobTitle: jobPostIndividualData["jobTitle"],
-                              jobType: jobPostIndividualData['jobType'],
-                              jobDeadline:
-                                  jobPostIndividualData['applicationDeadline'],
-                              jobPostedAt: jobPostIndividualData['posted_at'],
-                              jobPostID: jobPostIndividualData['jobPostID'],
-                              jobPostedBy: jobPostIndividualData['posted_by'],
-                              numberOfApplicants: numberOfApplicants,
-                              user: widget.user),
+                            jobTitle: jobPostIndividualData["jobTitle"],
+                            jobType: jobPostIndividualData['jobType'],
+                            jobDeadline:
+                                jobPostIndividualData['applicationDeadline'],
+                            jobPostedAt: jobPostIndividualData['posted_at'],
+                            jobPostID: jobPostIndividualData['jobPostID'],
+                            jobPostedBy: jobPostIndividualData['posted_by'],
+                            numberOfApplicants: numberOfApplicants,
+                            user: widget.user,
+                          ),
                         );
                       },
                     );

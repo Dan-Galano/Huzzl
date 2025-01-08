@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/job%20seekers/home/home_script.dart';
+import 'package:intl/intl.dart';
 
 class JobProvider with ChangeNotifier {
   List<Map<String, dynamic>> _jobs = [];
@@ -168,6 +169,10 @@ class JobProvider with ChangeNotifier {
       // Prepare a list to hold all the fetched job posts
       List<Map<String, dynamic>> fetchedJobs = [];
 
+      // Current date for filtering open jobs
+      DateTime currentDate = DateTime.now();
+      DateFormat formatter = DateFormat('MMM d, yyyy');
+
       // Step 2: Loop through each recruiter user
       for (var userDoc in usersSnapshot.docs) {
         // Query the 'job_posts' sub-collection for each recruiter user
@@ -189,31 +194,48 @@ class JobProvider with ChangeNotifier {
           String? postedDate = jobPost['posted_at']?.toString();
           String? salary = jobPost['payRate'] as String?;
           List? skills = jobPost['skills'];
-          // List<String> skillsTag = skills?.split(', ') ?? [];
 
-          // Get the UID of the job post (document ID)
-          String jobPostUid = doc.id;
+          // Check if the job post is open and its deadline is still valid
+          String? applicationDeadline = jobPost['applicationDeadline'];
+          bool isOpen = jobPost['status'] == 'open';
 
-          // Retrieve the userUid from the document's parent (the user's UID)
-          String userUid = userDoc.id;
+          bool isDeadlineValid = false;
+          if (applicationDeadline != null) {
+            try {
+              DateTime deadlineDate = formatter.parse(applicationDeadline);
+              isDeadlineValid = deadlineDate.isAfter(currentDate);
+            } catch (e) {
+              print("Error parsing date for job post ${doc.id}: $e");
+            }
+          }
 
-          if (title != null && location != null) {
-            String tags =
-                skills!.isNotEmpty ? skills.join(', ') : 'No tags available';
+          // Only include open jobs with a valid deadline
+          if (isOpen && isDeadlineValid) {
+            // Get the UID of the job post (document ID)
+            String jobPostUid = doc.id;
 
-            fetchedJobs.add({
-              'uid': jobPostUid, // Job post UID
-              'userUid': userUid, // The user UID who posted the job
-              'datePosted': postedDate ?? 'Unknown date',
-              'title': title,
-              'description': description ?? 'No Description',
-              'location': location,
-              'tags': tags,
-              'salary': salary ?? 'Salary not provided',
-              'proxyLink': 'no proxy link',
-              'website': 'assets/images/huzzl_logo_ulo.png',
-              'responsibilities': responsibilities,
-            });
+            // Retrieve the userUid from the document's parent (the user's UID)
+            String userUid = userDoc.id;
+
+            if (title != null && location != null) {
+              String tags = skills != null && skills.isNotEmpty
+                  ? skills.join(', ')
+                  : 'No tags available';
+
+              fetchedJobs.add({
+                'uid': jobPostUid, // Job post UID
+                'userUid': userUid, // The user UID who posted the job
+                'datePosted': postedDate ?? 'Unknown date',
+                'title': title,
+                'description': description ?? 'No Description',
+                'location': location,
+                'tags': tags,
+                'salary': salary ?? 'Salary not provided',
+                'proxyLink': 'no proxy link',
+                'website': 'assets/images/huzzl_logo_ulo.png',
+                'responsibilities': responsibilities,
+              });
+            }
           }
         }
       }
