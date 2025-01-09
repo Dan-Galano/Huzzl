@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:huzzl_web/views/chat/components/chat_bubble.dart';
 import 'package:huzzl_web/views/chat/services/chat_provider.dart';
 import 'package:huzzl_web/views/chat/services/chat_service.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:shimmer/shimmer.dart';
@@ -343,49 +344,50 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildMessageItem(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    bool isCurrentUser = data["senderID"] == getCurrentUser()!.uid;
+Widget _buildMessageItem(DocumentSnapshot doc) {
+  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  bool isCurrentUser = data["senderID"] == getCurrentUser()!.uid;
 
-    return Row(
-      mainAxisAlignment:
-          isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        if (!isCurrentUser) ...[
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.grey,
-            child: ((widget.userData["firstName"]?.isNotEmpty == true &&
-                        widget.userData["lastName"]?.isNotEmpty == true) ||
-                    (widget.userData["hiringManagerFirstName"]?.isNotEmpty ==
-                            true &&
-                        widget.userData["hiringManagerLastName"]?.isNotEmpty ==
-                            true))
-                ? Text(
-                    // Check for first name/last name or hiring manager's first and last name
-                    "${(widget.userData["firstName"] ?? widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
-                    style: TextStyle(color: Colors.white),
-                  )
-                : Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-          ),
-        ],
-        Expanded(
-          child: Align(
-            alignment:
-                isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-            child: ChatBubble(
-              message: data["message"],
-              isCurrentUser: isCurrentUser,
-            ),
-          ),
+  // Assuming "timestamp" is a Firestore Timestamp
+  Timestamp timestamp = data["timestamp"]; // Get the Timestamp object
+
+  return Row(
+    mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      if (!isCurrentUser) ...[
+        CircleAvatar(
+          radius: 18,
+          backgroundColor: Colors.grey,
+          child: ((widget.userData["firstName"]?.isNotEmpty == true &&
+                      widget.userData["lastName"]?.isNotEmpty == true) ||
+                  (widget.userData["hiringManagerFirstName"]?.isNotEmpty == true &&
+                      widget.userData["hiringManagerLastName"]?.isNotEmpty == true))
+              ? Text(
+                  // Check for first name/last name or hiring manager's first and last name
+                  "${(widget.userData["firstName"] ?? widget.userData["hiringManagerFirstName"] ?? '').toUpperCase()[0]}${(widget.userData["lastName"] ?? widget.userData["hiringManagerLastName"] ?? '').toUpperCase()[0]}",
+                  style: TextStyle(color: Colors.white),
+                )
+              : Icon(
+                  Icons.person,
+                  color: Colors.white,
+                ),
         ),
       ],
-    );
-  }
+      Expanded(
+        child: Align(
+          alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+          child: ChatBubble(
+            timestamp: timestamp, // Pass the Timestamp directly
+            message: data["message"],
+            isCurrentUser: isCurrentUser,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 
   Widget buildUserInput() {
     return Row(

@@ -138,23 +138,23 @@ class _NavBarHomeState extends State<NavBarHome> {
                             ],
                           ),
                         ),
-                        PopupMenuItem(
-                          value: 'my_reviews',
-                          child: Row(
-                            children: [
-                              Icon(Icons.star, color: Color(0xff373030)),
-                              SizedBox(width: 8),
-                              Text(
-                                'My Reviews',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xff373030),
-                                  fontFamily: 'Galano',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // PopupMenuItem(
+                        //   value: 'my_reviews',
+                        //   child: Row(
+                        //     children: [
+                        //       Icon(Icons.star, color: Color(0xff373030)),
+                        //       SizedBox(width: 8),
+                        //       Text(
+                        //         'My Reviews',
+                        //         style: TextStyle(
+                        //           fontSize: 14,
+                        //           color: Color(0xff373030),
+                        //           fontFamily: 'Galano',
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                         PopupMenuItem(
                           value: 'close_account',
                           child: Row(

@@ -4,7 +4,8 @@ import 'package:gap/gap.dart';
 
 class LoadingDialog extends StatefulWidget {
   final String message;
-  const LoadingDialog({Key? key, this.message="Loading..."}) : super(key: key);
+  const LoadingDialog({Key? key, this.message = "Loading..."})
+      : super(key: key);
 
   @override
   State<LoadingDialog> createState() => _LoadingDialogState();

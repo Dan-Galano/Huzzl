@@ -13,7 +13,8 @@ import 'package:provider/provider.dart';
 // }
 class WriteReviewPage extends StatefulWidget {
   final String recruiterId;
-  const WriteReviewPage({super.key, required this.recruiterId});
+  final bool showReviewBtn;
+  const WriteReviewPage({super.key, required this.recruiterId, required this.showReviewBtn});
 
   @override
   _WriteReviewPageState createState() => _WriteReviewPageState();
@@ -109,7 +110,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           );
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) =>
-                ReviewCongratulationPage(recruiterId: widget.recruiterId),
+                ReviewCongratulationPage(recruiterId: widget.recruiterId, showReviewBtn: widget.showReviewBtn),
           ));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

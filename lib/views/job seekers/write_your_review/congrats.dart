@@ -4,8 +4,9 @@ import 'package:huzzl_web/widgets/buttons/blue/blueoutlined_boxbutton.dart';
 
 class ReviewCongratulationPage extends StatelessWidget {
   final String recruiterId;
+  final bool showReviewBtn;
 
-  ReviewCongratulationPage({super.key, required this.recruiterId});
+  ReviewCongratulationPage({super.key, required this.recruiterId, required this.showReviewBtn});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class ReviewCongratulationPage extends StatelessWidget {
                     child: BlueOutlinedBoxButton(
                       onPressed: (){
                         
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CompanyViewScreen(recruiterId: recruiterId),));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CompanyViewScreen(recruiterId: recruiterId, showReviewBtn: showReviewBtn,),));
                       },
                       text: 'Continue',
                     ),

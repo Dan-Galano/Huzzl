@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 
 class ProfileHeaderJobSeeker extends StatefulWidget {
   final String recruiterId;
-  const ProfileHeaderJobSeeker({super.key, required this.recruiterId});
+  final bool showReviewBtn;
+  const ProfileHeaderJobSeeker(
+      {super.key, required this.recruiterId, required this.showReviewBtn});
   @override
   State<ProfileHeaderJobSeeker> createState() => _ProfileHeaderJobSeekerState();
 }
@@ -92,32 +94,40 @@ class _ProfileHeaderJobSeekerState extends State<ProfileHeaderJobSeeker> {
               // child: SizedBox(height: 50,),
               child: SizedBox(
                 width: 160,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WriteReviewPage(recruiterId: widget.recruiterId,),
+                child: widget.showReviewBtn == false
+                    ? SizedBox(
+                        height: 50,
+                      )
+                    : ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WriteReviewPage(
+                                recruiterId: widget.recruiterId,
+                                showReviewBtn: widget.showReviewBtn,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          side:
+                              BorderSide(color: Color(0xFF0038FF), width: 1.5),
+                          padding: EdgeInsets.all(10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          backgroundColor: Colors.white,
+                        ),
+                        child: Text(
+                          'Write a Review',
+                          style: TextStyle(
+                            color: Color(0xFF0038FF),
+                            fontFamily: 'Galano',
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    side: BorderSide(color: Color(0xFF0038FF), width: 1.5),
-                    padding: EdgeInsets.all(10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    backgroundColor: Colors.white,
-                  ),
-                  child: Text(
-                    'Write a Review',
-                    style: TextStyle(
-                      color: Color(0xFF0038FF),
-                      fontFamily: 'Galano',
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
               ),
             )
           ],

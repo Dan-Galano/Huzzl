@@ -16,8 +16,9 @@ import 'package:provider/provider.dart';
 
 class CompanyViewScreen extends StatefulWidget {
   final String recruiterId;
+  final bool showReviewBtn;
 
-  const CompanyViewScreen({Key? key, required this.recruiterId})
+  const CompanyViewScreen({Key? key, required this.recruiterId, required this.showReviewBtn})
       : super(key: key);
 
   @override
@@ -59,6 +60,8 @@ class _CompanyViewScreenState extends State<CompanyViewScreen>
                 children: [
                   ProfileHeaderJobSeeker(
                     recruiterId: widget.recruiterId,
+                    showReviewBtn: widget.showReviewBtn,
+
                   ),
                   Gap(30),
                   CompanyProfileTabBar(tabController: _tabController),
