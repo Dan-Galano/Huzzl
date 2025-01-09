@@ -8,15 +8,17 @@ import 'package:provider/provider.dart';
 import '../../../constants.dart'; // Import the model
 
 class AllSubscriptionsScreen extends StatefulWidget {
-  const AllSubscriptionsScreen({super.key});
+  DateTime? startDate;
+  DateTime? endDate;
+  AllSubscriptionsScreen({super.key, this.startDate, this.endDate});
 
   @override
   State<AllSubscriptionsScreen> createState() => _AllSubscriptionsScreenState();
 }
 
 class _AllSubscriptionsScreenState extends State<AllSubscriptionsScreen> {
-  DateTime _startDate = DateTime(1999, 1, 1);
-  DateTime _endDate = DateTime.now().add(const Duration(days: 30));
+  // DateTime widget.startDate = DateTime(1999, 1, 1);
+  // DateTime widget.endDate = DateTime.now().add(const Duration(days: 30));
   List<Subscriber> _filteredSubscriptions = [];
 
   @override
@@ -34,9 +36,9 @@ class _AllSubscriptionsScreenState extends State<AllSubscriptionsScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _startDate) {
+    if (picked != null && picked != widget.startDate) {
       setState(() {
-        _startDate = picked;
+        widget.startDate = picked;
         _filterSubscriptions();
       });
     }
@@ -49,9 +51,9 @@ class _AllSubscriptionsScreenState extends State<AllSubscriptionsScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _endDate) {
+    if (picked != null && picked != widget.endDate) {
       setState(() {
-        _endDate = picked;
+        widget.endDate = picked;
         _filterSubscriptions();
       });
     }
@@ -59,12 +61,12 @@ class _AllSubscriptionsScreenState extends State<AllSubscriptionsScreen> {
 
   void _filterSubscriptions() {
     final provider = Provider.of<MenuAppController>(context, listen: false);
-    if (_startDate != null && _endDate != null) {
+    if (widget.startDate != null && widget.endDate != null) {
       setState(() {
         _filteredSubscriptions = provider.allSubscriptions.where((subscriber) {
           final dateSubscribed = subscriber.dateSubscribed.toDate();
-          return dateSubscribed.isAfter(_startDate!) &&
-              dateSubscribed.isBefore(_endDate!);
+          return dateSubscribed.isAfter(widget.startDate!) &&
+              dateSubscribed.isBefore(widget.endDate!);
         }).toList();
       });
     }
@@ -84,95 +86,97 @@ class _AllSubscriptionsScreenState extends State<AllSubscriptionsScreen> {
         }
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: _pickStartDate,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 5.0), // Adjust padding as needed
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: Row(
-                        children: [
-                          // Show label only if startTime is selected
-                          if (_startDate != null)
-                            Text(
-                              'Start Date: ',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
-                          Text(
-                            _startDate != null
-                                ? DateFormat('MM/dd/yyyy').format(_startDate)
-                                : 'Select Start Date',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: _startDate != null
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  // ElevatedButton(
-                  //   onPressed: _pickEndDate,
-                  //   child: Text(_endDate == null
-                  //       ? 'Select End Date'
-                  //       : 'End Date: ${DateFormat('MM/dd/yyyy').format(_endDate!)}'),
-                  // ),
-                  InkWell(
-                    mouseCursor: SystemMouseCursors.click,
-                    onTap: _pickEndDate,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 5.0), // Adjust padding as needed
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: Row(
-                        children: [
-                          // Show label only if startTime is selected
-                          if (_endDate != null)
-                            const Text(
-                              'End Date: ',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
-                          Text(
-                            _endDate != null
-                                ? DateFormat('MM/dd/yyyy').format(_endDate)
-                                : 'Select End Date',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: _endDate != null
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            // child: Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     InkWell(
+            //       mouseCursor: SystemMouseCursors.click,
+            //       onTap: _pickStartDate,
+            //       child: Container(
+            //         padding: const EdgeInsets.symmetric(
+            //             vertical: 10.0,
+            //             horizontal: 5.0), // Adjust padding as needed
+            //         decoration: BoxDecoration(
+            //           border: Border.all(color: Colors.black),
+            //           borderRadius:
+            //               const BorderRadius.all(Radius.circular(10)),
+            //         ),
+            //         child: Row(
+            //           children: [
+            //             // Show label only if startTime is selected
+            //             if (widget.startDate != null)
+            //               Text(
+            //                 'Start Date: ',
+            //                 style:
+            //                     TextStyle(color: Colors.black, fontSize: 16),
+            //               ),
+            //             Text(
+            //               widget.startDate != null
+            //                   ? DateFormat('MM/dd/yyyy')
+            //                       .format(widget.startDate!)
+            //                   : 'Select Start Date',
+            //               style: TextStyle(
+            //                 color: Colors.black,
+            //                 fontSize: 16,
+            //                 fontWeight: widget.startDate != null
+            //                     ? FontWeight.bold
+            //                     : FontWeight.normal,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //     SizedBox(width: 20),
+            //     // ElevatedButton(
+            //     //   onPressed: _pickEndDate,
+            //     //   child: Text(widget.endDate == null
+            //     //       ? 'Select End Date'
+            //     //       : 'End Date: ${DateFormat('MM/dd/yyyy').format(widget.endDate!)}'),
+            //     // ),
+            //     InkWell(
+            //       mouseCursor: SystemMouseCursors.click,
+            //       onTap: _pickEndDate,
+            //       child: Container(
+            //         padding: const EdgeInsets.symmetric(
+            //             vertical: 10.0,
+            //             horizontal: 5.0), // Adjust padding as needed
+            //         decoration: BoxDecoration(
+            //           border: Border.all(color: Colors.black),
+            //           borderRadius:
+            //               const BorderRadius.all(Radius.circular(10)),
+            //         ),
+            //         child: Row(
+            //           children: [
+            //             // Show label only if startTime is selected
+            //             if (widget.endDate != null)
+            //               const Text(
+            //                 'End Date: ',
+            //                 style:
+            //                     TextStyle(color: Colors.black, fontSize: 16),
+            //               ),
+            //             Text(
+            //               widget.endDate != null
+            //                   ? DateFormat('MM/dd/yyyy')
+            //                       .format(widget.endDate!)
+            //                   : 'Select End Date',
+            //               style: TextStyle(
+            //                 color: Colors.black,
+            //                 fontSize: 16,
+            //                 fontWeight: widget.endDate != null
+            //                     ? FontWeight.bold
+            //                     : FontWeight.normal,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            // ),
             SingleChildScrollView(
               child: SizedBox(
                 width: double.infinity,

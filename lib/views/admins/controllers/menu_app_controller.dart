@@ -114,7 +114,6 @@ class MenuAppController extends ChangeNotifier {
     }
   }
 
-
   Future<Map<int, int>> fetchSubscribersByMonth() async {
     try {
       var subscribersSnapshot = await FirebaseFirestore.instance
@@ -316,18 +315,34 @@ class MenuAppController extends ChangeNotifier {
   int _totalRecruiters = 0;
   int get totalRecruiters => _totalRecruiters;
 
-  Future<void> recruitersCount() async {
+  Future<void> recruitersCount({DateTime? startDate, DateTime? endDate}) async {
     print('Counting recruiters');
-    try {
-      final snapshot = await _firestore
-          .collection('users')
-          .where('role', isEqualTo:   'recruiter')
-          .count()
-          .get();
-      _totalRecruiters = snapshot.count!;
-      notifyListeners();
-    } catch (e) {
-      print('Error counting documents: $e');
+    if (startDate != null && endDate != null) {
+      try {
+        final snapshot = await _firestore
+            .collection('users')
+            .where('role', isEqualTo: 'recruiter')
+            .where('created_at',
+                isGreaterThanOrEqualTo: startDate, isLessThanOrEqualTo: endDate)
+            .count()
+            .get();
+        _totalRecruiters = snapshot.count!;
+        notifyListeners();
+      } catch (e) {
+        print('Error counting documents: $e');
+      }
+    } else {
+      try {
+        final snapshot = await _firestore
+            .collection('users')
+            .where('role', isEqualTo: 'recruiter')
+            .count()
+            .get();
+        _totalRecruiters = snapshot.count!;
+        notifyListeners();
+      } catch (e) {
+        print('Error counting documents: $e');
+      }
     }
   }
 
@@ -337,6 +352,7 @@ class MenuAppController extends ChangeNotifier {
 
   Future<void> jobseekersCount() async {
     print('Counting jobseekers');
+
     try {
       final snapshot = await _firestore
           .collection('users')
@@ -414,7 +430,9 @@ class MenuAppController extends ChangeNotifier {
           status: doc['accStatus'],
           subscriptionType:
               doc['role'] == 'recruiter' ? doc['subscriptionType'] : 'N/A',
-          dateSubscribed: doc['role'] == 'recruiter' ? doc['dateSubscribed'] : Timestamp(0, 0),
+          dateSubscribed: doc['role'] == 'recruiter'
+              ? doc['dateSubscribed']
+              : Timestamp(0, 0),
         );
       }).toList();
 
@@ -570,6 +588,38 @@ class MenuAppController extends ChangeNotifier {
     } catch (e) {
       print('Error listing files: $e');
       return [];
+    }
+  }
+
+  DateTime? dateStartPicked;
+  DateTime? dateEndPicked;
+
+  DateTime? get startDate => dateStartPicked;
+  DateTime? get endDate => dateEndPicked;
+
+  void pickStartDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      dateStartPicked = picked;
+      notifyListeners();
+    }
+  }
+
+  void pickEndDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      dateEndPicked = picked;
+      notifyListeners();
     }
   }
 }

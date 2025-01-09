@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:huzzl_web/views/admins/controllers/menu_app_controller.dart';
 import 'package:huzzl_web/views/admins/models/my_files.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 
 class FileInfoCard extends StatefulWidget {
-  const FileInfoCard({
+  DateTime? startDate;
+  DateTime? endDate;
+  FileInfoCard({
     super.key,
     required this.info,
+    this.startDate,
+    this.endDate,
   });
 
   final CloudStorageInfo info;
@@ -39,7 +44,12 @@ class _FileInfoCardState extends State<FileInfoCard> {
 
     if (widget.info.title == "Recruiter") {
       //FETCH_DISABLER
-      await adminProvider.recruitersCount();
+      if (widget.startDate != null && widget.endDate != null) {
+        await adminProvider.recruitersCount(
+            startDate: widget.startDate, endDate: widget.endDate);
+      } else {
+        await adminProvider.recruitersCount();
+      }
       counterRecruiter = adminProvider.totalRecruiters;
       setState(() {
         print("RECRUITERS BABY: $counterRecruiter");
