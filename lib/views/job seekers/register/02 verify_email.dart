@@ -82,8 +82,9 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
         'lastName': widget.lname,
         'email': widget.email,
         'phoneNumber': widget.phoneNumber,
-        'accStatus' : 'enabled',
-      },SetOptions(merge: true));
+        'created_at': DateTime.now(),
+        'accStatus': 'enabled',
+      }, SetOptions(merge: true));
       String uid = widget.userCredential.user!.uid;
       EasyLoading.instance
         ..displayDuration = const Duration(milliseconds: 1500)
@@ -128,14 +129,11 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       }).catchError((error) {
         print('Error fetching user data from Firestore: $error');
       });
-      
-      
-      
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
+
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (_) => PreferenceViewPage(
                 userUid: uid,
               )));
-
 
       //TURN ON PHONE VERIFICATION
       // Navigator.of(context).pushReplacement(
@@ -145,7 +143,6 @@ class _EmailValidationScreenState extends State<EmailValidationScreen> {
       //             userCredential: widget.userCredential,
       //           )),
       // );
-  
     }
   }
 
