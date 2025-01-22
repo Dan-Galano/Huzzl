@@ -74,10 +74,10 @@ class JobProvider with ChangeNotifier {
     try {
       // Fetch job data from various sources
       List<Map<String, dynamic>> huzzlJobs = await fetchAllJobPosts();
-      // String jobstreetHtmlContent = await fetchJobStreetData(searchQuery);
-      // List<Map<String, String>> jobstreetJobs =
-      //     parseJobStreetData(jobstreetHtmlContent);
-      // await fetchJobStreetJobDesc(jobstreetJobs);
+      String jobstreetHtmlContent = await fetchJobStreetData(searchQuery);
+      List<Map<String, String>> jobstreetJobs =
+          parseJobStreetData(jobstreetHtmlContent);
+      await fetchJobStreetJobDesc(jobstreetJobs);
       // String linkedInHtmlContent = await fetchLinkedInData(searchQuery);
       // List<Map<String, String>> linkedInJobs =
       //     parseLinkedInData(linkedInHtmlContent);
@@ -88,10 +88,10 @@ class JobProvider with ChangeNotifier {
       String kalibrrHtmlContent = await fetchKalibrrData(searchQuery);
       List<Map<String, String>> kalibrrJobs =
           parseKalibrrData(kalibrrHtmlContent);
-      await fetchKalibrrJobDesc(kalibrrJobs);
-      // String philJobNetHtmlContent = await fetchPhilJobNetData();
-      // List<Map<String, String>> philJobNetJobs =
-      //     parsePhilJobNetData(philJobNetHtmlContent);
+      await fetchKalibrrJobDesc(kalibrrJobs); 
+      String philJobNetHtmlContent = await fetchPhilJobNetData();
+      List<Map<String, String>> philJobNetJobs =
+          parsePhilJobNetData(philJobNetHtmlContent);
 
       // Combine all jobs from all sources
       List<Map<String, dynamic>> allJobs = [
@@ -99,8 +99,8 @@ class JobProvider with ChangeNotifier {
         // ...linkedInJobs,
         // ...onlineJobsJobs,
         ...kalibrrJobs,
-        // ...jobstreetJobs,
-        // ...philJobNetJobs,
+        ...jobstreetJobs,
+        ...philJobNetJobs,
       ];
 
       // Filter jobs by platform
@@ -200,14 +200,28 @@ class JobProvider with ChangeNotifier {
           bool isOpen = jobPost['status'] == 'open';
 
           bool isDeadlineValid = false;
+          // if (applicationDeadline != null) {
+          //   try {
+          //     DateTime deadlineDate = formatter.parse(applicationDeadline);
+          //     isDeadlineValid = deadlineDate.isAfter(currentDate);
+          //   } catch (e) {
+          //     print("Error parsing date for job post ${doc.id}: $e");
+          //   }
+          // }
           if (applicationDeadline != null) {
-            try {
-              DateTime deadlineDate = formatter.parse(applicationDeadline);
-              isDeadlineValid = deadlineDate.isAfter(currentDate);
-            } catch (e) {
-              print("Error parsing date for job post ${doc.id}: $e");
-            }
-          }
+  try {
+    // Check if the applicationDeadline matches the expected date format
+    if (applicationDeadline.toLowerCase() != "no deadline") {
+      DateTime deadlineDate = formatter.parse(applicationDeadline);
+      isDeadlineValid = deadlineDate.isAfter(currentDate);
+    } else {
+      isDeadlineValid = true; // Assume "No Deadline" means no restriction
+    }
+  } catch (e) {
+    print("Error parsing date for job post ${doc.id}: $e");
+  }
+}
+
 
           // Only include open jobs with a valid deadline
           if (isOpen && isDeadlineValid) {

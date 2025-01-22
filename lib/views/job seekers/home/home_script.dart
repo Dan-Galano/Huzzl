@@ -2,9 +2,11 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html;
 
 Future<String> fetchJobStreetData(String searchQuery) async {
-  String url = 'https://corsproxy.io/?https://ph.jobstreet.com/jobs';
+  // String url = 'https://corsproxy.io/?https://ph.jobstreet.com/jobs';
+  String url = 'https://api.cors.lol/?url=https://ph.jobstreet.com/jobs';
   if (searchQuery.isNotEmpty) {
-    url = 'https://corsproxy.io/?https://ph.jobstreet.com/$searchQuery-jobs';
+    // url = 'https://corsproxy.io/?https://ph.jobstreet.com/$searchQuery-jobs';
+    url = 'https://api.cors.lol/?url=https://ph.jobstreet.com/$searchQuery-jobs';
   }
   final response = await http.get(Uri.parse(url));
 
@@ -260,7 +262,8 @@ List<Map<String, String>> parseKalibrrData(String htmlContent) {
 }
 
 Future<String> fetchPhilJobNetData() async {
-  String url = 'https://corsproxy.io/?https://philjobnet.gov.ph/job-vacancies/';
+  // String url = 'https://corsproxy.io/?https://philjobnet.gov.ph/job-vacancies/';
+  String url = 'https://api.cors.lol/?url=https://philjobnet.gov.ph/job-vacancies/';
   // WALA NAMAng link for job search dito
 
   final response = await http.get(Uri.parse(url));
